@@ -18,7 +18,7 @@ import model.Users;
 /**
  * Servlet xử lý đăng nhập và đăng xuất người dùng.
  *
- * @author Vo Hoang Tu - CE000000 - 20/05/2025
+ * @author nguyen quoc thinh - CE000000 - 05/10/2025
  */
 @WebServlet(name = "LoginServlet", urlPatterns = {"/login"})
 public class LoginServlet extends HttpServlet {
@@ -55,8 +55,7 @@ public class LoginServlet extends HttpServlet {
             HttpServletResponse response)
             throws ServletException, IOException {
         
-        // Bước 1: Lấy dữ liệu từ form
-        // Form trong login.jsp dùng name="username" cho Email và name="password" cho Mật khẩu.
+        // Bước 1, 2, 3: (Giữ nguyên logic lấy dữ liệu, xác thực, và kiểm tra kết quả đăng nhập)
         String email = request.getParameter("username"); 
         String password = request.getParameter("password");
         
@@ -69,42 +68,54 @@ public class LoginServlet extends HttpServlet {
         }
         
         UsersDAO dao = new UsersDAO();
-        // Bước 2: Gọi phương thức login để xác thực người dùng
         Users u = dao.login(email, password); 
 
         // Bước 3: Kiểm tra kết quả đăng nhập
-        if (u != null) { // Đăng nhập thành công (UsersDAO.login trả về null nếu thất bại)
+        if (u != null) { // Đăng nhập thành công
             
-            // Đăng nhập thành công -> Tạo cookie và Session
-            
-            // A. Gán User vào Session (Tốt hơn là chỉ gán các thông tin cần thiết)
-            // Lưu đối tượng User vào Session để truy cập dễ dàng hơn
+            // A. Gán User vào Session
             request.getSession().setAttribute("user", u);
             
-            // B. Gán cookie (dành cho việc ghi nhớ đăng nhập hoặc kiểm tra nhanh)
-            
+            // B. Gán cookie
             // Lưu EMAIL vào cookie
             Cookie cookieEmail = new Cookie("email", u.getEmail()); 
-            cookieEmail.setMaxAge(60 * 60); // Tồn tại 1 tiếng
+            cookieEmail.setMaxAge(60 * 60); 
             response.addCookie(cookieEmail);
 
             // Gán Role vào cookie 
-            String roleValue = (u.getRole() != null) ? u.getRole().toString() : "1"; // Mặc định role là 2 nếu null
+            String roleValue = (u.getRole() != null) ? u.getRole().toString() : "1"; // Mặc định role là 1 nếu null
             Cookie cookieRole = new Cookie("role", roleValue);
-            cookieRole.setMaxAge(60 * 60); // Tồn tại 1 tiếng
+            cookieRole.setMaxAge(60 * 60); 
             response.addCookie(cookieRole);
-
-            // Bước 4: Chuyển hướng đến Product
-            response.sendRedirect("homepage.jsp");
+            
+            
+            // =========================================================
+            // BƯỚC 4: THÊM LOGIC CHUYỂN HƯỚNG THEO ROLE (ĐÃ SỬA) 🚀
+            // =========================================================
+            if (roleValue.equals("4") ) {
+                // Nếu role là 4, chuyển hướng đến dashboard.jsp
+                response.sendRedirect("dashboard_admin.jsp"); 
+            } 
+            else if (roleValue.equals("3") ) {
+                // Nếu role là 4, chuyển hướng đến dashboard.jsp
+                response.sendRedirect("dashboard_shipper.jsp"); 
+            }
+            else if (roleValue.equals("2") ) {
+                // Nếu role là 4, chuyển hướng đến dashboard.jsp
+                response.sendRedirect("dashboard_staff.jsp"); 
+            }else if (roleValue.equals("1") ){
+                // Các role khác (hoặc role mặc định) chuyển hướng đến homepage.jsp
+                response.sendRedirect("homepage.jsp");
+            }
+            // =========================================================
 
         } else {
-            // Đăng nhập thất bại -> Gửi lại về trang login với thông báo lỗi
+            // Đăng nhập thất bại
             request.setAttribute("error", "Invalid email or password.");
             RequestDispatcher dispatcher = request.getRequestDispatcher("login.jsp");
             dispatcher.forward(request, response);
         }
     }
-
     /**
      * Returns a short description of the servlet.
      *
