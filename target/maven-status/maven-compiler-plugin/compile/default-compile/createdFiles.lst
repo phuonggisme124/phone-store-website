@@ -1,0 +1,11 @@
+filter\AuthFilter.class
+controller\LoginServlet.class
+model\Users.class
+model\Product.class
+model\Category.class
+controller\LogoutServlet.class
+dao\UsersDAO.class
+dao\CategoryDAO.class
+controller\ProductController.class
+dao\ProductDAO.class
+utils\DBContext.class
