@@ -1,0 +1,43 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : Oct 5, 2025, 5:18:30 PM
+    Author     : duynu
+*/
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f8f9fa;
+}
+
+#wrapper {
+    display: flex;
+    height: 100vh;
+}
+
+#sidebar-wrapper {
+    width: 250px;
+    min-height: 100vh;
+    transition: all 0.3s;
+}
+
+#wrapper.toggled #sidebar-wrapper {
+    margin-left: -250px;
+}
+
+.card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+}
+
+.card-body {
+    text-align: center;
+}
+
+.sidebar-heading {
+    font-size: 1.2rem;
+    letter-spacing: 1px;
+}
