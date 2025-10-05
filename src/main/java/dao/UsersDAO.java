@@ -7,6 +7,7 @@ package dao;
 import java.security.MessageDigest;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import model.Users;
@@ -88,25 +89,63 @@ public class UsersDAO extends DBContext {
     }
 
     public static void main(String[] args) {
-        UsersDAO dao = new UsersDAO();
-        
-        // Cần thay đổi test case để phù hợp với CSDL thực tế (Email và Password)
-        String testEmail = "vana@example.com"; 
-        String testPass = "123456";
-     // THÊM DÒNG NÀY ĐỂ DEBUG
-    String hashedPass = dao.hashMD5(testPass);
-    System.out.println("MD5 Hash generated: " + hashedPass);       
-        Users loggedInUser = dao.login(testEmail, testPass);
-        
-        System.out.println("--- Test Login ---");
+           UsersDAO dao = new UsersDAO();
+
+    String name = "phuong2";
+    String email = "phuong1@gmail.com";
+    String numberPhone = "0775876126";
+    String address = "123abc";
+    String password = "123456";
+
+    try {
+        System.out.println("--- Test Register ---");
+        Users newUser = dao.register(name, email, numberPhone, address, password);
+
+        if (newUser != null) {
+            System.out.println("✅ Register SUCCESS!");
+            System.out.println("UserID: " + newUser.getUserId());
+            System.out.println("FullName: " + newUser.getFullName());
+            System.out.println("Role: " + newUser.getRole());
+        } else {
+            System.out.println("❌ Register FAILED!");
+        }
+
+        System.out.println("\n--- Test Login ---");
+        Users loggedInUser = dao.login(email, password);
         if (loggedInUser != null) {
-            System.out.println("Login SUCCESS!");
+            System.out.println("✅ Login SUCCESS!");
             System.out.println("UserID: " + loggedInUser.getUserId());
             System.out.println("FullName: " + loggedInUser.getFullName());
             System.out.println("Role: " + loggedInUser.getRole());
-            System.out.println(loggedInUser);
         } else {
-            System.out.println("Login FAILED for email: " + testEmail);
+            System.out.println("❌ Login FAILED for email: " + email);
         }
+
+    } catch (Exception e) {
+        e.printStackTrace();
     }
+    }
+
+public Users register(String name, String email, String numberPhone, String address, String password) throws SQLException {
+    String sql = "INSERT INTO Users (FullName, Email, Phone, Password, Role, Address, CreatedAt, Status) "
+               + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
+    String status = "active";
+    PreparedStatement ps = conn.prepareStatement(sql);
+
+    ps.setString(1, name);
+    ps.setString(2, email);
+    ps.setString(3, numberPhone);
+    ps.setString(4, hashMD5(password));
+    ps.setInt(5, 1);
+    ps.setString(6, address);
+    ps.setTimestamp(7, java.sql.Timestamp.valueOf(java.time.LocalDateTime.now()));
+
+    ps.setString(8, status);
+
+    ps.executeUpdate();
+    ps.close();
+
+    return login(email, password); // hoặc trả về đối tượng Users nếu bạn muốn
+}
 }

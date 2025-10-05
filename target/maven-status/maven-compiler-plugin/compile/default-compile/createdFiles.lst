@@ -1,11 +1,12 @@
-filter\AuthFilter.class
 controller\LoginServlet.class
+dao\CategoryDAO.class
+controller\ProductController.class
+utils\DBContext.class
+filter\AuthFilter.class
 model\Users.class
 model\Product.class
 model\Category.class
 controller\LogoutServlet.class
 dao\UsersDAO.class
-dao\CategoryDAO.class
-controller\ProductController.class
+controller\RegisterServlet.class
 dao\ProductDAO.class
-utils\DBContext.class
