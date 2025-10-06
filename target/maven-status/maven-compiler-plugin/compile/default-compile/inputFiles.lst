@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 D:\swp\New folder\phone-store-website\src\main\java\model\Category.java
 D:\swp\New folder\phone-store-website\src\main\java\model\Sale.java
 D:\swp\New folder\phone-store-website\src\main\java\model\Carts.java
@@ -16,3 +17,25 @@ D:\swp\New folder\phone-store-website\src\main\java\model\Reviews.java
 D:\swp\New folder\phone-store-website\src\main\java\controller\LogoutServlet.java
 D:\swp\New folder\phone-store-website\src\main\java\controller\LoginServlet.java
 D:\swp\New folder\phone-store-website\src\main\java\model\CartItems.java
+=======
+D:\SWP391\phone-store-website\phone-store-website\src\main\java\dao\UsersDAO.java
+D:\SWP391\phone-store-website\phone-store-website\src\main\java\dao\ProductDAO.java
+D:\SWP391\phone-store-website\phone-store-website\src\main\java\utils\DBContext.java
+D:\SWP391\phone-store-website\phone-store-website\src\main\java\controller\LoginServlet.java
+D:\SWP391\phone-store-website\phone-store-website\src\main\java\model\Suppliers.java
+D:\SWP391\phone-store-website\phone-store-website\src\main\java\controller\LogoutServlet.java
+D:\SWP391\phone-store-website\phone-store-website\src\main\java\model\Promotions.java
+D:\SWP391\phone-store-website\phone-store-website\src\main\java\model\Products.java
+D:\SWP391\phone-store-website\phone-store-website\src\main\java\model\Users.java
+D:\SWP391\phone-store-website\phone-store-website\src\main\java\model\Order.java
+D:\SWP391\phone-store-website\phone-store-website\src\main\java\controller\RegisterServlet.java
+D:\SWP391\phone-store-website\phone-store-website\src\main\java\model\Category.java
+D:\SWP391\phone-store-website\phone-store-website\src\main\java\model\Payments.java
+D:\SWP391\phone-store-website\phone-store-website\src\main\java\controller\ProductController.java
+D:\SWP391\phone-store-website\phone-store-website\src\main\java\dao\CategoryDAO.java
+D:\SWP391\phone-store-website\phone-store-website\src\main\java\model\Categories.java
+D:\SWP391\phone-store-website\phone-store-website\src\main\java\filter\AuthFilter.java
+D:\SWP391\phone-store-website\phone-store-website\src\main\java\model\Sale.java
+D:\SWP391\phone-store-website\phone-store-website\src\main\java\model\Product.java
+D:\SWP391\phone-store-website\phone-store-website\src\main\java\controller\UserServlet.java
+>>>>>>> a16a842479c53cba94e0787a09b98e6918bc332b

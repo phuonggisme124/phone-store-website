@@ -1,6 +1,12 @@
 controller\LoginServlet.class
+<<<<<<< HEAD
 model\Carts.class
 model\SupportTickets.class
+=======
+model\Promotions.class
+model\Categories.class
+model\Suppliers.class
+>>>>>>> a16a842479c53cba94e0787a09b98e6918bc332b
 dao\CategoryDAO.class
 controller\ProductController.class
 model\CartItems.class
@@ -8,11 +14,17 @@ utils\DBContext.class
 model\Order.class
 model\Sale.class
 filter\AuthFilter.class
+model\Products.class
 model\Users.class
 model\Product.class
 model\Category.class
 controller\LogoutServlet.class
 dao\UsersDAO.class
+<<<<<<< HEAD
 model\Reviews.class
+=======
+model\Payments.class
+controller\UserServlet.class
+>>>>>>> a16a842479c53cba94e0787a09b98e6918bc332b
 controller\RegisterServlet.class
 dao\ProductDAO.class

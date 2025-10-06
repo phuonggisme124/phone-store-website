@@ -32,6 +32,7 @@ public class DBContext {
                     + "databaseName=PhoneStore;"
                     + "user=sa;"
                     + "password=261204;"
+                    + "password=123456;"
                     + "encrypt=true;trustServerCertificate=true;";
             // Tạo kết nối.
             conn = DriverManager.getConnection(dbURL);
