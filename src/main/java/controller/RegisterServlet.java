@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package controller;
 
 import dao.UsersDAO;
@@ -10,10 +6,11 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.Cookie;
+// Đã xóa import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession; // Thêm import cho HttpSession
 import model.Users;
 
 /**
@@ -23,15 +20,6 @@ import model.Users;
 @WebServlet(name = "RegisterServlet", urlPatterns = {"/register"})
 public class RegisterServlet extends HttpServlet {
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
@@ -49,96 +37,90 @@ public class RegisterServlet extends HttpServlet {
         }
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
     }
 
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        
+        // Lấy dữ liệu từ form
         String name = request.getParameter("fullname");
         String email = request.getParameter("email");
         String numberPhone = request.getParameter("numberphone");
         String address = request.getParameter("address");
         String password = request.getParameter("password");
         String rePassword = request.getParameter("rePassword");
-        //Check password and repeat pass word have to match
-        if (!password.equals(rePassword) || password.isEmpty() || rePassword.isEmpty() || password == null || rePassword == null) {
-            request.setAttribute("error", "Password do not match!");
+        
+        // --- Logic kiểm tra đầu vào ---
+        
+        // 1. Check password and rePassword match
+        if (!password.equals(rePassword) || password.isEmpty() || password == null) {
+            request.setAttribute("error", "Password do not match or cannot be empty!");
             request.getRequestDispatcher("login.jsp").forward(request, response);
+            return; // Dừng lại sau khi chuyển tiếp
         }
-        if (name == null || name.isEmpty() || email == null || email.trim().isEmpty() || numberPhone.isEmpty() || numberPhone == null || address.isEmpty() || address == null) {
+        
+        // 2. Check required fields
+        if (name == null || name.isEmpty() || email == null || email.trim().isEmpty() || 
+            numberPhone == null || numberPhone.isEmpty() || address == null || address.isEmpty()) {
             request.setAttribute("error", "You must fill in all required fields to register.");
             RequestDispatcher dispatcher = request.getRequestDispatcher("login.jsp");
             dispatcher.forward(request, response);
+            return; // Dừng lại sau khi chuyển tiếp
         }
+        
+        // --- Logic Đăng ký và Xử lý kết quả ---
+        
         UsersDAO dao = new UsersDAO();
         Users u = null;
         try {
+             // Giả định phương thức register trong UsersDAO sẽ trả về đối tượng Users nếu thành công
              u = dao.register(name, email, numberPhone, address, password);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            // Đây thường là lỗi Email đã tồn tại hoặc lỗi CSDL
+            System.out.println("Registration error: " + e.getMessage());
+            request.setAttribute("error", "Registration failed. This email may already be in use.");
+            request.getRequestDispatcher("login.jsp").forward(request, response);
+            return;
         }
-         if (u != null) { // Đăng nhập thành công (UsersDAO.login trả về null nếu thất bại)
-            
-            // Đăng nhập thành công -> Tạo cookie và Session
-            
-            // A. Gán User vào Session (Tốt hơn là chỉ gán các thông tin cần thiết)
-            // Lưu đối tượng User vào Session để truy cập dễ dàng hơn
-            request.getSession().setAttribute("user", u);
-            
-            // B. Gán cookie (dành cho việc ghi nhớ đăng nhập hoặc kiểm tra nhanh)
-            
-            // Lưu EMAIL vào cookie
-            Cookie cookieEmail = new Cookie("email", u.getEmail()); 
-            cookieEmail.setMaxAge(60 * 60); // Tồn tại 1 tiếng
-            response.addCookie(cookieEmail);
 
-            // Gán Role vào cookie 
-            String roleValue = (u.getRole() != null) ? u.getRole().toString() : "1"; // Mặc định role là 2 nếu null
-            Cookie cookieRole = new Cookie("role", roleValue);
-            cookieRole.setMaxAge(60 * 60); // Tồn tại 1 tiếng
-            response.addCookie(cookieRole);
+        if (u != null) { // Đăng ký thành công
+            
+            // =========================================================
+            // A. GÁN DỮ LIỆU VÀO SESSION (TỰ ĐỘNG ĐĂNG NHẬP) 🚀
+            // =========================================================
+            HttpSession session = request.getSession(); // Lấy hoặc tạo Session mới
+            
+            // Lưu toàn bộ đối tượng User (phương pháp tốt nhất)
+            session.setAttribute("user", u);
+            
+            // Lưu các thông tin cá nhân quan trọng vào Session
+            session.setAttribute("email", u.getEmail());
+            // Giả sử Users class có phương thức getId()
+            // session.setAttribute("id_user", u.getId()); 
 
-            // Bước 4: Chuyển hướng đến Product
+            String roleValue = (u.getRole() != null) ? u.getRole().toString() : "1"; // Mặc định role là 1 (người dùng)
+            session.setAttribute("role", roleValue); 
+
+            // Loại bỏ logic Cookie đã cũ
+            
+            // Bước 4: Chuyển hướng đến trang chủ
             response.sendRedirect("homepage.jsp");
 
         } else {
-            // Đăng nhập thất bại -> Gửi lại về trang login với thông báo lỗi
-            request.setAttribute("error", "Invalid email or password.");
+            // Đăng ký thất bại (Lỗi không xác định hoặc DAO trả về null)
+            request.setAttribute("error", "Registration failed due to an unexpected error.");
             RequestDispatcher dispatcher = request.getRequestDispatcher("login.jsp");
             dispatcher.forward(request, response);
         }
-
     }
 
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
     @Override
     public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
-
+        return "Handles user registration and subsequent automatic login using Session.";
+    }
 }

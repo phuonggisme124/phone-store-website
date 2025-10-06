@@ -29,6 +29,10 @@ public class Users {
     // Constructor mặc định
     public Users() {
     }
+    public Users(String name, String phone) {
+        this.fullName = name;
+        this.phone = phone;
+    }
 
     /**
      * Constructor đầy đủ, bao gồm tất cả các trường từ CSDL.
