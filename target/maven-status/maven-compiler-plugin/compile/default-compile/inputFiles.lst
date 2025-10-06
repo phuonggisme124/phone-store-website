@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 C:\Users\duynu\Desktop\SWP\phone-store-website\phone-store-website\src\main\java\controller\LogoutServlet.java
 C:\Users\duynu\Desktop\SWP\phone-store-website\phone-store-website\src\main\java\dao\ProductDAO.java
 C:\Users\duynu\Desktop\SWP\phone-store-website\phone-store-website\src\main\java\utils\DBContext.java
@@ -10,3 +11,17 @@ C:\Users\duynu\Desktop\SWP\phone-store-website\phone-store-website\src\main\java
 C:\Users\duynu\Desktop\SWP\phone-store-website\phone-store-website\src\main\java\dao\CategoryDAO.java
 C:\Users\duynu\Desktop\SWP\phone-store-website\phone-store-website\src\main\java\controller\RegisterServlet.java
 C:\Users\duynu\Desktop\SWP\phone-store-website\phone-store-website\src\main\java\model\Users.java
+=======
+C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\dao\ProductDAO.java
+C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\controller\LoginServlet.java
+C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\model\Users.java
+C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\model\Product.java
+C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\utils\DBContext.java
+C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\dao\CategoryDAO.java
+C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\controller\RegisterServlet.java
+C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\controller\ProductController.java
+C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\controller\LogoutServlet.java
+C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\filter\AuthFilter.java
+C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\model\Category.java
+C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\dao\UsersDAO.java
+>>>>>>> Stashed changes

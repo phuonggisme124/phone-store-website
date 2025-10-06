@@ -2,6 +2,8 @@ controller\LoginServlet.class
 dao\CategoryDAO.class
 controller\ProductController.class
 utils\DBContext.class
+model\Order.class
+model\Sale.class
 filter\AuthFilter.class
 model\Users.class
 model\Product.class
