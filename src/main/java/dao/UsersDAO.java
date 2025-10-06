@@ -10,6 +10,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import model.Users;
 import utils.DBContext;
 
@@ -23,6 +25,33 @@ public class UsersDAO extends DBContext {
 
     public UsersDAO() {
         super();
+    }
+    /**
+     * Duy
+     * @return 
+     */
+    public List<Users> getAllUsers(){
+        String sql = "SELECT * FROM users";
+        List<Users> list = new ArrayList<>();
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                int id = rs.getInt("UserID");
+                String fullName = rs.getString("FullName");
+                String email = rs.getString("Email");
+                String phone = rs.getString("Phone");
+                String pass = rs.getString("Password");
+                int role = rs.getInt("Role");
+                String address = rs.getString("Address");
+                Timestamp createAt = rs.getTimestamp("CreateAt");
+                String status = rs.getString("Status");
+                list.add(new Users(id, fullName, email, phone, pass, role, address, LocalDateTime.MAX, status));
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return list;
     }
 
     // --- Phương thức Hash MD5 (Giữ nguyên) ---
