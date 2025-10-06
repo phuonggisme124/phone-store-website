@@ -1,6 +1,9 @@
 controller\LoginServlet.class
+model\Carts.class
+model\SupportTickets.class
 dao\CategoryDAO.class
 controller\ProductController.class
+model\CartItems.class
 utils\DBContext.class
 model\Order.class
 model\Sale.class
@@ -10,5 +13,6 @@ model\Product.class
 model\Category.class
 controller\LogoutServlet.class
 dao\UsersDAO.class
+model\Reviews.class
 controller\RegisterServlet.class
 dao\ProductDAO.class

@@ -1,27 +1,18 @@
-<<<<<<< Updated upstream
-C:\Users\duynu\Desktop\SWP\phone-store-website\phone-store-website\src\main\java\controller\LogoutServlet.java
-C:\Users\duynu\Desktop\SWP\phone-store-website\phone-store-website\src\main\java\dao\ProductDAO.java
-C:\Users\duynu\Desktop\SWP\phone-store-website\phone-store-website\src\main\java\utils\DBContext.java
-C:\Users\duynu\Desktop\SWP\phone-store-website\phone-store-website\src\main\java\controller\LoginServlet.java
-C:\Users\duynu\Desktop\SWP\phone-store-website\phone-store-website\src\main\java\model\Product.java
-C:\Users\duynu\Desktop\SWP\phone-store-website\phone-store-website\src\main\java\controller\ProductController.java
-C:\Users\duynu\Desktop\SWP\phone-store-website\phone-store-website\src\main\java\model\Category.java
-C:\Users\duynu\Desktop\SWP\phone-store-website\phone-store-website\src\main\java\filter\AuthFilter.java
-C:\Users\duynu\Desktop\SWP\phone-store-website\phone-store-website\src\main\java\dao\UsersDAO.java
-C:\Users\duynu\Desktop\SWP\phone-store-website\phone-store-website\src\main\java\dao\CategoryDAO.java
-C:\Users\duynu\Desktop\SWP\phone-store-website\phone-store-website\src\main\java\controller\RegisterServlet.java
-C:\Users\duynu\Desktop\SWP\phone-store-website\phone-store-website\src\main\java\model\Users.java
-=======
-C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\dao\ProductDAO.java
-C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\controller\LoginServlet.java
-C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\model\Users.java
-C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\model\Product.java
-C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\utils\DBContext.java
-C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\dao\CategoryDAO.java
-C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\controller\RegisterServlet.java
-C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\controller\ProductController.java
-C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\controller\LogoutServlet.java
-C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\filter\AuthFilter.java
-C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\model\Category.java
-C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\dao\UsersDAO.java
->>>>>>> Stashed changes
+D:\swp\New folder\phone-store-website\src\main\java\model\Category.java
+D:\swp\New folder\phone-store-website\src\main\java\model\Sale.java
+D:\swp\New folder\phone-store-website\src\main\java\model\Carts.java
+D:\swp\New folder\phone-store-website\src\main\java\dao\ProductDAO.java
+D:\swp\New folder\phone-store-website\src\main\java\model\Product.java
+D:\swp\New folder\phone-store-website\src\main\java\model\Users.java
+D:\swp\New folder\phone-store-website\src\main\java\model\SupportTickets.java
+D:\swp\New folder\phone-store-website\src\main\java\model\Order.java
+D:\swp\New folder\phone-store-website\src\main\java\dao\CategoryDAO.java
+D:\swp\New folder\phone-store-website\src\main\java\utils\DBContext.java
+D:\swp\New folder\phone-store-website\src\main\java\controller\ProductController.java
+D:\swp\New folder\phone-store-website\src\main\java\controller\RegisterServlet.java
+D:\swp\New folder\phone-store-website\src\main\java\dao\UsersDAO.java
+D:\swp\New folder\phone-store-website\src\main\java\filter\AuthFilter.java
+D:\swp\New folder\phone-store-website\src\main\java\model\Reviews.java
+D:\swp\New folder\phone-store-website\src\main\java\controller\LogoutServlet.java
+D:\swp\New folder\phone-store-website\src\main\java\controller\LoginServlet.java
+D:\swp\New folder\phone-store-website\src\main\java\model\CartItems.java
