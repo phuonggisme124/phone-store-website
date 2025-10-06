@@ -87,12 +87,48 @@ protected void doPost(HttpServletRequest request,
     String email = request.getParameter("username");
     String password = request.getParameter("password");
 
+<<<<<<< Updated upstream
     // Kiểm tra tính hợp lệ cơ bản
     if (email == null || email.trim().isEmpty() || password == null || password.isEmpty()) {
         request.setAttribute("error", "Email and password cannot be empty.");
         RequestDispatcher dispatcher = request.getRequestDispatcher("login.jsp");
         dispatcher.forward(request, response);
         return;
+=======
+            // Gán Role vào cookie 
+            String roleValue = (u.getRole() != null) ? u.getRole().toString() : "1"; // Mặc định role là 1 nếu null
+            Cookie cookieRole = new Cookie("role", roleValue);
+            cookieRole.setMaxAge(60 * 60); 
+            response.addCookie(cookieRole);
+            
+            
+            // =========================================================
+            // BƯỚC 4: THÊM LOGIC CHUYỂN HƯỚNG THEO ROLE (ĐÃ SỬA) 🚀
+            // =========================================================
+            if (roleValue.equals("4") ) {
+                // Nếu role là 4, chuyển hướng đến dashboard.jsp
+                response.sendRedirect("admin"); 
+            } 
+            else if (roleValue.equals("3") ) {
+                // Nếu role là 4, chuyển hướng đến dashboard.jsp
+                response.sendRedirect("dashboard_shipper.jsp"); 
+            }
+            else if (roleValue.equals("2") ) {
+                // Nếu role là 4, chuyển hướng đến dashboard.jsp
+                response.sendRedirect("dashboard_staff.jsp"); 
+            }else if (roleValue.equals("1") ){
+                // Các role khác (hoặc role mặc định) chuyển hướng đến homepage.jsp
+                response.sendRedirect("homepage.jsp");
+            }
+            // =========================================================
+
+        } else {
+            // Đăng nhập thất bại
+            request.setAttribute("error", "Invalid email or password.");
+            RequestDispatcher dispatcher = request.getRequestDispatcher("login.jsp");
+            dispatcher.forward(request, response);
+        }
+>>>>>>> Stashed changes
     }
 
     // Giả định UsersDAO và Users class có các phương thức cần thiết

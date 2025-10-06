@@ -1,3 +1,5 @@
+<%@page import="java.util.List"%>
+<%@page import="model.Users"%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html lang="en">
@@ -23,10 +25,10 @@
                     <h4 class="fw-bold text-primary">Mantis</h4>
                 </div>
                 <ul class="list-unstyled ps-3">
-                    <li><a href="#"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
+                    <li><a href="admin"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
                     <li><a href="#"><i class="bi bi-box me-2"></i>Products</a></li>
                     <li><a href="#"><i class="bi bi-bag me-2"></i>Orders</a></li>
-                    <li><a href="#" class="active"><i class="bi bi-people me-2"></i>Users</a></li>
+                    <li><a href="admin?action=manageUser" class="active"><i class="bi bi-people me-2"></i>Users</a></li>
                     <li><a href="#"><i class="bi bi-gear me-2"></i>Settings</a></li>
                 </ul>
             </nav>
@@ -60,6 +62,11 @@
                 <div class="container-fluid p-4">
                     <input type="text" class="form-control w-25" placeholder="🔍 Search">
                 </div>
+                <div class="container-fluid p-4 ps-3">
+                    <a class="btn btn-primary px-4 py-2 rounded-pill shadow-sm" href="admin?action=createAccount">
+                        <i class="bi bi-person-plus"></i> Create Account
+                    </a>
+                </div>
 
                 <!-- Table -->
                 <div class="card shadow-sm border-0 p-4">
@@ -67,50 +74,65 @@
                         <table class="table table-hover align-middle mb-0">
                             <thead class="table-light">
                                 <tr>
-                                    <th>#</th>
-                                    <th>Bill For</th>
-                                    <th>Issue Date</th>
-                                    <th>Due Date</th>
-                                    <th>Total</th>
+                                    <th>UserID</th>
+                                    <th>Full Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Role</th>
+                                    <th>Address</th>
+                                    <th>CreateAt</th>
                                     <th>Status</th>
-                                    <th>Action</th>
                                 </tr>
                             </thead>
+
+                            <%
+                                List<Users> listUsers = (List<Users>) request.getAttribute("listUsers");
+                            %>
+
+                            <%
+                                for (Users u : listUsers) {
+                                    String role;
+                                    if (u.getRole() != 4) {
+
+                                        switch (u.getRole()) {
+                                            case 1:
+                                                role = "customer";
+                                                break;
+                                            case 2:
+                                                role = "staff";
+                                                break;
+                                            case 3:
+                                                role = "shipper";
+                                                break;
+                                            default:
+                                                throw new AssertionError();
+                                        }
+                            %>
+
                             <tbody>
-                                <tr>
-                                    <td>300500</td>
-                                    <td>Platinum Subscription Plan</td>
-                                    <td>05 Oct 2025</td>
-                                    <td>05 Nov 2025</td>
-                                    <td>$799.00</td>
-                                    <td><span class="status-paid">Paid</span></td>
-                                    <td><i class="bi bi-three-dots"></i></td>
-                                </tr>
-                                <tr>
-                                    <td>300496</td>
-                                    <td>Gold Subscription Plan</td>
-                                    <td>05 Sep 2025</td>
-                                    <td>05 Oct 2025</td>
-                                    <td>$533.00</td>
-                                    <td><span class="status-due">Due</span></td>
-                                    <td><i class="bi bi-three-dots"></i></td>
-                                </tr>
-                                <tr>
-                                    <td>300493</td>
-                                    <td>Gold Subscription Plan</td>
-                                    <td>16 Aug 2025</td>
-                                    <td>16 Sep 2025</td>
-                                    <td>$533.00</td>
-                                    <td><span class="status-canceled">Canceled</span></td>
-                                    <td><i class="bi bi-three-dots"></i></td>
-                                </tr>
+                                <tr  onclick="window.location.href='admin?action=editAccount&id=<%= u.getUserId() %>'">
+                                    <td><%= u.getUserId()%></td>
+                                    <td><%= u.getFullName()%></td>
+                                    <td><%= u.getEmail()%></td>
+                                    <td><%= u.getPhone()%></td>
+                                    <td><%= role%></td>
+                                    <td><%= u.getAddress()%></td>
+                                    <td><%= u.getCreatedAt()%></td>
+                                    <td><%= u.getStatus()%></td>
+                                </tr>                          
                             </tbody>
+
+                            <%
+                                    }
+                                }
+                            %>
+
                         </table>
                     </div>
                 </div>
             </div>
-            
-            
+
+
             <!-- JS Libraries -->
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
             <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
