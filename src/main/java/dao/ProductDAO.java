@@ -9,6 +9,8 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import model.Products;
+import model.Users;
 
 /**
  * Lớp DAO cho Product, được cập nhật để phù hợp với lớp Product.java mới.
@@ -190,5 +192,34 @@ public class ProductDAO extends DBContext {
         // System.out.println("\n--- Product by ID 1 ---");
         // Product p = dao.getProductById(1);
         // System.out.println(p != null ? p : "Product not found.");
+    }
+
+    public List<Products> getAllProduct() {
+        String sql = "Select * from Products";
+        List<Products> list = new ArrayList<>();
+        try{
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                int id = rs.getInt("ProductID");
+                int cateID = rs.getInt("CategoryID");
+                int supplierID = rs.getInt("SupplierID");
+                String name = rs.getString("Name");
+                String brand = rs.getString("Brand");
+                int warrantyPeriod = rs.getInt("WarrantyPeriod");
+                
+                Timestamp createdAtTimestamp = rs.getTimestamp("CreatedAt");
+                LocalDateTime createdAt = (createdAtTimestamp != null)
+                        ? createdAtTimestamp.toLocalDateTime()
+                        : null;
+                
+                list.add(new Products(id, cateID, supplierID, name, brand, warrantyPeriod, createdAt));
+            }
+            
+        }catch(Exception e){
+            System.out.println(e.getMessage());
+        }
+        
+        return list;
     }
 }

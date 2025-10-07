@@ -25,7 +25,7 @@ public class CategoryDAO extends DBContext {
     // --- Phương thức 1: Lấy tất cả Categories ---
     public List<Category> getAllCategories() {
         List<Category> categories = new ArrayList<>();
-        String sql = "SELECT CategoryID, CategoryName, Description FROM Category";
+        String sql = "SELECT CategoryID, CategoryName, Description FROM Categories";
         
         try (PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {

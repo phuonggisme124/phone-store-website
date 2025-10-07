@@ -1,5 +1,5 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to edit this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
 package controller;
@@ -18,98 +18,90 @@ import model.Order;
 import model.Users;
 
 /**
- *
  * @author admin
  */
 @WebServlet(name = "OrderServlet", urlPatterns = {"/order"})
 public class OrderServlet extends HttpServlet {
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet OrderServlet</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet OrderServlet at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
-    }
-
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // --- Logic kiểm tra đăng nhập bằng Session và lấy User ID ---
-        // 1. Lấy Session hiện tại (không tạo mới nếu chưa có)
+        // 1. Lấy Session hiện tại
         HttpSession session = request.getSession(false);
 
-
+        // 2. Kiểm tra đăng nhập
         Users currentUser = (Users) session.getAttribute("user");
-
         if (currentUser == null) {
             response.sendRedirect("login.jsp");
-            
             return;
         }
 
-// Nếu getUserId() trả về int (không phải String)
         int userID = currentUser.getUserId();
-
-    
+        int userRole = currentUser.getRole();
 
         OrderDAO dao = new OrderDAO();
-        List<Order> orders = dao.getOrdersByShipperId(userID);
+        String targetPage = "";
+        List<Order> orders = null;
 
-        request.setAttribute("orders", orders);
-        request.getRequestDispatcher("dashboard_shipper.jsp").forward(request, response);
+        // 3. Phân quyền
+        if (userRole == 3) {
+            // Role 3: Shipper
+            orders = dao.getOrdersByShipperId(userID);
+            request.setAttribute("orders", orders);
+            request.setAttribute("shipperName", currentUser.getFullName());
+            targetPage = "dashboard_shipper.jsp";
+
+        } else if (userRole == 2) {
+            // Role 2: Staff
+            orders = dao.getAllOders();
+            request.setAttribute("orders", orders);
+            targetPage = "dashboard_staff.jsp";
+
+        } else {
+            // Role khác → không được truy cập
+            System.err.println("User " + userID + " tried to access unsupported dashboard.");
+            response.sendRedirect("index.jsp");
+            return;
+        }
+
+        // 4. Forward đến JSP tương ứng
+        request.getRequestDispatcher(targetPage).forward(request, response);
     }
 
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+
+        request.setCharacterEncoding("UTF-8");
+        response.setCharacterEncoding("UTF-8");
+
+        OrderDAO dao = new OrderDAO();
+
+        String status = request.getParameter("status");
+        String orderIdParam = request.getParameter("orderID");
+
+        if (orderIdParam == null || status == null) {
+            response.sendRedirect("order");
+            return;
+        }
+
+        int orderID = Integer.parseInt(orderIdParam);
+
+        // Cập nhật trạng thái hoặc xóa đơn
+        if (status.equalsIgnoreCase("Delivered")) {
+            dao.deleteOrderByID(orderID);
+        } else if (status.equalsIgnoreCase("Pending")) {
+            dao.updateOrderStatus(orderID, "In Transit");
+        } else if (status.equalsIgnoreCase("In Transit")) {
+            dao.updateOrderStatus(orderID, "Delivered");
+        }
+
+        response.sendRedirect("order");
     }
 
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
     @Override
     public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
-
+        return "OrderServlet - xử lý phân quyền, cập nhật & xóa đơn hàng.";
+    }
 }

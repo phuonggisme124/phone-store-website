@@ -1019,3 +1019,93 @@ figure.instagram-item img.insta-image {
 .post-navigation:focus svg {
     fill: var(--primary-color);
 }
+
+
+#smart-watches img {
+  border-radius: 10px;
+  transition: transform 0.3s ease;
+}
+
+#smart-watches img:hover {
+  transform: scale(1.05);
+}
+
+#smart-watches h5 {
+  font-weight: 600;
+  margin-top: 15px;
+}
+
+#smart-watches p {
+  color: #0d6efd;
+  font-weight: 500;
+}
+
+
+#smart-watches .product-card {
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 10px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+#smart-watches .product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+}
+
+#smart-watches .image-holder img {
+    border-radius: 15px;
+}
+
+#smart-watches .card-title a {
+    color: #000;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+#smart-watches .item-price {
+    color: #0d6efd;
+    font-weight: 500;
+    display: block;
+    margin-top: 5px;
+}
+
+#mobile-products .product-card {
+    background-color: #fff;
+    border-radius: 15px;
+    padding: 15px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+#mobile-products .product-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+}
+
+#mobile-products .image-holder {
+    overflow: hidden;
+    border-radius: 15px;
+}
+
+#mobile-products .image-holder img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 15px;
+    transition: transform 0.3s ease;
+}
+
+#mobile-products .image-holder img:hover {
+    transform: scale(1.05);
+}
+
+#mobile-products .card-title a {
+    color: #000;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+#mobile-products .item-price {
+    color: #0d6efd;
+    font-weight: 500;
+}
