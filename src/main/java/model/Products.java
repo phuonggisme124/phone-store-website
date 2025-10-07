@@ -1,10 +1,11 @@
-/*
+    /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package model;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * The Products class maps to the Products table in the database.
@@ -24,7 +25,7 @@ public class Products {
     private Integer supplierID;    // int, Allow Nulls
     private Integer warrantyPeriod;// int, Allow Nulls
     private LocalDateTime createdAt; // datetime, Allow Nulls
-
+    private List<Variants> variants;
     // --- Default constructor ---
     public Products() {
     }
@@ -41,6 +42,21 @@ public class Products {
         this.brand = brand;
         this.warrantyPeriod = warrantyPeriod;
         this.createdAt = createdAt;
+    }
+
+    public Products(int productID, String name, LocalDateTime createdAt, List<Variants> variants) {
+        this.productID = productID;
+        this.name = name;
+        this.createdAt = createdAt;
+        this.variants = variants;
+    }
+
+    public List<Variants> getVariants() {
+        return variants;
+    }
+
+    public void setVariants(List<Variants> variants) {
+        this.variants = variants;
     }
 
     /**

@@ -20,7 +20,7 @@ public class DBContext {
     //kết nối database
     //protected thì class truy cập trực tiếp ko cân set get
 
-    protected Connection conn = null;
+    public Connection conn = null;
 
     public DBContext() {
 

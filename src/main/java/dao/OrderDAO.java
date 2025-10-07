@@ -135,6 +135,32 @@ public class OrderDAO extends DBContext {
             e.printStackTrace();
         }
     }
+    public List<Order> getOrdersByShipperIdAndStatus(int shipperId, String status) {
+        List<Order> orders = new ArrayList<>();
+        String sql = "SELECT "
+                + "o.OrderID, buyer.FullName, buyer.Phone, "
+                + "o.OrderDate, o.ShippingAddress, o.TotalAmount, o.Status "
+                + "FROM Orders o "
+                + "JOIN Users buyer ON buyer.UserID = o.UserID "
+                + "JOIN Sales s ON o.OrderID = s.OrderID "
+                + "JOIN Users shippers ON s.ShipperID = shippers.UserID "
+                + "WHERE shippers.Role = 3 AND s.ShipperID = ? AND o.Status = ?";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, shipperId);
+            stmt.setString(2, status);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                orders.add(mapResultSetToProduct(rs));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return orders;
+    }
 
     // Kiểm tra nhanh
     public static void main(String[] args) {

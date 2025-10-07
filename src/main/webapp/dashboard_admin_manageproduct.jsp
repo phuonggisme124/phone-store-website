@@ -1,155 +1,152 @@
-<<<<<<< Updated upstream:src/main/webapp/dashboard_admin_manageproduct.jsp
-<%-- 
-    Document   : dashboard_admin_manageproduct
-    Created on : Oct 6, 2025, 5:52:12â€¯PM
-    Author     : duynu
---%>
-=======
+<%@page import="model.Suppliers"%>
+<%@page import="model.Category"%>
+<%@page import="model.Products"%>
 <%@page import="java.util.List"%>
-<%@page import="model.Order"%>
 <%@page import="model.Users"%>
-<%@page import="java.text.NumberFormat"%>
-<%@page import="java.util.Locale"%>
->>>>>>> Stashed changes:target/PhoneStoreWebsite-1.0-SNAPSHOT/dashboard_staff.jsp
-
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>STAFF Dashboard - Order Management</title>
+        <title>Admin Dashboard</title>
 
+        <!-- Bootstrap -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+        <!-- Icons -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
-        <style>
-            body {
-                background-color: #f8f9fa;
-            }
-            .sidebar {
-                width: 230px;
-                min-height: 100vh;
-            }
-            .sidebar a {
-                color: #333;
-                text-decoration: none;
-                display: block;
-                padding: 10px 15px;
-                border-radius: 6px;
-            }
-            .sidebar a.active, .sidebar a:hover {
-                background-color: #0d6efd;
-                color: #fff;
-            }
-            .page-content {
-                background-color: #fff;
-            }
-            .card-header-staff {
-                background-color: #f7f7f7;
-                border-bottom: 1px solid #eee;
-            }
-
-
-
-        </style>
+        <!-- Custom CSS -->
+        <link rel="stylesheet" href="css/dashboard_admin.css">
+        <link href="css/dashboard_table.css" rel="stylesheet">
     </head>
     <body>
-        <%
-            List<Order> orders = (List<Order>) request.getAttribute("orders");
-            Users currentUser = (Users) session.getAttribute("user");
-
-            NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(new Locale("en", "US"));
-            currencyFormatter.setMaximumFractionDigits(0);
-        %>
-
         <div class="d-flex" id="wrapper">
+            <!-- Sidebar -->
             <nav class="sidebar bg-white shadow-sm border-end">
                 <div class="sidebar-header p-3">
-                    <h4 class="fw-bold text-primary">STAFF Portal</h4>
+                    <h4 class="fw-bold text-primary">Mantis</h4>
                 </div>
-                <ul class="list-unstyled" style="padding-left: 0 !important;">
-                    <li><a href="#" class="active"><i class="bi bi-list-check me-2"></i>All Orders</a></li>
+                <ul class="list-unstyled ps-3">
+                    <li><a href="admin"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
+                    <li><a href="#"><i class="bi bi-box me-2"></i>Products</a></li>
+                    <li><a href="#"><i class="bi bi-bag me-2"></i>Orders</a></li>
+                    <li><a href="admin?action=manageUser" class="active"><i class="bi bi-people me-2"></i>Users</a></li>
+                    <li><a href="#"><i class="bi bi-gear me-2"></i>Settings</a></li>
                 </ul>
             </nav>
 
+            <!-- Page Content -->
             <div class="page-content flex-grow-1">
+                <!-- Navbar -->
                 <nav class="navbar navbar-light bg-white shadow-sm">
-                    <div class="container-fluid d-flex justify-content-end">
-                        <div class="d-flex align-items-center">
-                            <img src="https://i.pravatar.cc/40?u=<%= currentUser != null ? currentUser.getUserId() : "staff"%>" class="rounded-circle me-2" width="35">
-                            <span>Staff (<%= currentUser != null ? currentUser.getFullName() : "Unknown"%>)</span>
+                    <div class="container-fluid">
+                        <button class="btn btn-outline-primary" id="menu-toggle"><i class="bi bi-list"></i></button>
+                        <form class="d-none d-md-flex ms-3">
+                            <input class="form-control" type="search" placeholder="Ctrl + K" readonly>
+                        </form>
+                        <div class="d-flex align-items-center ms-auto">
+                            <div class="position-relative me-3">
+                                <a href="logout">logout</a>
+                            </div>
+                            <i class="bi bi-bell me-3 fs-5"></i>
+                            <div class="position-relative me-3">
+                                <i class="bi bi-github fs-5"></i>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <img src="https://i.pravatar.cc/40" class="rounded-circle me-2" width="35">
+                                <span>Admin</span>
+                            </div>
                         </div>
                     </div>
                 </nav>
 
+                <!-- Search bar -->
                 <div class="container-fluid p-4">
-                    <h4 class="mb-4 fw-bold">Manage All Orders</h4>
-                    <div class="row g-3">
-<% if (orders != null && !orders.isEmpty()) { %>
+                    <input type="text" class="form-control w-25" placeholder="ðŸ” Search">
+                </div>
+                <div class="container-fluid p-4 ps-3">
+                    <a class="btn btn-primary px-4 py-2 rounded-pill shadow-sm" href="admin?action=createAccount">
+                        <i class="bi bi-person-plus"></i> Create Account
+                    </a>
+                </div>
 
-                        <div class="col-12">
-                            <div class="card shadow-sm">
-                                <div class="card-body">
-                                    <div class="table-responsive">
-                                        <table class="table table-hover table-striped">
-                                            <thead class="table-light">
-                                                <tr>
-                                                    <th>ID</th>
-                                                    <th>Customer</th>
-                                                    <th>Phone</th>
-                                                    <th>Address</th>
-                                                    <th>Total Amount</th>
-                                                    <th>Order Date</th>
-                                                    <th>Status</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <% for (Order o : orders) {
-                                                        String status = o.getStatus();
+                <!-- Table -->
+                <div class="card shadow-sm border-0 p-4">
+                    <div class="card-body p-0">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>ProductID</th>
+                                    <th>Category</th>
+                                    <th>Supplier</th>
+                                    <th>Name</th>
+                                    <th>Brand</th>
+                                    <th>Warranty Period</th>
+                                    <th>CreatedAt</th>
 
-                                                        // Bootstrap badge classes
-                                                        String badgeClass;
-                                                        if ("Delivered".equalsIgnoreCase(status)) {
-                                                            badgeClass = "badge bg-success"; // Xanh lá
-                                                        } else if ("In Transit".equalsIgnoreCase(status)) {
-                                                            badgeClass = "badge bg-warning text-dark"; // Vàng
-                                                        } else {
-                                                            badgeClass = "badge bg-danger"; // ??
-                                                        }
-                                                %>
-                                                <tr>
-                                                    <td>#<%= o.getOrderID()%></td>
-                                                    <td><%= o.getBuyer().getFullName()%></td>
-                                                    <td><%= o.getBuyer().getPhone()%></td>
-                                                    <td><%= o.getShippingAddress()%></td>
-                                                    <td><%= currencyFormatter.format(o.getTotalAmount())%></td>
-                                                    <td><%= o.getOrderDate()%></td>
-                                                    <td>
-                                                        <span class="<%= badgeClass%> fs-6 px-3 py-2">
-                                                            <%= status%>
-</span>
-                                                    </td>
-                                                </tr>
-                                                <% } %>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                                </tr>
+                            </thead>
 
-                        <% } else { %>
-                        <div class="col-12">
-                            <div class="alert alert-info" role="alert">
-                                <i class="bi bi-info-circle me-2"></i>There are currently no orders in the system.
-                            </div>
-                        </div>
-                        <% }%>
+                            <%
+                                List<Products> listProducts = (List<Products>) request.getAttribute("listProducts");
+                                List<Category> listCategory = (List<Category>) request.getAttribute("listCategory");
+                                List<Suppliers> listSupplier = (List<Suppliers>) request.getAttribute("listSupplier");
+                            %>
 
+                            <%
+                                for (Products p : listProducts) {
+
+
+                            %>
+
+                            <tbody>
+                                <tr  onclick="window.location.href = 'admin?action=productDetail&id=<%= p.getProductID()%>'">
+                                    <td><%= p.getProductID()%></td>
+                                    <%
+                                        for (Category ct : listCategory) {
+                                            if (p.getCategoryID().equals(ct.getCategoryId())) {
+                                    %>
+                                    <td><%= ct.getCategoryName()%></td>
+                                    <%
+                                            }
+                                        }
+                                    %>
+                                    
+                                    <%
+                                        for (Suppliers sl : listSupplier) {
+                                            if (p.getSupplierID().equals(sl.getSupplierID())) {
+                                    %>
+                                    <td><%= sl.getName()%></td>
+                                    <%
+                                            }
+                                        }
+                                    %>
+                                    <td><%= p.getName()%></td>
+                                    <td><%= p.getBrand()%></td>
+                                    
+                                    <td><%= p.getWarrantyPeriod()%></td>
+                                    <td><%= p.getCreatedAt()%></td>
+                                    
+                                </tr>                          
+                            </tbody>
+
+                            <%
+
+                                }
+                            %>
+
+                        </table>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+            <!-- JS Libraries -->
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+            <!-- Custom JS -->
+            <script src="js/dashboard.js"></script>
     </body>
 </html>

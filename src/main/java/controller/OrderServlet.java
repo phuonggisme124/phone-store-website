@@ -47,10 +47,18 @@ public class OrderServlet extends HttpServlet {
         // 3. Phân quyền
         if (userRole == 3) {
             // Role 3: Shipper
+            String status = request.getParameter("status");
+            if(status == null || status.equalsIgnoreCase("all")) {
             orders = dao.getOrdersByShipperId(userID);
             request.setAttribute("orders", orders);
             request.setAttribute("shipperName", currentUser.getFullName());
             targetPage = "dashboard_shipper.jsp";
+            }else {
+                orders = dao.getOrdersByShipperIdAndStatus(userID, status);
+            request.setAttribute("orders", orders);
+            request.setAttribute("shipperName", currentUser.getFullName());
+            targetPage = "dashboard_shipper.jsp";
+            }
 
         } else if (userRole == 2) {
             // Role 2: Staff

@@ -43,7 +43,7 @@ public class LogoutServlet extends HttpServlet {
 
         // BƯỚC 2: Chuyển hướng người dùng về trang chủ (hoặc trang đăng nhập)
         // Khi Session bị hủy, mọi trang được bảo vệ sẽ tự động chuyển hướng về login.jsp.
-        response.sendRedirect("homepage.jsp");
+        response.sendRedirect("homepage");
     }
 
     /**

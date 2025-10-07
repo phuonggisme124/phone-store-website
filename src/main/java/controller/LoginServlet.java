@@ -80,7 +80,7 @@ public class LoginServlet extends HttpServlet {
                     break;
                 case "1":
                 default:
-                    response.sendRedirect("homepage.jsp");
+response.sendRedirect("homepage.jsp");
                     break;
             }
 
