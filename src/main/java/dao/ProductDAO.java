@@ -20,7 +20,7 @@ public class ProductDAO extends DBContext {
     public List<Products> getAllProduct() {
         String sql = "Select * from Products";
         List<Products> list = new ArrayList<>();
-        try{
+        try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -30,39 +30,38 @@ public class ProductDAO extends DBContext {
                 String name = rs.getString("Name");
                 String brand = rs.getString("Brand");
                 int warrantyPeriod = rs.getInt("WarrantyPeriod");
-                
+
                 Timestamp createdAtTimestamp = rs.getTimestamp("CreatedAt");
                 LocalDateTime createdAt = (createdAtTimestamp != null)
                         ? createdAtTimestamp.toLocalDateTime()
                         : null;
-                
+
                 list.add(new Products(id, cateID, supplierID, name, brand, warrantyPeriod, createdAt));
             }
-            
-        }catch(Exception e){
+
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-        
+
         return list;
     }
+
     public List<Products> getNewestProduct() {
         String sql = "SELECT TOP 5 * FROM Products ORDER BY CreatedAt DESC";
         List<Products> newListProduct = new ArrayList<>();
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
-            VariantsDAO variantsDAO ;
+            VariantsDAO variantsDAO;
             while (rs.next()) {
                 int id = rs.getInt("ProductID");
                 String name = rs.getString("Name");
                 variantsDAO = new VariantsDAO(conn);
                 List<Variants> variants = variantsDAO.getAllVariantByProductID(id);
-
                 Timestamp createdAtTimestamp = rs.getTimestamp("CreatedAt");
                 LocalDateTime createdAt = (createdAtTimestamp != null)
                         ? createdAtTimestamp.toLocalDateTime()
                         : null;
-
                 newListProduct.add(new Products(id, name, createdAt, variants));
             }
         } catch (Exception e) {
@@ -71,26 +70,95 @@ public class ProductDAO extends DBContext {
         return newListProduct;
     }
 
-    // 👇 thêm hàm main để test
-    public static void main(String[] args) {
-        ProductDAO dao = new ProductDAO();
-        List<Products> list = dao.getNewestProduct();
+    public Products getProductByID(int pid) {
+        String sql = "SELECT * FROM Products where ProductID = ?";
 
-        for (Products p : list) {
-            System.out.println("ProductID: " + p.getProductID());
-            System.out.println("Name: " + p.getName());
-            System.out.println("CreatedAt: " + p.getCreatedAt());
-            if (p.getVariants() != null) {
-                for (Variants v : p.getVariants()) {
-                    System.out.println("  - VariantID: " + v.getVariantID() +
-                            ", Color: " + v.getColor() +
-                            ", Storage: " + v.getStorage() +
-                            ", Price: " + v.getPrice());
-                }
-            } else {
-                System.out.println("  No variants found.");
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, pid);
+
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                int id = rs.getInt("ProductID");
+                int cateID = rs.getInt("CategoryID");
+                int supplierID = rs.getInt("SupplierID");
+                String name = rs.getString("Name");
+                String brand = rs.getString("Brand");
+                int warrantyPeriod = rs.getInt("WarrantyPeriod");
+
+                Timestamp createdAtTimestamp = rs.getTimestamp("CreatedAt");
+                LocalDateTime createdAt = (createdAtTimestamp != null)
+                        ? createdAtTimestamp.toLocalDateTime()
+                        : null;
+
+                return (new Products(id, cateID, supplierID, name, brand, warrantyPeriod, createdAt));
             }
-            System.out.println("--------------------");
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+
+    public void updateProduct(int pID, int supplierID, String pName, String brand, int warrantyPeriod) {
+        String sql = "UPDATE Products\n"
+                + "SET SupplierID = ?,\n"
+                + "    Name = ?,\n"
+                + "    Brand = ?,\n"
+                + "	WarrantyPeriod = ?\n"
+                + "WHERE ProductID = ?;";
+
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, supplierID);
+            ps.setString(2, pName);
+            ps.setString(3, brand);
+            ps.setInt(4, warrantyPeriod);
+
+            ps.setInt(5, pID);
+            ps.executeUpdate();
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void createProduct(int categoryID, int supplierID, String pName, String brand, int warrantyPeriod) {
+        String sql = "INSERT INTO Products (CategoryID, SupplierID, Name, Brand, WarrantyPeriod) "
+                + "VALUES (?, ?, ?, ?, ?)";
+
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+
+            ps.setInt(1, categoryID);
+            ps.setInt(2, supplierID);
+            ps.setString(3, pName);
+
+            ps.setString(4, brand);
+
+            ps.setInt(5, warrantyPeriod);
+
+            ps.executeUpdate();
+            ps.close();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void deleteProductByProductID(int pid) {
+        String sql = "DELETE FROM Products\n"
+                + "WHERE ProductID = ?;";
+
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+
+            ps.setInt(1, pid);
+
+            ps.executeUpdate();
+            ps.close();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            
         }
     }
 }

@@ -30,9 +30,9 @@
                 </div>
                 <ul class="list-unstyled ps-3">
                     <li><a href="admin"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
-                    <li><a href="#"><i class="bi bi-box me-2"></i>Products</a></li>
+                    <li><a href="admin?action=manageProduct" class="active"><i class="bi bi-box me-2"></i>Products</a></li>
                     <li><a href="#"><i class="bi bi-bag me-2"></i>Orders</a></li>
-                    <li><a href="admin?action=manageUser" class="active"><i class="bi bi-people me-2"></i>Users</a></li>
+                    <li><a href="admin?action=manageUser" ><i class="bi bi-people me-2"></i>Users</a></li>
                     <li><a href="#"><i class="bi bi-gear me-2"></i>Settings</a></li>
                 </ul>
             </nav>
@@ -63,14 +63,21 @@
                 </nav>
 
                 <!-- Search bar -->
+                <%
+                    int productID = (int) request.getAttribute("productID");
+                %>
                 <div class="container-fluid p-4">
                     <input type="text" class="form-control w-25" placeholder="🔍 Search">
                 </div>
                 <div class="container-fluid p-4 ps-3">
-                    <a class="btn btn-primary px-4 py-2 rounded-pill shadow-sm" href="admin?action=createAccount">
-                        <i class="bi bi-person-plus"></i> Create Account
+                    <a class="btn btn-primary px-4 py-2 rounded-pill shadow-sm" href="admin?action=createVariant&pid=<%= productID%>">
+                        <i class="bi bi-sliders me-2"></i> Create Variant
+                    </a>
+                    <a class="btn btn-danger px-4 py-2 rounded-pill shadow-sm" href="admin?action=deleteProduct&pid=<%= productID%>">
+                         Delete Product
                     </a>
                 </div>
+                        
 
                 <!-- Table -->
                 <div class="card shadow-sm border-0 p-4">
@@ -98,25 +105,24 @@
                             %>
 
                             <%                                for (Variants v : listVariants) {
-
-
+                            String nameProduct="";
+                            //int productID = 0;
+                                
+                                
+                                        for (Products p : listProducts) {
+                                            if (p.getProductID() == v.getProductID()) {
+                                                    nameProduct = p.getName();
+                                                    //productID = p.getProductID();
+                                                }
+                                        }
                             %>
 
                             <tbody>
-                                <tr  onclick="window.location.href = 'admin?action=editAccount&id=<%= v.getVariantID()%>'">
+                                <tr  onclick="window.location.href = 'admin?action=editProduct&vid=<%= v.getVariantID()%>&pid=<%= productID%>'">
                                     <td><%= v.getVariantID()%></td>
 
-                                    <%
-                                        for (Products p : listProducts) {
-                                            if (p.getProductID() == v.getProductID()) {
-                                    %>
-                                    <td><%= p.getName()%></td>
-                                    <%
-                                            }
-                                        }
-                                    %>
-
                                     
+                                    <td><%= nameProduct%></td>                                   
                                     <td><%= v.getColor()%></td>
                                     <td><%= v.getStorage()%></td>
                                     <td><%= String.format("%,.0f", v.getPrice())%></td>
@@ -125,7 +131,7 @@
                                     <td><%= v.getDescription()%></td>
                                     <td><%= v.getImageUrl()%></td>
 
-                                   
+
 
                                 </tr>                          
                             </tbody>
