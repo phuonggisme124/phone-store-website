@@ -4,7 +4,11 @@
  */
 package controller;
 
+import dao.CategoryDAO;
+import dao.ProductDAO;
+import dao.SupplierDAO;
 import dao.UsersDAO;
+import dao.VariantDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -13,7 +17,11 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
+import model.Category;
+import model.Products;
+import model.Suppliers;
 import model.Users;
+import model.Variants;
 
 /**
  *
@@ -62,7 +70,10 @@ public class AdminServlet extends HttpServlet {
             throws ServletException, IOException {
         String action = request.getParameter("action");
         UsersDAO udao = new UsersDAO();
-        
+        ProductDAO pdao = new ProductDAO();
+        SupplierDAO sldao = new SupplierDAO();
+        CategoryDAO ctdao = new CategoryDAO();
+        VariantDAO vdao = new VariantDAO();
         if (action == null) {
             action = "dashboard";
         }
@@ -82,8 +93,25 @@ public class AdminServlet extends HttpServlet {
         }else if(action.equals("createAccount")){
             request.getRequestDispatcher("admin_manageuser_create.jsp").forward(request, response);
         }else if(action.equals("manageProduct")){
+            List<Products> listProducts = pdao.getAllProduct();
+            List<Category> listCategory = ctdao.getAllCategories();
+            List<Suppliers> listSupplier = sldao.getAllSupplier();
+            request.setAttribute("listProducts", listProducts);
+            request.setAttribute("listCategory", listCategory);
+            request.setAttribute("listSupplier", listSupplier);
             request.getRequestDispatcher("dashboard_admin_manageproduct.jsp").forward(request, response);
-        }else {
+        }else if(action.equals("productDetail")){
+            
+            int id = Integer.parseInt(request.getParameter("id"));
+            List<Variants> listVariants = vdao.getAllVariantByProductID(id);
+            List<Products> listProducts = pdao.getAllProduct();
+            
+            request.setAttribute("listProducts", listProducts);
+            request.setAttribute("listVariants", listVariants);
+            
+            request.getRequestDispatcher("admin_manageproduct_detail.jsp").forward(request, response);
+        }
+        else {
             request.getRequestDispatcher("dashboard_admin.jsp").forward(request, response);
         }
 
