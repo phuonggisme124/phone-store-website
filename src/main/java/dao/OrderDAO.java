@@ -9,7 +9,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import model.Order;
@@ -22,56 +21,56 @@ import utils.DBContext;
  */
 public class OrderDAO extends DBContext {
 
-    //P viet
+    // Ánh xạ dữ liệu từ ResultSet sang đối tượng Order
     private Order mapResultSetToProduct(ResultSet rs) throws SQLException {
-
-        int OrderID = rs.getInt("OrderID");
+        int orderID = rs.getInt("OrderID");
         String name = rs.getString("FullName");
         String phone = rs.getString("Phone");
-        Users u = new Users(name, phone);
+        Users buyer = new Users(name, phone);
         Timestamp orderDate = rs.getTimestamp("OrderDate");
         String address = rs.getString("ShippingAddress");
         BigDecimal total = rs.getBigDecimal("TotalAmount");
         String status = rs.getString("Status");
 
         return new Order(
-                OrderID, u, address, total.floatValue(), status, orderDate.toLocalDateTime().toLocalDate()
+                orderID,
+                buyer,
+                address,
+                total.floatValue(),
+                status,
+                orderDate.toLocalDateTime().toLocalDate()
         );
     }
 
-    // --- Phương thức GetAllProducts --- P viet
+    // Lấy tất cả đơn hàng
     public List<Order> getAllOders() {
         List<Order> orders = new ArrayList<>();
-        // Chọn tất cả các cột trong bảng Product
-        String sql = "SELECT \n"
-                + "    o.OrderID,\n"
-                + "    buyer.FullName,\n"
-                + "    buyer.Phone,\n"
-                + "    o.OrderDate,\n"
-                + "    o.ShippingAddress,\n"
-                + "    o.TotalAmount,\n"
-                + "    o.Status\n"
-                + "FROM Orders o\n"
-                + "JOIN Users buyer ON buyer.UserID = o.UserID\n"
-                + "JOIN Sales s ON o.OrderID = s.OrderID       \n"
-                + "JOIN Users shippers ON s.ShipperID = shippers.UserID      \n"
-                + "WHERE shippers.Role = 3;    ";
+        String sql = "SELECT "
+                + "o.OrderID, buyer.FullName, buyer.Phone, "
+                + "o.OrderDate, o.ShippingAddress, o.TotalAmount, o.Status "
+                + "FROM Orders o "
+                + "JOIN Users buyer ON buyer.UserID = o.UserID "
+                + "JOIN Sales s ON o.OrderID = s.OrderID "
+                + "JOIN Users shippers ON s.ShipperID = shippers.UserID "
+                + "WHERE shippers.Role = 3";
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
+        try (PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
                 orders.add(mapResultSetToProduct(rs));
             }
+
         } catch (SQLException e) {
-            System.err.println("Error fetching all products: " + e.getMessage());
+            System.err.println("Error fetching orders: " + e.getMessage());
             e.printStackTrace();
         }
         return orders;
     }
 
+    // Lấy danh sách đơn hàng theo Shipper ID
     public List<Order> getOrdersByShipperId(int shipperId) {
         List<Order> orders = new ArrayList<>();
-
         String sql = "SELECT "
                 + "o.OrderID, buyer.FullName, buyer.Phone, "
                 + "o.OrderDate, o.ShippingAddress, o.TotalAmount, o.Status "
@@ -96,6 +95,48 @@ public class OrderDAO extends DBContext {
         return orders;
     }
 
+    // Xóa đơn hàng theo ID
+    public void deleteOrderByID(int id) {
+        String sql1 = "DELETE FROM Payments WHERE OrderID = ?";
+        String sql2 = "DELETE FROM Sales WHERE OrderID = ?";
+        String sql3 = "DELETE FROM OrderDetails WHERE OrderID = ?";
+        String sql4 = "DELETE FROM Orders WHERE OrderID = ?";
+
+        try (PreparedStatement stmt1 = conn.prepareStatement(sql1);
+             PreparedStatement stmt2 = conn.prepareStatement(sql2);
+             PreparedStatement stmt3 = conn.prepareStatement(sql3);
+             PreparedStatement stmt4 = conn.prepareStatement(sql4)) {
+
+            stmt1.setInt(1, id);
+            stmt1.executeUpdate();
+
+            stmt2.setInt(1, id);
+            stmt2.executeUpdate();
+
+            stmt3.setInt(1, id);
+            stmt3.executeUpdate();
+
+            stmt4.setInt(1, id);
+            stmt4.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Cập nhật trạng thái đơn hàng
+    public void updateOrderStatus(int id, String status) {
+        String sql = "UPDATE Orders SET Status = ? WHERE OrderID = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, status);
+            stmt.setInt(2, id);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Kiểm tra nhanh
     public static void main(String[] args) {
         OrderDAO dao = new OrderDAO();
         List<Order> list = dao.getAllOders();
@@ -106,7 +147,7 @@ public class OrderDAO extends DBContext {
             System.out.println("===== DANH SÁCH ĐƠN HÀNG =====");
             for (Order o : list) {
                 System.out.println("Mã đơn: " + o.getOrderID());
-                System.out.println("Người mua: " + o.getBuyer());
+                System.out.println("Người mua: " + o.getBuyer().getFullName());
                 System.out.println("Địa chỉ giao: " + o.getShippingAddress());
                 System.out.println("Ngày đặt: " + o.getOrderDate());
                 System.out.println("Tổng tiền: " + o.getTotalAmount());

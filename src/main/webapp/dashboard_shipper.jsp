@@ -35,10 +35,16 @@
             .page-content {
                 background-color: #fff;
             }
+            /* Làm ch? tr?ng thái to và rõ h?n */
+            .badge {
+                font-size: 1.25rem !important;
+                padding: 0.6em 1.2em;
+                border-radius: 0.8rem;
+            }
         </style>
     </head>
     <body>
-        <% List<Order> orders = (List<Order>) request.getAttribute("orders"); %>
+        <% List<Order> orders = (List<Order>) request.getAttribute("orders");%>
 
         <div class="d-flex" id="wrapper">
             <!-- Sidebar -->
@@ -61,7 +67,7 @@
                             <i class="bi bi-bell me-3 fs-5"></i>
                             <div class="d-flex align-items-center">
                                 <img src="https://i.pravatar.cc/40" class="rounded-circle me-2" width="35">
-                                <span>Shipper</span>
+                                <span><%=request.getAttribute("shipperName")%></span>
                             </div>
                         </div>
                     </div>
@@ -90,18 +96,27 @@
 
                                     <!-- Tr?ng thái ??n hàng -->
                                     <div class="col-md-4 d-flex flex-column justify-content-center align-items-center">
-                                        <%
-                                            String status = o.getStatus();
-                                            String badgeClass = "bg-secondary";
-                                            if ("Delivered".equalsIgnoreCase(status))
-                                                badgeClass = "bg-success";
-                                            else if ("In Transit".equalsIgnoreCase(status))
-                                                badgeClass = "bg-warning text-dark";
-                                            else if ("Pending".equalsIgnoreCase(status))
-                                                badgeClass = "bg-secondary";
-                                        %>
-                                        <span class="badge <%= badgeClass%>"><%= status%></span>
+                                        <form action="order" method="post">
+                                            <input type="hidden" name="orderID" value="<%= o.getOrderID()%>">
+                                            <input type="hidden" name="status" value="<%= o.getStatus()%>">
+
+                                            <%
+                                                String status = o.getStatus();
+                                                String badgeClass = "bg-secondary";
+                                                if ("Delivered".equalsIgnoreCase(status))
+                                                    badgeClass = "bg-success";
+                                                else if ("In Transit".equalsIgnoreCase(status))
+                                                    badgeClass = "bg-warning";
+                                                else if ("Pending".equalsIgnoreCase(status))
+                                                    badgeClass = "bg-secondary";
+                                            %>
+
+                                            <button type="submit" class="btn <%= badgeClass%> text-white px-4 py-2 fw-bold">
+                                                <%= status%>
+                                            </button>
+                                        </form>
                                     </div>
+
                                 </div>
                             </div>
                         </div>

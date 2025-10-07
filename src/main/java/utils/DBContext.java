@@ -31,11 +31,7 @@ public class DBContext {
             String dbURL = "jdbc:sqlserver://localhost:1433;"
                     + "databaseName=PhoneStore;"
                     + "user=sa;"
-<<<<<<< HEAD
-=======
-                    + "password=261204;"
->>>>>>> 654e381e574f649fd082ef1e7bb4d1c8835a1fa9
-                    + "password=123456;"
+                    + "password=6789;"
                     + "encrypt=true;trustServerCertificate=true;";
             // Tạo kết nối.
             conn = DriverManager.getConnection(dbURL);
