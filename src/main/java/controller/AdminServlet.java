@@ -141,6 +141,20 @@ public class AdminServlet extends HttpServlet {
             vdao.deleteVariantByProductID(pid);
             pdao.deleteProductByProductID(pid);
             response.sendRedirect("admin?action=manageProduct");
+        }else if(action.equals("manageSupplier")){
+            List<Suppliers> listSupplier = sldao.getAllSupplier();
+            request.setAttribute("listSupplier", listSupplier);
+            
+            request.getRequestDispatcher("dashboard_admin_managesupplier.jsp").forward(request, response);
+        }else if(action.equals("editSupplier")){
+            int supplierID = Integer.parseInt(request.getParameter("id"));
+            
+            Suppliers supplier = sldao.getSupplierByID(supplierID);
+            request.setAttribute("supplier", supplier);
+            request.getRequestDispatcher("admin_managesupplier_edit.jsp").forward(request, response);
+        }else if (action.equals("createSupplier")){
+            
+            request.getRequestDispatcher("admin_managesupplier_create.jsp").forward(request, response);
         }
         else {
             request.getRequestDispatcher("dashboard_admin.jsp").forward(request, response);
@@ -242,6 +256,29 @@ public class AdminServlet extends HttpServlet {
             vdao.deleteVariantByID(vID);
             
             response.sendRedirect("admin?action=productDetail&id="+pID);
+        }else if(action.equals("updateSupplier")){
+            int sID = Integer.parseInt(request.getParameter("sID"));
+            String name = request.getParameter("name");
+            String phone = request.getParameter("phone");
+            String email = request.getParameter("email");
+            String address = request.getParameter("address");
+            
+            sldao.updateSupplier(sID, name, phone, email, address);
+            
+            response.sendRedirect("admin?action=manageSupplier");
+        }else if(action.equals("createSupplier")){
+            String name = request.getParameter("name");
+            String phone = request.getParameter("phone");
+            String email = request.getParameter("email");
+            String address = request.getParameter("address");
+            
+            sldao.createSupplier(name, phone, email, address);
+            response.sendRedirect("admin?action=manageSupplier");
+        }else if (action.equals("deleteSupplier")){
+            int sID = Integer.parseInt(request.getParameter("sID"));
+            
+            sldao.deleteSupplier(sID);
+            response.sendRedirect("admin?action=manageSupplier");
         }
     }
 
