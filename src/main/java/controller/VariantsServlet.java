@@ -68,7 +68,7 @@ public class VariantsServlet extends HttpServlet {
             Connection conn = db.conn;
 
             // Tạo DAO và lấy danh sách variants
-            VariantsDAO dao = new VariantsDAO(conn); // Nếu DAO version của bạn dùng Connection
+            VariantsDAO dao = new VariantsDAO(); // Nếu DAO version của bạn dùng Connection
             List<Variants> variants = dao.getAllVariants();
 
             // Gửi dữ liệu sang JSP

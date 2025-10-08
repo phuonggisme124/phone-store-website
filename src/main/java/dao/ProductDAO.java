@@ -17,6 +17,12 @@ import model.Variants;
  */
 public class ProductDAO extends DBContext {
 
+    public ProductDAO() {
+        super();
+    }
+    
+    
+
     public List<Products> getAllProduct() {
         String sql = "Select * from Products";
         List<Products> list = new ArrayList<>();
@@ -56,7 +62,7 @@ public class ProductDAO extends DBContext {
             while (rs.next()) {
                 int id = rs.getInt("ProductID");
                 String name = rs.getString("Name");
-                variantsDAO = new VariantsDAO(conn);
+                variantsDAO = new VariantsDAO();
                 List<Variants> variants = variantsDAO.getAllVariantByProductID(id);
                 Timestamp createdAtTimestamp = rs.getTimestamp("CreatedAt");
                 LocalDateTime createdAt = (createdAtTimestamp != null)

@@ -12,6 +12,12 @@ import java.util.List;
  */
 public class CategoryDAO extends DBContext {
 
+    public CategoryDAO() {
+        super();
+    }
+    
+    
+
     // Helper method để ánh xạ ResultSet sang đối tượng Category
     private Category mapResultSetToCategory(ResultSet rs) throws SQLException {
         int id = rs.getInt("CategoryID");

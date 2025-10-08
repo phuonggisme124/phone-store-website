@@ -5,6 +5,7 @@
 package model;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * The Promotions class maps to the Promotions table in the database.
@@ -19,8 +20,8 @@ public class Promotions {
 
     // --- Optional fields (Allow Nulls) ---
     private Integer discountPercent; // int, Allow Nulls
-    private LocalDate startDate;     // date, Allow Nulls
-    private LocalDate endDate;       // date, Allow Nulls
+    private LocalDateTime startDate;     // date, Allow Nulls
+    private LocalDateTime endDate;       // date, Allow Nulls
     private String status;           // nvarchar(20), Allow Nulls
     private Integer productID;       // int, Allow Nulls
 
@@ -31,8 +32,8 @@ public class Promotions {
     /**
      * Full constructor including all fields.
      */
-    public Promotions(int promotionID, Integer discountPercent, LocalDate startDate,
-                      LocalDate endDate, String status, Integer productID) {
+    public Promotions(int promotionID, Integer discountPercent, LocalDateTime startDate,
+                      LocalDateTime endDate, String status, Integer productID) {
         this.promotionID = promotionID;
         this.discountPercent = discountPercent;
         this.startDate = startDate;
@@ -70,19 +71,19 @@ public class Promotions {
         this.discountPercent = discountPercent;
     }
 
-    public LocalDate getStartDate() {
+    public LocalDateTime getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(LocalDate startDate) {
+    public void setStartDate(LocalDateTime startDate) {
         this.startDate = startDate;
     }
 
-    public LocalDate getEndDate() {
+    public LocalDateTime getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(LocalDate endDate) {
+    public void setEndDate(LocalDateTime endDate) {
         this.endDate = endDate;
     }
 
@@ -114,4 +115,6 @@ public class Promotions {
                 ", productID=" + productID +
                 '}';
     }
+
+    
 }

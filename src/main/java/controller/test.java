@@ -4,11 +4,18 @@
  */
 package controller;
 
+import dao.OrderDAO;
+import dao.PromotionsDAO;
 import dao.SupplierDAO;
 import dao.UsersDAO;
+import dao.VariantsDAO;
 import java.util.List;
+import model.Order;
+import model.Promotions;
+import model.Sale;
 import model.Suppliers;
 import model.Users;
+import model.Variants;
 
 /**
  *
@@ -17,26 +24,36 @@ import model.Users;
 public class test {
 
     public static void main(String[] args) {
-        SupplierDAO dao = new SupplierDAO();
-        List<Suppliers> list = dao.getAllSupplier();
+        // Khởi tạo DAO
+        OrderDAO odao = new OrderDAO();
+        UsersDAO udao = new UsersDAO();
 
-        if (list == null) {
-            System.out.println("⚠️ listSupplier is NULL — kiểm tra lại DB connection!");
-            return;
+        // Lấy dữ liệu
+        List<Order> listOrder = odao.getAllOrders();
+        List<Users> listUsers = udao.getAllUsers();
+        List<Sale> listSales = udao.getAllSales();
+
+        // In ra để kiểm tra
+        System.out.println("===== 🧾 DANH SÁCH ORDERS =====");
+        for (Order o : listOrder) {
+            System.out.println("OrderID: " + o.getOrderID() + 
+                               " | UserID: " + o.getUserID() + 
+                               " | Total: " + o.getTotalAmount() + 
+                               " | Status: " + o.getStatus());
         }
 
-        if (list.isEmpty()) {
-            System.out.println("⚠️ listSupplier is EMPTY — không có dữ liệu trong bảng Suppliers!");
-            return;
+        System.out.println("\n===== 👤 DANH SÁCH USERS =====");
+        for (Users u : listUsers) {
+            System.out.println("UserID: " + u.getUserId()+ 
+                               " | Name: " + u.getFullName() + 
+                               " | Role: " + u.getRole());
         }
 
-        System.out.println("✅ Lấy thành công danh sách Supplier:");
-        for (Suppliers s : list) {
-            System.out.println("ID: " + s.getSupplierID()
-                    + " | Name: " + s.getName()
-                    + " | Address: " + s.getAddress()
-                    + " | Phone: " + s.getPhone());
+        System.out.println("\n===== 💸 DANH SÁCH SALES =====");
+        for (Sale s : listSales) {
+            System.out.println("SaleID: " + s.getSaleID() + 
+                               " | Order: " + s.getOrderID()+ 
+                               " | Staff: " + s.getStaffID());
         }
     }
-
 }

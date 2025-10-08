@@ -9,9 +9,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import model.Order;
+import model.Products;
 import model.Users;
 import utils.DBContext;
 
@@ -20,6 +23,12 @@ import utils.DBContext;
  * @author ADMIN
  */
 public class OrderDAO extends DBContext {
+
+    public OrderDAO() {
+        super();
+    }
+    
+    
 
     // Ánh xạ dữ liệu từ ResultSet sang đối tượng Order
     private Order mapResultSetToProduct(ResultSet rs) throws SQLException {
@@ -38,10 +47,38 @@ public class OrderDAO extends DBContext {
                 address,
                 total.floatValue(),
                 status,
-                orderDate.toLocalDateTime().toLocalDate()
+                orderDate.toLocalDateTime()
         );
     }
+    
+    public List<Order> getAllOrders(){
+        String sql = "Select * from Orders";
+        List<Order> list = new ArrayList<>();
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                int oid = rs.getInt("OrderID");
+                int uid = rs.getInt("UserID");
+                Timestamp orderDateTimestamp = rs.getTimestamp("OrderDate");
+                LocalDateTime orderDate = (orderDateTimestamp != null)
+                        ? orderDateTimestamp.toLocalDateTime()
+                        : null;
+                String status = rs.getString("Status");
+                String paymentMethod = rs.getString("PaymentMethod");
+                String address = rs.getString("ShippingAddress");
+                double totalAmount = rs.getDouble("TotalAmount");               
+             
+                list.add(new Order(oid, uid, paymentMethod, address, totalAmount, status, orderDate));
+            }
 
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        return list;
+    }
+    
     // Lấy tất cả đơn hàng
     public List<Order> getAllOders() {
         List<Order> orders = new ArrayList<>();

@@ -21,6 +21,7 @@ import utils.DBContext;
 public class SupplierDAO extends DBContext{
 
     public SupplierDAO() {
+        super();
     }
 
     public List<Suppliers> getAllSupplier() {

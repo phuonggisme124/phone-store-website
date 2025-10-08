@@ -5,7 +5,9 @@
 package controller;
 
 import dao.CategoryDAO;
+import dao.OrderDAO;
 import dao.ProductDAO;
+import dao.PromotionsDAO;
 import dao.SupplierDAO;
 import dao.UsersDAO;
 import dao.VariantsDAO;
@@ -16,9 +18,14 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import model.Category;
+import model.Order;
 import model.Products;
+import model.Promotions;
+import model.Sale;
 import model.Suppliers;
 import model.Users;
 import model.Variants;
@@ -74,6 +81,8 @@ public class AdminServlet extends HttpServlet {
         SupplierDAO sldao = new SupplierDAO();
         CategoryDAO ctdao = new CategoryDAO();
         VariantsDAO vdao = new VariantsDAO();
+        OrderDAO odao = new OrderDAO();
+        PromotionsDAO pmtdao = new PromotionsDAO();
         if (action == null) {
             action = "dashboard";
         }
@@ -105,8 +114,10 @@ public class AdminServlet extends HttpServlet {
             int id = Integer.parseInt(request.getParameter("id"));
             List<Variants> listVariants = vdao.getAllVariantByProductID(id);
             List<Products> listProducts = pdao.getAllProduct();
+            //Promotions promotion = pmtdao.getPromotionByProductID(id);
 
             request.setAttribute("productID", id);
+            //request.setAttribute("promotion", promotion);
             request.setAttribute("listProducts", listProducts);
             request.setAttribute("listVariants", listVariants);
 
@@ -136,25 +147,55 @@ public class AdminServlet extends HttpServlet {
             request.setAttribute("product", product);
             request.setAttribute("productID", pid);
             request.getRequestDispatcher("admin_manageproduct_createvariant.jsp").forward(request, response);
-        }else if(action.equals("deleteProduct")){
+        } else if (action.equals("deleteProduct")) {
             int pid = Integer.parseInt(request.getParameter("pid"));
             vdao.deleteVariantByProductID(pid);
             pdao.deleteProductByProductID(pid);
             response.sendRedirect("admin?action=manageProduct");
-        }else if(action.equals("manageSupplier")){
+        } else if (action.equals("manageSupplier")) {
             List<Suppliers> listSupplier = sldao.getAllSupplier();
             request.setAttribute("listSupplier", listSupplier);
-            
+
             request.getRequestDispatcher("dashboard_admin_managesupplier.jsp").forward(request, response);
-        }else if(action.equals("editSupplier")){
+        } else if (action.equals("editSupplier")) {
             int supplierID = Integer.parseInt(request.getParameter("id"));
-            
+
             Suppliers supplier = sldao.getSupplierByID(supplierID);
             request.setAttribute("supplier", supplier);
             request.getRequestDispatcher("admin_managesupplier_edit.jsp").forward(request, response);
-        }else if (action.equals("createSupplier")){
-            
+        } else if (action.equals("createSupplier")) {
+
             request.getRequestDispatcher("admin_managesupplier_create.jsp").forward(request, response);
+        } else if (action.equals("managePromotion")) {
+            List<Products> listProducts = pdao.getAllProduct();
+            List<Promotions> listPromotions = pmtdao.getAllPromotion();
+
+            request.setAttribute("listProducts", listProducts);
+            request.setAttribute("listPromotions", listPromotions);
+
+            request.getRequestDispatcher("dashboard_admin_managepromotion.jsp").forward(request, response);
+        } else if (action.equals("editPromotion")) {
+            int pmtID = Integer.parseInt(request.getParameter("pmtID"));
+            int pID = Integer.parseInt(request.getParameter("pID"));
+            Promotions promotion = pmtdao.getPromotionByID(pmtID);
+            Products product = pdao.getProductByID(pID);
+
+            request.setAttribute("promotion", promotion);
+            request.setAttribute("product", product);
+
+            request.getRequestDispatcher("admin_managepromotion_edit.jsp").forward(request, response);
+        }else if(action.equals("createPromotion")){
+            List<Products> listProducts = pdao.getAllProduct();
+            request.setAttribute("listProducts", listProducts);
+            request.getRequestDispatcher("admin_managepromotion_create.jsp").forward(request, response);
+        } else if(action.equals("manageOrder")){
+            List<Order> listOrder = odao.getAllOrders();
+            List<Users> listUsers = udao.getAllUsers();
+            List<Sale> listSales = udao.getAllSales();
+            request.setAttribute("listOrder", listOrder);
+            request.setAttribute("listUsers", listUsers);
+            request.setAttribute("listSales", listSales);
+            request.getRequestDispatcher("dashboard_admin_manageorder.jsp").forward(request, response);
         }
         else {
             request.getRequestDispatcher("dashboard_admin.jsp").forward(request, response);
@@ -179,7 +220,7 @@ public class AdminServlet extends HttpServlet {
         SupplierDAO sldao = new SupplierDAO();
         CategoryDAO ctdao = new CategoryDAO();
         VariantsDAO vdao = new VariantsDAO();
-
+        PromotionsDAO pmtdao = new PromotionsDAO();
         if (action.equals("update")) {
             int userId = Integer.parseInt(request.getParameter("userId"));
             String name = request.getParameter("name");
@@ -247,38 +288,62 @@ public class AdminServlet extends HttpServlet {
             int stock = Integer.parseInt(request.getParameter("stock"));
             String description = request.getParameter("description");
             String img = request.getParameter("img");
-            
+
             vdao.createVariant(pID, color, storage, price, stock, description, img);
-            response.sendRedirect("admin?action=productDetail&id="+pID);
-        }else if(action.equals("deleteVariant")){
+            response.sendRedirect("admin?action=productDetail&id=" + pID);
+        } else if (action.equals("deleteVariant")) {
             int vID = Integer.parseInt(request.getParameter("vID"));
             int pID = Integer.parseInt(request.getParameter("pID"));
             vdao.deleteVariantByID(vID);
-            
-            response.sendRedirect("admin?action=productDetail&id="+pID);
-        }else if(action.equals("updateSupplier")){
+
+            response.sendRedirect("admin?action=productDetail&id=" + pID);
+        } else if (action.equals("updateSupplier")) {
             int sID = Integer.parseInt(request.getParameter("sID"));
             String name = request.getParameter("name");
             String phone = request.getParameter("phone");
             String email = request.getParameter("email");
             String address = request.getParameter("address");
-            
+
             sldao.updateSupplier(sID, name, phone, email, address);
-            
+
             response.sendRedirect("admin?action=manageSupplier");
-        }else if(action.equals("createSupplier")){
+        } else if (action.equals("createSupplier")) {
             String name = request.getParameter("name");
             String phone = request.getParameter("phone");
             String email = request.getParameter("email");
             String address = request.getParameter("address");
-            
+
             sldao.createSupplier(name, phone, email, address);
             response.sendRedirect("admin?action=manageSupplier");
-        }else if (action.equals("deleteSupplier")){
+        } else if (action.equals("deleteSupplier")) {
             int sID = Integer.parseInt(request.getParameter("sID"));
-            
+
             sldao.deleteSupplier(sID);
             response.sendRedirect("admin?action=manageSupplier");
+        } else if (action.equals("updatePromotion")) {
+            int pmtID = Integer.parseInt(request.getParameter("pmtID"));
+            int pID = Integer.parseInt(request.getParameter("pID"));
+            int discountPercent = Integer.parseInt(request.getParameter("discountPercent"));
+            LocalDateTime startDate = LocalDateTime.parse(request.getParameter("startDate"));
+            LocalDateTime endDate = LocalDateTime.parse(request.getParameter("endDate"));
+            String status = request.getParameter("status");
+            
+            pmtdao.updatePromotion(pmtID, pID, discountPercent, startDate, endDate, status);
+            
+            vdao.updateDiscountPrice();
+            
+            response.sendRedirect("admin?action=managePromotion");
+        }else if(action.equals("createPromotion")){
+            int pID = Integer.parseInt(request.getParameter("pID"));
+            int discountPercent = Integer.parseInt(request.getParameter("discountPercent"));
+            LocalDateTime startDate = LocalDate.parse(request.getParameter("startDate")).atStartOfDay();
+            LocalDateTime endDate = LocalDate.parse(request.getParameter("endDate")).atStartOfDay();
+            String status = "active";
+            
+            pmtdao.createPromotion(pID, discountPercent, startDate, endDate, status);
+            vdao.updateDiscountPrice();
+            response.sendRedirect("admin?action=managePromotion");
+            
         }
     }
 

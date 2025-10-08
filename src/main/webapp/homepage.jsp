@@ -391,7 +391,7 @@
                 <%
                     List<Products> productList = (List<Products>) request.getAttribute("productList");
 
-  // N?u không có danh sách s?n ph?m và ch?a t?ng ?i qua servlet Product
+                    // N?u kh?ng c? danh s?ch s?n ph?m v? ch?a t?ng ?i qua servlet Product
                     if (productList == null && request.getParameter("fromProduct") == null) {
                         response.sendRedirect(request.getContextPath() + "/product?fromProduct=true");
                         return;
@@ -427,30 +427,36 @@
                 <a href="shop.html" class="text-uppercase text-decoration-underline">Go to Shop</a>
             </div>
 
-            <div class="row text-center">
-                <div class="col-md-3">
-                    <img src="images/watch-pink.png" alt="Pink Watch" class="img-fluid">
-                    <h5 class="text-uppercase mt-3">Pink Watch</h5>
-                    <p class="text-primary">$870</p>
-                </div>
-                <div class="col-md-3">
-                    <img src="images/watch-heavy.png" alt="Heavy Watch" class="img-fluid">
-                    <h5 class="text-uppercase mt-3">Heavy Watch</h5>
-                    <p class="text-primary">$699</p>
-                </div>
-                <div class="col-md-3">
-                    <img src="images/watch-spotted.png" alt="Spotted Watch" class="img-fluid">
-                    <h5 class="text-uppercase mt-3">Spotted Watch</h5>
-                    <p class="text-primary">$799</p>
-                </div>
-                <div class="col-md-3">
-                    <img src="images/watch-black.png" alt="Black Watch" class="img-fluid">
-                    <h5 class="text-uppercase mt-3">Black Watch</h5>
-                    <p class="text-primary">$1000</p>
+            <%
+                List<Products> watchproduct = (List<Products>) request.getAttribute("productList");
+                if (productList == null && request.getParameter("fromProduct") == null) {
+                    response.sendRedirect(request.getContextPath() + "/product?fromProduct=true");
+                    return;
+                }
+            %>
+            <div class="swiper product-swiper">
+                <div class="swiper-wrapper">
+                    <%for (Products p : productList) {%>
+                    <!-- Product 1 -->
+                    <div class="swiper-slide">
+                        <div class="product-card text-center position-relative">
+                            <div class="image-holder">
+                                <img src="images/iphone10.jpg" alt="Iphone 10" class="img-fluid rounded-3">
+                            </div>
+                            <div class="card-detail pt-3">
+                                <h3 class="card-title text-uppercase">
+                                    <a href="#"><%=p.getName()%></a>
+                                </h3>
+                                <span class="item-price text-primary"><%= p.getVariants().get(0).getPrice()%></span>
+                            </div>
+                        </div>
+                    </div>
+                    <%}%>
                 </div>
             </div>
         </div>
     </section>
+
 
     <section id="yearly-sale" class="bg-light-blue overflow-hidden mt-5 padding-xlarge" style="background-image: url('images/single-image1.png');background-position: right; background-repeat: no-repeat;">
         <div class="row d-flex flex-wrap align-items-center">

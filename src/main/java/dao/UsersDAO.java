@@ -14,6 +14,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import model.Sale;
 import model.Users;
 import utils.DBContext;
 
@@ -294,5 +295,28 @@ public class UsersDAO extends DBContext {
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    public List<Sale> getAllSales() {
+        String sql = "SELECT * FROM Sales";
+        List<Sale> list = new ArrayList<>();
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                int saleID = rs.getInt("SaleID");
+                int orderID = rs.getInt("OrderID");
+                int staffID = rs.getInt("StaffID");             
+                Timestamp createdAtTimestamp = rs.getTimestamp("CreatedAt");
+                LocalDateTime createdAt = (createdAtTimestamp != null)
+                        ? createdAtTimestamp.toLocalDateTime()
+                        : null;
+                int shipperID = rs.getInt("ShipperID");
+                list.add(new Sale(saleID, shipperID, staffID, orderID, createdAt));
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return list;
     }
 }
