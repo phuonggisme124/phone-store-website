@@ -1,5 +1,6 @@
 C:\Users\duynu\Desktop\SWP\phone-store-website\phone-store-website\src\main\java\controller\AdminServlet.java
 C:\Users\duynu\Desktop\SWP\phone-store-website\phone-store-website\src\main\java\utils\DBContext.java
+C:\Users\duynu\Desktop\SWP\phone-store-website\phone-store-website\src\main\java\controller\ProductServlet.java
 C:\Users\duynu\Desktop\SWP\phone-store-website\phone-store-website\src\main\java\dao\OrderDAO.java
 C:\Users\duynu\Desktop\SWP\phone-store-website\phone-store-website\src\main\java\dao\UsersDAO.java
 C:\Users\duynu\Desktop\SWP\phone-store-website\phone-store-website\src\main\java\dao\SupplierDAO.java
@@ -12,6 +13,7 @@ C:\Users\duynu\Desktop\SWP\phone-store-website\phone-store-website\src\main\java
 C:\Users\duynu\Desktop\SWP\phone-store-website\phone-store-website\src\main\java\model\CartItems.java
 C:\Users\duynu\Desktop\SWP\phone-store-website\phone-store-website\src\main\java\model\Reviews.java
 C:\Users\duynu\Desktop\SWP\phone-store-website\phone-store-website\src\main\java\controller\test.java
+C:\Users\duynu\Desktop\SWP\phone-store-website\phone-store-website\src\main\java\dao\PaymentsDAO.java
 C:\Users\duynu\Desktop\SWP\phone-store-website\phone-store-website\src\main\java\model\Users.java
 C:\Users\duynu\Desktop\SWP\phone-store-website\phone-store-website\src\main\java\controller\LogoutServlet.java
 C:\Users\duynu\Desktop\SWP\phone-store-website\phone-store-website\src\main\java\dao\ProductDAO.java

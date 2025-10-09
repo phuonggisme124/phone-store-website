@@ -32,14 +32,14 @@ public class test {
         List<Order> listOrder = odao.getAllOrders();
         List<Users> listUsers = udao.getAllUsers();
         List<Sale> listSales = udao.getAllSales();
-
+        
         // In ra để kiểm tra
         System.out.println("===== 🧾 DANH SÁCH ORDERS =====");
         for (Order o : listOrder) {
             System.out.println("OrderID: " + o.getOrderID() + 
                                " | UserID: " + o.getUserID() + 
                                " | Total: " + o.getTotalAmount() + 
-                               " | Status: " + o.getStatus());
+                               " | Instalment: " + o.isIsInstallment());
         }
 
         System.out.println("\n===== 👤 DANH SÁCH USERS =====");

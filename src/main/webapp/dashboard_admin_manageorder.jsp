@@ -31,10 +31,10 @@
                 </div>
                 <ul class="list-unstyled ps-3">
                     <li><a href="admin" ><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
-                    <li><a href="admin?action=manageProduct" class="active"><i class="bi bi-box me-2"></i>Products</a></li>
+                    <li><a href="admin?action=manageProduct"><i class="bi bi-box me-2"></i>Products</a></li>
                     <li><a href="admin?action=manageSupplier"><i class="bi bi-truck me-2"></i>Suppliers</a></li>
                     <li><a href="admin?action=managePromotion"><i class="bi bi-tag me-2"></i></i>Promotions</a></li>
-                    <li><a href="#"><i class="bi bi-bag me-2"></i>Orders</a></li>
+                    <li><a href="admin?action=manageOrder" class="active"><i class="bi bi-bag me-2"></i>Orders</a></li>
                     <li><a href="admin?action=manageUser"><i class="bi bi-people me-2"></i>Users</a></li>
                     <li><a href="#"><i class="bi bi-gear me-2"></i>Settings</a></li>
                 </ul>
@@ -85,7 +85,7 @@
                                     <th>User Name</th>
                                     <th>Phone</th>
                                     <th>Address</th>
-
+                                    <th>Instalment</th>
                                     <th>Method</th>
                                     <th>Order Date</th>
                                     <th>Total Amount</th>
@@ -109,7 +109,7 @@
                             %>
 
                             <tbody>
-                                <tr  onclick="window.location.href = 'admin?action=orderDetail&id=<%= o.getOrderID()%>'">
+                                <tr  onclick="window.location.href = 'admin?action=orderDetail&id=<%= o.getOrderID()%>&isInstalment=<%= o.isIsInstallment()%>'">
                                     <td><%= o.getOrderID()%></td>
                                     <%
                                         for (Users u : listUsers) {
@@ -123,9 +123,10 @@
                                         }
                                     %>
                                     <td><%= o.getShippingAddress()%></td>   
+                                    <td><%= o.isIsInstallment()%></td>   
                                     <td><%= o.getPaymentMethod()%></td>   
                                     <td><%= o.getOrderDate()%></td>   
-                                    <td><%= o.getTotalAmount()%></td>
+                                    <td><%= String.format("%,.0f", o.getTotalAmount()) %></td>
 
                                     <%
                                         for (Sale s : listSales) {

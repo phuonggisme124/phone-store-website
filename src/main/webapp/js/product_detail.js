@@ -6,7 +6,7 @@ function updateImage() {
   mainImage.classList.remove('fade-in');
   void mainImage.offsetWidth; // reset animation
   mainImage.classList.add('fade-in');
-  mainImage.textContent = '🖼️';
+  mainImage.textContent = '🖼️ ' + images[currentImage];
   document.querySelectorAll('.thumb').forEach((t, i) => {
     t.classList.toggle('active', i === currentImage);
   });
@@ -29,10 +29,14 @@ function selectImage(index) {
 
 setInterval(nextImage, 3000);
 
-// Select Version
+// Select Version + Update Price
 function selectVersion(btn) {
   document.querySelectorAll('.option').forEach(b => b.classList.remove('selected'));
   btn.classList.add('selected');
+
+  const price = parseInt(btn.getAttribute('data-price'));
+  const priceTag = document.getElementById('price');
+  priceTag.textContent = price.toLocaleString('vi-VN') + '₫';
 }
 
 // Select Color

@@ -6,6 +6,7 @@ package controller;
 
 import dao.CategoryDAO;
 import dao.OrderDAO;
+import dao.PaymentsDAO;
 import dao.ProductDAO;
 import dao.PromotionsDAO;
 import dao.SupplierDAO;
@@ -23,6 +24,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import model.Category;
 import model.Order;
+import model.OrderDetails;
+import model.Payments;
 import model.Products;
 import model.Promotions;
 import model.Sale;
@@ -82,6 +85,7 @@ public class AdminServlet extends HttpServlet {
         CategoryDAO ctdao = new CategoryDAO();
         VariantsDAO vdao = new VariantsDAO();
         OrderDAO odao = new OrderDAO();
+        PaymentsDAO paydao = new PaymentsDAO();
         PromotionsDAO pmtdao = new PromotionsDAO();
         if (action == null) {
             action = "dashboard";
@@ -196,6 +200,19 @@ public class AdminServlet extends HttpServlet {
             request.setAttribute("listUsers", listUsers);
             request.setAttribute("listSales", listSales);
             request.getRequestDispatcher("dashboard_admin_manageorder.jsp").forward(request, response);
+        }else if(action.equals("orderDetail")){
+            int oid = Integer.parseInt(request.getParameter("id"));
+            boolean isIntalment = Boolean.parseBoolean(request.getParameter("isInstalment"));
+            List<OrderDetails> listOrderDetails = odao.getAllOrderDetailByOrderID(oid);
+            List<Payments> listPayments = paydao.getPaymentByOrderID(oid);
+            List<Products> listProducts = pdao.getAllProduct();
+            List<Variants> listVariant = vdao.getAllVariant();
+            request.setAttribute("listOrderDetails", listOrderDetails);
+            request.setAttribute("listProducts", listProducts);
+            request.setAttribute("listVariant", listVariant);
+            request.setAttribute("listPayments", listPayments);
+            request.setAttribute("isIntalment", isIntalment);
+            request.getRequestDispatcher("admin_manageorder_detail.jsp").forward(request, response);
         }
         else {
             request.getRequestDispatcher("dashboard_admin.jsp").forward(request, response);

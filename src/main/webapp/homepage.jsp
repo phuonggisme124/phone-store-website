@@ -409,7 +409,7 @@
                                 </div>
                                 <div class="card-detail pt-3">
                                     <h3 class="card-title text-uppercase">
-                                        <a href="#"><%=p.getName()%></a>
+                                        <a href="product?action=viewDetail&pID=<%= p.getProductID()%>"><%=p.getName()%></a>
                                     </h3>
                                     <span class="item-price text-primary"><%= p.getVariants().get(0).getPrice()%></span>
                                 </div>

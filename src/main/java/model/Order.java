@@ -28,8 +28,9 @@ public class Order {
     private double totalAmount;
     private String status;
     private LocalDateTime orderDate;
+    private boolean isInstalment;
 
-    public Order(int orderID, int userID, String paymentMethod, String shippingAddress, double totalAmount, String status, LocalDateTime orderDate) {
+    public Order(int orderID, int userID, String paymentMethod, String shippingAddress, double totalAmount, String status, LocalDateTime orderDate, boolean isInstalment) {
         this.orderID = orderID;
         this.userID = userID;
         this.paymentMethod = paymentMethod;
@@ -37,10 +38,19 @@ public class Order {
         this.totalAmount = totalAmount;
         this.status = status;
         this.orderDate = orderDate;
+        this.isInstalment = isInstalment;
+    }
+
+    public boolean isIsInstallment() {
+        return isInstalment;
+    }
+
+    public void setIsInstallment(boolean isInstalment) {
+        this.isInstalment = isInstalment;
     }
     
     
-
+    
     public String getPaymentMethod() {
         return paymentMethod;
     }

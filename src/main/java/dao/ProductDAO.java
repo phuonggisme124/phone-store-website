@@ -167,4 +167,27 @@ public class ProductDAO extends DBContext {
             
         }
     }
+    
+    
+    public String getNameByID(int productID){
+        String sql = "SELECT Name FROM Products where ProductID = ?";
+
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, productID);
+
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                
+                String name = rs.getString("Name");
+                
+
+                return name;
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
 }

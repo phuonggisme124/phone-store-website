@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import model.Order;
+import model.OrderDetails;
 import model.Products;
 import model.Users;
 import utils.DBContext;
@@ -68,8 +69,8 @@ public class OrderDAO extends DBContext {
                 String paymentMethod = rs.getString("PaymentMethod");
                 String address = rs.getString("ShippingAddress");
                 double totalAmount = rs.getDouble("TotalAmount");               
-             
-                list.add(new Order(oid, uid, paymentMethod, address, totalAmount, status, orderDate));
+                boolean isInstalment = rs.getBoolean("IsInstalment");
+                list.add(new Order(oid, uid, paymentMethod, address, totalAmount, status, orderDate, isInstalment));
             }
 
         } catch (Exception e) {
@@ -218,5 +219,34 @@ public class OrderDAO extends DBContext {
                 System.out.println("-------------------------------");
             }
         }
+    }
+
+    public List<OrderDetails> getAllOrderDetailByOrderID(int oid) {
+        String sql = "Select * from OrderDetails where OrderID = ?";
+        List<OrderDetails> list = new ArrayList<>();
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, oid);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                int orderID = rs.getInt("OrderID");
+                int variantID = rs.getInt("VariantID");
+                int quantity = rs.getInt("Quantity");
+                double price = rs.getDouble("UnitPrice");
+                
+                int instalmentPeriod = rs.getInt("InstalmentPeriod");
+                double monthlyPayment = rs.getDouble("MonthlyPayment");
+                double downPayment = rs.getDouble("DownPayment");
+                int interestRate = rs.getInt("InterestRate");
+                              
+             
+                list.add(new OrderDetails(orderID, variantID, quantity, price, instalmentPeriod, monthlyPayment, downPayment, interestRate));
+            }
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        return list;
     }
 }

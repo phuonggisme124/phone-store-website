@@ -33,7 +33,7 @@
                     <li><a href="admin?action=manageProduct" class="active"><i class="bi bi-box me-2"></i>Products</a></li>
                     <li><a href="admin?action=manageSupplier"><i class="bi bi-truck me-2"></i>Suppliers</a></li>
                     <li><a href="admin?action=managePromotion"><i class="bi bi-tag me-2"></i></i>Promotions</a></li>
-                    <li><a href="#"><i class="bi bi-bag me-2"></i>Orders</a></li>
+                    <li><a href="admin?action=manageOrder"><i class="bi bi-bag me-2"></i>Orders</a></li>
                     <li><a href="admin?action=manageUser"><i class="bi bi-people me-2"></i>Users</a></li>
                     <li><a href="#"><i class="bi bi-gear me-2"></i>Settings</a></li>
                 </ul>

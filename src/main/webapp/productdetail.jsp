@@ -1,3 +1,5 @@
+<%@page import="dao.ProductDAO"%>
+<%@page import="model.Variants"%>
 <%@page import="model.Products"%>
 <%@page import="java.util.List"%>
 <!DOCTYPE html>
@@ -19,8 +21,8 @@
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
 
-        <link rel="stylesheet" href="css\product_detail.css">
-        <script defer src="js\product_detail.js"></script>
+        <link rel="stylesheet" href="css/product_detail.css">
+        <script src="js/product_detail.js"></script>
         <script src="js/modernizr.js"></script>
         <!-- Swiper CSS -->
         <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
@@ -275,14 +277,18 @@
 
     </section>
     <!-- detail -->
-
+    <%
+        ProductDAO pdao = new ProductDAO();
+        int productID = (int) request.getAttribute("productID");
+        List<Products> listProducts = (List<Products>) request.getAttribute("listProducts");
+        List<Variants> listVariants = (List<Variants>) request.getAttribute("listVariants");
+    %>
     <section id="billboard" class="bg-light-blue overflow-hidden mt-5 padding-large">
         <div class="container">
-            <h3>Name</h3>
+            <h3><%= pdao.getNameByID(productID)%></h3>
         </div>
         <div class="product-container">
             <!-- LEFT -->
-            
             <div class="product-left">
                 <div class="main-image">
                     <div class="image-slide fade-in" id="mainImage">??</div>
@@ -298,11 +304,11 @@
 
                 <div class="thumbnail-row">
                     <button class="arrow" onclick="prevImage()">?</button>
-                    <div class="thumb" onclick="selectImage(0)">??</div>
-                    <div class="thumb" onclick="selectImage(1)">??</div>
-                    <div class="thumb" onclick="selectImage(2)">??</div>
-                    <div class="thumb" onclick="selectImage(3)">??</div>
-                    <div class="thumb" onclick="selectImage(4)">??</div>
+                    <div class="thumb" onclick="selectImage(0)">1??</div>
+                    <div class="thumb" onclick="selectImage(1)">2??</div>
+                    <div class="thumb" onclick="selectImage(2)">3??</div>
+                    <div class="thumb" onclick="selectImage(3)">4??</div>
+                    <div class="thumb" onclick="selectImage(4)">5??</div>
                     <button class="arrow" onclick="nextImage()">?</button>
                 </div>
 
@@ -316,15 +322,15 @@
             <div class="product-right">
                 <div class="price-box">
                     <p>Price</p>
-                    <h2>30.000.000?</h2>
+                    <h2 id="price"></h2>
                 </div>
 
                 <div class="option-box">
                     <p>Version</p>
                     <div class="option-list">
-                        <button class="option" onclick="selectVersion(this)">1TB</button>
-                        <button class="option selected" onclick="selectVersion(this)">512GB</button>
-                        <button class="option" onclick="selectVersion(this)">256GB</button>
+                        <button class="option" name="btn" id="data-price" value="35000000" onclick="selectVersion(this)">1TB</button>
+                        <button class="option selected" data-price="30000000" onclick="selectVersion(this)">512GB</button>
+                        <button class="option" data-price="25000000" onclick="selectVersion(this)">256GB</button>
                     </div>
                 </div>
 
@@ -734,20 +740,21 @@
     <script type="text/javascript" src="js/plugins.js"></script>
     <script type="text/javascript" src="js/script.js"></script>
     <script>
-                    var swiper = new Swiper(".product-swiper", {
-                        slidesPerView: 4,
-                        spaceBetween: 30,
-                        pagination: {
-                            el: ".swiper-pagination",
-                            clickable: true,
-                        },
-                        breakpoints: {
-                            320: {slidesPerView: 1},
-                            768: {slidesPerView: 2},
-                            1024: {slidesPerView: 4}
-                        }
-                    });
+                            var swiper = new Swiper(".product-swiper", {
+                                slidesPerView: 4,
+                                spaceBetween: 30,
+                                pagination: {
+                                    el: ".swiper-pagination",
+                                    clickable: true,
+                                },
+                                breakpoints: {
+                                    320: {slidesPerView: 1},
+                                    768: {slidesPerView: 2},
+                                    1024: {slidesPerView: 4}
+                                }
+                            });
     </script>
+    <script src="js/product_detail.js"></script>
 
 </body>
 </html>

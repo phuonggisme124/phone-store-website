@@ -20,10 +20,11 @@ public class Payments {
 
     // --- Optional fields (Allow Nulls) ---
     private Integer orderID;      // int, Allow Nulls
-    private BigDecimal amount;    // decimal(15,2), Allow Nulls
+    private double amount;    // decimal(15,2), Allow Nulls
     private LocalDateTime paymentDate; // datetime, Allow Nulls
     private String paymentStatus; // nvarchar(20), Allow Nulls
-
+    private int totalMonth;
+    private int currentMonth;
     // --- Default constructor ---
     public Payments() {
     }
@@ -31,7 +32,7 @@ public class Payments {
     /**
      * Full constructor including all fields.
      */
-    public Payments(int paymentID, Integer orderID, BigDecimal amount, LocalDateTime paymentDate, String paymentStatus) {
+    public Payments(int paymentID, Integer orderID, double amount, LocalDateTime paymentDate, String paymentStatus) {
         this.paymentID = paymentID;
         this.orderID = orderID;
         this.amount = amount;
@@ -45,11 +46,41 @@ public class Payments {
     public Payments(int paymentID) {
         this.paymentID = paymentID;
         this.orderID = null;
-        this.amount = null;
+        this.amount = 0;
         this.paymentDate = null;
         this.paymentStatus = null;
     }
 
+    public Payments(int paymentID, Integer orderID, double amount, LocalDateTime paymentDate, String paymentStatus, int totalMonth, int currentMonth) {
+        this.paymentID = paymentID;
+        this.orderID = orderID;
+        this.amount = amount;
+        this.paymentDate = paymentDate;
+        this.paymentStatus = paymentStatus;
+        this.totalMonth = totalMonth;
+        this.currentMonth = currentMonth;
+    }
+    
+    
+
+    public int getTotalMonth() {
+        return totalMonth;
+    }
+
+    public void setTotalMonth(int totalMonth) {
+        this.totalMonth = totalMonth;
+    }
+
+    public int getCurrentMonth() {
+        return currentMonth;
+    }
+
+    public void setCurrentMonth(int currentMonth) {
+        this.currentMonth = currentMonth;
+    }
+    
+    
+    
     // --- Getters and Setters ---
     public int getPaymentID() {
         return paymentID;
@@ -67,11 +98,11 @@ public class Payments {
         this.orderID = orderID;
     }
 
-    public BigDecimal getAmount() {
+    public double getAmount() {
         return amount;
     }
 
-    public void setAmount(BigDecimal amount) {
+    public void setAmount(double amount) {
         this.amount = amount;
     }
 

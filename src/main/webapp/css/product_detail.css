@@ -17,7 +17,7 @@ body {
 /* LEFT SIDE */
 .product-left {
     flex: 1 1 50%;
-    background-color: white ;
+    background-color: white;
     border-radius: 20px;
     padding: 20px;
     box-shadow: 0 5px 20px rgba(114, 174, 200, 0.4);
@@ -46,12 +46,12 @@ body {
 }
 
 .feature-box h3 {
-    color: white;
+    color: #333;
     font-weight: 600;
 }
 
 .feature-box ul {
-    color: white;
+    color: #333;
     list-style: none;
     padding-left: 0;
 }
@@ -82,7 +82,7 @@ body {
 }
 
 .thumb.active {
-    border: 2px solid white;
+    border: 2px solid #72AEC8;
 }
 
 .arrow {
