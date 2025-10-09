@@ -22,6 +22,7 @@
         <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
 
         <link rel="stylesheet" href="css/product_detail.css">
+        <link rel="stylesheet" href="css/gallery.css">
         <script src="js/product_detail.js"></script>
         <script src="js/modernizr.js"></script>
         <!-- Swiper CSS -->
@@ -162,19 +163,16 @@
                                 <a class="nav-link me-4 active" href="#billboard">Home</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link me-4" href="#company-services">Services</a>
+                                <a class="nav-link me-4" href="#company-services">Phone</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link me-4" href="#mobile-products">Products</a>
+                                <a class="nav-link me-4" href="#mobile-products">Tablet</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link me-4" href="#smart-watches">Watches</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link me-4" href="#yearly-sale">Sale</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link me-4" href="#latest-blog">Blog</a>
+                                <a class="nav-link me-4" href="#yearly-sale">Accessory</a>
                             </li>
                             <li class="nav-item dropdown">
                                 <a class="nav-link me-4 dropdown-toggle link-dark" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Pages</a>
@@ -287,58 +285,75 @@
         <div class="container">
             <h3><%= pdao.getNameByID(productID)%></h3>
         </div>
+
         <div class="product-container">
             <!-- LEFT -->
             <div class="product-left">
-                <div class="main-image">
-                    <div class="image-slide fade-in" id="mainImage">??</div>
-                    <div class="feature-box">
-                        <h3>Main Features</h3>
-                        <ul>
-                            <li>Feature 1</li>
-                            <li>Feature 2</li>
-                            <li>Feature 3</li>
-                        </ul>
+                <div class="gallery">
+                    <!-- Radio buttons (?n) -->
+
+                    <input type="radio" name="gallery" id="img1" checked>
+                    <input type="radio" name="gallery" id="img2">
+                    <input type="radio" name="gallery" id="img3">
+                    <input type="radio" name="gallery" id="img4">
+
+                    <!-- ?nh l?n -->
+                    <div class="main-image">
+                        <img src="images/post-item1.jpg" alt="?nh 1">
+                        <img src="images/post-item2.jpg" alt="?nh 2">
+                        <img src="images/post-item3.jpg" alt="?nh 3">
+                        <img src="images/post-item4.jpg" alt="?nh 4">
                     </div>
-                </div>
 
-                <div class="thumbnail-row">
-                    <button class="arrow" onclick="prevImage()">?</button>
-                    <div class="thumb" onclick="selectImage(0)">1??</div>
-                    <div class="thumb" onclick="selectImage(1)">2??</div>
-                    <div class="thumb" onclick="selectImage(2)">3??</div>
-                    <div class="thumb" onclick="selectImage(3)">4??</div>
-                    <div class="thumb" onclick="selectImage(4)">5??</div>
-                    <button class="arrow" onclick="nextImage()">?</button>
-                </div>
-
-                <div class="tab-section">
-                    <button class="tab active">Description</button>
-                    <button class="tab">Review</button>
+                    <!-- Thumbnail -->
+                    <div class="thumbnails">
+                        <label for="img1"><img src="images/post-item1.jpg" alt="thumb 1"></label>
+                        <label for="img2"><img src="images/post-item2.jpg" alt="thumb 2"></label>
+                        <label for="img3"><img src="images/post-item3.jpg" alt="thumb 3"></label>
+                        <label for="img4"><img src="images/post-item4.jpg" alt="thumb 4"></label>
+                    </div>
                 </div>
             </div>
 
             <!-- RIGHT -->
+            <%
+                String storage = listVariants.get(0).getStorage();
+            %>
             <div class="product-right">
                 <div class="price-box">
                     <p>Price</p>
-                    <h2 id="price"></h2>
+                    <h2 id="price">
+                        <%= String.format("%,.0f", listVariants.get(0).getDiscountPrice())%> VND
+                    </h2>
                 </div>
 
+                <% if (!storage.equals("N/A")) { %>
                 <div class="option-box">
                     <p>Version</p>
                     <div class="option-list">
-                        <button class="option" name="btn" id="data-price" value="35000000" onclick="selectVersion(this)">1TB</button>
-                        <button class="option selected" data-price="30000000" onclick="selectVersion(this)">512GB</button>
-                        <button class="option" data-price="25000000" onclick="selectVersion(this)">256GB</button>
+                        <% for (int i = 0; i < listVariants.size(); i++) {%>
+                        <button class="option <%= ((i == 0) ? "selected" : "")%>"
+                                name="btn"
+                                data-price="<%= listVariants.get(i).getDiscountPrice()%>"
+                                onclick="selectVersion(this)">
+                            <%= listVariants.get(i).getStorage()%>
+                        </button>
+                        <% } %>
                     </div>
                 </div>
+                <% } %>
 
                 <div class="option-box">
                     <p>Color</p>
                     <div class="color-list">
-                        <div class="color" style="background-color: #ffffff;" onclick="selectColor(this)"></div>
-                        <div class="color" style="background-color: #000000;" onclick="selectColor(this)"></div>
+                        <% for (int i = 0; i < listVariants.size(); i++) {%>
+                        <div class="color"
+                             style="background-color: <%= listVariants.get(i).getColor()%>;"
+                             data-color="<%= listVariants.get(i).getColor()%>"
+                             onclick="selectColor(this)">
+                            <a href=""></a>
+                        </div>
+                        <% }%>
                     </div>
                 </div>
 
@@ -740,20 +755,22 @@
     <script type="text/javascript" src="js/plugins.js"></script>
     <script type="text/javascript" src="js/script.js"></script>
     <script>
-                            var swiper = new Swiper(".product-swiper", {
-                                slidesPerView: 4,
-                                spaceBetween: 30,
-                                pagination: {
-                                    el: ".swiper-pagination",
-                                    clickable: true,
-                                },
-                                breakpoints: {
-                                    320: {slidesPerView: 1},
-                                    768: {slidesPerView: 2},
-                                    1024: {slidesPerView: 4}
-                                }
-                            });
+                                 var swiper = new Swiper(".product-swiper", {
+                                     slidesPerView: 4,
+                                     spaceBetween: 30,
+                                     pagination: {
+                                         el: ".swiper-pagination",
+                                         clickable: true,
+                                     },
+                                     breakpoints: {
+                                         320: {slidesPerView: 1},
+                                         768: {slidesPerView: 2},
+                                         1024: {slidesPerView: 4}
+                                     }
+                                 });
     </script>
+
+
     <script src="js/product_detail.js"></script>
 
 </body>

@@ -27,12 +27,12 @@ public class test {
         // Khởi tạo DAO
         OrderDAO odao = new OrderDAO();
         UsersDAO udao = new UsersDAO();
-
+        VariantsDAO vdao = new VariantsDAO();
         // Lấy dữ liệu
         List<Order> listOrder = odao.getAllOrders();
         List<Users> listUsers = udao.getAllUsers();
         List<Sale> listSales = udao.getAllSales();
-        
+        List<Variants> listVariant = vdao.getAllVariant();
         // In ra để kiểm tra
         System.out.println("===== 🧾 DANH SÁCH ORDERS =====");
         for (Order o : listOrder) {
@@ -40,6 +40,15 @@ public class test {
                                " | UserID: " + o.getUserID() + 
                                " | Total: " + o.getTotalAmount() + 
                                " | Instalment: " + o.isIsInstallment());
+        }
+        System.out.println("===== 🧾 DANH SÁCH VARIANT =====");
+        for (Variants v : listVariant) {
+            if(v.getStorage().equals("N/A")){
+                System.out.println("VariantID: " + v.getVariantID()+ 
+                              
+                               " | Storage: " + v.getStorage());
+            }
+            
         }
 
         System.out.println("\n===== 👤 DANH SÁCH USERS =====");

@@ -158,20 +158,18 @@
                                 <a class="nav-link me-4 active" href="#billboard">Home</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link me-4" href="#company-services">Services</a>
+                                <a class="nav-link me-4" href="#company-services">Phone</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link me-4" href="#mobile-products">Products</a>
+                                <a class="nav-link me-4" href="#mobile-products">Tablet</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link me-4" href="#smart-watches">Watches</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link me-4" href="#yearly-sale">Sale</a>
+                                <a class="nav-link me-4" href="#yearly-sale">Accessory</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link me-4" href="#latest-blog">Blog</a>
-                            </li>
+                            
                             <li class="nav-item dropdown">
                                 <a class="nav-link me-4 dropdown-toggle link-dark" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Pages</a>
                                 <ul class="dropdown-menu">
@@ -445,7 +443,7 @@
                             </div>
                             <div class="card-detail pt-3">
                                 <h3 class="card-title text-uppercase">
-                                    <a href="#"><%=p.getName()%></a>
+                                    <a href="product?action=viewDetail&pID=<%= p.getProductID()%>"><%=p.getName()%></a>
                                 </h3>
                                 <span class="item-price text-primary"><%= p.getVariants().get(0).getPrice()%></span>
                             </div>
