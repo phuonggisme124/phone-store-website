@@ -76,7 +76,7 @@ public class LoginServlet extends HttpServlet {
                     response.sendRedirect("order");
                     break;
                 case "2":
-                    response.sendRedirect("dashboard_staff.jsp");
+                    response.sendRedirect("staff");
                     break;
                 case "1":
                 default:

@@ -68,6 +68,19 @@ public class Users {
         this.status = null;
     }
 
+    
+  //của thịnh lấy danh sách tất cả shipper
+     /**
+     * Constructor tối thiểu cho các trường NOT NULL.
+     */
+    public Users(int userId, String fullName,String phone) {
+        this.userId = userId;
+        this.fullName = fullName;
+        this.email = email;
+        
+        this.phone = phone;
+       
+    }
 
     // --- Getters và Setters ---
 

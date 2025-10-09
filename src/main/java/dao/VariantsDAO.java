@@ -26,6 +26,11 @@ import utils.DBContext;
  */
 public class VariantsDAO extends DBContext {
 
+<<<<<<< Updated upstream
+=======
+
+
+>>>>>>> Stashed changes
     public VariantsDAO() {
         super();
     }

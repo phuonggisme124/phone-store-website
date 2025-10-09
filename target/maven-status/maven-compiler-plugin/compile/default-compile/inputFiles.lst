@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 C:\Users\duynu\Desktop\SWP\phone-store-website\phone-store-website\src\main\java\controller\AdminServlet.java
 C:\Users\duynu\Desktop\SWP\phone-store-website\phone-store-website\src\main\java\utils\DBContext.java
 C:\Users\duynu\Desktop\SWP\phone-store-website\phone-store-website\src\main\java\controller\ProductServlet.java
@@ -34,3 +35,40 @@ C:\Users\duynu\Desktop\SWP\phone-store-website\phone-store-website\src\main\java
 C:\Users\duynu\Desktop\SWP\phone-store-website\phone-store-website\src\main\java\model\Suppliers.java
 C:\Users\duynu\Desktop\SWP\phone-store-website\phone-store-website\src\main\java\controller\VariantsServlet.java
 C:\Users\duynu\Desktop\SWP\phone-store-website\phone-store-website\src\main\java\model\Promotions.java
+=======
+D:\ki5\SWP\PhoneStoreWebsite\phone-store-website\src\main\java\model\Suppliers.java
+D:\ki5\SWP\PhoneStoreWebsite\phone-store-website\src\main\java\controller\VariantsServlet.java
+D:\ki5\SWP\PhoneStoreWebsite\phone-store-website\src\main\java\dao\SupplierDAO.java
+D:\ki5\SWP\PhoneStoreWebsite\phone-store-website\src\main\java\model\Payment.java
+D:\ki5\SWP\PhoneStoreWebsite\phone-store-website\src\main\java\dao\VariantsDAO.java
+D:\ki5\SWP\PhoneStoreWebsite\phone-store-website\src\main\java\model\Reviews.java
+D:\ki5\SWP\PhoneStoreWebsite\phone-store-website\src\main\java\model\Order.java
+D:\ki5\SWP\PhoneStoreWebsite\phone-store-website\src\main\java\model\Sale.java
+D:\ki5\SWP\PhoneStoreWebsite\phone-store-website\src\main\java\model\Promotions.java
+D:\ki5\SWP\PhoneStoreWebsite\phone-store-website\src\main\java\model\SupportTickets.java
+D:\ki5\SWP\PhoneStoreWebsite\phone-store-website\src\main\java\controller\AdminServlet.java
+D:\ki5\SWP\PhoneStoreWebsite\phone-store-website\src\main\java\model\CartItems.java
+D:\ki5\SWP\PhoneStoreWebsite\phone-store-website\src\main\java\model\Products.java
+D:\ki5\SWP\PhoneStoreWebsite\phone-store-website\src\main\java\utils\DBContext.java
+D:\ki5\SWP\PhoneStoreWebsite\phone-store-website\src\main\java\controller\HomepageServlet.java
+D:\ki5\SWP\PhoneStoreWebsite\phone-store-website\src\main\java\model\Payments.java
+D:\ki5\SWP\PhoneStoreWebsite\phone-store-website\src\main\java\dao\OrderDAO.java
+D:\ki5\SWP\PhoneStoreWebsite\phone-store-website\src\main\java\model\Category.java
+D:\ki5\SWP\PhoneStoreWebsite\phone-store-website\src\main\java\controller\LoginServlet.java
+D:\ki5\SWP\PhoneStoreWebsite\phone-store-website\src\main\java\dao\ProductDAO.java
+D:\ki5\SWP\PhoneStoreWebsite\phone-store-website\src\main\java\controller\RegisterServlet.java
+D:\ki5\SWP\PhoneStoreWebsite\phone-store-website\src\main\java\controller\test.java
+D:\ki5\SWP\PhoneStoreWebsite\phone-store-website\src\main\java\model\Carts.java
+D:\ki5\SWP\PhoneStoreWebsite\phone-store-website\src\main\java\controller\OrderServlet.java
+D:\ki5\SWP\PhoneStoreWebsite\phone-store-website\src\main\java\controller\StaffServlet.java
+D:\ki5\SWP\PhoneStoreWebsite\phone-store-website\src\main\java\controller\LogoutServlet.java
+D:\ki5\SWP\PhoneStoreWebsite\phone-store-website\src\main\java\model\Users.java
+D:\ki5\SWP\PhoneStoreWebsite\phone-store-website\src\main\java\controller\UserServlet.java
+D:\ki5\SWP\PhoneStoreWebsite\phone-store-website\src\main\java\model\OrderDetails.java
+D:\ki5\SWP\PhoneStoreWebsite\phone-store-website\src\main\java\model\Variants.java
+D:\ki5\SWP\PhoneStoreWebsite\phone-store-website\src\main\java\dao\CategoryDAO.java
+D:\ki5\SWP\PhoneStoreWebsite\phone-store-website\src\main\java\model\Categories.java
+D:\ki5\SWP\PhoneStoreWebsite\phone-store-website\src\main\java\dao\SalesDAO.java
+D:\ki5\SWP\PhoneStoreWebsite\phone-store-website\src\main\java\dao\UsersDAO.java
+D:\ki5\SWP\PhoneStoreWebsite\phone-store-website\src\main\java\filter\AuthFilter.java
+>>>>>>> Stashed changes

@@ -62,9 +62,9 @@ public class OrderServlet extends HttpServlet {
 
         } else if (userRole == 2) {
             // Role 2: Staff
-            orders = dao.getAllOders();
+            orders = dao.getAllOrders();
             request.setAttribute("orders", orders);
-            targetPage = "dashboard_staff.jsp";
+            targetPage = "staff";
 
         } else {
             // Role khác → không được truy cập

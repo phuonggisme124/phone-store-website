@@ -125,43 +125,7 @@ public class UsersDAO extends DBContext {
         return u;
     }
 
-    public static void main(String[] args) {
-        UsersDAO dao = new UsersDAO();
 
-        String name = "phuong2";
-        String email = "phuong1@gmail.com";
-        String numberPhone = "0775876126";
-        String address = "123abc";
-        String password = "123456";
-
-        try {
-            System.out.println("--- Test Register ---");
-            Users newUser = dao.register(name, email, numberPhone, address, password);
-
-            if (newUser != null) {
-                System.out.println("✅ Register SUCCESS!");
-                System.out.println("UserID: " + newUser.getUserId());
-                System.out.println("FullName: " + newUser.getFullName());
-                System.out.println("Role: " + newUser.getRole());
-            } else {
-                System.out.println("❌ Register FAILED!");
-            }
-
-            System.out.println("\n--- Test Login ---");
-            Users loggedInUser = dao.login(email, password);
-            if (loggedInUser != null) {
-                System.out.println("✅ Login SUCCESS!");
-                System.out.println("UserID: " + loggedInUser.getUserId());
-                System.out.println("FullName: " + loggedInUser.getFullName());
-                System.out.println("Role: " + loggedInUser.getRole());
-            } else {
-                System.out.println("❌ Login FAILED for email: " + email);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     public Users register(String name, String email, String numberPhone, String address, String password) throws SQLException {
         String sql = "INSERT INTO Users (FullName, Email, Phone, Password, Role, Address, CreatedAt, Status) "
@@ -296,14 +260,26 @@ public class UsersDAO extends DBContext {
             System.out.println(e.getMessage());
         }
     }
+<<<<<<< Updated upstream
 
     public List<Sale> getAllSales() {
         String sql = "SELECT * FROM Sales";
         List<Sale> list = new ArrayList<>();
+=======
+    
+    
+    
+   //của thịnh lấy tất cả shipper
+    public List<Users> getAllShippers() {
+        String sql = "select * from Users\n" 
+                     +"where Role = 3";
+        List<Users> list = new ArrayList<>();
+>>>>>>> Stashed changes
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
+<<<<<<< Updated upstream
                 int saleID = rs.getInt("SaleID");
                 int orderID = rs.getInt("OrderID");
                 int staffID = rs.getInt("StaffID");             
@@ -313,10 +289,37 @@ public class UsersDAO extends DBContext {
                         : null;
                 int shipperID = rs.getInt("ShipperID");
                 list.add(new Sale(saleID, shipperID, staffID, orderID, createdAt));
+=======
+                int id = rs.getInt("UserID");
+                String fullName = rs.getString("FullName");             
+                String phone = rs.getString("Phone");
+              
+                list.add(new Users(id, fullName,  phone));
+>>>>>>> Stashed changes
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
         return list;
     }
+<<<<<<< Updated upstream
+=======
+    
+        public static void main(String[] args) {
+            UsersDAO dao = new UsersDAO();
+System.out.println("\n--- Test getAllShippers ---");
+        List<Users> shippers = dao.getAllShippers();
+
+        if (shippers != null && !shippers.isEmpty()) {
+            System.out.println("Total Shippers: " + shippers.size());
+            for (Users s : shippers) {
+                System.out.println("ID: " + s.getUserId() + " | Name: " + s.getFullName() + " | Phone: " + s.getPhone());
+            }
+        } else {
+            System.out.println("❌ No shippers found!");
+        
+
+   }
+        }
+>>>>>>> Stashed changes
 }
