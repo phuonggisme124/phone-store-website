@@ -13,17 +13,14 @@ import java.time.LocalDateTime;
  */
 public class Order {
     private int orderID;
-<<<<<<< Updated upstream
     private Users buyer;          
     private int userID;
     private String paymentMethod;
-    public Order(int orderID, Users buyer, String shippingAddress, double totalAmount, String status, LocalDateTime orderDate) {
-=======
-    private Users buyer; 
     private Users shippers;
 
-    public Order(int orderID, Users buyer, String shippingAddress, double totalAmount, String status, LocalDate orderDate) {
->>>>>>> Stashed changes
+   
+    public Order(int orderID, Users buyer, String shippingAddress, double totalAmount, String status, LocalDateTime orderDate) {
+
         this.orderID = orderID;
         this.buyer = buyer;
         this.shippingAddress = shippingAddress;
@@ -32,7 +29,7 @@ public class Order {
         this.orderDate = orderDate;
     }
     //Constructor for staff can see buyer and shippep information
-      public Order(int orderID, Users buyer, Users shippers, String shippingAddress, double totalAmount, LocalDate orderDate, String status) {
+      public Order(int orderID, Users buyer, Users shippers, String shippingAddress, double totalAmount, LocalDateTime orderDate, String status) {
         this.orderID = orderID;
         this.buyer = buyer;
         this.shippers = shippers;

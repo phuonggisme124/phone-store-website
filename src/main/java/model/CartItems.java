@@ -10,15 +10,16 @@ package model;
  */
 public class CartItems {
     private int cartItemsID;
-    private Carts cartID;
-    private int productID;
-    private int quality;
-
-    public CartItems(int cartItemsID, Carts cartID, int productID, int quality) {
+    private int cartID;
+    private Products products;
+    private int quantity;
+    private double price;
+    //Contructor to see information of items into cart
+    public CartItems(int cartItemsID, int cartID, int quantity, Products products) {
         this.cartItemsID = cartItemsID;
         this.cartID = cartID;
-        this.productID = productID;
-        this.quality = quality;
+        this.quantity = quantity;
+        this.products = products;
     }
 
     public int getCartItemsID() {
@@ -29,33 +30,35 @@ public class CartItems {
         this.cartItemsID = cartItemsID;
     }
 
-    public Carts getCartID() {
+    public int getCartID() {
         return cartID;
     }
 
-    public void setCartID(Carts cartID) {
+    public void setCartID(int cartID) {
         this.cartID = cartID;
     }
 
-    public int getProductID() {
-        return productID;
+    public int getQuantity() {
+        return quantity;
     }
 
-    public void setProductID(int productID) {
-        this.productID = productID;
+    public void setQuality(int quantity) {
+        this.quantity = quantity;
     }
 
-    public int getQuality() {
-        return quality;
+    public Products getProducts() {
+        return products;
     }
 
-    public void setQuality(int quality) {
-        this.quality = quality;
-    }
-
-    @Override
-    public String toString() {
-        return "CartItems{" + "cartItemsID=" + cartItemsID + ", cartID=" + cartID + ", productID=" + productID + ", quality=" + quality + '}';
+    public void setProducts(Products products) {
+        this.products = products;
     }
     
+    public double getTotalPrice() {
+        return this.price * this.quantity;
+    }
+    public void setPrice(double price) {
+    this.price = price;
+}
+  
 }

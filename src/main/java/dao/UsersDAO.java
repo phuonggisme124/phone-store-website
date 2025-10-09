@@ -1,5 +1,3 @@
-
-
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
@@ -22,7 +20,7 @@ import utils.DBContext;
  * Data Access Object cho đối tượng Users, thực hiện các thao tác với bảng Users
  * trong cơ sở dữ liệu.
  *
- * @author Vo Hoang Tu - CE000000 - 20/05/2025
+ * @author Vo Hoang Tu
  */
 public class UsersDAO extends DBContext {
 
@@ -30,11 +28,6 @@ public class UsersDAO extends DBContext {
         super();
     }
 
-    /**
-     * Duy
-     *
-     * @return
-     */
     public List<Users> getAllUsers() {
         String sql = "SELECT * FROM users";
         List<Users> list = new ArrayList<>();
@@ -62,7 +55,6 @@ public class UsersDAO extends DBContext {
         return list;
     }
 
-    // --- Phương thức Hash MD5 (Giữ nguyên) ---
     public String hashMD5(String pass) {
         try {
             MessageDigest mes = MessageDigest.getInstance("MD5");
@@ -79,40 +71,26 @@ public class UsersDAO extends DBContext {
         return "";
     }
 
-    // --- Phương thức Login (Đã sửa) ---
     public Users login(String email, String pass) {
         Users u = null;
-        // Sửa: Thay username bằng Email, và tên cột (id -> UserID, username -> Email)
         String sql = "SELECT * FROM Users WHERE Email = ? AND Password = ?";
-
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, email);
             ps.setString(2, hashMD5(pass));
-
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    // 1. Ánh xạ các trường NOT NULL
                     int userId = rs.getInt("UserID");
                     String fullName = rs.getString("FullName");
                     String userEmail = rs.getString("Email");
                     String password = rs.getString("Password");
-
-                    // 2. Ánh xạ các trường Allow Nulls
-                    // Dùng rs.getString() cho các cột nvarchar(MAX)/nvarchar có thể null
                     String phone = rs.getString("Phone");
                     String address = rs.getString("Address");
                     String status = rs.getString("Status");
-
-                    // Dùng rs.getObject(..., Integer.class) cho int (Allow Nulls)
                     Integer role = rs.getObject("Role", Integer.class);
-
-                    // Dùng rs.getTimestamp() cho datetime2
                     Timestamp createdAtTimestamp = rs.getTimestamp("CreatedAt");
                     LocalDateTime createdAt = (createdAtTimestamp != null)
                             ? createdAtTimestamp.toLocalDateTime()
                             : null;
-
-                    // 3. Khởi tạo đối tượng Users với Constructor đầy đủ
                     u = new Users(userId, fullName, userEmail, phone, password,
                             role, address, createdAt, status);
                 }
@@ -121,19 +99,14 @@ public class UsersDAO extends DBContext {
             System.err.println("Error during login: " + e.getMessage());
             e.printStackTrace();
         }
-        // Nếu không tìm thấy, u sẽ là null.
         return u;
     }
-
-
 
     public Users register(String name, String email, String numberPhone, String address, String password) throws SQLException {
         String sql = "INSERT INTO Users (FullName, Email, Phone, Password, Role, Address, CreatedAt, Status) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-
         String status = "active";
         PreparedStatement ps = conn.prepareStatement(sql);
-
         ps.setString(1, name);
         ps.setString(2, email);
         ps.setString(3, numberPhone);
@@ -141,30 +114,18 @@ public class UsersDAO extends DBContext {
         ps.setInt(5, 1);
         ps.setString(6, address);
         ps.setTimestamp(7, java.sql.Timestamp.valueOf(java.time.LocalDateTime.now()));
-
         ps.setString(8, status);
-
         ps.executeUpdate();
         ps.close();
-
-        return login(email, password); // hoặc trả về đối tượng Users nếu bạn muốn
+        return login(email, password);
     }
 
-    /**
-     * Duy
-     *
-     * @param id
-     * @return
-     */
     public Users getUserByID(int id) {
         String sql = "SELECT * FROM users where UserID = ?";
-
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setInt(1, id);
-
             ResultSet rs = ps.executeQuery();
-
             if (rs.next()) {
                 int userId = rs.getInt("UserID");
                 String fullName = rs.getString("FullName");
@@ -178,7 +139,7 @@ public class UsersDAO extends DBContext {
                         ? createdAtTimestamp.toLocalDateTime()
                         : null;
                 String status = rs.getString("Status");
-                return (new Users(userId, fullName, email, phone, pass, role, address, createdAt, status));
+                return new Users(userId, fullName, email, phone, pass, role, address, createdAt, status);
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -186,27 +147,8 @@ public class UsersDAO extends DBContext {
         return null;
     }
 
-    /**
-     * Duy
-     *
-     * @param userId
-     * @param name
-     * @param email
-     * @param phone
-     * @param address
-     * @param role
-     * @param status
-     */
     public void updateUser(int userId, String name, String email, String phone, String address, int role, String status) {
-        String sql = "UPDATE Users\n"
-                + "SET FullName = ?,\n"
-                + "    Email = ?,\n"
-                + "    Phone = ?,\n"
-                + "	Role = ?,\n"
-                + "	Address = ?,\n"
-                + "    Status = ?\n"
-                + "WHERE UserID = ?;";
-
+        String sql = "UPDATE Users SET FullName = ?, Email = ?, Phone = ?, Role = ?, Address = ?, Status = ? WHERE UserID = ?";
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, name);
@@ -217,26 +159,21 @@ public class UsersDAO extends DBContext {
             ps.setString(6, status);
             ps.setInt(7, userId);
             ps.executeUpdate();
-
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
 
     public void register(String name, String email, String phone, String address, String password, int role) {
-        String sql = "INSERT INTO Users (FullName, Email, Phone, Password, Role, Address) "
-                + "VALUES (?, ?, ?, ?, ?, ?)";
-
+        String sql = "INSERT INTO Users (FullName, Email, Phone, Password, Role, Address) VALUES (?, ?, ?, ?, ?, ?)";
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
-
             ps.setString(1, name);
             ps.setString(2, email);
             ps.setString(3, phone);
             ps.setString(4, hashMD5(password));
             ps.setInt(5, role);
             ps.setString(6, address);
-
             ps.executeUpdate();
             ps.close();
         } catch (Exception e) {
@@ -245,69 +182,64 @@ public class UsersDAO extends DBContext {
     }
 
     public void deleteUser(int userId) {
-        String sql = "DELETE FROM Users\n"
-                + "WHERE UserID = ?;";
-        
+        String sql = "DELETE FROM Users WHERE UserID = ?";
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
-
             ps.setInt(1, userId);
-            
-
             ps.executeUpdate();
             ps.close();
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
-<<<<<<< Updated upstream
 
+    // --- Giữ lại từ upstream: Lấy tất cả Sales ---
     public List<Sale> getAllSales() {
         String sql = "SELECT * FROM Sales";
         List<Sale> list = new ArrayList<>();
-=======
-    
-    
-    
-   //của thịnh lấy tất cả shipper
-    public List<Users> getAllShippers() {
-        String sql = "select * from Users\n" 
-                     +"where Role = 3";
-        List<Users> list = new ArrayList<>();
->>>>>>> Stashed changes
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-<<<<<<< Updated upstream
                 int saleID = rs.getInt("SaleID");
                 int orderID = rs.getInt("OrderID");
-                int staffID = rs.getInt("StaffID");             
+                int staffID = rs.getInt("StaffID");
                 Timestamp createdAtTimestamp = rs.getTimestamp("CreatedAt");
                 LocalDateTime createdAt = (createdAtTimestamp != null)
                         ? createdAtTimestamp.toLocalDateTime()
                         : null;
                 int shipperID = rs.getInt("ShipperID");
                 list.add(new Sale(saleID, shipperID, staffID, orderID, createdAt));
-=======
-                int id = rs.getInt("UserID");
-                String fullName = rs.getString("FullName");             
-                String phone = rs.getString("Phone");
-              
-                list.add(new Users(id, fullName,  phone));
->>>>>>> Stashed changes
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
         return list;
     }
-<<<<<<< Updated upstream
-=======
-    
-        public static void main(String[] args) {
-            UsersDAO dao = new UsersDAO();
-System.out.println("\n--- Test getAllShippers ---");
+
+    // --- Của Thịnh: Lấy tất cả shipper ---
+    public List<Users> getAllShippers() {
+        String sql = "SELECT * FROM Users WHERE Role = 3";
+        List<Users> list = new ArrayList<>();
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                int id = rs.getInt("UserID");
+                String fullName = rs.getString("FullName");
+                String phone = rs.getString("Phone");
+                list.add(new Users(id, fullName, phone));
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return list;
+    }
+
+    // --- Test ---
+    public static void main(String[] args) {
+        UsersDAO dao = new UsersDAO();
+        System.out.println("\n--- Test getAllShippers ---");
         List<Users> shippers = dao.getAllShippers();
 
         if (shippers != null && !shippers.isEmpty()) {
@@ -317,9 +249,6 @@ System.out.println("\n--- Test getAllShippers ---");
             }
         } else {
             System.out.println("❌ No shippers found!");
-        
-
-   }
         }
->>>>>>> Stashed changes
+    }
 }

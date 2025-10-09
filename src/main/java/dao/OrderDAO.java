@@ -62,33 +62,7 @@ public class OrderDAO extends DBContext {
         return order;
     }
     
-    public List<Order> getAllOrders(){
-        String sql = "Select * from Orders";
-        List<Order> list = new ArrayList<>();
-        try {
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                int oid = rs.getInt("OrderID");
-                int uid = rs.getInt("UserID");
-                Timestamp orderDateTimestamp = rs.getTimestamp("OrderDate");
-                LocalDateTime orderDate = (orderDateTimestamp != null)
-                        ? orderDateTimestamp.toLocalDateTime()
-                        : null;
-                String status = rs.getString("Status");
-                String paymentMethod = rs.getString("PaymentMethod");
-                String address = rs.getString("ShippingAddress");
-                double totalAmount = rs.getDouble("TotalAmount");               
-                boolean isInstalment = rs.getBoolean("IsInstalment");
-                list.add(new Order(oid, uid, paymentMethod, address, totalAmount, status, orderDate, isInstalment));
-            }
 
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-
-        return list;
-    }
     
     // Lấy tất cả đơn hàng
     public List<Order> getAllOrders() {
@@ -166,7 +140,7 @@ public class OrderDAO extends DBContext {
                     BigDecimal total = rs.getBigDecimal("TotalAmount");
                     Timestamp orderDate = rs.getTimestamp("OrderDate");
                     String status = rs.getString("Status");
-                    Order o = new Order(rs.getInt("OrderID"), buyer, shipper, address, total.doubleValue(), orderDate.toLocalDateTime().toLocalDate(), status);
+                    Order o = new Order(rs.getInt("OrderID"), buyer, shipper, address, total.doubleValue(), orderDate.toLocalDateTime(), status);
                     orders.add(o);
                 }
 
@@ -307,7 +281,6 @@ public class OrderDAO extends DBContext {
         }
     }
 
-<<<<<<< Updated upstream
     public List<OrderDetails> getAllOrderDetailByOrderID(int oid) {
         String sql = "Select * from OrderDetails where OrderID = ?";
         List<OrderDetails> list = new ArrayList<>();
@@ -336,6 +309,6 @@ public class OrderDAO extends DBContext {
 
         return list;
     }
-=======
->>>>>>> Stashed changes
+
+
 }

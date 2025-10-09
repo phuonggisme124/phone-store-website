@@ -50,6 +50,11 @@ public class Products {
         this.createdAt = createdAt;
         this.variants = variants;
     }
+    
+    public Products(int productID, String name) {
+        this.productID = productID;
+        this.name = name;
+    }
 
     public List<Variants> getVariants() {
         return variants;

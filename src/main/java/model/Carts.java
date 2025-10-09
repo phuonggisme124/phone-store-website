@@ -6,6 +6,8 @@ package model;
 
 import java.sql.Date;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -14,18 +16,31 @@ import java.time.LocalDateTime;
 public class Carts {
 
     private int cartID;          // CartID từ SQL
-    private Users userID;          // UserID, nếu chỉ lưu ID
+    private int userID;          // UserID, nếu chỉ lưu ID
     private Date createdAt;  // CreatedAt
-
+    private List<CartItems> listCartItems;
     public Carts() {
     }
 
-    public Carts(int cartID, Users userID, Date createdAt) {
+    public Carts(int cartID, int userID, Date createdAt) {
         this.cartID = cartID;
         this.userID = userID;
         this.createdAt = createdAt;
     }
+    
+     public Carts(int cartID, int userID) {
+        this.cartID = cartID;
+        this.userID = userID;
+        listCartItems = new ArrayList<>();
+    }
 
+    public List<CartItems> getListCartItems() {
+        return this.listCartItems;
+    }
+
+    public void setListCartItems(CartItems item) {
+        this.listCartItems.add(item);
+    }
   
     public int getCartID() {
         return cartID;
@@ -35,11 +50,11 @@ public class Carts {
         this.cartID = cartID;
     }
 
-    public Users getUserID() {
+    public int getUserID() {
         return userID;
     }
 
-    public void setUserID(Users userID) {
+    public void setUserID(int userID) {
         this.userID = userID;
     }
 
@@ -50,7 +65,7 @@ public class Carts {
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
     }
-
+    
   
 
     @Override
