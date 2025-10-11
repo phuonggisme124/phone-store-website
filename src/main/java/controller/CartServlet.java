@@ -15,6 +15,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import model.Variants;
 
 /**
+ * CartServlet handles HTTP requests related to the shopping cart feature.
  *
  * @author duynu
  */
@@ -59,7 +60,7 @@ public class CartServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
     }
 
     /**
