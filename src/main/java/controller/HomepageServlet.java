@@ -51,7 +51,14 @@ public class HomepageServlet extends HttpServlet {
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
-     * Handles the HTTP <code>GET</code> method.
+     * Handles the HTTP <code>GET</code> method
+     *
+     * Workflow:
+     * 1. Create a ProductDAO instance to access data from the database.
+     * 2. Retrieve the newest products list.
+     * 3. Retrieve all product categories.
+     * 4. Set these lists as request attributes.
+     * 5. Forward the request to homepage.jsp for rendering..
      *
      * @param request servlet request
      * @param response servlet response
@@ -61,11 +68,20 @@ public class HomepageServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        // Create DAO object for database operations
         ProductDAO dao = new ProductDAO();
+
+        // Retrieve the newest products from the database
         List<Products> productList = dao.getNewestProduct();
+
+        // Retrieve all categories from the database
         List<Category> listCategory = dao.getAllCategory();
+
+        // Store data in request attributes for access in JSP
         request.setAttribute("productList", productList);
         request.setAttribute("listCategory", listCategory);
+
+        // Forward the request to the homepage.jsp view
         request.getRequestDispatcher("homepage.jsp").forward(request, response);
     }
 

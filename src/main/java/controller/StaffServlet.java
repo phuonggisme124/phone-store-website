@@ -83,54 +83,102 @@ public class StaffServlet extends HttpServlet {
             action = "manageProduct";
         }
 
+        // =====================================================
+        // Case 1: Staff manages orders
+        // =====================================================
         if (action.equals("manageOrder")) {
+
+            // Get all available shippers for assignment
             List<Users> shippers = udao.getAllShippers();
 
+            // Get all orders that staff can manage
             List<Order> listOrders = odao.getAllOrderForStaff();
+
+            // Pass data to JSP
             request.setAttribute("listOrders", listOrders);
             request.setAttribute("listShippers", shippers);
+
+            // Forward request to the staff order management page
             request.getRequestDispatcher("dashboard_staff_manageorder.jsp").forward(request, response);
 
+            // =====================================================
+            // Case 2: Staff manages products
+            // =====================================================
         } else if (action.equals("manageProduct")) {
+
+            // Retrieve all product-related data
             List<Products> listProducts = pdao.getAllProduct();
             List<Category> listCategory = ctdao.getAllCategories();
             List<Suppliers> listSupplier = sldao.getAllSupplier();
+
+            // Set data as attributes for JSP
             request.setAttribute("listProducts", listProducts);
             request.setAttribute("listCategory", listCategory);
             request.setAttribute("listSupplier", listSupplier);
+
+            // Forward to the product management dashboard
             request.getRequestDispatcher("dashboard_staff_manageproduct.jsp").forward(request, response);
 
+            // =====================================================
+            // Case 3: View details of a specific product
+            // =====================================================
         } else if (action.equals("productDetail")) {
+
+            // Get product ID from request
             int id = Integer.parseInt(request.getParameter("id"));
+
+            // Retrieve all variants of the product
             List<Variants> listVariants = vdao.getAllVariantByProductID(id);
+
+            // Get all products for reference
             List<Products> listProducts = pdao.getAllProduct();
 
+            // Attach data to request
             request.setAttribute("listProducts", listProducts);
             request.setAttribute("listVariants", listVariants);
 
+            // Forward to the product detail management page
             request.getRequestDispatcher("staff_manageproduct_detail.jsp").forward(request, response);
+
+            // =====================================================
+            // Case 4: Display available shippers for a specific order
+            // =====================================================
         } else if (action.equals("chooseShipper")) {
+
+            // Get order ID from request
             int orderID = Integer.parseInt(request.getParameter("orderID"));
-            // Lấy danh sách shipper từ DB
+
+            // Retrieve list of shippers
             List<Users> shippers = udao.getAllShippers();
 
+            // Set data for the JSP
             request.setAttribute("orderID", orderID);
             request.setAttribute("listShippers", shippers);
+
+            // Forward to the order management dashboard with shipper selection
             request.getRequestDispatcher("dashboard_staff_manageorder.jsp").forward(request, response);
-        }else if (action.equals("assignShipper")) {
+
+            // =====================================================
+            // Case 5: Assign a shipper to an order
+            // =====================================================
+        } else if (action.equals("assignShipper")) {
+
+            // Parse order and user data from request
             int orderID = Integer.parseInt(request.getParameter("orderID"));
             int shipperID = Integer.parseInt(request.getParameter("shipperID"));
-            int StaffID =  Integer.parseInt(request.getParameter("staffID"));   
-            sdao.assignShipperForOrder(orderID,StaffID , shipperID);
+            int StaffID = Integer.parseInt(request.getParameter("staffID"));
+
+            // Assign the selected shipper to the order
+            sdao.assignShipperForOrder(orderID, StaffID, shipperID);
+
+            // Reload the order list after assignment
             List<Order> listOrders = odao.getAllOrderForStaff();
             request.setAttribute("listOrders", listOrders);
+
+            // Redirect to manage order page
             action = "manageOrder";
             request.getRequestDispatcher("dashboard_staff_manageorder.jsp").forward(request, response);
         }
-
-        
-        
-        
     }
 
     /**

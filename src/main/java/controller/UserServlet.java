@@ -61,7 +61,7 @@ public class UserServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         UsersDAO udao = new UsersDAO();
-        
+
     }
 
     /**

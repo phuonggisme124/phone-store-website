@@ -6,25 +6,28 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-// Đã xóa import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession; // Thêm import cho HttpSession
+import jakarta.servlet.http.HttpSession; // Added import for HttpSession
 import model.Users;
 
 /**
+ * Servlet that handles user registration and automatic login using session.
  *
- * @author ADMIN
+ * Author: ADMIN
  */
 @WebServlet(name = "RegisterServlet", urlPatterns = {"/register"})
 public class RegisterServlet extends HttpServlet {
 
+    /**
+     * Default method to generate a simple HTML response (for debugging only).
+     */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
+            /* Example HTML output */
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
@@ -37,17 +40,24 @@ public class RegisterServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Handles HTTP GET requests (not used for registration, only for testing).
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
     }
 
+    /**
+     * Handles HTTP POST requests for user registration.
+     * Validates form data, registers a new user, and automatically logs them in.
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
-        // Lấy dữ liệu từ form
+        // Retrieve form data
         String name = request.getParameter("fullname");
         String email = request.getParameter("email");
         String numberPhone = request.getParameter("numberphone");
@@ -55,72 +65,76 @@ public class RegisterServlet extends HttpServlet {
         String password = request.getParameter("password");
         String rePassword = request.getParameter("rePassword");
         
-        // --- Logic kiểm tra đầu vào ---
-        
-        // 1. Check password and rePassword match
+        // --- Input validation logic ---
+
+        // 1. Check if passwords match and are not empty
         if (!password.equals(rePassword) || password.isEmpty() || password == null) {
-            request.setAttribute("error", "Password do not match or cannot be empty!");
+            request.setAttribute("error", "Passwords do not match or cannot be empty!");
             request.getRequestDispatcher("login.jsp").forward(request, response);
-            return; // Dừng lại sau khi chuyển tiếp
+            return; // Stop further processing
         }
         
-        // 2. Check required fields
+        // 2. Check if all required fields are filled
         if (name == null || name.isEmpty() || email == null || email.trim().isEmpty() || 
             numberPhone == null || numberPhone.isEmpty() || address == null || address.isEmpty()) {
             request.setAttribute("error", "You must fill in all required fields to register.");
             RequestDispatcher dispatcher = request.getRequestDispatcher("login.jsp");
             dispatcher.forward(request, response);
-            return; // Dừng lại sau khi chuyển tiếp
+            return; // Stop further processing
         }
         
-        // --- Logic Đăng ký và Xử lý kết quả ---
+        // --- Registration logic and result handling ---
         
         UsersDAO dao = new UsersDAO();
         Users u = null;
         try {
-             // Giả định phương thức register trong UsersDAO sẽ trả về đối tượng Users nếu thành công
-             u = dao.register(name, email, numberPhone, address, password);
+            // The register() method is assumed to return a Users object if successful
+            u = dao.register(name, email, numberPhone, address, password);
         } catch (Exception e) {
-            // Đây thường là lỗi Email đã tồn tại hoặc lỗi CSDL
+            // Common causes: duplicate email or database error
             System.out.println("Registration error: " + e.getMessage());
             request.setAttribute("error", "Registration failed. This email may already be in use.");
             request.getRequestDispatcher("login.jsp").forward(request, response);
             return;
         }
 
-        if (u != null) { // Đăng ký thành công
-            
+        if (u != null) { 
+            // Registration successful
+
             // =========================================================
-            // A. GÁN DỮ LIỆU VÀO SESSION (TỰ ĐỘNG ĐĂNG NHẬP) 🚀
+            // A. STORE USER DATA IN SESSION (AUTO LOGIN) 🚀
             // =========================================================
-            HttpSession session = request.getSession(); // Lấy hoặc tạo Session mới
+            HttpSession session = request.getSession(); // Create or get existing session
             
-            // Lưu toàn bộ đối tượng User (phương pháp tốt nhất)
+            // Store the full user object (recommended approach)
             session.setAttribute("user", u);
             
-            // Lưu các thông tin cá nhân quan trọng vào Session
+            // Optionally store important user info
             session.setAttribute("email", u.getEmail());
-            // Giả sử Users class có phương thức getId()
-            // session.setAttribute("id_user", u.getId()); 
+            // Example: session.setAttribute("id_user", u.getId());
 
-            String roleValue = (u.getRole() != null) ? u.getRole().toString() : "1"; // Mặc định role là 1 (người dùng)
-            session.setAttribute("role", roleValue); 
+            // Set default role = 1 if null
+            String roleValue = (u.getRole() != null) ? u.getRole().toString() : "1";
+            session.setAttribute("role", roleValue);
 
-            // Loại bỏ logic Cookie đã cũ
-            
-            // Bước 4: Chuyển hướng đến trang chủ
+            // Old cookie-based logic removed
+
+            // Redirect to homepage after successful registration
             response.sendRedirect("homepage.jsp");
 
         } else {
-            // Đăng ký thất bại (Lỗi không xác định hoặc DAO trả về null)
+            // Registration failed (null returned from DAO)
             request.setAttribute("error", "Registration failed due to an unexpected error.");
             RequestDispatcher dispatcher = request.getRequestDispatcher("login.jsp");
             dispatcher.forward(request, response);
         }
     }
 
+    /**
+     * Returns a brief description of this servlet.
+     */
     @Override
     public String getServletInfo() {
-        return "Handles user registration and subsequent automatic login using Session.";
+        return "Handles user registration and automatic login using Session.";
     }
 }

@@ -7,28 +7,40 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Data Access Object cho đối tượng Category, thực hiện các thao tác
- * với bảng Category trong cơ sở dữ liệu.
+ * Data Access Object (DAO) class for handling operations related to the
+ * Category entity in the database.
+ * 
+ * This class provides methods for performing CRUD (Create, Read, Update, Delete)
+ * operations on the "Category" table using JDBC.
+ * 
+ * Author: ADMIN
  */
 public class CategoryDAO extends DBContext {
 
+    // Default constructor that calls the superclass DBContext to initialize DB connection
     public CategoryDAO() {
         super();
     }
-    
-    
 
-    // Helper method để ánh xạ ResultSet sang đối tượng Category
+    /**
+     * Helper method that maps a single ResultSet row to a Category object.
+     * 
+     * @param rs The ResultSet returned from executing a SQL query
+     * @return Category object created from the current ResultSet row
+     * @throws SQLException if a database access error occurs
+     */
     private Category mapResultSetToCategory(ResultSet rs) throws SQLException {
         int id = rs.getInt("CategoryID");
         String name = rs.getString("CategoryName");
-        String description = rs.getString("Description"); // Có thể là null
+        String description = rs.getString("Description"); // May be null if not provided
 
-        // Description có thể null, rs.getString() tự động trả về null nếu giá trị CSDL là NULL
+        // If the value in the database is NULL, rs.getString() automatically returns null
         return new Category(id, name, description);
     }
 
-    // --- Phương thức 1: Lấy tất cả Categories ---
+    // ==============================================================
+    // Method 1: Retrieve all categories from the database
+    // ==============================================================
     public List<Category> getAllCategories() {
         List<Category> categories = new ArrayList<>();
         String sql = "SELECT CategoryID, CategoryName, Description FROM Categories";
@@ -36,6 +48,7 @@ public class CategoryDAO extends DBContext {
         try (PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
             
+            // Iterate through the result set and map each row to a Category object
             while (rs.next()) {
                 categories.add(mapResultSetToCategory(rs));
             }
@@ -46,7 +59,9 @@ public class CategoryDAO extends DBContext {
         return categories;
     }
 
-    // --- Phương thức 2: Lấy Category theo ID ---
+    // ==============================================================
+    // Method 2: Retrieve a category by its ID
+    // ==============================================================
     public Category getCategoryById(int id) {
         Category category = null;
         String sql = "SELECT CategoryID, CategoryName, Description FROM Category WHERE CategoryID = ?";
@@ -54,6 +69,7 @@ public class CategoryDAO extends DBContext {
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
             try (ResultSet rs = stmt.executeQuery()) {
+                // If the record exists, map it to a Category object
                 if (rs.next()) {
                     category = mapResultSetToCategory(rs);
                 }
@@ -65,20 +81,22 @@ public class CategoryDAO extends DBContext {
         return category;
     }
 
-    // --- Phương thức 3: Thêm Category mới ---
+    // ==============================================================
+    // Method 3: Create a new category in the database
+    // ==============================================================
     public boolean createCategory(Category category) {
-        // Giả định CategoryID là IDENTITY (tự tăng) trong CSDL.
-        // Nếu không, bạn cần thêm CategoryID vào câu lệnh SQL và setInt() cho nó.
+        // Assumes CategoryID is auto-increment (IDENTITY) in the database.
+        // If not, add CategoryID to the SQL and set it manually.
         String sql = "INSERT INTO Category (CategoryName, Description) VALUES (?, ?)";
         
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, category.getCategoryName());
             
-            // Xử lý trường Description có thể null
+            // Handle null description value
             if (category.getDescription() != null) {
                 stmt.setString(2, category.getDescription());
             } else {
-                stmt.setNull(2, Types.NVARCHAR); // hoặc Types.VARCHAR tùy thuộc vào driver
+                stmt.setNull(2, Types.NVARCHAR); // Or Types.VARCHAR depending on the DB driver
             }
             
             int rowsAffected = stmt.executeUpdate();
@@ -90,14 +108,16 @@ public class CategoryDAO extends DBContext {
         }
     }
 
-    // --- Phương thức 4: Cập nhật Category hiện có ---
+    // ==============================================================
+    // Method 4: Update an existing category
+    // ==============================================================
     public boolean updateCategory(Category category) {
         String sql = "UPDATE Category SET CategoryName = ?, Description = ? WHERE CategoryID = ?";
         
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, category.getCategoryName());
             
-            // Xử lý trường Description có thể null
+            // Handle possible null description
             if (category.getDescription() != null) {
                 stmt.setString(2, category.getDescription());
             } else {
@@ -115,7 +135,9 @@ public class CategoryDAO extends DBContext {
         }
     }
 
-    // --- Phương thức 5: Xóa Category theo ID ---
+    // ==============================================================
+    // Method 5: Delete a category by its ID
+    // ==============================================================
     public boolean deleteCategory(int id) {
         String sql = "DELETE FROM Category WHERE CategoryID = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -129,11 +151,14 @@ public class CategoryDAO extends DBContext {
         }
     }
     
-    // --- Main Method (Để kiểm tra) ---
+    // ==============================================================
+    // Main method for testing database functionality
+    // ==============================================================
     public static void main(String[] args) {
         CategoryDAO dao = new CategoryDAO();
         System.out.println("--- All Categories ---");
         List<Category> list = dao.getAllCategories();
+
         if (list.isEmpty()) {
             System.out.println("No data.");
         } else {

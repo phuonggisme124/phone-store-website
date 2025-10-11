@@ -48,21 +48,34 @@ public class CartDAO extends DBContext {
 //        }
 //        return cart.getListCartItems();
 //    }
+    /**
+     * Inserts a new product variant into the user's shopping cart.
+     *
+     * @param userID The ID of the user (also used as CartID)
+     * @param variantID The ID of the product variant being added
+     * @param quantity The number of units to be added
+     */
     public void addNewProductToCart(int userID, int variantID, int quantity) {
+        // SQL command to insert a new item into the CartItems table
         String sql = "INSERT INTO CartItems (CartID, VariantID, Quantity) VALUES (?, ?, ?)";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, userID);    // vì CartID = userID
+            // Bind parameters to the SQL statement
+            stmt.setInt(1, userID);    // In this design, CartID = userID
             stmt.setInt(2, variantID);
             stmt.setInt(3, quantity);
 
+            // Execute the SQL command
             int rows = stmt.executeUpdate();
+
+            // Print success or failure message
             if (rows > 0) {
                 System.out.println("Added product " + variantID + " to cart of user " + userID);
             } else {
                 System.out.println("Failed to add product to cart.");
             }
         } catch (SQLException e) {
+            // Log error if something goes wrong during the database operation
             System.err.println("Error adding product to cart: " + e.getMessage());
         }
     }

@@ -18,26 +18,24 @@ import model.Variants;
 import utils.DBContext;
 
 /**
- *
+ * This servlet handles variant-related requests from the client.
+ * It connects to the database using DBContext, retrieves all product variants
+ * from the VariantsDAO, and forwards the data to the JSP for rendering.
+ * 
  * @author USER
  */
 @WebServlet(name = "VariantsServlet", urlPatterns = {"/variants"})
 public class VariantsServlet extends HttpServlet {
 
     /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * Default process method for both GET and POST requests.
+     * This is usually used as a placeholder for testing purposes.
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
+            /* Basic HTML output for quick servlet testing */
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
@@ -50,46 +48,51 @@ public class VariantsServlet extends HttpServlet {
         }
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods.">
     /**
-     * Handles the HTTP <code>GET</code> method.
+     * Handles HTTP GET requests.
+     * Retrieves all product variants from the database and forwards them to homepage.jsp.
      *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @param request  HTTP request object
+     * @param response HTTP response object
+     * @throws ServletException if servlet-specific error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            // Lấy connection từ DBContext
+            // Create a DBContext instance to establish a database connection
             DBContext db = new DBContext();
             Connection conn = db.conn;
 
-            // Tạo DAO và lấy danh sách variants
-            VariantsDAO dao = new VariantsDAO(); // Nếu DAO version của bạn dùng Connection
+            // Create DAO instance for Variants operations
+            VariantsDAO dao = new VariantsDAO(); // Uses DAO to fetch data from DB
+
+            // Retrieve all product variants
             List<Variants> variants = dao.getAllVariants();
 
-            // Gửi dữ liệu sang JSP
+            // Attach the retrieved variants list to the request object
             request.setAttribute("variants", variants);
 
-            // Chuyển hướng tới homepage.jsp
+            // Forward the request and response to homepage.jsp for display
             request.getRequestDispatcher("homepage.jsp").forward(request, response);
 
         } catch (Exception e) {
+            // Print stack trace for debugging and send error message to client
             e.printStackTrace();
-            response.getWriter().println("Lỗi khi tải dữ liệu sản phẩm: " + e.getMessage());
+            response.getWriter().println("Error loading product data: " + e.getMessage());
         }
     }
 
     /**
-     * Handles the HTTP <code>POST</code> method.
+     * Handles HTTP POST requests.
+     * Forwards POST requests to processRequest (default behavior for testing).
      *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @param request  HTTP request object
+     * @param response HTTP response object
+     * @throws ServletException if servlet-specific error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

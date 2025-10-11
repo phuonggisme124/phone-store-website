@@ -13,59 +13,73 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author nguyen quoc thinh - 5/6/2025
+ * @author Nguyen Quoc Thinh
+ * @since 2025-06-05
  */
-// class mô tả dữ liệu
+/**
+ * DBContext class is responsible for establishing a connection
+ * to the SQL Server database "PhoneStore".
+ *
+ * @author Nguyen Quoc Thinh
+ * @since 2025-06-05
+ */
 public class DBContext {
-    //kết nối database
-    //protected thì class truy cập trực tiếp ko cân set get
 
+    /**
+     * The Connection object represents the connection to the database.
+     * It is public so that other classes can access the connection directly.
+     */
     public Connection conn = null;
 
+    /**
+     *
+     * Default constructor for DBContext.
+     *
+     */
     public DBContext() {
-
         try {
-            // Nạp driver JDBC cho SQL Server.
+            // Load JDBC driver for SQL Server
             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-            // Chuỗi kết nối đến database.
+
+            // Connection URL to the database
             String dbURL = "jdbc:sqlserver://localhost:1433;"
                     + "databaseName=PhoneStore;"
                     + "user=sa;"
                     + "password=123456;"
                     + "encrypt=true;trustServerCertificate=true;";
-            // Tạo kết nối.
+
+            // Establish the connection
             conn = DriverManager.getConnection(dbURL);
-//nếu knối tahnhf công
+
+            // If connection is successful, print metadata
             if (conn != null) {
-// Lấy metadata về kết nối (thông tin driver, database) và in ra màn hình.
                 DatabaseMetaData dm = conn.getMetaData();
-               
+
                 System.out.println("Driver name: " + dm.getDriverName());
-
                 System.out.println("Driver version: " + dm.getDriverVersion());
-
-                System.out.println("Product name: "
-                        + dm.getDatabaseProductName());
-
-                System.out.println("Product version: "
-                        + dm.getDatabaseProductVersion());
-
+                System.out.println("Product name: " + dm.getDatabaseProductName());
+                System.out.println("Product version: " + dm.getDatabaseProductVersion());
             }
 
         } catch (SQLException ex) {
-//nếu sql lỗi thì ....
- Logger.getLogger(DBContext.class.getName()).log(Level.SEVERE, null, ex);
-    ex.printStackTrace(); // IN LỖI RA CONSOLE
-        } catch (ClassNotFoundException ex) {
-//nếu driver lỗi thì ...
+            // Handle SQL exceptions
             Logger.getLogger(DBContext.class.getName()).log(Level.SEVERE, null, ex);
-
+            ex.printStackTrace(); // print stack trace to console
+        } catch (ClassNotFoundException ex) {
+            // Handle driver class not found exceptions
+            Logger.getLogger(DBContext.class.getName()).log(Level.SEVERE, null, ex);
         }
-
     }
-     // main test file 
+
+    /**
+     * Main method to test the database connection.
+     * It creates an instance of DBContext and prints
+     * the connection metadata to the console.
+     *
+     * @param args command-line arguments (not used)
+     */
     public static void main(String[] args) {
-        System.out.println("kiểm tra kết nối database");
-        new DBContext(); 
+        System.out.println("Checking database connection...");
+        new DBContext();
     }
 }

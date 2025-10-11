@@ -24,18 +24,22 @@ import model.Variants;
 public class test {
 
     public static void main(String[] args) {
+        // Create a VariantsDAO instance to access the database
         VariantsDAO dao = new VariantsDAO();
 
-        // 👉 Nhập sẵn dữ liệu để test (đúng với database của Đại Ca nha)
+        // Predefined test data 
         int productID = 3;
         String storage = "128GB";
         String color = "blue";
 
+        // Fetch all variants with the given product ID and storage capacity
         List<Variants> vr = dao.getAllVariantByStorage(productID, storage);
 
+        // Check if the retrieved list is not null and not empty
         if (vr != null && !vr.isEmpty()) {
+            // Loop through each variant and print its details to the console
             for (Variants v : vr) {
-                System.out.println("✅ Variant found!--------");
+                System.out.println("Variant found!--------");
                 System.out.println("Variant ID: " + v.getVariantID());
                 System.out.println("Product ID: " + v.getProductID());
                 System.out.println("Color: " + v.getColor());
@@ -48,7 +52,8 @@ public class test {
             }
 
         } else {
-            System.out.println("❌ Không tìm thấy variant phù hợp!");
+            // If no variant matches the search conditions
+            System.out.println("No matching variant found!");
         }
 
     }

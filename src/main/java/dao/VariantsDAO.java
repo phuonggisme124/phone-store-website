@@ -4,38 +4,44 @@
  */
 package dao;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import model.Variants;
-
-import model.Products;
 import model.Promotions;
-import model.Users;
-
 import model.Variants;
 import utils.DBContext;
 
 /**
- *
- * @author USER
+ * Data Access Object (DAO) class responsible for handling database operations
+ * related to Variants table.
+ * This class provides CRUD operations and utility methods to fetch, insert,
+ * update, or delete variant data.
  */
 public class VariantsDAO extends DBContext {
 
+    /**
+     * Default constructor that calls the superclass constructor.
+     */
     public VariantsDAO() {
         super();
     }
 
+    /**
+     * Retrieves all variants from the database.
+     * 
+     * @return List of all Variants.
+     * @throws SQLException if any SQL error occurs.
+     */
     public List<Variants> getAllVariants() throws SQLException {
         List<Variants> list = new ArrayList<>();
         String sql = "SELECT * FROM variants";
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
+
+            // Iterate through each record in the result set
             while (rs.next()) {
                 int variantID = rs.getInt("VariantID");
                 int productID = rs.getInt("ProductID");
@@ -43,7 +49,7 @@ public class VariantsDAO extends DBContext {
                 String storage = rs.getString("Storage");
                 double price = rs.getDouble("Price");
 
-                // Kiểm tra DiscountPrice có null không
+                // Handle possible null value in DiscountPrice column
                 Double discountPrice = (rs.getObject("DiscountPrice") != null)
                         ? rs.getDouble("DiscountPrice")
                         : null;
@@ -70,13 +76,18 @@ public class VariantsDAO extends DBContext {
         return list;
     }
 
+    /**
+     * Retrieves all variants.
+     * 
+     * @return List of Variants objects.
+     */
     public List<Variants> getAllVariant() {
         String sql = "Select * from Variants";
         List<Variants> list = new ArrayList<>();
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
-
             ResultSet rs = ps.executeQuery();
+
             while (rs.next()) {
                 int variantId = rs.getInt("VariantID");
                 int productID = rs.getInt("ProductID");
@@ -89,24 +100,27 @@ public class VariantsDAO extends DBContext {
                 String img = rs.getString("ImageURL");
 
                 list.add(new Variants(variantId, productID, color, storage, price, discountPrice, stock, description, img));
-
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-
         return list;
     }
 
+    /**
+     * Retrieves all variants that belong to a specific product.
+     * 
+     * @param id Product ID.
+     * @return List of Variants belonging to that product.
+     */
     public List<Variants> getAllVariantByProductID(int id) {
-
         String sql = "Select * from Variants where ProductID = ?";
         List<Variants> list = new ArrayList<>();
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
-
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
+
             while (rs.next()) {
                 int variantId = rs.getInt("VariantID");
                 int productID = rs.getInt("ProductID");
@@ -119,22 +133,24 @@ public class VariantsDAO extends DBContext {
                 String img = rs.getString("ImageURL");
 
                 list.add(new Variants(variantId, productID, color, storage, price, discountPrice, stock, description, img));
-
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-
         return list;
     }
 
+    /**
+     * Retrieves a single variant by its ID.
+     * 
+     * @param id Variant ID.
+     * @return Variant object if found, otherwise null.
+     */
     public Variants getVariantByID(int id) {
         String sql = "SELECT * FROM Variants where VariantID = ?";
-
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setInt(1, id);
-
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
@@ -147,7 +163,7 @@ public class VariantsDAO extends DBContext {
                 int stock = rs.getInt("Stock");
                 String description = rs.getString("Description");
                 String img = rs.getString("ImageURL");
-                return (new Variants(variantId, productID, color, storage, price, discountPrice, stock, description, img));
+                return new Variants(variantId, productID, color, storage, price, discountPrice, stock, description, img);
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -155,16 +171,19 @@ public class VariantsDAO extends DBContext {
         return null;
     }
 
+    /**
+     * Updates a variant's details.
+     * 
+     * @param vID          Variant ID.
+     * @param color        Color value.
+     * @param storage      Storage value.
+     * @param price        Price value.
+     * @param stock        Stock quantity.
+     * @param description  Description text.
+     * @param img          Image URL.
+     */
     public void updateVariant(int vID, String color, String storage, double price, int stock, String description, String img) {
-        String sql = "UPDATE Variants\n"
-                + "SET Color = ?,\n"
-                + "    Storage = ?,\n"
-                + "    Price = ?,\n"
-                + "	Stock = ?,\n"
-                + "	Description = ?,\n"
-                + "    ImageURL = ?\n"
-                + "WHERE VariantID = ?;";
-
+        String sql = "UPDATE Variants SET Color = ?, Storage = ?, Price = ?, Stock = ?, Description = ?, ImageURL = ? WHERE VariantID = ?";
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, color);
@@ -175,46 +194,51 @@ public class VariantsDAO extends DBContext {
             ps.setString(6, img);
             ps.setInt(7, vID);
             ps.executeUpdate();
-
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
 
+    /**
+     * Updates the discount price for a variant.
+     * 
+     * @param variantID      Variant ID.
+     * @param discountPrice  Discounted price value.
+     */
     public void discountPrice(int variantID, double discountPrice) {
-        String sql = "UPDATE Variants\n"
-                + "SET DiscountPrice = ?\n"
-                + "WHERE VariantID = ?;";
-
+        String sql = "UPDATE Variants SET DiscountPrice = ? WHERE VariantID = ?";
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
-
             ps.setDouble(1, discountPrice);
             ps.setInt(2, variantID);
             ps.executeUpdate();
-
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
 
+    /**
+     * Inserts a new variant record into the database.
+     * 
+     * @param pID          Product ID.
+     * @param color        Color value.
+     * @param storage      Storage value.
+     * @param price        Price value.
+     * @param stock        Stock quantity.
+     * @param description  Description text.
+     * @param img          Image URL.
+     */
     public void createVariant(int pID, String color, String storage, double price, int stock, String description, String img) {
-        String sql = "INSERT INTO Variants (ProductID, Color, Storage, Price, Stock, Description, ImageURL) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?)";
-
+        String sql = "INSERT INTO Variants (ProductID, Color, Storage, Price, Stock, Description, ImageURL) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
-
             ps.setInt(1, pID);
             ps.setString(2, color);
             ps.setString(3, storage);
-
             ps.setDouble(4, price);
-
             ps.setInt(5, stock);
             ps.setString(6, description);
             ps.setString(7, img);
-
             ps.executeUpdate();
             ps.close();
         } catch (Exception e) {
@@ -222,15 +246,16 @@ public class VariantsDAO extends DBContext {
         }
     }
 
+    /**
+     * Deletes a variant record by its ID.
+     * 
+     * @param vID Variant ID.
+     */
     public void deleteVariantByID(int vID) {
-        String sql = "DELETE FROM Variants\n"
-                + "WHERE VariantID = ?;";
-
+        String sql = "DELETE FROM Variants WHERE VariantID = ?";
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
-
             ps.setInt(1, vID);
-
             ps.executeUpdate();
             ps.close();
         } catch (Exception e) {
@@ -238,15 +263,16 @@ public class VariantsDAO extends DBContext {
         }
     }
 
+    /**
+     * Deletes all variants related to a specific product.
+     * 
+     * @param pid Product ID.
+     */
     public void deleteVariantByProductID(int pid) {
-        String sql = "DELETE FROM Variants\n"
-                + "WHERE ProductID = ?;";
-
+        String sql = "DELETE FROM Variants WHERE ProductID = ?";
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
-
             ps.setInt(1, pid);
-
             ps.executeUpdate();
             ps.close();
         } catch (Exception e) {
@@ -254,6 +280,10 @@ public class VariantsDAO extends DBContext {
         }
     }
 
+    /**
+     * Updates the discount price for all variants based on active promotions.
+     * If a product has no active promotion, its discount price equals its original price.
+     */
     public void updateDiscountPrice() {
         VariantsDAO vdao = new VariantsDAO();
         PromotionsDAO pmtdao = new PromotionsDAO();
@@ -262,8 +292,10 @@ public class VariantsDAO extends DBContext {
         double percent;
         List<Promotions> listPromotions = pmtdao.getAllPromotion();
         List<Variants> listVariants = vdao.getAllVariant();
+
         for (Variants v : listVariants) {
             boolean hasPromotion = false;
+
             for (Promotions pmt : listPromotions) {
                 if (v.getProductID() == pmt.getProductID() && pmt.getStatus().equals("active")) {
                     double price = v.getPrice();
@@ -275,27 +307,29 @@ public class VariantsDAO extends DBContext {
                 }
             }
 
+            // Reset discount price if no active promotion found
             if (!hasPromotion) {
                 double price = v.getPrice();
-                percent = 0;
-                discountPrice = price - (price * percent);
-                discountPrice(v.getVariantID(), discountPrice);
+                discountPrice(v.getVariantID(), price);
             }
         }
     }
 
+    /**
+     * Retrieves a variant by product ID, storage, and color.
+     * 
+     * @param pID     Product ID.
+     * @param storage Storage value.
+     * @param color   Color value.
+     * @return Variant if found, otherwise null.
+     */
     public Variants getVariant(int pID, String storage, String color) {
-        String sql = "SELECT * FROM Variants \n"
-                + "Where ProductID = ? \n"
-                + "And Storage = ?\n"
-                + "And Color = ?";
-
+        String sql = "SELECT * FROM Variants Where ProductID = ? And Storage = ? And Color = ?";
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setInt(1, pID);
             ps.setString(2, storage);
             ps.setString(3, color);
-
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
@@ -308,7 +342,7 @@ public class VariantsDAO extends DBContext {
                 int stock = rs.getInt("Stock");
                 String description = rs.getString("Description");
                 String img = rs.getString("ImageURL");
-                return (new Variants(variantId, productID, colorV, storageV, price, discountPrice, stock, description, img));
+                return new Variants(variantId, productID, colorV, storageV, price, discountPrice, stock, description, img);
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -316,15 +350,22 @@ public class VariantsDAO extends DBContext {
         return null;
     }
 
+    /**
+     * Retrieves all variants of a specific product filtered by color.
+     * 
+     * @param pID   Product ID.
+     * @param color Color filter.
+     * @return List of Variants matching the filter.
+     */
     public List<Variants> getAllVariantByColor(int pID, String color) {
         String sql = "Select * from Variants where ProductID = ? And Color = ?";
         List<Variants> list = new ArrayList<>();
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
-
             ps.setInt(1, pID);
             ps.setString(2, color);
             ResultSet rs = ps.executeQuery();
+
             while (rs.next()) {
                 int variantId = rs.getInt("VariantID");
                 int productID = rs.getInt("ProductID");
@@ -337,24 +378,29 @@ public class VariantsDAO extends DBContext {
                 String img = rs.getString("ImageURL");
 
                 list.add(new Variants(variantId, productID, colorV, storage, price, discountPrice, stock, description, img));
-
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-
         return list;
     }
 
+    /**
+     * Retrieves all variants of a product filtered by storage.
+     * 
+     * @param pID     Product ID.
+     * @param storage Storage filter.
+     * @return List of Variants matching the storage value.
+     */
     public List<Variants> getAllVariantByStorage(int pID, String storage) {
         String sql = "Select * from Variants where ProductID = ? And Storage = ?";
         List<Variants> list = new ArrayList<>();
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
-
             ps.setInt(1, pID);
             ps.setString(2, storage);
             ResultSet rs = ps.executeQuery();
+
             while (rs.next()) {
                 int variantId = rs.getInt("VariantID");
                 int productID = rs.getInt("ProductID");
@@ -367,60 +413,55 @@ public class VariantsDAO extends DBContext {
                 String img = rs.getString("ImageURL");
 
                 list.add(new Variants(variantId, productID, colorV, storageV, price, discountPrice, stock, description, img));
-
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-
         return list;
     }
 
+    /**
+     * Retrieves all distinct storage options for a specific product.
+     * 
+     * @param pID Product ID.
+     * @return List of unique storage strings.
+     */
     public List<String> getAllStorage(int pID) {
-        String sql = "SELECT DISTINCT Storage\n"
-                + "FROM Variants\n"
-                + "WHERE ProductID = ?";
+        String sql = "SELECT DISTINCT Storage FROM Variants WHERE ProductID = ?";
         List<String> list = new ArrayList<>();
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
-
             ps.setInt(1, pID);
-
             ResultSet rs = ps.executeQuery();
+
             while (rs.next()) {
-                
                 String storage = rs.getString("Storage");
-
                 list.add(storage);
-
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-
         return list;
     }
 
+    /**
+     * Retrieves all variants that belong to a specific category by joining Products, Categories, and Variants tables.
+     * 
+     * @param cID Category ID.
+     * @return List of Variants belonging to the given category.
+     */
     public List<Variants> getAllVariantByCategory(int cID) {
-        String sql = "SELECT \n"
-                + "    v.VariantID,\n"
-                + "    v.ProductID, \n"
-                + "    v.Color,\n"
-                + "    v.Storage,\n"
-                + "    v.Price,\n"
-                + "    v.DiscountPrice,\n"
-                + "    v.Stock,\n"
-                + "	v.Description,\n"
-                + "    v.ImageURL\n"
-                + "FROM Products p\n"
-                + "JOIN Categories c ON p.CategoryID = c.CategoryID\n"
-                + "JOIN Variants v ON p.ProductID = v.ProductID\n"
-                + "WHERE c.CategoryID = ?;";
+        String sql = "SELECT v.VariantID, v.ProductID, v.Color, v.Storage, v.Price, v.DiscountPrice, v.Stock, v.Description, v.ImageURL "
+                + "FROM Products p "
+                + "JOIN Categories c ON p.CategoryID = c.CategoryID "
+                + "JOIN Variants v ON p.ProductID = v.ProductID "
+                + "WHERE c.CategoryID = ?";
         List<Variants> list = new ArrayList<>();
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setInt(1, cID);
             ResultSet rs = ps.executeQuery();
+
             while (rs.next()) {
                 int variantId = rs.getInt("VariantID");
                 int productID = rs.getInt("ProductID");
@@ -433,13 +474,10 @@ public class VariantsDAO extends DBContext {
                 String img = rs.getString("ImageURL");
 
                 list.add(new Variants(variantId, productID, color, storage, price, discountPrice, stock, description, img));
-
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-
         return list;
     }
-
 }

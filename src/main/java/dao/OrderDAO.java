@@ -9,13 +9,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import model.Order;
 import model.OrderDetails;
-import model.Products;
 import model.Users;
 import utils.DBContext;
 
@@ -28,25 +25,23 @@ public class OrderDAO extends DBContext {
     public OrderDAO() {
         super();
     }
-    
-    
 
-    // Ánh xạ dữ liệu từ ResultSet sang đối tượng Order
+    // Map ResultSet data to Order object
     private Order mapResultSetToProduct(ResultSet rs) throws SQLException {
         int orderID = rs.getInt("OrderID");
 
-        // Người mua
+        // Buyer information
         String name = rs.getString("FullName");
         String phone = rs.getString("Phone");
         Users buyer = new Users(name, phone);
 
-        // Thông tin đơn hàng
+        // Order details
         Timestamp orderDate = rs.getTimestamp("OrderDate");
         String address = rs.getString("ShippingAddress");
         BigDecimal total = rs.getBigDecimal("TotalAmount");
         String status = rs.getString("Status");
 
-        // ✅ Tạo Order theo constructor hiện tại
+        // Create an Order object using constructor
         Order order = new Order(
                 orderID,
                 buyer,
@@ -56,15 +51,11 @@ public class OrderDAO extends DBContext {
                 orderDate.toLocalDateTime()
         );
 
-        // ✅ Nếu muốn vẫn lưu ShipperID tạm thì có thể set bằng 1 phương thức khác (nếu bạn thêm sau này)
-        // int shipperID = rs.getInt("ShipperID");
-        // order.setShipperID(shipperID); // chỉ dùng nếu bạn thêm setter sau này
+        // Optional: handle ShipperID if setter is available
         return order;
     }
-    
 
-    
-    // Lấy tất cả đơn hàng
+    // Get all orders
     public List<Order> getAllOrders() {
         List<Order> orders = new ArrayList<>();
         String sql = "SELECT "
@@ -93,8 +84,7 @@ public class OrderDAO extends DBContext {
         return orders;
     }
 
-    //của thịnh
-    // Lấy danh sách đơn hàng theo Shipper ID
+    // Get all orders for staff (including buyer and optional shipper info)
     public List<Order> getAllOrderForStaff() {
         List<Order> orders = new ArrayList<>();
         String sql = "SELECT \n"
@@ -124,9 +114,9 @@ public class OrderDAO extends DBContext {
                     buyer.setFullName(buyerName);
                     buyer.setPhone(rs.getString("Phone"));
                     buyer.setAddress(rs.getString("Address"));
-
                 }
-                //Không cần kiểm tra null vì shipper có thể null do đơn hàng chưa gán đc ai giao
+
+                // Shipper may be null if not yet assigned
                 Users shipper = null;
                 int shipperID = rs.getInt("ShipperID");
                 shipper = new Users();
@@ -143,7 +133,6 @@ public class OrderDAO extends DBContext {
                     Order o = new Order(rs.getInt("OrderID"), buyer, shipper, address, total.doubleValue(), orderDate.toLocalDateTime(), status);
                     orders.add(o);
                 }
-
             }
 
         } catch (SQLException e) {
@@ -153,8 +142,7 @@ public class OrderDAO extends DBContext {
         return orders;
     }
 
-//hết của thịnh
-    // Lấy danh sách đơn hàng theo Shipper ID
+    // Get list of orders assigned to a specific shipper
     public List<Order> getOrdersByShipperId(int shipperId) {
         List<Order> orders = new ArrayList<>();
         String sql = "SELECT "
@@ -181,7 +169,7 @@ public class OrderDAO extends DBContext {
         return orders;
     }
 
-    // Xóa đơn hàng theo ID
+    // Delete order by ID (including related records)
     public void deleteOrderByID(int id) {
         String sql1 = "DELETE FROM Payments WHERE OrderID = ?";
         String sql2 = "DELETE FROM Sales WHERE OrderID = ?";
@@ -207,7 +195,7 @@ public class OrderDAO extends DBContext {
         }
     }
 
-    // Cập nhật trạng thái đơn hàng
+    // Update order status
     public void updateOrderStatus(int id, String status) {
         String sql = "UPDATE Orders SET Status = ? WHERE OrderID = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -219,6 +207,7 @@ public class OrderDAO extends DBContext {
         }
     }
 
+    // Get orders by shipper and status
     public List<Order> getOrdersByShipperIdAndStatus(int shipperId, String status) {
         List<Order> orders = new ArrayList<>();
         String sql = "SELECT "
@@ -246,41 +235,42 @@ public class OrderDAO extends DBContext {
         return orders;
     }
 
-    // Kiểm tra nhanh
+    // Test main method
     public static void main(String[] args) {
         OrderDAO dao = new OrderDAO();
         List<Order> list = dao.getAllOrderForStaff();
 
         if (list.isEmpty()) {
-            System.out.println("❌ Không có đơn hàng nào trong cơ sở dữ liệu!");
+            System.out.println("No orders found in the database!");
         } else {
-            System.out.println("===== 📦 DANH SÁCH ĐƠN HÀNG (CHO STAFF) =====");
+            System.out.println("===== ORDER LIST (FOR STAFF) =====");
             for (Order o : list) {
-                System.out.println("🆔 Mã đơn: " + o.getOrderID());
+                System.out.println("Order ID: " + o.getOrderID());
 
                 if (o.getBuyer() != null) {
-                    System.out.println("👤 Người mua: " + o.getBuyer().getFullName()
-                            + " | SĐT: " + o.getBuyer().getPhone());
+                    System.out.println("Buyer: " + o.getBuyer().getFullName()
+                            + " | Phone: " + o.getBuyer().getPhone());
                 } else {
-                    System.out.println("👤 Người mua: (null)");
+                    System.out.println("Buyer: (null)");
                 }
 
                 if (o.getShippers() != null) {
-                    System.out.println("🚚 Shipper: " + o.getShippers().getFullName()
-                            + " | SĐT: " + o.getShippers().getPhone());
+                    System.out.println("Shipper: " + o.getShippers().getFullName()
+                            + " | Phone: " + o.getShippers().getPhone());
                 } else {
-                    System.out.println("🚚 Shipper: (chưa gán)");
+                    System.out.println("Shipper: (not assigned)");
                 }
 
-                System.out.println("🏠 Địa chỉ: " + o.getShippingAddress());
-                System.out.println("💰 Tổng tiền: " + o.getTotalAmount());
-                System.out.println("📅 Ngày đặt: " + o.getOrderDate());
-                System.out.println("📦 Trạng thái: " + o.getStatus());
+                System.out.println("Address: " + o.getShippingAddress());
+                System.out.println("Total Amount: " + o.getTotalAmount());
+                System.out.println("Order Date: " + o.getOrderDate());
+                System.out.println("Status: " + o.getStatus());
                 System.out.println("--------------------------------------------");
             }
         }
     }
 
+    // Get all order details by OrderID
     public List<OrderDetails> getAllOrderDetailByOrderID(int oid) {
         String sql = "Select * from OrderDetails where OrderID = ?";
         List<OrderDetails> list = new ArrayList<>();
@@ -293,13 +283,12 @@ public class OrderDAO extends DBContext {
                 int variantID = rs.getInt("VariantID");
                 int quantity = rs.getInt("Quantity");
                 double price = rs.getDouble("UnitPrice");
-                
+
                 int instalmentPeriod = rs.getInt("InstalmentPeriod");
                 double monthlyPayment = rs.getDouble("MonthlyPayment");
                 double downPayment = rs.getDouble("DownPayment");
                 int interestRate = rs.getInt("InterestRate");
-                              
-             
+
                 list.add(new OrderDetails(orderID, variantID, quantity, price, instalmentPeriod, monthlyPayment, downPayment, interestRate));
             }
 
@@ -309,6 +298,4 @@ public class OrderDAO extends DBContext {
 
         return list;
     }
-
-
 }

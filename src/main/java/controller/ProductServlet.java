@@ -63,10 +63,12 @@ public class ProductServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
         String action = request.getParameter("action");
         ProductDAO pdao = new ProductDAO();
         VariantsDAO vdao = new VariantsDAO();
 
+        // === Case 1: View product details ===
         if (action.equals("viewDetail")) {
             int productID = Integer.parseInt(request.getParameter("pID"));
             List<Category> listCategory = pdao.getAllCategory();
@@ -74,32 +76,47 @@ public class ProductServlet extends HttpServlet {
             Products p = pdao.getProductByID(productID);
             int cID = p.getCategoryID();
             List<Variants> listVariants = vdao.getAllVariantByProductID(productID);
-            Variants variants = vdao.getVariant(productID, listVariants.get(0).getStorage(), listVariants.get(0).getColor());
 
+            // Default variant: first combination of storage and color
+            Variants variants = vdao.getVariant(
+                    productID,
+                    listVariants.get(0).getStorage(),
+                    listVariants.get(0).getColor()
+            );
+
+            // Pass data to JSP
             request.setAttribute("categoryID", cID);
             request.setAttribute("productID", productID);
             request.setAttribute("listStorage", listStorage);
             request.setAttribute("listVariants", listVariants);
             request.setAttribute("variants", variants);
             request.setAttribute("listCategory", listCategory);
+
+            // Forward to product detail page
             request.getRequestDispatcher("productdetail.jsp").forward(request, response);
 
+            // === Case 2: Change storage variant ===
         } else if (action.equals("selectStorage")) {
             int pID = Integer.parseInt(request.getParameter("pID"));
             int cID = Integer.parseInt(request.getParameter("cID"));
             String storage = request.getParameter("storage");
             String color = request.getParameter("color");
+
             Variants variants;
             List<Products> listProducts = pdao.getAllProduct();
             List<Variants> listVariants = vdao.getAllVariantByProductID(pID);
             List<Variants> listVariantDetail = vdao.getAllVariantByStorage(pID, storage);
             List<String> listStorage = vdao.getAllStorage(pID);
             List<Category> listCategory = pdao.getAllCategory();
+
+            // Retrieve specific variant
             variants = vdao.getVariant(pID, storage, color);
             if (variants == null) {
+                // If color not found, select first available variant
                 variants = vdao.getVariant(pID, storage, listVariantDetail.get(0).getColor());
             }
 
+            // Send data to JSP
             request.setAttribute("productID", pID);
             request.setAttribute("categoryID", cID);
             request.setAttribute("variants", variants);
@@ -108,17 +125,24 @@ public class ProductServlet extends HttpServlet {
             request.setAttribute("listVariantDetail", listVariantDetail);
             request.setAttribute("listStorage", listStorage);
             request.setAttribute("listCategory", listCategory);
+
+            // Forward to product detail page
             request.getRequestDispatcher("productdetail.jsp").forward(request, response);
+
+            // === Case 3: Filter by category ===
         } else if (action.equals("category")) {
             int cID = Integer.parseInt(request.getParameter("cID"));
             List<Products> listProduct = pdao.getAllProductByCategory(cID);
             List<Variants> listVariant = vdao.getAllVariantByCategory(cID);
             List<Category> listCategory = pdao.getAllCategory();
 
+            // Set attributes for category page
             request.setAttribute("listVariant", listVariant);
             request.setAttribute("categoryID", cID);
             request.setAttribute("listCategory", listCategory);
             request.setAttribute("listProduct", listProduct);
+
+            // Forward to category JSP
             request.getRequestDispatcher("category.jsp").forward(request, response);
         }
     }

@@ -17,80 +17,106 @@ import jakarta.servlet.http.HttpSession;
 import model.Users;
 
 /**
- * Servlet xử lý đăng nhập và đăng xuất người dùng.
+ * Servlet that handles user login and logout functionality.
  *
- * @author nguyen quoc thinh - CE000000 - 05/10/2025
+ * @author Nguyen Quoc Thinh - CE191376 - 05/10/2025
  */
 @WebServlet(name = "LoginServlet", urlPatterns = {"/login"})
 public class LoginServlet extends HttpServlet {
 
     /**
-     * Xử lý Đăng xuất (Logout) bằng cách hủy session.
+     * Handles user logout by invalidating the current session.
+     *
+     * This method is triggered when a GET request is made to /login,
+     * which is treated as a logout action in this context.
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        // Retrieve the current session (if it exists)
         HttpSession session = request.getSession(false);
         if (session != null) {
-            session.invalidate(); // Hủy toàn bộ session
+            session.invalidate(); // Destroy the current session to log out the user
         }
 
-        response.sendRedirect("login.jsp"); // Quay lại trang đăng nhập
+        // Redirect the user back to the login page after logout
+        response.sendRedirect("login.jsp");
     }
 
     /**
-     * Xử lý Đăng nhập (Login)
+     * Handles user login functionality.
+     *
+     * Workflow:
+     * 1. Get login credentials (email & password) from the request.
+     * 2. Validate that both fields are not empty.
+     * 3. Use UsersDAO to verify user credentials.
+     * 4. If valid → create a session and redirect based on the user role.
+     * 5. If invalid → forward back to login.jsp with an error message.
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        // Get user input from the login form
         String email = request.getParameter("username");
         String password = request.getParameter("password");
 
-        // Kiểm tra dữ liệu rỗng
+        // Validate empty fields
         if (email == null || email.trim().isEmpty() || password == null || password.isEmpty()) {
+            // Set error message for empty credentials
             request.setAttribute("error", "Email and password cannot be empty.");
+            // Forward back to login.jsp for the user to correct input
             RequestDispatcher dispatcher = request.getRequestDispatcher("login.jsp");
             dispatcher.forward(request, response);
             return;
         }
 
-        // Gọi DAO kiểm tra đăng nhập
+        // Create a DAO instance to check login credentials in the database
         UsersDAO dao = new UsersDAO();
-        Users u = dao.login(email, password);
+        Users u = dao.login(email, password); // Attempt to authenticate user
 
-        if (u != null) { // Đăng nhập thành công
+        if (u != null) { // Login successful
+            // Create a new session for the logged-in user
             HttpSession session = request.getSession();
-            session.setAttribute("user", u); // Lưu user object vào session
+            session.setAttribute("user", u); // Store the user object in the session
 
+            // Get the user's role (default to "1" if null)
             String roleValue = (u.getRole() != null) ? u.getRole().toString() : "1";
 
-            // Chuyển hướng theo vai trò
+            // Redirect based on user role
             switch (roleValue) {
                 case "4":
+                    // Role 4: Admin → Redirect to admin dashboard
                     response.sendRedirect("dashboard_admin.jsp");
                     break;
                 case "3":
+                    // Role 3: Possibly manager → Redirect to order page
                     response.sendRedirect("order");
                     break;
                 case "2":
+                    // Role 2: Staff → Redirect to staff page
                     response.sendRedirect("staff");
                     break;
                 case "1":
                 default:
-response.sendRedirect("homepage");
+                    // Role 1 or unknown → Redirect to homepage
+                    response.sendRedirect("homepage");
                     break;
             }
 
-        } else { // Sai email hoặc mật khẩu
+        } else { // Login failed: invalid email or password
+            // Set error message for invalid credentials
             request.setAttribute("error", "Invalid email or password.");
+            // Forward back to login.jsp to show the error
             RequestDispatcher dispatcher = request.getRequestDispatcher("login.jsp");
             dispatcher.forward(request, response);
         }
     }
 
+    /**
+     * Provides a brief description of the servlet for documentation purposes.
+     */
     @Override
     public String getServletInfo() {
         return "Servlet for handling user login and logout.";
