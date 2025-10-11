@@ -68,37 +68,25 @@ public class ProductServlet extends HttpServlet {
         VariantsDAO vdao = new VariantsDAO();
 
         if (action.equals("viewDetail")) {
-            int pID = Integer.parseInt(request.getParameter("pID"));
-            String storage = request.getParameter("storage");
-            String color = request.getParameter("color");
+            int productID = Integer.parseInt(request.getParameter("pID"));
+            List<Category> listCategory = pdao.getAllCategory();
+            List<String> listStorage = vdao.getAllStorage(productID);
+            Products p = pdao.getProductByID(productID);
+            int cID = p.getCategoryID();
+            List<Variants> listVariants = vdao.getAllVariantByProductID(productID);
+            Variants variants = vdao.getVariant(productID, listVariants.get(0).getStorage(), listVariants.get(0).getColor());
 
-            List<String> listStorage = vdao.getAllStorage(pID);
-            List<Products> listProducts = pdao.getAllProduct();
-            List<Variants> listVariants;
-            
-            Variants variants;
-
-            if (storage == null && color == null) {
-                listVariants = vdao.getAllVariantByProductID(pID);
-                variants = vdao.getVariant(pID, listVariants.get(0).getStorage(), listVariants.get(0).getColor());
-            } else {
-                listVariants = vdao.getAllVariantByProductID(pID);
-                
-                variants = vdao.getVariant(pID, storage, color);
-                
-                
-            }
-
-            request.setAttribute("productID", pID);
-            request.setAttribute("variants", variants);
-            request.setAttribute("listProducts", listProducts);
-            request.setAttribute("listVariants", listVariants);
+            request.setAttribute("categoryID", cID);
+            request.setAttribute("productID", productID);
             request.setAttribute("listStorage", listStorage);
-
+            request.setAttribute("listVariants", listVariants);
+            request.setAttribute("variants", variants);
+            request.setAttribute("listCategory", listCategory);
             request.getRequestDispatcher("productdetail.jsp").forward(request, response);
 
         } else if (action.equals("selectStorage")) {
             int pID = Integer.parseInt(request.getParameter("pID"));
+            int cID = Integer.parseInt(request.getParameter("cID"));
             String storage = request.getParameter("storage");
             String color = request.getParameter("color");
             Variants variants;
@@ -106,24 +94,27 @@ public class ProductServlet extends HttpServlet {
             List<Variants> listVariants = vdao.getAllVariantByProductID(pID);
             List<Variants> listVariantDetail = vdao.getAllVariantByStorage(pID, storage);
             List<String> listStorage = vdao.getAllStorage(pID);
+            List<Category> listCategory = pdao.getAllCategory();
             variants = vdao.getVariant(pID, storage, color);
-            if(variants == null){
+            if (variants == null) {
                 variants = vdao.getVariant(pID, storage, listVariantDetail.get(0).getColor());
             }
-            
-             request.setAttribute("productID", pID);
+
+            request.setAttribute("productID", pID);
+            request.setAttribute("categoryID", cID);
             request.setAttribute("variants", variants);
             request.setAttribute("listProducts", listProducts);
             request.setAttribute("listVariants", listVariants);
             request.setAttribute("listVariantDetail", listVariantDetail);
             request.setAttribute("listStorage", listStorage);
+            request.setAttribute("listCategory", listCategory);
             request.getRequestDispatcher("productdetail.jsp").forward(request, response);
-        }else if(action.equals("category")){
+        } else if (action.equals("category")) {
             int cID = Integer.parseInt(request.getParameter("cID"));
             List<Products> listProduct = pdao.getAllProductByCategory(cID);
             List<Variants> listVariant = vdao.getAllVariantByCategory(cID);
             List<Category> listCategory = pdao.getAllCategory();
-            
+
             request.setAttribute("listVariant", listVariant);
             request.setAttribute("categoryID", cID);
             request.setAttribute("listCategory", listCategory);
