@@ -35,9 +35,6 @@ function selectVersion(btn) {
   document.querySelectorAll('.option').forEach(b => b.classList.remove('selected'));
   btn.classList.add('selected');
 
-  const price = parseFloat(btn.getAttribute('data-price'));
-  const priceTag = document.getElementById('price');
-  priceTag.textContent = price.toLocaleString('vi-VN') + "VND";
 }
 
 // Select Color

@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
+import model.Category;
 import model.Products;
 
 /**
@@ -60,9 +61,11 @@ public class HomepageServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-             ProductDAO dao = new ProductDAO();
+        ProductDAO dao = new ProductDAO();
         List<Products> productList = dao.getNewestProduct();
+        List<Category> listCategory = dao.getAllCategory();
         request.setAttribute("productList", productList);
+        request.setAttribute("listCategory", listCategory);
         request.getRequestDispatcher("homepage.jsp").forward(request, response);
     }
 

@@ -25,6 +25,7 @@ import utils.DBContext;
  * @author USER
  */
 public class VariantsDAO extends DBContext {
+
     public VariantsDAO() {
         super();
     }
@@ -283,6 +284,162 @@ public class VariantsDAO extends DBContext {
         }
     }
 
-    
+    public Variants getVariant(int pID, String storage, String color) {
+        String sql = "SELECT * FROM Variants \n"
+                + "Where ProductID = ? \n"
+                + "And Storage = ?\n"
+                + "And Color = ?";
+
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, pID);
+            ps.setString(2, storage);
+            ps.setString(3, color);
+
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                int variantId = rs.getInt("VariantID");
+                int productID = rs.getInt("ProductID");
+                String colorV = rs.getString("Color");
+                String storageV = rs.getString("Storage");
+                double price = rs.getDouble("Price");
+                double discountPrice = rs.getDouble("DiscountPrice");
+                int stock = rs.getInt("Stock");
+                String description = rs.getString("Description");
+                String img = rs.getString("ImageURL");
+                return (new Variants(variantId, productID, colorV, storageV, price, discountPrice, stock, description, img));
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+
+    public List<Variants> getAllVariantByColor(int pID, String color) {
+        String sql = "Select * from Variants where ProductID = ? And Color = ?";
+        List<Variants> list = new ArrayList<>();
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+
+            ps.setInt(1, pID);
+            ps.setString(2, color);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                int variantId = rs.getInt("VariantID");
+                int productID = rs.getInt("ProductID");
+                String colorV = rs.getString("Color");
+                String storage = rs.getString("Storage");
+                double price = rs.getDouble("Price");
+                double discountPrice = rs.getDouble("DiscountPrice");
+                int stock = rs.getInt("Stock");
+                String description = rs.getString("Description");
+                String img = rs.getString("ImageURL");
+
+                list.add(new Variants(variantId, productID, colorV, storage, price, discountPrice, stock, description, img));
+
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        return list;
+    }
+
+    public List<Variants> getAllVariantByStorage(int pID, String storage) {
+        String sql = "Select * from Variants where ProductID = ? And Storage = ?";
+        List<Variants> list = new ArrayList<>();
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+
+            ps.setInt(1, pID);
+            ps.setString(2, storage);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                int variantId = rs.getInt("VariantID");
+                int productID = rs.getInt("ProductID");
+                String colorV = rs.getString("Color");
+                String storageV = rs.getString("Storage");
+                double price = rs.getDouble("Price");
+                double discountPrice = rs.getDouble("DiscountPrice");
+                int stock = rs.getInt("Stock");
+                String description = rs.getString("Description");
+                String img = rs.getString("ImageURL");
+
+                list.add(new Variants(variantId, productID, colorV, storageV, price, discountPrice, stock, description, img));
+
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        return list;
+    }
+
+    public List<String> getAllStorage(int pID) {
+        String sql = "SELECT DISTINCT Storage\n"
+                + "FROM Variants\n"
+                + "WHERE ProductID = ?";
+        List<String> list = new ArrayList<>();
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+
+            ps.setInt(1, pID);
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                
+                String storage = rs.getString("Storage");
+
+                list.add(storage);
+
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        return list;
+    }
+
+    public List<Variants> getAllVariantByCategory(int cID) {
+        String sql = "SELECT \n"
+                + "    v.VariantID,\n"
+                + "    v.ProductID, \n"
+                + "    v.Color,\n"
+                + "    v.Storage,\n"
+                + "    v.Price,\n"
+                + "    v.DiscountPrice,\n"
+                + "    v.Stock,\n"
+                + "	v.Description,\n"
+                + "    v.ImageURL\n"
+                + "FROM Products p\n"
+                + "JOIN Categories c ON p.CategoryID = c.CategoryID\n"
+                + "JOIN Variants v ON p.ProductID = v.ProductID\n"
+                + "WHERE c.CategoryID = ?;";
+        List<Variants> list = new ArrayList<>();
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, cID);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                int variantId = rs.getInt("VariantID");
+                int productID = rs.getInt("ProductID");
+                String color = rs.getString("Color");
+                String storage = rs.getString("Storage");
+                double price = rs.getDouble("Price");
+                double discountPrice = rs.getDouble("DiscountPrice");
+                int stock = rs.getInt("Stock");
+                String description = rs.getString("Description");
+                String img = rs.getString("ImageURL");
+
+                list.add(new Variants(variantId, productID, color, storage, price, discountPrice, stock, description, img));
+
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        return list;
+    }
 
 }

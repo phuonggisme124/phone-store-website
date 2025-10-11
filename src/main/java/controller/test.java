@@ -24,45 +24,32 @@ import model.Variants;
 public class test {
 
     public static void main(String[] args) {
-        // Khởi tạo DAO
-        OrderDAO odao = new OrderDAO();
-        UsersDAO udao = new UsersDAO();
-        VariantsDAO vdao = new VariantsDAO();
-        // Lấy dữ liệu
-        List<Order> listOrder = odao.getAllOrders();
-        List<Users> listUsers = udao.getAllUsers();
-        List<Sale> listSales = udao.getAllSales();
-        List<Variants> listVariant = vdao.getAllVariant();
-        // In ra để kiểm tra
-        System.out.println("===== 🧾 DANH SÁCH ORDERS =====");
-        for (Order o : listOrder) {
-            System.out.println("OrderID: " + o.getOrderID() + 
-                               " | UserID: " + o.getUserID() + 
-                               " | Total: " + o.getTotalAmount() + 
-                               " | Instalment: " + o.isIsInstallment());
-        }
-        System.out.println("===== 🧾 DANH SÁCH VARIANT =====");
-        for (Variants v : listVariant) {
-            if(v.getStorage().equals("N/A")){
-                System.out.println("VariantID: " + v.getVariantID()+ 
-                              
-                               " | Storage: " + v.getStorage());
+        VariantsDAO dao = new VariantsDAO();
+
+        // 👉 Nhập sẵn dữ liệu để test (đúng với database của Đại Ca nha)
+        int productID = 3;
+        String storage = "128GB";
+        String color = "blue";
+
+        List<Variants> vr = dao.getAllVariantByStorage(productID, storage);
+
+        if (vr != null && !vr.isEmpty()) {
+            for (Variants v : vr) {
+                System.out.println("✅ Variant found!--------");
+                System.out.println("Variant ID: " + v.getVariantID());
+                System.out.println("Product ID: " + v.getProductID());
+                System.out.println("Color: " + v.getColor());
+                System.out.println("Storage: " + v.getStorage());
+                System.out.println("Price: " + v.getPrice());
+                System.out.println("Discount Price: " + v.getDiscountPrice());
+                System.out.println("Stock: " + v.getStock());
+                System.out.println("Description: " + v.getDescription());
+                System.out.println("Image URL: " + v.getImageUrl());
             }
-            
+
+        } else {
+            System.out.println("❌ Không tìm thấy variant phù hợp!");
         }
 
-        System.out.println("\n===== 👤 DANH SÁCH USERS =====");
-        for (Users u : listUsers) {
-            System.out.println("UserID: " + u.getUserId()+ 
-                               " | Name: " + u.getFullName() + 
-                               " | Role: " + u.getRole());
-        }
-
-        System.out.println("\n===== 💸 DANH SÁCH SALES =====");
-        for (Sale s : listSales) {
-            System.out.println("SaleID: " + s.getSaleID() + 
-                               " | Order: " + s.getOrderID()+ 
-                               " | Staff: " + s.getStaffID());
-        }
     }
 }

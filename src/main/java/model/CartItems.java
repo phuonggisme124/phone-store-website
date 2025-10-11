@@ -9,18 +9,41 @@ package model;
  * @author USER
  */
 public class CartItems {
+
     private int cartItemsID;
     private int cartID;
-    private Products products;
+    private int variantID;
+    private Variants variants;
     private int quantity;
     private double price;
+
     //Contructor to see information of items into cart
-    public CartItems(int cartItemsID, int cartID, int quantity, Products products) {
+    public CartItems(int cartItemsID, int cartID, int quantity, Variants variants) {
         this.cartItemsID = cartItemsID;
         this.cartID = cartID;
         this.quantity = quantity;
-        this.products = products;
+        this.variants = variants;
     }
+
+    public CartItems(int cartItemsID, int cartID, int variantID, int quantity) {
+        this.cartItemsID = cartItemsID;
+        this.cartID = cartID;
+        this.variantID = variantID;
+        this.quantity = quantity;
+    }
+    
+    
+    
+
+    public int getVariantID() {
+        return variantID;
+    }
+
+    public void setVariantID(int variantID) {
+        this.variantID = variantID;
+    }
+    
+    
 
     public int getCartItemsID() {
         return cartItemsID;
@@ -46,19 +69,20 @@ public class CartItems {
         this.quantity = quantity;
     }
 
-    public Products getProducts() {
-        return products;
+    public Variants getVariants() {
+        return variants;
     }
 
-    public void setProducts(Products products) {
-        this.products = products;
+    public void setVariants(Variants variants) {
+        this.variants = variants;
     }
-    
+
     public double getTotalPrice() {
         return this.price * this.quantity;
     }
+
     public void setPrice(double price) {
-    this.price = price;
-}
-  
+        this.price = price;
+    }
+
 }

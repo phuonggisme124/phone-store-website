@@ -56,6 +56,17 @@ public class Products {
         this.name = name;
     }
 
+    public Products(int productID, int categoryID, int supplierID, String name, String brand, int warrantyPeriod, LocalDateTime createdAt, List<Variants> variants) {
+        this.productID = productID;
+        this.categoryID = categoryID;
+        this.supplierID = supplierID;
+        this.name = name;
+        this.brand = brand;
+        this.warrantyPeriod = warrantyPeriod;
+        this.createdAt = createdAt;
+        this.variants = variants;
+    }
+
     public List<Variants> getVariants() {
         return variants;
     }

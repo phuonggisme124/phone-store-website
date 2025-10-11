@@ -1,3 +1,4 @@
+<%@page import="model.Category"%>
 <%@page import="model.Products"%>
 <%@page import="java.util.List"%>
 <!DOCTYPE html>
@@ -152,23 +153,24 @@
                         </a>
                         <button type="button" class="btn-close btn-close-black" data-bs-dismiss="offcanvas" aria-label="Close" data-bs-target="#bdNavbar"></button>
                     </div>
+                    <%
+                        List<Category> listCategory = (List<Category>) request.getAttribute("listCategory");
+                    %>
                     <div class="offcanvas-body">
                         <ul id="navbar" class="navbar-nav text-uppercase justify-content-end align-items-center flex-grow-1 pe-3">
                             <li class="nav-item">
-                                <a class="nav-link me-4 active" href="#billboard">Home</a>
+                                <a class="nav-link me-4 active" href="homepage">Home</a>
                             </li>
+                            <%
+                                for (Category c : listCategory){
+                            %>
                             <li class="nav-item">
-                                <a class="nav-link me-4" href="#company-services">Phone</a>
+                                <a class="nav-link me-4" href="product?action=category&cID=<%= c.getCategoryId()%>"><%= c.getCategoryName()%></a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link me-4" href="#mobile-products">Tablet</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link me-4" href="#smart-watches">Watches</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link me-4" href="#yearly-sale">Accessory</a>
-                            </li>
+                            <%
+                                }
+                            %>
+                            
                             
                             <li class="nav-item dropdown">
                                 <a class="nav-link me-4 dropdown-toggle link-dark" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Pages</a>
