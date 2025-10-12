@@ -5,41 +5,51 @@
 package model;
 
 /**
- * Lớp Category ánh xạ với cấu trúc bảng trong CSDL.
+ * The Category class maps to the Category table in the database.
+ * Represents a product category with its name and optional description.
  *
- * @author nhóm 2
+ * This class follows the camelCase naming convention for attributes.
+ * Example: "cat_id" in the database is mapped to "categoryId" in Java.
+ *
+ * @author Group 2
  */
 public class Category {
-    // Tên thuộc tính đổi từ snake_case (cat_id) sang camelCase (categoryId)
 
-    private int categoryId;             // int, NOT NULL (CategoryID)
-    private String categoryName;        // nvarchar(100), NOT NULL (CategoryName)
-    private String description;         // nvarchar(MAX), Allow Nulls (Description)
+    // --- Fields ---
+    private int categoryId;       // int, NOT NULL (Primary Key)
+    private String categoryName;  // nvarchar(100), NOT NULL
+    private String description;   // nvarchar(MAX), Allow Nulls
 
     /**
-     * Constructor đầy đủ, bao gồm cả trường description có thể null.
+     * Full constructor including all fields.
+     * @param categoryId The unique ID of the category.
+     * @param categoryName The name of the category.
+     * @param description The description of the category (nullable).
      */
     public Category(int categoryId, String categoryName, String description) {
         this.categoryId = categoryId;
         this.categoryName = categoryName;
-        this.description = description; // description có thể là null
+        this.description = description; // May be null
     }
 
     /**
-     * Constructor tối thiểu cho các trường NOT NULL.
+     * Minimal constructor for required (NOT NULL) fields.
+     * @param categoryId The unique ID of the category.
+     * @param categoryName The name of the category.
      */
     public Category(int categoryId, String categoryName) {
         this.categoryId = categoryId;
         this.categoryName = categoryName;
-        this.description = null; // Gán mặc định là null cho trường Allow Nulls
+        this.description = null; // Default value for optional field
     }
 
-    // Constructor mặc định (nên có)
+    /**
+     * Default no-argument constructor.
+     */
     public Category() {
     }
 
-    // --- Getters và Setters ---
-    
+    // --- Getters and Setters ---
     public int getCategoryId() {
         return categoryId;
     }
@@ -65,13 +75,12 @@ public class Category {
     }
 
     // --- Override toString() ---
-
     @Override
     public String toString() {
-        return "Category{" + 
-                "categoryId=" + categoryId + 
-                ", categoryName='" + categoryName + '\'' + 
-                ", description='" + description + '\'' + 
+        return "Category{" +
+                "categoryId=" + categoryId +
+                ", categoryName='" + categoryName + '\'' +
+                ", description='" + description + '\'' +
                 '}';
     }
 }

@@ -5,43 +5,50 @@
 package model;
 
 import java.sql.Date;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
+ * The Carts class represents a shopping cart in the system.
+ * Each cart belongs to a specific user and contains a list of CartItems.
+ * 
  * @author USER
  */
 public class Carts {
 
-    private int cartID;          // CartID từ SQL
-    private int userID;          // UserID, nếu chỉ lưu ID
-    private Date createdAt;  // CreatedAt
-    private List<CartItems> listCartItems;
+    private int cartID;          // Unique ID of the cart (from SQL database)
+    private int userID;          // ID of the user who owns this cart
+    private Date createdAt;      // Date when the cart was created
+    private List<CartItems> listCartItems;  // List of items in the cart
+
+    // Default constructor
     public Carts() {
     }
 
+    // Full constructor with creation date
     public Carts(int cartID, int userID, Date createdAt) {
         this.cartID = cartID;
         this.userID = userID;
         this.createdAt = createdAt;
     }
-    
-     public Carts(int cartID, int userID) {
+
+    // Constructor initializing an empty list of items
+    public Carts(int cartID, int userID) {
         this.cartID = cartID;
         this.userID = userID;
         listCartItems = new ArrayList<>();
     }
 
+    // Returns the list of items in the cart
     public List<CartItems> getListCartItems() {
         return this.listCartItems;
     }
 
+    // Adds an item to the cart
     public void setListCartItems(CartItems item) {
         this.listCartItems.add(item);
     }
-  
+
     public int getCartID() {
         return cartID;
     }
@@ -65,12 +72,10 @@ public class Carts {
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
     }
-    
-  
 
+    // Returns a string representation of the cart (for debugging)
     @Override
     public String toString() {
         return "Carts{" + "cartID=" + cartID + ", userID=" + userID + ", createdAt=" + createdAt + '}';
     }
-
 }

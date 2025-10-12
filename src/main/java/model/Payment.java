@@ -7,21 +7,23 @@ package model;
 import java.sql.Timestamp;
 
 /**
- *
+ * Represents a payment transaction related to an order.
+ * Contains details such as payment ID, order ID, amount, payment date, and status.
+ * 
  * @author USER
  */
 public class Payment {
-    private int paymentID;
-    private int orderID;
-    private double amount;
-    private Timestamp paymentDate;
-    private String paymentStatus;
+    private int paymentID;          // Unique ID of the payment record
+    private int orderID;            // ID of the order this payment belongs to
+    private double amount;          // Total amount paid
+    private Timestamp paymentDate;  // Date and time when the payment was made
+    private String paymentStatus;   // Status of the payment (e.g., "Pending", "Completed")
 
+    // Default constructor
     public Payment() {
     }
-    
-    
 
+    // Full constructor including all fields
     public Payment(int paymentID, int orderID, double amount, Timestamp paymentDate, String paymentStatus) {
         this.paymentID = paymentID;
         this.orderID = orderID;
@@ -72,7 +74,7 @@ public class Payment {
 
     @Override
     public String toString() {
-        return "Payment{" + "paymentID=" + paymentID + ", orderID=" + orderID + ", amount=" + amount + ", paymentDate=" + paymentDate + ", paymentStatus=" + paymentStatus + '}';
-    }
-  
-}
+        return "Payment{" +
+                "paymentID=" + paymentID +
+                ", orderID=" + orderID +
+                ", amount="

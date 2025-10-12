@@ -1,29 +1,30 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ * This class represents a record in the SupportTickets table.
+ * It is used to store support requests created by users, including
+ * ticket details, status, assigned staff, etc.
  */
 package model;
 
 import java.sql.Date;
-import java.time.LocalDateTime;
 
 /**
- *
- * @author USER
+ * The SupportTickets class maps to the structure of the support ticket entity.
  */
 public class SupportTickets {
 
-    private int ticketID;
-    private Users userID;
-    private String subject;
-    private String message;
-    private Date createdAt;
-    private String status;         // "Open", "Closed", ...
-    private int assignedStaffID;
+    private int ticketID;          // ID of the support ticket (Primary Key)
+    private Users userID;          // User who created the ticket (FK to Users)
+    private String subject;        // Short title or subject of the issue
+    private String message;        // Detailed description of the issue
+    private Date createdAt;        // Date when the ticket was created
+    private String status;         // Ticket status: "Open", "Closed", etc.
+    private int assignedStaffID;   // ID of the staff assigned to handle the ticket
 
+    // Default constructor
     public SupportTickets() {
     }
 
+    // Full-argument constructor
     public SupportTickets(int ticketID, Users userID, String subject, String message, Date createdAt, String status, int assignedStaffID) {
         this.ticketID = ticketID;
         this.userID = userID;
@@ -33,10 +34,6 @@ public class SupportTickets {
         this.status = status;
         this.assignedStaffID = assignedStaffID;
     }
-
-    
-    
-    
 
     public int getTicketID() {
         return ticketID;
@@ -78,8 +75,6 @@ public class SupportTickets {
         this.createdAt = createdAt;
     }
 
-    
-
     public String getStatus() {
         return status;
     }
@@ -100,5 +95,4 @@ public class SupportTickets {
     public String toString() {
         return "SupportTickets{" + "ticketID=" + ticketID + ", userID=" + userID + ", subject=" + subject + ", message=" + message + ", createdAt=" + createdAt + ", status=" + status + ", assignedStaffID=" + assignedStaffID + '}';
     }
-    
 }

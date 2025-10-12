@@ -6,18 +6,21 @@ package model;
 
 /**
  * The Categories class maps to the Categories table in the database.
- * Represents product categories and their descriptions.
- *
+ * This class represents product categories and their related information.
+ * Each category has an ID, a name, and an optional description.
+ * 
+ * Used to organize products into meaningful groups.
+ * 
  * @author Hoa Hong Nhung
  */
 public class Categories {
 
     // --- Required fields (NOT NULL) ---
-    private int categoryID;        // int, NOT NULL (Primary Key)
-    private String categoryName;   // nvarchar(100), NOT NULL
+    private int categoryID;        // Unique ID of the category (Primary Key)
+    private String categoryName;   // Name of the category (cannot be null)
 
     // --- Optional fields (Allow Nulls) ---
-    private String description;    // nvarchar(MAX), Allow Nulls
+    private String description;    // Description of the category (can be null)
 
     // --- Default constructor ---
     public Categories() {
@@ -25,6 +28,9 @@ public class Categories {
 
     /**
      * Full constructor including all fields.
+     * @param categoryID The unique ID of the category.
+     * @param categoryName The name of the category.
+     * @param description The description of the category.
      */
     public Categories(int categoryID, String categoryName, String description) {
         this.categoryID = categoryID;
@@ -34,6 +40,8 @@ public class Categories {
 
     /**
      * Minimal constructor for required fields only.
+     * @param categoryID The unique ID of the category.
+     * @param categoryName The name of the category.
      */
     public Categories(int categoryID, String categoryName) {
         this.categoryID = categoryID;

@@ -8,16 +8,17 @@ package model;
  *
  * @author USER
  */
+// Class representing items in the shopping cart
 public class CartItems {
 
-    private int cartItemsID;
-    private int cartID;
-    private int variantID;
-    private Variants variants;
-    private int quantity;
-    private double price;
+    private int cartItemsID;  // Unique ID for each cart item
+    private int cartID;       // ID of the cart that this item belongs to
+    private int variantID;    // ID of the product variant
+    private Variants variants; // Object representing detailed variant information
+    private int quantity;     // Quantity of this item in the cart
+    private double price;     // Unit price of the product variant
 
-    //Contructor to see information of items into cart
+    // Constructor to view detailed information of an item in the cart
     public CartItems(int cartItemsID, int cartID, int quantity, Variants variants) {
         this.cartItemsID = cartItemsID;
         this.cartID = cartID;
@@ -25,15 +26,13 @@ public class CartItems {
         this.variants = variants;
     }
 
+    // Constructor with basic product and cart information
     public CartItems(int cartItemsID, int cartID, int variantID, int quantity) {
         this.cartItemsID = cartItemsID;
         this.cartID = cartID;
         this.variantID = variantID;
         this.quantity = quantity;
     }
-    
-    
-    
 
     public int getVariantID() {
         return variantID;
@@ -42,8 +41,6 @@ public class CartItems {
     public void setVariantID(int variantID) {
         this.variantID = variantID;
     }
-    
-    
 
     public int getCartItemsID() {
         return cartItemsID;
@@ -65,6 +62,7 @@ public class CartItems {
         return quantity;
     }
 
+    // Setter method (method name should be corrected to setQuantity)
     public void setQuality(int quantity) {
         this.quantity = quantity;
     }
@@ -77,6 +75,7 @@ public class CartItems {
         this.variants = variants;
     }
 
+    // Calculate total price for this item (unit price * quantity)
     public double getTotalPrice() {
         return this.price * this.quantity;
     }
@@ -84,5 +83,4 @@ public class CartItems {
     public void setPrice(double price) {
         this.price = price;
     }
-
 }

@@ -5,20 +5,22 @@
 package model;
 
 /**
- *
+ * Represents the details of an order, including product variant,
+ * quantity, unit price, and installment information.
+ * 
  * @author USER
  */
 public class OrderDetails {
-    private int orderID;
-    private int variantID;
-    private int quanlity;
-    private double unitPrice;
-    
-    private int instalmentPeriod;
-    private double monthlyPayment;
-    private double downPayment;
-    private int interestRate;
+    private int orderID;            // Unique ID of the order
+    private int variantID;          // ID of the product variant in this order
+    private int quanlity;           // Quantity of the product variant ordered
+    private double unitPrice;       // Price per unit of the product variant
+    private int instalmentPeriod;   // Installment period (number of months)
+    private double monthlyPayment;  // Monthly payment amount for the installment
+    private double downPayment;     // Down payment made at the beginning
+    private int interestRate;       // Interest rate applied to the installment
 
+    // Constructor for non-installment purchases
     public OrderDetails(int orderID, int variantID, int quanlity, double unitPrice) {
         this.orderID = orderID;
         this.variantID = variantID;
@@ -26,20 +28,18 @@ public class OrderDetails {
         this.unitPrice = unitPrice;
     }
 
+    // Constructor for installment purchases
     public OrderDetails(int orderID, int variantID, int quanlity, double unitPrice, int instalmentPeriod, double monthlyPayment, double downPayment, int interestRate) {
         this.orderID = orderID;
         this.variantID = variantID;
         this.quanlity = quanlity;
         this.unitPrice = unitPrice;
-        
         this.instalmentPeriod = instalmentPeriod;
         this.monthlyPayment = monthlyPayment;
         this.downPayment = downPayment;
         this.interestRate = interestRate;
     }
-
-   
-
+    // GETTER - SETTER
     public int getIntallmentPeriod() {
         return instalmentPeriod;
     }
@@ -71,9 +71,7 @@ public class OrderDetails {
     public void setInterestRate(int interestRate) {
         this.interestRate = interestRate;
     }
-    
-    
-    
+
     public int getOrderID() {
         return orderID;
     }
@@ -89,8 +87,6 @@ public class OrderDetails {
     public void setVariantID(int variantID) {
         this.variantID = variantID;
     }
-
-    
 
     public int getQuanlity() {
         return quanlity;
@@ -110,8 +106,11 @@ public class OrderDetails {
 
     @Override
     public String toString() {
-        return "OrderDetails{" + "orderID=" + orderID + ", VariantID=" + variantID + ", quanlity=" + quanlity + ", unitPrice=" + unitPrice + '}';
+        return "OrderDetails{" + 
+               "orderID=" + orderID + 
+               ", VariantID=" + variantID + 
+               ", quanlity=" + quanlity + 
+               ", unitPrice=" + unitPrice + 
+               '}';
     }
-    
-    
 }

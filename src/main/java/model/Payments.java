@@ -4,34 +4,29 @@
  */
 package model;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
- * The Payments class maps to the Payments table in the database.
- * Stores information about order payments and transaction details.
+ * The Payments class maps to the Payments table in the database.  
+ * Stores information about payments, transaction details, and installment progress.
  * 
  * @author Hoa Hong Nhung
  */
 public class Payments {
 
-    // --- Required fields (NOT NULL) ---
-    private int paymentID;        // int, NOT NULL (Primary Key)
+    private int paymentID;              // int, NOT NULL (Primary Key)
+    private Integer orderID;            // int, Allow Nulls — reference to the related Order
+    private double amount;              // decimal(15,2), Allow Nulls — payment amount
+    private LocalDateTime paymentDate;  // datetime, Allow Nulls — date and time of the payment
+    private String paymentStatus;       // nvarchar(20), Allow Nulls — payment state (e.g., "Paid", "Pending")
+    private int totalMonth;             // total number of months for installment payments
+    private int currentMonth;           // current month in the installment plan
 
-    // --- Optional fields (Allow Nulls) ---
-    private Integer orderID;      // int, Allow Nulls
-    private double amount;    // decimal(15,2), Allow Nulls
-    private LocalDateTime paymentDate; // datetime, Allow Nulls
-    private String paymentStatus; // nvarchar(20), Allow Nulls
-    private int totalMonth;
-    private int currentMonth;
     // --- Default constructor ---
     public Payments() {
     }
 
-    /**
-     * Full constructor including all fields.
-     */
+    // --- Full constructor (all fields except totalMonth and currentMonth) ---
     public Payments(int paymentID, Integer orderID, double amount, LocalDateTime paymentDate, String paymentStatus) {
         this.paymentID = paymentID;
         this.orderID = orderID;
@@ -40,9 +35,7 @@ public class Payments {
         this.paymentStatus = paymentStatus;
     }
 
-    /**
-     * Minimal constructor for required fields only.
-     */
+    // --- Minimal constructor (only required field) ---
     public Payments(int paymentID) {
         this.paymentID = paymentID;
         this.orderID = null;
@@ -51,6 +44,7 @@ public class Payments {
         this.paymentStatus = null;
     }
 
+    // --- Extended constructor including installment fields ---
     public Payments(int paymentID, Integer orderID, double amount, LocalDateTime paymentDate, String paymentStatus, int totalMonth, int currentMonth) {
         this.paymentID = paymentID;
         this.orderID = orderID;
@@ -60,8 +54,6 @@ public class Payments {
         this.totalMonth = totalMonth;
         this.currentMonth = currentMonth;
     }
-    
-    
 
     public int getTotalMonth() {
         return totalMonth;
@@ -78,10 +70,7 @@ public class Payments {
     public void setCurrentMonth(int currentMonth) {
         this.currentMonth = currentMonth;
     }
-    
-    
-    
-    // --- Getters and Setters ---
+
     public int getPaymentID() {
         return paymentID;
     }
@@ -122,7 +111,6 @@ public class Payments {
         this.paymentStatus = paymentStatus;
     }
 
-    // --- Override toString() ---
     @Override
     public String toString() {
         return "Payments{" +
@@ -131,6 +119,8 @@ public class Payments {
                 ", amount=" + amount +
                 ", paymentDate=" + paymentDate +
                 ", paymentStatus='" + paymentStatus + '\'' +
+                ", totalMonth=" + totalMonth +
+                ", currentMonth=" + currentMonth +
                 '}';
     }
 }
