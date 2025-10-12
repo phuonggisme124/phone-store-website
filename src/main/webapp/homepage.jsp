@@ -138,7 +138,7 @@
     <header id="header" class="site-header header-scrolled position-fixed text-black bg-light">
         <nav id="header-nav" class="navbar navbar-expand-lg px-3 mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" href="index.html">
+                <a class="navbar-brand" href="homepage">
                     <img src="images/main-logo.png" class="logo">
                 </a>
                 <button class="navbar-toggler d-flex d-lg-none order-3 p-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#bdNavbar" aria-controls="bdNavbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -206,21 +206,18 @@
                             <div class="user-items ps-5">
                                 <ul class="d-flex justify-content-end list-unstyled align-items-center">
                                     <%
-                                        // B??C 1: L?y ??i t??ng Users t? session. 
-                                        // T?n thu?c t?nh ???c l?u l? "user" (nh? trong LoginServlet).
-                                        // D?ng t?n l?p ??y ?? model.Users (h?y ??m b?o t?n package l? ??ng)
+                                        
                                         model.Users user = (model.Users) session.getAttribute("user");
 
                                         boolean isLoggedIn = (user != null);
-                                        String displayName = ""; // Bi?n ?? l?u tr? T?n ng??i d?ng ho?c Email
+                                        String displayName = ""; 
 
                                         if (isLoggedIn) {
-                                            // B??C 2: D?ng ph??ng th?c getName() c? s?n ?? l?y t?n ng??i d?ng.
-                                            // Th?m logic ki?m tra null/r?ng ?? tr?nh l?i n?u t?n kh?ng ???c l?u.
+                                            
                                             if (user.getFullName() != null && !user.getFullName().trim().isEmpty()) {
                                                 displayName = user.getFullName();
                                             } else {
-                                                // N?u t?n b? r?ng, hi?n th? Email thay th? (t?y ch?n)
+                                               
                                                 displayName = user.getEmail();
                                             }
                                     %>

@@ -141,7 +141,7 @@
     <header id="header" class="site-header header-scrolled position-fixed text-black bg-light">
         <nav id="header-nav" class="navbar navbar-expand-lg px-3 mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" href="index.html">
+                <a class="navbar-brand" href="homepage">
                     <img src="images/main-logo.png" class="logo">
                 </a>
                 <button class="navbar-toggler d-flex d-lg-none order-3 p-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#bdNavbar" aria-controls="bdNavbar" aria-expanded="false" aria-label="Toggle navigation">
