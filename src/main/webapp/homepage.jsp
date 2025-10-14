@@ -241,7 +241,7 @@
                                     </li>
 
                                     <li class="text-dark fw-bold">
-                                        <%= displayName%>
+                                        <a href="user" class="nav-link p-0 text-dark text-uppercase fw-bold"> <%= displayName %> </a>
                                     </li>
 
                                     <%
@@ -635,7 +635,7 @@
                 320: {slidesPerView: 1},
                 768: {slidesPerView: 2},
                 1024: {slidesPerView: 4}
-            }
+            }c
         });
     </script>
 
