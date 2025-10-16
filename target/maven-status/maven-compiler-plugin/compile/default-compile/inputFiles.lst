@@ -17,6 +17,7 @@ D:\ki5\SWP\PhoneStoreWebsite\phone-store-website\src\main\java\model\Review.java
 D:\ki5\SWP\PhoneStoreWebsite\phone-store-website\src\main\java\controller\HomepageServlet.java
 D:\ki5\SWP\PhoneStoreWebsite\phone-store-website\src\main\java\model\Payments.java
 D:\ki5\SWP\PhoneStoreWebsite\phone-store-website\src\main\java\dao\OrderDAO.java
+D:\ki5\SWP\PhoneStoreWebsite\phone-store-website\src\main\java\controller\EditProfileServlet.java
 D:\ki5\SWP\PhoneStoreWebsite\phone-store-website\src\main\java\model\Category.java
 D:\ki5\SWP\PhoneStoreWebsite\phone-store-website\src\main\java\controller\LoginServlet.java
 D:\ki5\SWP\PhoneStoreWebsite\phone-store-website\src\main\java\dao\ProductDAO.java
@@ -37,5 +38,6 @@ D:\ki5\SWP\PhoneStoreWebsite\phone-store-website\src\main\java\controller\CartSe
 D:\ki5\SWP\PhoneStoreWebsite\phone-store-website\src\main\java\dao\CategoryDAO.java
 D:\ki5\SWP\PhoneStoreWebsite\phone-store-website\src\main\java\model\Categories.java
 D:\ki5\SWP\PhoneStoreWebsite\phone-store-website\src\main\java\dao\SalesDAO.java
+D:\ki5\SWP\PhoneStoreWebsite\phone-store-website\src\main\java\controller\ProfileServlet.java
 D:\ki5\SWP\PhoneStoreWebsite\phone-store-website\src\main\java\dao\UsersDAO.java
 D:\ki5\SWP\PhoneStoreWebsite\phone-store-website\src\main\java\filter\AuthFilter.java
