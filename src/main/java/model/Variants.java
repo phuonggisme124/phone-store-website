@@ -1,28 +1,31 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ * The Variants class represents a specific variant of a product.
+ * Example: iPhone 15 - Red - 128GB
  */
 package model;
 
-/**
- *
- * @author USER
- */
 public class Variants {
-     private int variantID;        // ID biến thể
-    private int productID;        // ID sản phẩm
-    private String color;         // Màu sắc
-    private int stock;            // Kho (số lượng tồn)
-    private double price;         // Giá gốc
-    private Double discountPrice; // Giá chiết khấu (có thể null)
-    private String storage;          // Cỡ hoặc cổ phần (tùy nghĩa "Cổ phần" Đạt muốn là size)
-    private String description;   // Sự miêu tả
-    private String imageUrl;      // URL hình ảnh
 
+    //=================== FIELDS / ATTRIBUTES ===================//
+    private int variantID;        // Variant ID (primary key)
+    private int productID;        // Product ID (FK referencing Product)
+    private String color;         // Color of the variant
+    private int stock;            // Available stock quantity
+    private double price;         // Original price of the variant
+    private Double discountPrice; // Discounted price (nullable if no discount)
+    private String storage;       // Storage / size / version
+    private String description;   // Detailed description of the variant
+    private String imageUrl;      // URL to the representative image
+
+    //=================== CONSTRUCTORS ===================//
+    // No-argument constructor
     public Variants() {
     }
 
-    public Variants(int variantID, int productID, String color, String storage, double price, Double discountPrice,  int stock ,String description, String imageUrl) {
+    // Full-argument constructor
+    public Variants(int variantID, int productID, String color, String storage,
+            double price, Double discountPrice, int stock,
+            String description, String imageUrl) {
         this.variantID = variantID;
         this.productID = productID;
         this.color = color;
@@ -33,9 +36,8 @@ public class Variants {
         this.description = description;
         this.imageUrl = imageUrl;
     }
-    
-    
 
+    //=================== GETTERS & SETTERS ===================//
     public int getVariantID() {
         return variantID;
     }
@@ -108,10 +110,19 @@ public class Variants {
         this.imageUrl = imageUrl;
     }
 
+    //=================== toString ===================//
     @Override
     public String toString() {
-        return "Variants{" + "variantID=" + variantID + ", productID=" + productID + ", color=" + color + ", stock=" + stock + ", price=" + price + ", discountPrice=" + discountPrice + ", storage=" + storage + ", description=" + description + ", imageUrl=" + imageUrl + '}';
+        return "Variants{"
+                + "variantID=" + variantID
+                + ", productID=" + productID
+                + ", color='" + color + '\''
+                + ", stock=" + stock
+                + ", price=" + price
+                + ", discountPrice=" + discountPrice
+                + ", storage='" + storage + '\''
+                + ", description='" + description + '\''
+                + ", imageUrl='" + imageUrl + '\''
+                + '}';
     }
-    
-    
 }

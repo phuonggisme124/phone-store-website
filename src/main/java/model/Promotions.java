@@ -1,36 +1,47 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ * Represents a promotion or discount event for products.
  */
 package model;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
  * The Promotions class maps to the Promotions table in the database.
- * Represents discount events and related product information.
- * 
- * @author Hoa Hong Nhung
+ * Stores information about discount events, including discount percent,
+ * duration, status, and related product.
  */
 public class Promotions {
 
-    // --- Required fields (NOT NULL) ---
-    private int promotionID;       // int, NOT NULL (Primary Key)
+    // =========================================================
+    //  Required fields (NOT NULL in database)
+    // =========================================================
+    private int promotionID;       // int, Primary Key (NOT NULL)
 
-    // --- Optional fields (Allow Nulls) ---
-    private Integer discountPercent; // int, Allow Nulls
-    private LocalDateTime startDate;     // date, Allow Nulls
-    private LocalDateTime endDate;       // date, Allow Nulls
-    private String status;           // nvarchar(20), Allow Nulls
-    private Integer productID;       // int, Allow Nulls
+    // =========================================================
+    //  Optional fields (Nullable in database)
+    // =========================================================
+    private Integer discountPercent; // Discount percentage (nullable)
+    private LocalDateTime startDate; // Start date and time of the promotion (nullable)
+    private LocalDateTime endDate;   // End date and time of the promotion (nullable)
+    private String status;           // Status of promotion, e.g., "Active", "Expired" (nullable)
+    private Integer productID;       // Related product ID (nullable)
 
-    // --- Default constructor ---
+    // =========================================================
+    //  Default constructor - creates an empty Promotions object
+    // =========================================================
     public Promotions() {
     }
 
     /**
      * Full constructor including all fields.
+     * Useful when retrieving or inserting complete promotion data.
+     *
+     * @param promotionID unique ID of the promotion
+     * @param discountPercent discount percentage
+     * @param startDate start date and time of the promotion
+     * @param endDate end date and time of the promotion
+     * @param status current status of the promotion
+     * @param productID ID of the product associated with the promotion
      */
     public Promotions(int promotionID, Integer discountPercent, LocalDateTime startDate,
                       LocalDateTime endDate, String status, Integer productID) {
@@ -44,6 +55,9 @@ public class Promotions {
 
     /**
      * Minimal constructor for required fields only.
+     * Useful when only the ID is known or other fields will be set later.
+     *
+     * @param promotionID unique ID of the promotion
      */
     public Promotions(int promotionID) {
         this.promotionID = promotionID;
@@ -54,7 +68,9 @@ public class Promotions {
         this.productID = null;
     }
 
-    // --- Getters and Setters ---
+    // =========================================================
+    //  Getters and Setters - Accessor methods for each field
+    // =========================================================
     public int getPromotionID() {
         return promotionID;
     }
@@ -103,7 +119,9 @@ public class Promotions {
         this.productID = productID;
     }
 
-    // --- Override toString() ---
+    // =========================================================
+    //  toString() - Returns a string representation of the Promotions object
+    // =========================================================
     @Override
     public String toString() {
         return "Promotions{" +
@@ -115,6 +133,4 @@ public class Promotions {
                 ", productID=" + productID +
                 '}';
     }
-
-    
 }

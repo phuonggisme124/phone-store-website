@@ -1,6 +1,6 @@
-    /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+/*
+ * Represents a product in the system.
+ * Maps to the Products table in the database.
  */
 package model;
 
@@ -8,25 +8,30 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * The Products class maps to the Products table in the database.
- * Contains information about products, their category, supplier, and details.
- *
- * @author Hoa Hong Nhung
+ * The Products class stores information about products, including
+ * their category, supplier, brand, warranty, creation date, and variants.
  */
 public class Products {
 
-    // --- Required fields (NOT NULL) ---
-    private int productID;         // int, NOT NULL (Primary Key)
-    private String name;           // nvarchar(100), NOT NULL
-    private String brand;          // nvarchar(50), NOT NULL
+    // =========================================================
+    //  Required fields (NOT NULL in database)
+    // =========================================================
+    private int productID;         // Unique ID of the product (Primary Key)
+    private String name;           // Product name (NOT NULL)
+    private String brand;          // Product brand (NOT NULL)
 
-    // --- Optional fields (Allow Nulls) ---
-    private Integer categoryID;    // int, Allow Nulls
-    private Integer supplierID;    // int, Allow Nulls
-    private Integer warrantyPeriod;// int, Allow Nulls
-    private LocalDateTime createdAt; // datetime, Allow Nulls
-    private List<Variants> variants;
-    // --- Default constructor ---
+    // =========================================================
+    //  Optional fields (Nullable in database)
+    // =========================================================
+    private Integer categoryID;    // Category ID of the product (nullable)
+    private Integer supplierID;    // Supplier ID of the product (nullable)
+    private Integer warrantyPeriod;// Warranty period in months (nullable)
+    private LocalDateTime createdAt; // Creation date of the product record (nullable)
+    private List<Variants> variants; // List of variants for this product (nullable)
+
+    // =========================================================
+    //  Default constructor - creates an empty product object
+    // =========================================================
     public Products() {
     }
 
@@ -44,19 +49,29 @@ public class Products {
         this.createdAt = createdAt;
     }
 
+    /**
+     * Constructor with selected fields including variants.
+     */
     public Products(int productID, String name, LocalDateTime createdAt, List<Variants> variants) {
         this.productID = productID;
         this.name = name;
         this.createdAt = createdAt;
         this.variants = variants;
     }
-    
+
+    /**
+     * Constructor with only ID and name.
+     */
     public Products(int productID, String name) {
         this.productID = productID;
         this.name = name;
     }
 
-    public Products(int productID, int categoryID, int supplierID, String name, String brand, int warrantyPeriod, LocalDateTime createdAt, List<Variants> variants) {
+    /**
+     * Full constructor including variants.
+     */
+    public Products(int productID, int categoryID, int supplierID, String name, String brand,
+                    int warrantyPeriod, LocalDateTime createdAt, List<Variants> variants) {
         this.productID = productID;
         this.categoryID = categoryID;
         this.supplierID = supplierID;
@@ -67,6 +82,7 @@ public class Products {
         this.variants = variants;
     }
 
+    // Getter and Setter for variants
     public List<Variants> getVariants() {
         return variants;
     }
@@ -88,7 +104,9 @@ public class Products {
         this.createdAt = null;
     }
 
-    // --- Getters and Setters ---
+    // =========================================================
+    //  Getters and Setters for all fields
+    // =========================================================
     public int getProductID() {
         return productID;
     }
@@ -145,7 +163,9 @@ public class Products {
         this.createdAt = createdAt;
     }
 
-    // --- Override toString() ---
+    // =========================================================
+    //  toString() - Returns a string representation of the product
+    // =========================================================
     @Override
     public String toString() {
         return "Products{" +

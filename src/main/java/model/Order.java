@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 /**
  *
- * @author ADMIN
+ * @author thinh
  */
 public class Order {
     private int orderID;
@@ -18,7 +18,11 @@ public class Order {
     private String paymentMethod;
     private Users shippers;
 
-   
+    // Bổ sung các trường cần thiết để lưu thông tin người mua (từ bảng Orders trong DAO)
+    private String buyerName;
+    private String buyerPhone;
+
+    
     public Order(int orderID, Users buyer, String shippingAddress, double totalAmount, String status, LocalDateTime orderDate) {
 
         this.orderID = orderID;
@@ -28,7 +32,8 @@ public class Order {
         this.status = status;
         this.orderDate = orderDate;
     }
-    //Constructor for staff can see buyer and shippep information
+    
+    //Constructor for staff can see buyer and shipper information
       public Order(int orderID, Users buyer, Users shippers, String shippingAddress, double totalAmount, LocalDateTime orderDate, String status) {
         this.orderID = orderID;
         this.buyer = buyer;
@@ -39,6 +44,21 @@ public class Order {
         this.orderDate = orderDate;
     }
 
+    // Constructor mới được triển khai để khớp với OrderDAO.getOrdersByPhoneForStaff
+    public Order(int orderId, int userId, String buyerName, String buyerPhone, String buyerAddress, double totalAmount, String paymentMethod, String status, LocalDateTime orderDate) {
+        this.orderID = orderId;
+        this.userID = userId;
+        this.buyerName = buyerName;
+        this.buyerPhone = buyerPhone;
+        this.shippingAddress = buyerAddress; // buyerAddress từ DB -> shippingAddress trong Model
+        this.totalAmount = totalAmount;
+        this.paymentMethod = paymentMethod;
+        this.status = status;
+        this.orderDate = orderDate;
+        this.buyer = null; // Buyer object chưa được fetch
+        this.shippers = null; // Shipper object chưa được fetch
+    }
+
     public Users getShippers() {
         return shippers;
     }
@@ -46,6 +66,7 @@ public class Order {
     public void setShippers(Users shippers) {
         this.shippers = shippers;
     }
+    
     private String shippingAddress;
     private double totalAmount;
     private String status;
@@ -89,6 +110,22 @@ public class Order {
         this.userID = userID;
     }
     
+    // Getters and Setters cho các trường mới (buyerName, buyerPhone)
+    public String getBuyerName() {
+        return buyerName;
+    }
+
+    public void setBuyerName(String buyerName) {
+        this.buyerName = buyerName;
+    }
+
+    public String getBuyerPhone() {
+        return buyerPhone;
+    }
+
+    public void setBuyerPhone(String buyerPhone) {
+        this.buyerPhone = buyerPhone;
+    }
     
 
     public int getOrderID() {

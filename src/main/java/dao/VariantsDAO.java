@@ -444,12 +444,8 @@ public class VariantsDAO extends DBContext {
         return list;
     }
 
-    /**
-     * Retrieves all variants that belong to a specific category by joining Products, Categories, and Variants tables.
-     * 
-     * @param cID Category ID.
-     * @return List of Variants belonging to the given category.
-     */
+  // (ĐÃ RÚT GỌN PHẦN ĐẦU - GIỮ NGUYÊN NHƯ BẠN GỬI)
+
     public List<Variants> getAllVariantByCategory(int cID) {
         String sql = "SELECT v.VariantID, v.ProductID, v.Color, v.Storage, v.Price, v.DiscountPrice, v.Stock, v.Description, v.ImageURL "
                 + "FROM Products p "
@@ -478,6 +474,162 @@ public class VariantsDAO extends DBContext {
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
+        return list;
+    }
+
+    // ================== PHẦN MỚI THÊM ==================
+
+    // Phương thức lọc variants theo color và storage (hỗ trợ tìm kiếm một phần)
+    public List<Variants> searchVariants(String color, String storage) {
+        List<Variants> list = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("SELECT * FROM Variants WHERE 1=1");
+
+        if (color != null && !color.trim().isEmpty()) {
+            sql.append(" AND LOWER(Color) LIKE ?");
+        }
+
+        if (storage != null && !storage.trim().isEmpty()) {
+            sql.append(" AND Storage = ?");
+        }
+
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql.toString());
+            int paramIndex = 1;
+
+            if (color != null && !color.trim().isEmpty()) {
+                ps.setString(paramIndex++, "%" + color.toLowerCase() + "%");
+            }
+
+            if (storage != null && !storage.trim().isEmpty()) {
+                ps.setString(paramIndex++, storage);
+            }
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                int variantId = rs.getInt("VariantID");
+                int productID = rs.getInt("ProductID");
+                String colorV = rs.getString("Color");
+                String storageV = rs.getString("Storage");
+                double price = rs.getDouble("Price");
+
+                Double discountPrice = (rs.getObject("DiscountPrice") != null)
+                        ? rs.getDouble("DiscountPrice")
+                        : null;
+
+                int stock = rs.getInt("Stock");
+                String description = rs.getString("Description");
+                String img = rs.getString("ImageURL");
+
+                list.add(new Variants(variantId, productID, colorV, storageV,
+                        price, discountPrice, stock, description, img));
+            }
+            rs.close();
+            ps.close();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        return list;
+    }
+
+    // Phương thức lấy danh sách tất cả màu sắc (không trùng lặp)
+    public List<String> getAllColors() {
+        List<String> list = new ArrayList<>();
+        String sql = "SELECT DISTINCT Color FROM Variants ORDER BY Color";
+
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                String color = rs.getString("Color");
+                if (color != null && !color.trim().isEmpty()) {
+                    list.add(color);
+                }
+            }
+            rs.close();
+            ps.close();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        return list;
+    }
+
+    // Phương thức lấy danh sách tất cả storage (không trùng lặp)
+    public List<String> getAllStorages() {
+        List<String> list = new ArrayList<>();
+        String sql = "SELECT DISTINCT Storage FROM Variants ORDER BY Storage";
+
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                String storage = rs.getString("Storage");
+                if (storage != null && !storage.trim().isEmpty()) {
+                    list.add(storage);
+                }
+            }
+            rs.close();
+            ps.close();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        return list;
+    }
+
+    // Phương thức tìm kiếm variants theo ProductID, color và storage
+    public List<Variants> searchVariantsByProductId(int productId, String color, String storage) {
+        List<Variants> list = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("SELECT * FROM Variants WHERE ProductID = ?");
+
+        if (color != null && !color.trim().isEmpty()) {
+            sql.append(" AND LOWER(Color) LIKE ?");
+        }
+
+        if (storage != null && !storage.trim().isEmpty()) {
+            sql.append(" AND Storage = ?");
+        }
+
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql.toString());
+            int paramIndex = 1;
+
+            ps.setInt(paramIndex++, productId);
+
+            if (color != null && !color.trim().isEmpty()) {
+                ps.setString(paramIndex++, "%" + color.toLowerCase() + "%");
+            }
+
+            if (storage != null && !storage.trim().isEmpty()) {
+                ps.setString(paramIndex++, storage);
+            }
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                int variantId = rs.getInt("VariantID");
+                int productID = rs.getInt("ProductID");
+                String colorV = rs.getString("Color");
+                String storageV = rs.getString("Storage");
+                double price = rs.getDouble("Price");
+
+                Double discountPrice = (rs.getObject("DiscountPrice") != null)
+                        ? rs.getDouble("DiscountPrice")
+                        : null;
+
+                int stock = rs.getInt("Stock");
+                String description = rs.getString("Description");
+                String img = rs.getString("ImageURL");
+
+                list.add(new Variants(variantId, productID, colorV, storageV,
+                        price, discountPrice, stock, description, img));
+            }
+            rs.close();
+            ps.close();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
         return list;
     }
 }
