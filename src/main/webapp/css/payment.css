@@ -1,0 +1,128 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : Oct 14, 2025, 3:57:18 PM
+    Author     : duynu
+*/
+
+body {
+  background-color: #fdfdfd;
+  font-family: 'Poppins', sans-serif;
+  color: #333;
+  margin: 0;
+  padding: 20px;
+}
+
+.payment-container {
+  max-width: 600px;
+  background: #fff;
+  margin: 30px auto;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  padding: 30px;
+}
+
+.payment-title {
+  text-align: center;
+  font-size: 26px;
+  font-weight: bold;
+  color: #111;
+  margin-bottom: 24px;
+}
+
+.user-info label,
+.payment-methods h3 {
+  font-weight: 600;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.user-info input,
+.user-info textarea {
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 16px;
+  transition: all 0.2s;
+}
+
+.user-info input:focus,
+.user-info textarea:focus {
+  border-color: #ff5b77;
+  box-shadow: 0 0 4px rgba(255, 91, 119, 0.3);
+  outline: none;
+}
+
+.payment-methods label {
+  display: block;
+  margin-bottom: 8px;
+  cursor: pointer;
+}
+
+.installment {
+  margin-top: 20px;
+  font-weight: 500;
+}
+
+.installment-policy {
+  background: #ffeef2;
+  border: 1px solid #ffc9d4;
+  border-radius: 10px;
+  padding: 15px;
+  margin-top: 15px;
+}
+
+.installment-policy h4 {
+  color: #e83e5a;
+  margin-bottom: 8px;
+}
+
+.installment-policy ul {
+  margin: 0;
+  padding-left: 20px;
+  font-size: 14px;
+}
+
+.hidden {
+  display: none;
+}
+
+#confirm-btn {
+  width: 100%;
+  background-color: #ff5b77;
+  color: white;
+  font-weight: 600;
+  border: none;
+  border-radius: 10px;
+  padding: 14px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 24px;
+  transition: all 0.25s;
+}
+
+#confirm-btn:hover {
+  background-color: #ff2d58;
+}
+
+.installment-duration {
+  margin-top: 15px;
+  padding-top: 10px;
+  border-top: 1px solid #ffc9d4;
+}
+
+.installment-duration label {
+  display: inline-block;
+  margin-right: 15px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.installment-label {
+  font-weight: 600;
+  color: #e83e5a;
+  margin-bottom: 8px;
+}

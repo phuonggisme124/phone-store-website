@@ -111,7 +111,7 @@ public class UsersDAO extends DBContext {
      * 3. If a user is found, construct and return a Users object; otherwise return null.
      *
      * @param email login email
-     * @param pass  plaintext password (will be hashed inside the method)
+     * @param pass plaintext password (will be hashed inside the method)
      * @return Users object if authentication succeeds; null otherwise
      */
     public Users login(String email, String pass) {
@@ -159,10 +159,10 @@ public class UsersDAO extends DBContext {
      * Note: This method throws SQLException to let the caller handle DB constraint errors
      * (for example duplicate email).
      *
-     * @param name     full name
-     * @param email    email address
+     * @param name full name
+     * @param email email address
      * @param numberPhone phone number
-     * @param address  address
+     * @param address address
      * @param password plaintext password (will be hashed before storing)
      * @return Users object for the newly created user
      * @throws SQLException when DB insert fails
@@ -226,13 +226,13 @@ public class UsersDAO extends DBContext {
     /**
      * Update an existing user's data.
      *
-     * @param userId  ID of the user to update
-     * @param name    new full name
-     * @param email   new email
-     * @param phone   new phone
+     * @param userId ID of the user to update
+     * @param name new full name
+     * @param email new email
+     * @param phone new phone
      * @param address new address
-     * @param role    new role integer
-     * @param status  new status string
+     * @param role new role integer
+     * @param status new status string
      */
     public void updateUser(int userId, String name, String email, String phone, String address, int role, String status) {
         String sql = "UPDATE Users SET FullName = ?, Email = ?, Phone = ?, Role = ?, Address = ?, Status = ? WHERE UserID = ?";
@@ -254,12 +254,12 @@ public class UsersDAO extends DBContext {
     /**
      * Insert a new user with a specified role (used by admin create operations).
      *
-     * @param name     full name
-     * @param email    email address
-     * @param phone    phone number
-     * @param address  address
+     * @param name full name
+     * @param email email address
+     * @param phone phone number
+     * @param address address
      * @param password plaintext password (will be hashed)
-     * @param role     integer role value
+     * @param role integer role value
      */
     public void register(String name, String email, String phone, String address, String password, int role) {
         String sql = "INSERT INTO Users (FullName, Email, Phone, Password, Role, Address) VALUES (?, ?, ?, ?, ?, ?)";
@@ -326,47 +326,109 @@ public class UsersDAO extends DBContext {
         return list;
     }
 
-    /**
-     * Retrieve all users who have role = 3 (shippers).
-     *
-     * @return List of Users objects representing shippers
-     */
-    public List<Users> getAllShippers() {
-        String sql = "SELECT * FROM Users WHERE Role = 3";
-        List<Users> list = new ArrayList<>();
-        try {
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                int id = rs.getInt("UserID");
-                String fullName = rs.getString("FullName");
-                String phone = rs.getString("Phone");
+   // (ĐÃ RÚT GỌN PHẦN TRÊN - KHÔNG THAY ĐỔI GÌ Ở ĐẦU FILE)
 
-                // Minimal Users object for shipper listing
-                list.add(new Users(id, fullName, phone));
-            }
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+/**
+ * Retrieve all users who have role = 3 (shippers).
+ *
+ * @return List of Users objects representing shippers
+ */
+public List<Users> getAllShippers() {
+    String sql = "SELECT * FROM Users WHERE Role = 3";
+    List<Users> list = new ArrayList<>();
+    try {
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            int id = rs.getInt("UserID");
+            String fullName = rs.getString("FullName");
+            String phone = rs.getString("Phone");
+            list.add(new Users(id, fullName, phone));
         }
-        return list;
+    } catch (Exception e) {
+        System.out.println(e.getMessage());
+    }
+    return list;
+}
+
+/**
+ * Update the personal information of a user (used for profile editing).
+ *
+ * This method only updates editable profile fields (FullName, Email, Phone, Address, Password).
+ * The password is updated only if a new one is provided.
+ *
+ * @param user Users object containing updated profile data
+ */
+public void updateUserProfile(Users user) {
+    StringBuilder sql = new StringBuilder("UPDATE Users SET FullName = ?, Email = ?, Phone = ?, Address = ?");
+
+    boolean hasPassword = user.getPassword() != null && !user.getPassword().trim().isEmpty();
+    if (hasPassword) {
+        sql.append(", Password = ?");
+    }
+    sql.append(" WHERE UserID = ?");
+
+    try (PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+        ps.setString(1, user.getFullName());
+        ps.setString(2, user.getEmail());
+        ps.setString(3, user.getPhone());
+        ps.setString(4, user.getAddress());
+
+        int index = 5;
+        if (hasPassword) {
+            ps.setString(index++, hashMD5(user.getPassword()));
+        }
+        ps.setInt(index, user.getUserId());
+
+        ps.executeUpdate();
+    } catch (Exception e) {
+        System.err.println("Error updating user profile: " + e.getMessage());
+        e.printStackTrace();
+    }
+}
+
+/**
+ * Lấy tất cả số điện thoại khách hàng đã đặt hàng.
+ */
+public List<String> getAllBuyerPhones() {
+    List<String> phones = new ArrayList<>();
+    String sql = "SELECT DISTINCT u.Phone " +
+                 "FROM Orders o " +
+                 "JOIN Users u ON o.UserID = u.UserID " +
+                 "WHERE u.Phone IS NOT NULL AND u.Phone <> ''";
+    try (PreparedStatement ps = conn.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+        while (rs.next()) {
+            phones.add(rs.getString("Phone"));
+        }
+    } catch (SQLException e) {
+        System.err.println("Error getAllBuyerPhones: " + e.getMessage());
+        e.printStackTrace();
+    }
+    return phones;
+}
+
+/**
+ * Test method.
+ */
+public static void main(String[] args) {
+    UsersDAO dao = new UsersDAO();
+
+    System.out.println("\n--- Test getAllShippers ---");
+    List<Users> shippers = dao.getAllShippers();
+    if (shippers != null && !shippers.isEmpty()) {
+        System.out.println("Total Shippers: " + shippers.size());
+        for (Users s : shippers) {
+            System.out.println("ID: " + s.getUserId() + " | Name: " + s.getFullName() + " | Phone: " + s.getPhone());
+        }
+    } else {
+        System.out.println("No shippers found!");
     }
 
-    /**
-     * Test method for quick manual verification.
-     * Prints out all shippers to console.
-     */
-    public static void main(String[] args) {
-        UsersDAO dao = new UsersDAO();
-        System.out.println("\n--- Test getAllShippers ---");
-        List<Users> shippers = dao.getAllShippers();
-
-        if (shippers != null && !shippers.isEmpty()) {
-            System.out.println("Total Shippers: " + shippers.size());
-            for (Users s : shippers) {
-                System.out.println("ID: " + s.getUserId() + " | Name: " + s.getFullName() + " | Phone: " + s.getPhone());
-            }
-        } else {
-            System.out.println("No shippers found!");
-        }
+    System.out.println("\n--- All Buyer Phones ---");
+    List<String> phones = dao.getAllBuyerPhones();
+    for (String phone : phones) {
+        System.out.println(phone);
     }
+}
 }

@@ -1,0 +1,224 @@
+
+body {
+    background-color: #f8f9fc;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* ===== Review Container ===== */
+.review-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    background: #fff;
+    border-radius: 16px;
+    padding: 30px 40px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin: 40px;
+    gap: 40px;
+    width: 90%;
+    height: auto;
+    max-width: auto;
+}
+
+/* ===== Left Side ===== */
+.review-left {
+    text-align: center;
+    width: 45%;
+}
+
+/* Ẩn radio */
+input[type="radio"] {
+    display: none;
+}
+
+/* Main Image Container */
+.main-image {
+    width: 280px;
+    height: 280px;
+    margin: 0 auto;
+    position: relative;
+    border-radius: 12px;
+    border: 2px solid #eee;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.main-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+/* Khi chọn thumbnail sẽ hiện đúng ảnh */
+#img1:checked ~ .main-image .img1 {
+    opacity: 1;
+}
+#img2:checked ~ .main-image .img2 {
+    opacity: 1;
+}
+#img3:checked ~ .main-image .img3 {
+    opacity: 1;
+}
+
+.product-name {
+    margin-top: 15px;
+    font-size: 22px;
+    font-weight: 600;
+}
+
+/* ===== Thumbnails ===== */
+.thumbnail-list {
+    margin-top: 12px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.thumbnail-list label {
+    cursor: pointer;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.3s, border 0.3s;
+    border: 2px solid transparent;
+}
+
+.thumbnail-list img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    display: block;
+    border-radius: 6px;
+}
+
+/* Hover + active thumbnail effect */
+.thumbnail-list label:hover {
+    transform: scale(1.05);
+    border-color: #aaa;
+}
+
+#img1:checked ~ .thumbnail-list label[for="img1"],
+#img2:checked ~ .thumbnail-list label[for="img2"],
+#img3:checked ~ .thumbnail-list label[for="img3"] {
+    border-color: #007bff;
+    transform: scale(1.1);
+}
+
+/* ===== Right Side ===== */
+.review-right {
+    width: 50%;
+    background-color: #f8f9fa;
+    padding: 25px 30px;
+    border-radius: 12px;
+}
+
+.review-right h2 {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.review-info p {
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+.comment, .reply {
+    background-color: #fff;
+    height: auto;
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+.update-btn {
+    display: inline-block;
+    margin-top: 20px;
+    text-decoration: none;
+    color: #007bff;
+    font-weight: 500;
+}
+
+.update-btn:hover {
+    text-decoration: underline;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 900px) {
+    .review-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .review-left, .review-right {
+        width: 100%;
+    }
+
+    .main-image {
+        width: 240px;
+        height: 240px;
+    }
+}
+
+/* ==== Admin Reply Input ==== */
+.reply-input {
+    min-height: 60px;
+    max-height: 200px;
+    width: 100%;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 15px;
+    line-height: 1.5;
+    overflow-y: auto;
+    resize: vertical;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+/* Hiệu ứng focus */
+.reply-input:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 4px rgba(0, 123, 255, 0.3);
+}
+
+/* Placeholder giả lập cho contenteditable */
+.reply-input:empty:before {
+    content: attr(data-placeholder);
+    color: #aaa;
+    font-style: italic;
+}
+
+.reply-box {
+  background-color: #ffffff;
+  height: auto;
+  border-radius: 10px;
+  padding: 8px;
+  margin-top: 8px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.reply-box:focus-within {
+  border-color: #007bff;
+  box-shadow: 0 0 6px rgba(0, 123, 255, 0.2);
+}
+
+.send-btn {
+  margin-top: 12px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.send-btn:hover {
+  background-color: #0056b3;
+}

@@ -1,77 +1,25 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package controller;
 
-import dao.CategoryDAO;
-import dao.ProductDAO;
-import dao.SupplierDAO;
-import dao.UsersDAO;
-import dao.VariantsDAO;
-import dao.OrderDAO;
-import dao.SalesDAO;
+import com.google.gson.Gson;
+import dao.*;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.util.List;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.List;
-import model.Category;
-import model.Order;
-import model.Products;
-import model.Suppliers;
-import model.Users;
-import model.Variants;
+import jakarta.servlet.http.HttpSession;
+import model.*;
 
-/**
- *
- * @author duynu
- */
 @WebServlet(name = "StaffServlet", urlPatterns = {"/staff"})
 public class StaffServlet extends HttpServlet {
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet StaffServlet</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet StaffServlet at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
-    }
-
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String action = request.getParameter("action");
+
         UsersDAO udao = new UsersDAO();
         OrderDAO odao = new OrderDAO();
         ProductDAO pdao = new ProductDAO();
@@ -79,129 +27,188 @@ public class StaffServlet extends HttpServlet {
         CategoryDAO ctdao = new CategoryDAO();
         VariantsDAO vdao = new VariantsDAO();
         SalesDAO sdao = new SalesDAO();
+        ReviewDAO rdao = new ReviewDAO();
+
         if (action == null) {
             action = "manageProduct";
         }
 
-        // =====================================================
-        // Case 1: Staff manages orders
-        // =====================================================
-        if (action.equals("manageOrder")) {
+        HttpSession session = request.getSession();
+        Users currentUser = (Users) session.getAttribute("user");
 
-            // Get all available shippers for assignment
+        if (currentUser == null || currentUser.getRole() == null || currentUser.getRole() != 2) {
+            response.sendRedirect("login");
+            return;
+        }
+
+        // ========================= QUẢN LÝ ĐƠN HÀNG =========================
+        if ("manageOrder".equals(action)) {
             List<Users> shippers = udao.getAllShippers();
+            List<String> allPhones = udao.getAllBuyerPhones();
+            request.setAttribute("allPhones", allPhones);
 
-            // Get all orders that staff can manage
-            List<Order> listOrders = odao.getAllOrderForStaff();
+            String searchPhone = request.getParameter("phone");
+            String status = request.getParameter("status");
+            List<Order> listOrders;
 
-            // Pass data to JSP
+            if (searchPhone != null && !searchPhone.trim().isEmpty() && status != null && !status.equalsIgnoreCase("All")) {
+                listOrders = odao.getOrdersByPhoneAndStatus(searchPhone.trim(), status);
+            } else if (searchPhone != null && !searchPhone.trim().isEmpty()) {
+                listOrders = odao.getOrdersByPhone(searchPhone.trim());
+            } else if (status != null && !status.equalsIgnoreCase("All")) {
+                listOrders = odao.getOrdersByStatusForStaff(currentUser.getUserId(), status);
+            } else {
+                listOrders = odao.getAllOrderForStaff(currentUser.getUserId());
+            }
+
             request.setAttribute("listOrders", listOrders);
             request.setAttribute("listShippers", shippers);
-
-            // Forward request to the staff order management page
             request.getRequestDispatcher("dashboard_staff_manageorder.jsp").forward(request, response);
+        } // ========================= AJAX GỢI Ý SĐT =========================
+        else if ("searchPhone".equals(action)) {
+            String term = request.getParameter("term");
+            List<String> phones = udao.getAllBuyerPhones();
+            if (term != null && !term.isEmpty()) {
+                phones = phones.stream().filter(p -> p.contains(term)).toList();
+            }
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().write(new Gson().toJson(phones));
+        } // ========================= GÁN SHIPPER =========================
+        else if ("assignShipper".equals(action)) {
+            try {
+                int orderID = Integer.parseInt(request.getParameter("orderID"));
+                int shipperID = Integer.parseInt(request.getParameter("shipperID"));
+                sdao.assignShipperForOrder(orderID, currentUser.getUserId(), shipperID);
+                odao.updateOrderStatus(orderID, "In Transit");
+            } catch (NumberFormatException e) {
+                System.err.println("Lỗi khi gán Shipper: " + e.getMessage());
+            }
+            response.sendRedirect("staff?action=manageOrder");
+        } // ========================= QUẢN LÝ SẢN PHẨM =========================
+        else if ("manageProduct".equals(action)) {
+            String productName = request.getParameter("productName");
+            String supplierIDStr = request.getParameter("supplierID");
+            Integer supplierID = null;
+            if (supplierIDStr != null && !supplierIDStr.equalsIgnoreCase("All")) {
+                try {
+                    supplierID = Integer.parseInt(supplierIDStr);
+                } catch (NumberFormatException e) {
+                    supplierID = null;
+                }
+            }
 
-            // =====================================================
-            // Case 2: Staff manages products
-            // =====================================================
-        } else if (action.equals("manageProduct")) {
+            List<Products> listProducts;
+            if (productName != null && !productName.trim().isEmpty() && supplierID != null) {
+                listProducts = pdao.getProductsByNameAndSupplier(productName.trim(), supplierID);
+            } else if (productName != null && !productName.trim().isEmpty()) {
+                listProducts = pdao.getProductsByName(productName.trim());
+            } else if (supplierID != null) {
+                listProducts = pdao.getProductsBySupplier(supplierID);
+            } else {
+                listProducts = pdao.getAllProduct();
+            }
 
-            // Retrieve all product-related data
-            List<Products> listProducts = pdao.getAllProduct();
             List<Category> listCategory = ctdao.getAllCategories();
             List<Suppliers> listSupplier = sldao.getAllSupplier();
 
-            // Set data as attributes for JSP
             request.setAttribute("listProducts", listProducts);
             request.setAttribute("listCategory", listCategory);
             request.setAttribute("listSupplier", listSupplier);
 
-            // Forward to the product management dashboard
             request.getRequestDispatcher("dashboard_staff_manageproduct.jsp").forward(request, response);
+        } // ========================= CHI TIẾT SẢN PHẨM (VARIANTS) =========================
+        else if ("productDetail".equals(action)) {
+            try {
+                String productId = request.getParameter("productId");
+                if (productId == null) {
+                    productId = request.getParameter("id");
+                }
 
-            // =====================================================
-            // Case 3: View details of a specific product
-            // =====================================================
-        } else if (action.equals("productDetail")) {
+                String color = request.getParameter("color");
+                String storage = request.getParameter("storage");
+                if (color != null && color.trim().isEmpty()) {
+                    color = null;
+                }
+                if (storage != null && storage.trim().isEmpty()) {
+                    storage = null;
+                }
 
-            // Get product ID from request
-            int id = Integer.parseInt(request.getParameter("id"));
+                List<Variants> listVariants;
+                List<Products> listProducts = pdao.getAllProduct();
 
-            // Retrieve all variants of the product
-            List<Variants> listVariants = vdao.getAllVariantByProductID(id);
+                if (productId != null && !productId.isEmpty()) {
+                    int id = Integer.parseInt(productId);
+                    if (color != null || storage != null) {
+                        listVariants = vdao.searchVariantsByProductId(id, color, storage);
+                    } else {
+                        listVariants = vdao.getAllVariantByProductID(id);
+                    }
+                } else {
+                    listVariants = vdao.searchVariants(color, storage);
+                }
 
-            // Get all products for reference
-            List<Products> listProducts = pdao.getAllProduct();
+                request.setAttribute("listVariants", listVariants);
+                request.setAttribute("listProducts", listProducts);
+                request.setAttribute("allColors", vdao.getAllColors());
+                request.setAttribute("allStorages", vdao.getAllStorages());
+                request.setAttribute("selectedProductId", productId);
 
-            // Attach data to request
-            request.setAttribute("listProducts", listProducts);
-            request.setAttribute("listVariants", listVariants);
+                request.getRequestDispatcher("staff_manageproduct_detail.jsp").forward(request, response);
+            } catch (Exception e) {
+                e.printStackTrace();
+                response.sendRedirect("error.jsp");
+            }
+        } // ========================= QUẢN LÝ REVIEW =========================
+        else if ("manageReview".equals(action)) {
+            try {
+                List<Review> listReview = rdao.getAllReview();
 
-            // Forward to the product detail management page
-            request.getRequestDispatcher("staff_manageproduct_detail.jsp").forward(request, response);
+                request.setAttribute("listReview", listReview);
+                request.getRequestDispatcher("staff_managereview.jsp").forward(request, response);
+            } catch (Exception e) {
+                e.printStackTrace();
+                response.sendRedirect("error.jsp");
+            }
+        } else if (action.equals("reviewDetail")) {
+            int rID = Integer.parseInt(request.getParameter("rID"));
 
-            // =====================================================
-            // Case 4: Display available shippers for a specific order
-            // =====================================================
-        } else if (action.equals("chooseShipper")) {
+            Review review = rdao.getReviewByID(rID);
 
-            // Get order ID from request
-            int orderID = Integer.parseInt(request.getParameter("orderID"));
-
-            // Retrieve list of shippers
-            List<Users> shippers = udao.getAllShippers();
-
-            // Set data for the JSP
-            request.setAttribute("orderID", orderID);
-            request.setAttribute("listShippers", shippers);
-
-            // Forward to the order management dashboard with shipper selection
-            request.getRequestDispatcher("dashboard_staff_manageorder.jsp").forward(request, response);
-
-            // =====================================================
-            // Case 5: Assign a shipper to an order
-            // =====================================================
-        } else if (action.equals("assignShipper")) {
-
-            // Parse order and user data from request
-            int orderID = Integer.parseInt(request.getParameter("orderID"));
-            int shipperID = Integer.parseInt(request.getParameter("shipperID"));
-            int StaffID = Integer.parseInt(request.getParameter("staffID"));
-
-            // Assign the selected shipper to the order
-            sdao.assignShipperForOrder(orderID, StaffID, shipperID);
-
-            // Reload the order list after assignment
-            List<Order> listOrders = odao.getAllOrderForStaff();
-            request.setAttribute("listOrders", listOrders);
-
-            // Redirect to manage order page
-            action = "manageOrder";
-            request.getRequestDispatcher("dashboard_staff_manageorder.jsp").forward(request, response);
+            request.setAttribute("review", review);
+            request.getRequestDispatcher("staff_managereview_detail.jsp").forward(request, response);
         }
     }
 
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        String action = request.getParameter("action");
+        ReviewDAO reviewDAO = new ReviewDAO();
+        
+        if ("replyReview".equals(action)) {
+            try {
+                int reviewID = Integer.parseInt(request.getParameter("reviewID"));
+                String reply = request.getParameter("reply");
+                reviewDAO.replyToReview(reviewID, reply);
+                response.sendRedirect("staff?action=manageReview");
+            } catch (Exception e) {
+                e.printStackTrace();
+                response.sendRedirect("error.jsp");
+            }
+        } else if (action.equals("replyReview")) {
+            int rID = Integer.parseInt(request.getParameter("rID"));
+
+            String reply = request.getParameter("reply");
+
+            reviewDAO.updateReview(rID, reply);
+            response.sendRedirect("staff?action=manageReview");
+
+        }
     }
 
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
     @Override
     public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
-
+        return "Staff Servlet for managing products, orders and reviews";
+    }
 }

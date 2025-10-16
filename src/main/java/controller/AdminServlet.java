@@ -9,6 +9,7 @@ import dao.OrderDAO;
 import dao.PaymentsDAO;
 import dao.ProductDAO;
 import dao.PromotionsDAO;
+import dao.ReviewDAO;
 import dao.SupplierDAO;
 import dao.UsersDAO;
 import dao.VariantsDAO;
@@ -28,6 +29,7 @@ import model.OrderDetails;
 import model.Payments;
 import model.Products;
 import model.Promotions;
+import model.Review;
 import model.Sale;
 import model.Suppliers;
 import model.Users;
@@ -84,6 +86,7 @@ public class AdminServlet extends HttpServlet {
         SupplierDAO sldao = new SupplierDAO();
         CategoryDAO ctdao = new CategoryDAO();
         VariantsDAO vdao = new VariantsDAO();
+        ReviewDAO rdao = new ReviewDAO();
         OrderDAO odao = new OrderDAO();
         PaymentsDAO paydao = new PaymentsDAO();
         PromotionsDAO pmtdao = new PromotionsDAO();
@@ -188,11 +191,11 @@ public class AdminServlet extends HttpServlet {
             request.setAttribute("product", product);
 
             request.getRequestDispatcher("admin_managepromotion_edit.jsp").forward(request, response);
-        }else if(action.equals("createPromotion")){
+        } else if (action.equals("createPromotion")) {
             List<Products> listProducts = pdao.getAllProduct();
             request.setAttribute("listProducts", listProducts);
             request.getRequestDispatcher("admin_managepromotion_create.jsp").forward(request, response);
-        } else if(action.equals("manageOrder")){
+        } else if (action.equals("manageOrder")) {
             List<Order> listOrder = odao.getAllOrders();
             List<Users> listUsers = udao.getAllUsers();
             List<Sale> listSales = udao.getAllSales();
@@ -200,7 +203,7 @@ public class AdminServlet extends HttpServlet {
             request.setAttribute("listUsers", listUsers);
             request.setAttribute("listSales", listSales);
             request.getRequestDispatcher("dashboard_admin_manageorder.jsp").forward(request, response);
-        }else if(action.equals("orderDetail")){
+        } else if (action.equals("orderDetail")) {
             int oid = Integer.parseInt(request.getParameter("id"));
             boolean isIntalment = Boolean.parseBoolean(request.getParameter("isInstalment"));
             List<OrderDetails> listOrderDetails = odao.getAllOrderDetailByOrderID(oid);
@@ -213,8 +216,19 @@ public class AdminServlet extends HttpServlet {
             request.setAttribute("listPayments", listPayments);
             request.setAttribute("isIntalment", isIntalment);
             request.getRequestDispatcher("admin_manageorder_detail.jsp").forward(request, response);
-        }
-        else {
+        } else if (action.equals("manageReview")) {
+            List<Review> listReview = rdao.getAllReview();
+
+            request.setAttribute("listReview", listReview);
+            request.getRequestDispatcher("dashboard_admin_managereview.jsp").forward(request, response);
+        } else if (action.equals("reviewDetail")) {
+            int rID = Integer.parseInt(request.getParameter("rID"));
+
+            Review review = rdao.getReviewByID(rID);
+
+            request.setAttribute("review", review);
+            request.getRequestDispatcher("admin_managereview_detail.jsp").forward(request, response);
+        } else {
             request.getRequestDispatcher("dashboard_admin.jsp").forward(request, response);
         }
 
@@ -238,6 +252,7 @@ public class AdminServlet extends HttpServlet {
         CategoryDAO ctdao = new CategoryDAO();
         VariantsDAO vdao = new VariantsDAO();
         PromotionsDAO pmtdao = new PromotionsDAO();
+        ReviewDAO rdao = new ReviewDAO();
         if (action.equals("update")) {
             int userId = Integer.parseInt(request.getParameter("userId"));
             String name = request.getParameter("name");
@@ -344,23 +359,30 @@ public class AdminServlet extends HttpServlet {
             LocalDateTime startDate = LocalDateTime.parse(request.getParameter("startDate"));
             LocalDateTime endDate = LocalDateTime.parse(request.getParameter("endDate"));
             String status = request.getParameter("status");
-            
+
             pmtdao.updatePromotion(pmtID, pID, discountPercent, startDate, endDate, status);
-            
+
             vdao.updateDiscountPrice();
-            
+
             response.sendRedirect("admin?action=managePromotion");
-        }else if(action.equals("createPromotion")){
+        } else if (action.equals("createPromotion")) {
             int pID = Integer.parseInt(request.getParameter("pID"));
             int discountPercent = Integer.parseInt(request.getParameter("discountPercent"));
             LocalDateTime startDate = LocalDate.parse(request.getParameter("startDate")).atStartOfDay();
             LocalDateTime endDate = LocalDate.parse(request.getParameter("endDate")).atStartOfDay();
             String status = "active";
-            
+
             pmtdao.createPromotion(pID, discountPercent, startDate, endDate, status);
             vdao.updateDiscountPrice();
             response.sendRedirect("admin?action=managePromotion");
-            
+        } else if (action.equals("replyReview")) {
+            int rID = Integer.parseInt(request.getParameter("rID"));
+
+            String reply = request.getParameter("reply");
+
+            rdao.updateReview(rID, reply);
+            response.sendRedirect("admin?action=manageReview");
+
         }
     }
 

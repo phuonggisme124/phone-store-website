@@ -22,9 +22,17 @@ import jakarta.servlet.http.HttpSession;
 
 /**
  *
- * @author Vo Hoang Tu - CE000000 - 20/05/2025
+ * @author Nguyễn Quốc Thịnh - CE191376 - 20/10/2025
+ *
  */
-@WebFilter(filterName = "AuthFilter", urlPatterns = {"/product.jsp","/delete.jsp", "/update.jsp", "/create.jsp","/Product"})
+
+// guest    0
+// customer 1
+// staff    2
+// shipper  3
+// admin    4
+
+@WebFilter(filterName = "AuthFilter", urlPatterns = {})
 public class AuthFilter implements Filter {
     
     private static final boolean debug = true;
@@ -43,7 +51,7 @@ public class AuthFilter implements Filter {
         if (debug) {
             log("AuthFilter:DoBeforeProcessing");
         }
-
+//
         // Write code here to process the request and/or response before
         // the rest of the filter chain is invoked.
         // For example, a logging filter might log items on the request object,
@@ -85,7 +93,7 @@ public class AuthFilter implements Filter {
 
 	}
          */
-        // For example, a filter might append something to the response.
+// For example, a filter might append something to the response.
         /*
 	PrintWriter respOut = new PrintWriter(response.getWriter());
 	respOut.println("<P><B>This has been appended by an intrusive filter.</B>");
@@ -106,20 +114,6 @@ public class AuthFilter implements Filter {
             throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
- ////cookie       
-        Cookie[] cookies = req.getCookies();
-        String user = null;
-        for (Cookie c : cookies) {
-            if(c.getName().equalsIgnoreCase("username")){
-                user = c.getValue();
-                break;
-            }
-        }
-        if(user == null){
-            res.sendRedirect("login");
-            return;
-        }
-
 /////session
 //HttpSession session = req.getSession(false);
 //if (session == null || session.getAttribute("username") == null) {
@@ -185,7 +179,7 @@ public class AuthFilter implements Filter {
     /**
      * Init method for this filter
      */
-    public void init(FilterConfig filterConfig) {
+public void init(FilterConfig filterConfig) {
         this.filterConfig = filterConfig;
         if (filterConfig != null) {
             if (debug) {

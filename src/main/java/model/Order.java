@@ -1,44 +1,33 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package model;
 
 import java.time.LocalDateTime;
 
 /**
- * The Order class maps to the Orders table in the database.
- * It represents a customer's purchase order, including buyer, shipper,
- * payment details, shipping address, and order status.
+ * The Order class maps to the Orders table in the database. It represents a
+ * customer's purchase order, including buyer, shipper, payment details,
+ * shipping address, and order status.
  *
- * @author ADMIN
+ * @author thinh
  */
 public class Order {
 
-    // --- Required fields (NOT NULL) ---
-    private int orderID;                // int, NOT NULL (Primary Key)
-    private int userID;                 // int, NOT NULL (Foreign Key to Users)
-    private String paymentMethod;       // nvarchar(50), NOT NULL
-    private String shippingAddress;     // nvarchar(255), NOT NULL
-    private double totalAmount;         // decimal, NOT NULL
-    private String status;              // nvarchar(50), NOT NULL
-    private LocalDateTime orderDate;    // datetime, NOT NULL
+    // --- Required fields ---
+    private int orderID;
+    private int userID;
+    private String paymentMethod;
+    private String shippingAddress;
+    private double totalAmount;
+    private String status;
+    private LocalDateTime orderDate;
 
-    // --- Optional fields (Allow Nulls) ---
-    private boolean isInstalment;       // bit, Allow Nulls
-    private Users buyer;                // Object reference to the buyer (Users)
-    private Users shippers;             // Object reference to the shipper (Users)
+    // --- Optional fields ---
+    private boolean isInstalment;
+    private Users buyer;
+    private Users shippers;
+    private String buyerName;
+    private String buyerPhone;
 
-    /**
-     * Constructor for creating an order with buyer details.
-     *
-     * @param orderID Order ID
-     * @param buyer Buyer information (Users object)
-     * @param shippingAddress Shipping address
-     * @param totalAmount Total price of the order
-     * @param status Order status
-     * @param orderDate Date and time when the order was created
-     */
+    // Constructor 1: Basic order info
     public Order(int orderID, Users buyer, String shippingAddress, double totalAmount, String status, LocalDateTime orderDate) {
         this.orderID = orderID;
         this.buyer = buyer;
@@ -48,17 +37,7 @@ public class Order {
         this.orderDate = orderDate;
     }
 
-    /**
-     * Constructor for staff viewing both buyer and shipper information.
-     *
-     * @param orderID Order ID
-     * @param buyer Buyer information (Users object)
-     * @param shippers Shipper information (Users object)
-     * @param shippingAddress Shipping address
-     * @param totalAmount Total price of the order
-     * @param orderDate Date and time when the order was created
-     * @param status Order status
-     */
+    // Constructor 2: For staff (has shipper info)
     public Order(int orderID, Users buyer, Users shippers, String shippingAddress, double totalAmount, LocalDateTime orderDate, String status) {
         this.orderID = orderID;
         this.buyer = buyer;
@@ -69,18 +48,20 @@ public class Order {
         this.orderDate = orderDate;
     }
 
-    /**
-     * Constructor for order creation including all database fields.
-     *
-     * @param orderID Order ID
-     * @param userID Buyer ID
-     * @param paymentMethod Payment method
-     * @param shippingAddress Shipping address
-     * @param totalAmount Total price of the order
-     * @param status Order status
-     * @param orderDate Order creation date and time
-     * @param isInstalment Whether the order is paid in instalments
-     */
+    // Constructor 3: Full data from database (used by DAO)
+    public Order(int orderId, int userId, String buyerName, String buyerPhone, String buyerAddress, double totalAmount, String paymentMethod, String status, LocalDateTime orderDate) {
+        this.orderID = orderId;
+        this.userID = userId;
+        this.buyerName = buyerName;
+        this.buyerPhone = buyerPhone;
+        this.shippingAddress = buyerAddress;
+        this.totalAmount = totalAmount;
+        this.paymentMethod = paymentMethod;
+        this.status = status;
+        this.orderDate = orderDate;
+    }
+
+    // Constructor 4: Create order with all DB fields
     public Order(int orderID, int userID, String paymentMethod, String shippingAddress, double totalAmount, String status, LocalDateTime orderDate, boolean isInstalment) {
         this.orderID = orderID;
         this.userID = userID;
@@ -149,11 +130,11 @@ public class Order {
         this.orderDate = orderDate;
     }
 
-    public boolean isIsInstallment() {
+    public boolean isInstalment() {
         return isInstalment;
     }
 
-    public void setIsInstallment(boolean isInstalment) {
+    public void setInstalment(boolean isInstalment) {
         this.isInstalment = isInstalment;
     }
 
@@ -171,5 +152,21 @@ public class Order {
 
     public void setShippers(Users shippers) {
         this.shippers = shippers;
+    }
+
+    public String getBuyerName() {
+        return buyerName;
+    }
+
+    public void setBuyerName(String buyerName) {
+        this.buyerName = buyerName;
+    }
+
+    public String getBuyerPhone() {
+        return buyerPhone;
+    }
+
+    public void setBuyerPhone(String buyerPhone) {
+        this.buyerPhone = buyerPhone;
     }
 }

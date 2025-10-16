@@ -1,10 +1,7 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package dao;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import utils.DBContext;
 
 /**
@@ -14,9 +11,6 @@ import utils.DBContext;
 public class SalesDAO extends DBContext {
 
     /**
-     * 
-     * @author admin
-     * 
      * Default constructor that initializes the database connection.
      */
     public SalesDAO() {
@@ -24,34 +18,49 @@ public class SalesDAO extends DBContext {
     }
 
     /**
-     * Assigns a shipper and a staff member to a specific sales order.
+     * Assigns a shipper and a staff member to a specific order.
+     * If the order already exists in Sales -> UPDATE
+     * If not -> INSERT
+     * Then update Order status to 'In Transit'
      *
-     * @param orderId The ID of the sales order to update.
-     * @param staffId The ID of the staff member responsible for the order.
-     * @param shipperId The ID of the shipper assigned to deliver the order.
+     * @param orderId  ID của đơn hàng
+     * @param staffId  Nhân viên xử lý
+     * @param shipperId Shipper giao hàng
      */
     public void assignShipperForOrder(int orderId, int staffId, int shipperId) {
-        String sql = "UPDATE Sales "
-                + "SET ShipperID = ?, StaffID = ? "
-                + "WHERE SaleID = ?;";
-
         try {
-            PreparedStatement ps = conn.prepareStatement(sql);
+            // 1) Kiểm tra xem order đã tồn tại trong bảng Sales chưa
+            String checkSql = "SELECT SaleID FROM Sales WHERE OrderID = ?";
+            PreparedStatement checkPs = conn.prepareStatement(checkSql);
+            checkPs.setInt(1, orderId);
+            ResultSet rs = checkPs.executeQuery();
 
-            // Assign the shipper to the order
-            ps.setInt(1, shipperId);
+            if (rs.next()) {
+                // 2) Nếu đã có thì UPDATE
+                String updateSql = "UPDATE Sales SET ShipperID=?, StaffID=?, SaleDate=GETDATE() WHERE OrderID=?";
+                PreparedStatement ps = conn.prepareStatement(updateSql);
+                ps.setInt(1, shipperId);
+                ps.setInt(2, staffId);
+                ps.setInt(3, orderId);
+                ps.executeUpdate();
+            } else {
+                // 3) Nếu chưa có thì INSERT
+                String insertSql = "INSERT INTO Sales (OrderID, StaffID, SaleDate, ShipperID) VALUES (?, ?, GETDATE(), ?)";
+                PreparedStatement ps = conn.prepareStatement(insertSql);
+                ps.setInt(1, orderId);
+                ps.setInt(2, staffId);
+                ps.setInt(3, shipperId);
+                ps.executeUpdate();
+            }
 
-            // Assign the staff member to the order
-            ps.setInt(2, staffId);
-
-            // Specify which order to update
-            ps.setInt(3, orderId);
-
-            // Execute the update operation
-            ps.executeUpdate();
+            // 4) Cập nhật trạng thái đơn hàng
+            String updateOrderSql = "UPDATE Orders SET Status = 'In Transit' WHERE OrderID = ?";
+            PreparedStatement ps2 = conn.prepareStatement(updateOrderSql);
+            ps2.setInt(1, orderId);
+            ps2.executeUpdate();
 
         } catch (Exception e) {
-            System.out.println("Error in assignShipperForOrder: " + e.getMessage());
+            System.out.println("Error assignShipperForOrder: " + e.getMessage());
         }
     }
 }
