@@ -1,0 +1,26 @@
+rating-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f9fafb;
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.rating-left h1 {
+    font-size: 48px;
+    color: #222;
+}
+
+.stars i {
+    font-size: 22px;
+}
+
+.progress {
+    background-color: #e5e7eb;
+    border-radius: 8px;
+}
+
+.progress-bar {
+    background-color: #facc15 !important; /* vàng */
+}

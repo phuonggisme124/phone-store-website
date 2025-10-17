@@ -150,7 +150,7 @@ public class AdminServlet extends HttpServlet {
         } else if (action.equals("createVariant")) {
             int pid = Integer.parseInt(request.getParameter("pid"));
             Products product = pdao.getProductByID(pid);
-
+            
             request.setAttribute("product", product);
             request.setAttribute("productID", pid);
             request.getRequestDispatcher("admin_manageproduct_createvariant.jsp").forward(request, response);
@@ -298,7 +298,7 @@ public class AdminServlet extends HttpServlet {
 
             vdao.updateVariant(vID, color, storage, price, stock, description, img);
             pdao.updateProduct(pID, supplierID, pName, brand, warrantyPeriod);
-
+            vdao.updateDiscountPrice();
             response.sendRedirect("admin?action=manageProduct");
 
         } else if (action.equals("createProduct")) {
@@ -322,6 +322,7 @@ public class AdminServlet extends HttpServlet {
             String img = request.getParameter("img");
 
             vdao.createVariant(pID, color, storage, price, stock, description, img);
+            vdao.updateDiscountPrice();
             response.sendRedirect("admin?action=productDetail&id=" + pID);
         } else if (action.equals("deleteVariant")) {
             int vID = Integer.parseInt(request.getParameter("vID"));
