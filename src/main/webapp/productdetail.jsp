@@ -1,8 +1,10 @@
+<%@page import="model.Review"%>
 <%@page import="model.Category"%>
 <%@page import="dao.ProductDAO"%>
 <%@page import="model.Variants"%>
 <%@page import="model.Products"%>
 <%@page import="java.util.List"%>
+<%@ page import="model.Users" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -233,7 +235,7 @@
         <%
             ProductDAO pdao = new ProductDAO();
             int productID = (int) request.getAttribute("productID");
-            double rating = (double) request.getAttribute("rating");
+            //double rating = (double) request.getAttribute("rating");
             Variants variants = (Variants) request.getAttribute("variants");
             List<Variants> listVariants = (List<Variants>) request.getAttribute("listVariants");
             List<String> listStorage = (List<String>) request.getAttribute("listStorage");
@@ -360,123 +362,122 @@
 
 
         <!-- ===================== REVIEW SECTION ===================== -->
-        <div class="container mt-5">
-            <h3 class="mb-4">Đánh giá sản phẩm</h3>
-            <!-- ===================== RATING SUMMARY ===================== -->
-            <c:if test="${totalReviews > 0}">
-                <div class="rating-summary d-flex flex-wrap align-items-center border rounded p-4 mb-4" style="background-color:#fff;">
-                    <!-- Cột trái -->
-                    <div class="rating-left text-center me-5">
-                        <h1 class="fw-bold mb-1">
-                            <fmt:formatNumber value="${averageRating}" type="number" maxFractionDigits="1"/> / 5
-                        </h1>
-                        <div class="stars mb-2">
-                            <c:forEach var="i" begin="1" end="5">
-                                <i class="fa fa-star ${i <= averageRating ? 'text-warning' : 'text-secondary'}"></i>
-                            </c:forEach>
-                        </div>
-                        <p class="text-muted">${totalReviews} đánh giá và nhận xét</p>
-                    </div>
+      <%
+    // ===================== Khởi tạo biến =====================
+    List<Review> listReview = (List<Review>) request.getAttribute("listReview");
 
-                    <!-- Cột phải -->
+    int totalReviews = (listReview != null) ? listReview.size() : 0;
+
+    double averageRating = 0;
+    int[] ratingDistribution = new int[6]; // 1-5 stars
+    if (totalReviews > 0) {
+        int sumRating = 0;
+        for (Review r : listReview) {
+            int rating = r.getRating();
+            sumRating += rating;
+            if (rating >= 1 && rating <= 5) {
+                ratingDistribution[rating]++;
+            }
+        }
+        averageRating = (double) sumRating / totalReviews;
+        for (int j = 1; j <= 5; j++) {
+            ratingDistribution[j] = (int) Math.round((double) ratingDistribution[j] * 100 / totalReviews);
+        }
+    }
+
+   
+%>
+
+<div class="container mt-5">
+    <h3 class="mb-4">Product Reviews</h3>
+
+ <!-- ===================== REVIEW SECTION ===================== -->
+        <div class="container mt-5">
+            <h3 class="mb-4">Product Reviews</h3>
+
+            <%-- ===================== RATING SUMMARY ===================== --%>
+            <% if (totalReviews > 0) { %>
+                <div class="rating-summary d-flex flex-wrap align-items-center border rounded p-4 mb-4" style="background-color:#fff;">
+                    <div class="rating-left text-center me-5">
+                        <h1 class="fw-bold mb-1"><%= String.format("%.1f", averageRating) %> / 5</h1>
+                        <div class="stars mb-2">
+                            <% for (int k = 1; k <= 5; k++) { %>  <!-- Đổi tên biến lặp nếu cần -->
+                                <i class="fa fa-star <%= (k <= averageRating) ? "text-warning" : "text-secondary" %>"></i>
+                            <% } %>
+                        </div>
+                        <p class="text-muted"><%= totalReviews %> reviews and comments</p>
+                    </div>
                     <div class="rating-bars flex-grow-1">
-                        <c:forEach var="i" begin="5" end="1" step="-1">
+                        <% for (int m = 5; m >= 1; m--) { %>
                             <div class="d-flex align-items-center mb-2">
-                                <div class="me-2" style="width: 40px;">${i} <i class="fa fa-star text-warning"></i></div>
+                                <div class="me-2" style="width: 40px;"><%= m %> <i class="fa fa-star text-warning"></i></div>
                                 <div class="progress flex-grow-1" style="height:10px;">
-                                    <div class="progress-bar bg-warning" style="width: ${ratingDistribution[i]}%;"></div>
+                                    <div class="progress-bar bg-warning" style="width: <%= ratingDistribution[m] %>%;"></div>
                                 </div>
-                                <div class="ms-2 text-muted" style="width:40px;">
-                                    <fmt:formatNumber value="${ratingDistribution[i]}" type="number" maxFractionDigits="0"/>%
-                                </div>
+                                <div class="ms-2 text-muted" style="width:40px;"><%= ratingDistribution[m] %>%</div>
                             </div>
-                        </c:forEach>
+                        <% } %>
                     </div>
                 </div>
-            </c:if>
-            <!-- ===================== END RATING SUMMARY ===================== -->
-            <!--         Nếu chưa đăng nhập -->
-            <c:if test="${empty sessionScope.user}">
-                <p class="text-muted fst-italic">Vui lòng <a href="login.jsp">đăng nhập</a> để viết đánh giá.</p>
-            </c:if>
-            <!--         Nếu đã đăng nhập mới được gửi đánh giá -->
-            <c:if test="${not empty sessionScope.user}">
-                <form action="review" method="post" enctype="multipart/form-data" >
+            <% } %>
+
+            <%-- Nếu chưa đăng nhập --%>
+            <% if (!isLoggedIn) { %>
+                <p class="text-muted fst-italic">Please <a href="login.jsp">login</a> to write a review.</p>
+            <% } else { %>
+                <form action="review" method="post" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="add">
-                    <input type="hidden" name="variantID" value="<%= variants.getVariantID()%>">
+                    <input type="hidden" name="variantID" value="<%= variants.getVariantID() %>">
+
                     <div class="mb-3">
-                        <label for="rating" class="form-label fw-bold">Đánh giá (1 - 5 sao):</label>
+                        <label for="rating" class="form-label fw-bold">Evaluate (1 - 5):</label>
                         <input type="number" name="rating" id="rating" class="form-control" min="1" max="5" required>
                     </div>
+
                     <div class="mb-3">
-                        <label for="comment" class="form-label fw-bold">Bình luận của bạn:</label>
+                        <label for="comment" class="form-label fw-bold">Your comment:</label>
                         <textarea name="comment" id="comment" class="form-control" rows="3" required></textarea>
                     </div>
+
                     <div class="mb-3">
-                        <label for="image" class="form-label fw-bold">Thêm hình ảnh (tùy chọn):</label>
+                        <label for="image" class="form-label fw-bold">Add picture (optional):</label>
                         <input type="file" name="image" id="image" class="form-control" accept="image/*">
                     </div>
-                    <button type="submit" class="btn btn-primary">Gửi đánh giá</button>
+
+                    <button type="submit" class="btn btn-primary">Submit a review</button>
                 </form>
-            </c:if>
+            <% } %>
 
+            <%-- Danh sách review: THÊM NULL-CHECK --%>
+            <% if (listReview != null && !listReview.isEmpty()) { 
+                for (Review r : listReview) { %>
+                    <div class="review-item border rounded p-3 mb-3">
+                        <p class="mb-1">
+                            <b><%= r.getUserName() %></b>
+                            <span class="text-warning">(<%= r.getRating() %>/5 ⭐)</span>
+                        </p>
+                        <p class="mb-2"><%= r.getComment() %></p>
 
+                        <% if (r.getImage() != null && !r.getImage().isEmpty()) { %>
+                            <div class="mt-2">
+                                <img src="<%= r.getImage() %>" alt="Ảnh đánh giá" class="img-fluid rounded shadow-sm" style="max-width: 250px; height: auto;">
+                            </div>
+                        <% } %>
 
-            <!-- ======= TỔNG QUAN ĐÁNH GIÁ ======= -->
-            <c:if test="${not empty listReview}">
-                <div class="border rounded p-3 mb-4 bg-light">
-                    <c:set var="totalRating" value="0" />
-                    <c:set var="count" value="0" />
-
-                    <c:forEach var="r" items="${listReview}">
-                        <c:set var="totalRating" value="${totalRating + r.rating}" />
-                        <c:set var="count" value="${count + 1}" />
-                    </c:forEach>
-
-                    <c:set var="average" value="${totalRating / count}" />
-
-                    <h5 class="mb-1 fw-bold">Đánh giá trung bình:</h5>
-                    <p class="fs-5 mb-1 text-warning">
-                        ⭐ <fmt:formatNumber value="${average}" type="number" maxFractionDigits="1"/> / 5
-                    </p>
-                    <p class="text-muted small mb-0">${count} đánh giá</p>
-                </div>
-            </c:if>
-
-            <!-- ======= DANH SÁCH REVIEW ======= -->
-            <c:forEach var="r" items="${listReview}">
-                <div class="review-item border rounded p-3 mb-3">
-                    <p class="mb-1">
-                        <b>${r.userName}</b> 
-                        <span class="text-warning">(${r.rating}/5 ⭐)</span>
-                    </p>
-                    <p class="mb-2">${r.comment}</p>
-                    <!-- Nếu có hình ảnh thì hiển thị -->
-                    <c:if test="${not empty r.image}">
-                        <div class="mt-2">
-                            <img src="${r.image}" alt="Ảnh đánh giá" 
-                                 class="img-fluid rounded shadow-sm"
-                                 style="max-width: 250px; height: auto;">
-                        </div>
-                    </c:if>
-
-                    <!--                    Hiển thị nút Xóa nếu là chính chủ -->
-                    <c:if test="${sessionScope.user != null and sessionScope.user.userId == r.userId}">
-                        <form action="review" method="post" class="d-inline">
-                            <input type="hidden" name="action" value="delete">
-                            <input type="hidden" name="variantID" value="${r.variantID}">
-                            <input type="hidden" name="reviewID" value="${r.reviewId}">
-                            <button type="submit" class="btn btn-sm btn-danger">Xóa</button>
-                        </form>
-                    </c:if>
-                </div>
-            </c:forEach>
-
-            <!--            Nếu chưa có review -->
-            <c:if test="${empty listReview}">
-                <p class="text-muted fst-italic">Chưa có đánh giá nào cho sản phẩm này.</p>
-            </c:if>
-        </div> 
+                        <% if (isLoggedIn && user.getUserId() == r.getUserID()) { %>
+                            <form action="review" method="post" class="d-inline">
+                                <input type="hidden" name="action" value="delete">
+                                <input type="hidden" name="variantID" value="<%= r.getVariantID() %>">
+                                <input type="hidden" name="reviewID" value="<%= r.getReviewID() %>">
+                                <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                            </form>
+                        <% } %>
+                    </div>
+            <%  }
+               } else { %>
+                <p class="text-muted fst-italic">There are no reviews for this product yet.</p>
+            <% } %>
+        </div>
         <!-- ===================== END REVIEW SECTION ===================== -->
 
 
