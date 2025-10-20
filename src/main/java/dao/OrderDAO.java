@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -388,7 +389,39 @@ public class OrderDAO extends DBContext {
         return orders;
     }
 
-    //--------------------------------------------
+
+  
+    // Add new order when payment successfully
+// Add new order when payment successfully - UPDATED TO RETURN OrderID
+
+    public int addNewOrder(Order o) {
+        String sql = "INSERT INTO Orders (UserID, Status, PaymentMethod, ShippingAddress, TotalAmount, IsInstalment, ReceiverName, ReceiverPhone) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        try {
+            // THAY ĐỔI: Thêm Statement.RETURN_GENERATED_KEYS
+            PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            ps.setInt(1, o.getUserID());
+            ps.setString(2, o.getStatus());
+            ps.setString(3, o.getPaymentMethod());
+            ps.setString(4, o.getShippingAddress());
+            ps.setDouble(5, o.getTotalAmount());
+            ps.setByte(6, o.isIsInstallment());
+            ps.setString(7, o.getBuyer().getFullName());
+            ps.setString(8, o.getBuyer().getPhone());
+            ps.executeUpdate();
+
+            // LẤY OrderID vừa được tự động sinh
+            ResultSet rs = ps.getGeneratedKeys();
+            if (rs.next()) {
+                int generatedOrderID = rs.getInt(1);
+                return generatedOrderID;
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
+        return -1; // Trả về -1 nếu có lỗi
+    }
 
     // Get all order details by OrderID
     public List<OrderDetails> getAllOrderDetailByOrderID(int oid) {
@@ -418,6 +451,7 @@ public class OrderDAO extends DBContext {
 
         return list;
     }
+
 
     //--------------------------------------------
 
@@ -539,6 +573,7 @@ public class OrderDAO extends DBContext {
     }
 
     return list;
+
 }
 
     //--------------------------------------------

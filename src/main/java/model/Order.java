@@ -20,8 +20,7 @@ public class Order {
     private String status;
     private LocalDateTime orderDate;
 
-    // --- Optional fields ---
-    private boolean isInstalment;
+    private byte isInstalment;
     private Users buyer;
     private Users shippers;
     private String buyerName;
@@ -48,29 +47,27 @@ public class Order {
         this.orderDate = orderDate;
     }
 
-    // Constructor 3: Full data from database (used by DAO)
-    public Order(int orderId, int userId, String buyerName, String buyerPhone, String buyerAddress, double totalAmount, String paymentMethod, String status, LocalDateTime orderDate) {
-        this.orderID = orderId;
-        this.userID = userId;
-        this.buyerName = buyerName;
-        this.buyerPhone = buyerPhone;
-        this.shippingAddress = buyerAddress;
-        this.totalAmount = totalAmount;
-        this.paymentMethod = paymentMethod;
-        this.status = status;
-        this.orderDate = orderDate;
-    }
 
-    // Constructor 4: Create order with all DB fields
-    public Order(int orderID, int userID, String paymentMethod, String shippingAddress, double totalAmount, String status, LocalDateTime orderDate, boolean isInstalment) {
-        this.orderID = orderID;
+    /**
+     * Constructor for order creation including all database fields.
+     *
+     * @param userID Buyer ID
+     * @param paymentMethod Payment method
+     * @param shippingAddress Shipping address
+     * @param totalAmount Total price of the order
+     * @param status Order status
+     * @param isInstalment Whether the order is paid in instalments
+     * @param buyer
+     */
+    public Order( int userID, String paymentMethod, String shippingAddress, double totalAmount, String status, byte isInstalment, Users buyer) {
+
         this.userID = userID;
         this.paymentMethod = paymentMethod;
         this.shippingAddress = shippingAddress;
         this.totalAmount = totalAmount;
         this.status = status;
-        this.orderDate = orderDate;
         this.isInstalment = isInstalment;
+        this.buyer= buyer;
     }
 
     // --- Getters and Setters ---
@@ -130,11 +127,13 @@ public class Order {
         this.orderDate = orderDate;
     }
 
-    public boolean isInstalment() {
+
+    public byte isIsInstallment() {
         return isInstalment;
     }
 
-    public void setInstalment(boolean isInstalment) {
+    public void setIsInstallment(byte isInstalment) {
+
         this.isInstalment = isInstalment;
     }
 

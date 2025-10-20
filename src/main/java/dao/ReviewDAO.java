@@ -231,6 +231,7 @@ public class ReviewDAO extends DBContext {
 
     }
 
+
     public int getTotalReview(List<Variants> listVariantRating, List<Review> listReview) {
 
         int count = 0;
@@ -354,4 +355,55 @@ public class ReviewDAO extends DBContext {
         }
     }
 
+    public void addReview(Review r) throws SQLException {
+        String sql = "INSERT INTO Reviews (UserID, VariantID, Rating, Comment, ReviewDate, Image) "
+                + "VALUES (?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, r.getUserID());
+            ps.setInt(2, r.getVariantID());
+            ps.setInt(3, r.getRating());
+            ps.setString(4, r.getComment());
+            ps.setTimestamp(5, Timestamp.valueOf(r.getReviewDate()));
+            ps.setString(6, r.getImage());
+            ps.executeUpdate();
+
+        }
+    }
+
+    public void deleteReview(int reviewID, int userID) throws SQLException {
+        String sql = "DELETE FROM Reviews WHERE ReviewID = ? AND UserID = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, reviewID);
+            ps.setInt(2, userID);
+            ps.executeUpdate();
+        }
+    }
+
+    public List<Review> getReviewsByVariantID(int variantID) throws SQLException {
+        List<Review> list = new ArrayList<>();
+        String sql = "SELECT r.*, u.FullName "
+                + "FROM Reviews r "
+                + "JOIN Users u ON r.UserID = u.UserID "
+                + "WHERE r.VariantID = ? "
+                + "ORDER BY r.ReviewDate DESC";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, variantID);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Review r = new Review();
+                    r.setReviewID(rs.getInt("ReviewID"));
+                    r.setUserID(rs.getInt("UserID"));
+                    r.setVariantID(rs.getInt("VariantID"));
+                    r.setRating(rs.getInt("Rating"));
+                    r.setComment(rs.getString("Comment"));
+                    r.setReviewDate(rs.getTimestamp("ReviewDate").toLocalDateTime());
+                    r.setImage(rs.getString("Image"));
+                    r.setReply(rs.getString("Reply"));
+                    r.setUserName(rs.getString("FullName"));
+                    list.add(r);
+                }
+            }
+        }
+        return list;
+    }
 }

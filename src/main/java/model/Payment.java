@@ -73,12 +73,6 @@ public class Payment {
         this.paymentStatus = paymentStatus;
     }
 
-//    @Override
-//    public String toString() {
-//        return "Payment{"
-//                + "paymentID=" + paymentID
-//                + ", orderID=" + orderID
-//                + ", amount="
-//    }
+
 
 }

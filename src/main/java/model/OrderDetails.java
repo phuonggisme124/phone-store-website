@@ -13,7 +13,7 @@ package model;
 public class OrderDetails {
     private int orderID;            // Unique ID of the order
     private int variantID;          // ID of the product variant in this order
-    private int quanlity;           // Quantity of the product variant ordered
+    private int quantity;           // Quantity of the product variant ordered
     private double unitPrice;       // Price per unit of the product variant
     private int instalmentPeriod;   // Installment period (number of months)
     private double monthlyPayment;  // Monthly payment amount for the installment
@@ -21,23 +21,31 @@ public class OrderDetails {
     private int interestRate;       // Interest rate applied to the installment
 
     // Constructor for non-installment purchases
-    public OrderDetails(int orderID, int variantID, int quanlity, double unitPrice) {
+    public OrderDetails(int orderID, int variantID, int quantity, double unitPrice) {
         this.orderID = orderID;
         this.variantID = variantID;
-        this.quanlity = quanlity;
+        this.quantity = quantity;
         this.unitPrice = unitPrice;
     }
 
     // Constructor for installment purchases
-    public OrderDetails(int orderID, int variantID, int quanlity, double unitPrice, int instalmentPeriod, double monthlyPayment, double downPayment, int interestRate) {
+    public OrderDetails(int orderID, int variantID, int quantity, double unitPrice, int instalmentPeriod, double monthlyPayment, double downPayment, int interestRate) {
         this.orderID = orderID;
         this.variantID = variantID;
-        this.quanlity = quanlity;
+        this.quantity = quantity;
         this.unitPrice = unitPrice;
         this.instalmentPeriod = instalmentPeriod;
         this.monthlyPayment = monthlyPayment;
         this.downPayment = downPayment;
         this.interestRate = interestRate;
+    }
+
+    public int getInstalmentPeriod() {
+        return instalmentPeriod;
+    }
+
+    public void setInstalmentPeriod(int instalmentPeriod) {
+        this.instalmentPeriod = instalmentPeriod;
     }
     // GETTER - SETTER
     public int getIntallmentPeriod() {
@@ -88,12 +96,12 @@ public class OrderDetails {
         this.variantID = variantID;
     }
 
-    public int getQuanlity() {
-        return quanlity;
+    public int getQuantity() {
+        return quantity;
     }
 
-    public void setQuanlity(int quanlity) {
-        this.quanlity = quanlity;
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 
     public double getUnitPrice() {
@@ -109,7 +117,7 @@ public class OrderDetails {
         return "OrderDetails{" + 
                "orderID=" + orderID + 
                ", VariantID=" + variantID + 
-               ", quanlity=" + quanlity + 
+               ", quantity=" + quantity + 
                ", unitPrice=" + unitPrice + 
                '}';
     }

@@ -160,7 +160,7 @@
                     %>
                     <div class="offcanvas-body">
                         <ul id="navbar" class="navbar-nav text-uppercase justify-content-end align-items-center flex-grow-1 pe-3">
-                             <li class="nav-item">
+                            <li class="nav-item">
                                 <a class="nav-link me-4 active" href="homepage">Home</a>
                             </li>
 
@@ -222,7 +222,7 @@
                                     </li>
 
                                     <li class="pe-3">
-                                        <a href="cart"> 
+                                        <a href="cart?userID=<%= user.getUserId() %>"> 
                                             <svg class="cart"><use xlink:href="#cart" ></use></svg>
                                         </a>
                                     </li>

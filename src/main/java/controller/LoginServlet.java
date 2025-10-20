@@ -80,7 +80,6 @@ public class LoginServlet extends HttpServlet {
             // Create a new session for the logged-in user
             HttpSession session = request.getSession();
             session.setAttribute("user", u); // Store the user object in the session
-
             // Get the user's role (default to "1" if null)
             String roleValue = (u.getRole() != null) ? u.getRole().toString() : "1";
 

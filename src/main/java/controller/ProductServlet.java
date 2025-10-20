@@ -1,5 +1,5 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
 package controller;
@@ -14,6 +14,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import model.Category;
 import model.Products;
@@ -27,20 +29,10 @@ import model.Variants;
 @WebServlet(name = "ProductServlet", urlPatterns = {"/product"})
 public class ProductServlet extends HttpServlet {
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
@@ -53,15 +45,7 @@ public class ProductServlet extends HttpServlet {
         }
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods.">
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -70,8 +54,9 @@ public class ProductServlet extends HttpServlet {
         ProductDAO pdao = new ProductDAO();
         VariantsDAO vdao = new VariantsDAO();
         ReviewDAO rdao = new ReviewDAO();
+
         // === Case 1: View product details ===
-        if (action.equals("viewDetail")) {
+        if ("viewDetail".equals(action)) {
             int productID = Integer.parseInt(request.getParameter("pID"));
             List<Category> listCategory = pdao.getAllCategory();
             List<String> listStorage = vdao.getAllStorage(productID);
@@ -85,9 +70,19 @@ public class ProductServlet extends HttpServlet {
                     listVariants.get(0).getStorage(),
                     listVariants.get(0).getColor()
             );
+
             List<Variants> listVariantRating = vdao.getAllVariantByStorage(variants.getProductID(), variants.getStorage());
-            List<Review> listReview = rdao.getReview();
+
+            // Lấy danh sách review theo VariantID
+            List<Review> listReview = new ArrayList<>();
+            try {
+                listReview = rdao.getReviewsByVariantID(variants.getVariantID());
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
             double rating = rdao.getTotalRating(listVariantRating, listReview);
+
             // Pass data to JSP
             request.setAttribute("categoryID", cID);
             request.setAttribute("rating", rating);
@@ -98,12 +93,13 @@ public class ProductServlet extends HttpServlet {
             request.setAttribute("listCategory", listCategory);
             request.setAttribute("listVariantRating", listVariantRating);
             request.setAttribute("listReview", listReview);
+            request.setAttribute("product", p);
 
             // Forward to product detail page
             request.getRequestDispatcher("productdetail.jsp").forward(request, response);
 
             // === Case 2: Change storage variant ===
-        } else if (action.equals("selectStorage")) {
+        } else if ("selectStorage".equals(action)) {
             int pID = Integer.parseInt(request.getParameter("pID"));
             int cID = Integer.parseInt(request.getParameter("cID"));
             String storage = request.getParameter("storage");
@@ -115,14 +111,14 @@ public class ProductServlet extends HttpServlet {
             List<Variants> listVariantRating = vdao.getAllVariantByStorage(pID, storage);
             List<String> listStorage = vdao.getAllStorage(pID);
             List<Category> listCategory = pdao.getAllCategory();
-            
+
             // Retrieve specific variant
             variants = vdao.getVariant(pID, storage, color);
-            if (variants == null) {
+            if (variants == null && !listVariantRating.isEmpty()) {
                 // If color not found, select first available variant
                 variants = vdao.getVariant(pID, storage, listVariantRating.get(0).getColor());
             }
-            
+
             List<Review> listReview = rdao.getReview();
             double rating = rdao.getTotalRating(listVariantRating, listReview);
 
@@ -142,7 +138,7 @@ public class ProductServlet extends HttpServlet {
             request.getRequestDispatcher("productdetail.jsp").forward(request, response);
 
             // === Case 3: Filter by category ===
-        } else if (action.equals("category")) {
+        } else if ("category".equals(action)) {
             int cID = Integer.parseInt(request.getParameter("cID"));
             List<Products> listProduct = pdao.getAllProductByCategory(cID);
             List<Variants> listVariant = vdao.getAllVariantByCategory(cID);
@@ -159,20 +155,12 @@ public class ProductServlet extends HttpServlet {
         }
     }
 
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String action = request.getParameter("action");
         VariantsDAO vdao = new VariantsDAO();
-        if (action.equals("viewVariantColor")) {
+        if ("viewVariantColor".equals(action)) {
             int pID = Integer.parseInt(request.getParameter("pID"));
 
             String storage = request.getParameter("storage");
@@ -186,7 +174,6 @@ public class ProductServlet extends HttpServlet {
                 return;
             }
             List<Variants> listVariants = vdao.getAllVariantByColor(pID, color);
-
             Variants variants = vdao.getVariant(pID, storage, color);
             if (listVariants.isEmpty()) {
                 request.getRequestDispatcher("homepage.jsp").forward(request, response);
@@ -196,17 +183,10 @@ public class ProductServlet extends HttpServlet {
             request.setAttribute("listVariants", listVariants);
             request.getRequestDispatcher("homepage.jsp").forward(request, response);
         }
-
     }
 
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
     @Override
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-
 }

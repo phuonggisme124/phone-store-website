@@ -33,21 +33,20 @@ public class Carts {
     }
 
     // Constructor initializing an empty list of items
-    public Carts(int cartID, int userID) {
+    public Carts(int cartID, List<CartItems> listCartItems) {
         this.cartID = cartID;
-        this.userID = userID;
-        listCartItems = new ArrayList<>();
+        this.listCartItems = listCartItems;
     }
 
-    // Returns the list of items in the cart
     public List<CartItems> getListCartItems() {
-        return this.listCartItems;
+        return listCartItems;
     }
 
-    // Adds an item to the cart
-    public void setListCartItems(CartItems item) {
-        this.listCartItems.add(item);
+    public void setListCartItems(List<CartItems> listCartItems) {
+        this.listCartItems = listCartItems;
     }
+
+
 
     public int getCartID() {
         return cartID;

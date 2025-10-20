@@ -1,15 +1,16 @@
+<%@page import="model.Promotions"%>
 <%@page import="model.Variants"%>
-<%@page import="model.Suppliers"%>
-<%@page import="model.Category"%>
 <%@page import="model.Products"%>
 <%@page import="java.util.List"%>
+<%@page import="java.util.ArrayList"%>
 <%@page import="model.Users"%>
+<%@page import="com.google.gson.Gson"%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>Admin Dashboard</title>
+        <title>Admin Dashboard - Product Details</title>
 
         <!-- Bootstrap -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -22,6 +23,62 @@
         <link href="css/dashboard_table.css" rel="stylesheet">
     </head>
     <body>
+        <%
+            Users currentUser = (Users) session.getAttribute("user");
+            if (currentUser == null) {
+                response.sendRedirect("login.jsp");
+                return;
+            }
+            if (currentUser.getRole() != 4) {
+                response.sendRedirect("login");
+                return;
+            }
+
+            int productID = (int) request.getAttribute("productID");
+            List<Products> listProducts = (List<Products>) request.getAttribute("listProducts");
+            List<Variants> listVariants = (List<Variants>) request.getAttribute("listVariants");
+            List<Promotions> listPromotions = (List<Promotions>) request.getAttribute("listPromotions");
+
+            // Lấy danh sách màu sắc và storage unique
+            List<String> allColors = new ArrayList<>();
+            List<String> allStorages = new ArrayList<>();
+            if (listVariants != null) {
+                for (Variants v : listVariants) {
+                    if (!allColors.contains(v.getColor())) {
+                        allColors.add(v.getColor());
+                    }
+                    if (!allStorages.contains(v.getStorage())) {
+                        allStorages.add(v.getStorage());
+                    }
+                }
+            }
+
+            // Tìm promotion cho product này
+            Promotions activePromotion = null;
+            if (listPromotions != null) {
+                for (Promotions pmt : listPromotions) {
+                    if (pmt.getProductID() == productID && "Active".equalsIgnoreCase(pmt.getStatus())) {
+                        activePromotion = pmt;
+                        break;
+                    }
+                }
+            }
+
+            // Tìm thông tin product hiện tại
+            Products currentProduct = null;
+            for (Products p : listProducts) {
+                if (p.getProductID() == productID) {
+                    currentProduct = p;
+                    break;
+                }
+            }
+        %>
+
+        <script>
+        const allColors = <%= new Gson().toJson(allColors)%>;
+        const allStorages = <%= new Gson().toJson(allStorages)%>;
+        </script>
+
         <div class="d-flex" id="wrapper">
             <!-- Sidebar -->
             <nav class="sidebar bg-white shadow-sm border-end">
@@ -29,12 +86,12 @@
                     <h4 class="fw-bold text-primary">Mantis</h4>
                 </div>
                 <ul class="list-unstyled ps-3">
-                    <li><a href="admin" ><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
+                    <li><a href="admin"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
                     <li><a href="admin?action=manageProduct" class="active"><i class="bi bi-box me-2"></i>Products</a></li>
                     <li><a href="admin?action=manageSupplier"><i class="bi bi-truck me-2"></i>Suppliers</a></li>
-                    <li><a href="admin?action=managePromotion"><i class="bi bi-tag me-2"></i></i>Promotions</a></li>
+                    <li><a href="admin?action=managePromotion"><i class="bi bi-tag me-2"></i>Promotions</a></li>
                     <li><a href="admin?action=manageOrder"><i class="bi bi-bag me-2"></i>Orders</a></li>
-                    <li><a href="admin?action=manageReview"><i class="bi bi-bag me-2"></i>Reviews</a></li>
+                    <li><a href="admin?action=manageReview"><i class="bi bi-chat-left-text me-2"></i>Reviews</a></li>
                     <li><a href="admin?action=manageUser"><i class="bi bi-people me-2"></i>Users</a></li>
                     <li><a href="#"><i class="bi bi-gear me-2"></i>Settings</a></li>
                 </ul>
@@ -45,116 +102,387 @@
                 <!-- Navbar -->
                 <nav class="navbar navbar-light bg-white shadow-sm">
                     <div class="container-fluid">
-                        <button class="btn btn-outline-primary" id="menu-toggle"><i class="bi bi-list"></i></button>
-                        <form class="d-none d-md-flex ms-3">
-                            <input class="form-control" type="search" placeholder="Ctrl + K" readonly>
-                        </form>
+                        <button class="btn btn-outline-primary" id="menu-toggle">
+                            <i class="bi bi-list"></i>
+                        </button>
                         <div class="d-flex align-items-center ms-auto">
-                            <div class="position-relative me-3">
-                                <a href="logout">logout</a>
+
+                            <!-- Search Color -->
+                            <div class="d-flex position-relative me-3" id="searchColorForm" autocomplete="off">
+                                <input class="form-control me-2" type="text" id="searchColor"
+                                       placeholder="Search Color…"
+                                       oninput="handleColorSearch(this.value)" style="width: 150px;">
+                                <button class="btn btn-outline-primary" type="button" onclick="applyFilters()">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                                <div id="colorSuggestionBox" class="list-group position-absolute w-100"
+                                     style="top: 100%; z-index: 1000;"></div>
                             </div>
-                            <i class="bi bi-bell me-3 fs-5"></i>
-                            <div class="position-relative me-3">
-                                <i class="bi bi-github fs-5"></i>
+
+                            <!-- Filter Storage -->
+                            <div class="dropdown me-3">
+                                <button class="btn btn-outline-secondary fw-bold dropdown-toggle"
+                                        type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-funnel"></i> Storage
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="filterDropdown">
+                                    <li><button type="button" onclick="selectStorage('')" class="dropdown-item">All Storage</button></li>
+                                        <% if (allStorages != null) {
+                                        for (String storage : allStorages) {%>
+                                    <li><button type="button" onclick="selectStorage('<%= storage%>')" class="dropdown-item">
+                                            <%= storage%>
+                                        </button></li>
+                                        <% }
+                                    }%>
+                                </ul>
                             </div>
-                            <div class="d-flex align-items-center">
+
+                            <a href="logout" class="btn btn-outline-danger btn-sm">Logout</a>
+                            <div class="d-flex align-items-center ms-3">
                                 <img src="https://i.pravatar.cc/40" class="rounded-circle me-2" width="35">
-                                <span>Admin</span>
+                                <span><%= currentUser.getFullName()%></span>
                             </div>
                         </div>
                     </div>
                 </nav>
 
-                <!-- Search bar -->
-                <%
-                    int productID = (int) request.getAttribute("productID");
-                %>
+                <!-- Active Promotion Alert -->
+                <% if (activePromotion != null) {%>
+                <div class="container-fluid px-4 pt-4">
+                    <div class="alert alert-success d-flex align-items-center" role="alert">
+                        <i class="bi bi-tag-fill me-2 fs-4"></i>
+                        <div>
+                            <strong>Active Promotion:</strong> 
+                            <%= activePromotion.getDiscountPercent()%>% OFF 
+                            (Valid: <%= activePromotion.getStartDate()%> - <%= activePromotion.getEndDate()%>)
+                        </div>
+                    </div>
+                </div>
+                <% }%>
+
+                <!-- Action Buttons -->
                 <div class="container-fluid p-4">
-                    <input type="text" class="form-control w-25" placeholder="🔍 Search">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <a class="btn btn-primary px-4 py-2 rounded-pill shadow-sm me-2" 
+                               href="admin?action=createVariant&pid=<%= productID%>">
+                                <i class="bi bi-sliders me-2"></i> Create Variant
+                            </a>
+                            <a class="btn btn-danger px-4 py-2 rounded-pill shadow-sm" 
+                               href="admin?action=deleteProduct&pid=<%= productID%>">
+                                <i class="bi bi-trash me-2"></i> Delete Product
+                            </a>
+                        </div>
+                        <a href="admin?action=manageProduct" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-2"></i>Back to Products
+                        </a>
+                    </div>
                 </div>
-                <div class="container-fluid p-4 ps-3">
-                    <a class="btn btn-primary px-4 py-2 rounded-pill shadow-sm" href="admin?action=createVariant&pid=<%= productID%>">
-                        <i class="bi bi-sliders me-2"></i> Create Variant
-                    </a>
-                    <a class="btn btn-danger px-4 py-2 rounded-pill shadow-sm" href="admin?action=deleteProduct&pid=<%= productID%>">
-                         Delete Product
-                    </a>
-                </div>
-                        
 
-                <!-- Table -->
-                <div class="card shadow-sm border-0 p-4">
-                    <div class="card-body p-0">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>VariantID</th>
-                                    <th>Product Name</th>
-                                    <th>Color</th>
-                                    <th>Storage</th>
-                                    <th>Price</th>
-                                    <th>Discount Price</th>
-                                    <th>Stock</th>
-                                    <th>Description</th>
-                                    <th>ImageURL</th>
+                <!-- Variants Table -->
+                <div class="container-fluid px-4 pb-4">
+                    <div class="card shadow-sm border-0 p-4">
+                        <div class="card-body p-0">
+                            <div class="ps-3 mb-4">
+                                <h4 class="fw-bold mb-1">Product Variants</h4>
+                                <% if (currentProduct != null) {%>
+                                <p class="text-muted mb-0">
+                                    <i class="bi bi-box-seam me-2"></i>
+                                    Product: <span class="fw-semibold"><%= currentProduct.getName()%></span>
+                                </p>
+                                <% } %>
+                            </div>
 
-                                </tr>
-                            </thead>
+                            <!-- Active Filters Display -->
+                            <div class="ps-3 mb-3" id="activeFiltersDisplay" style="display: none;">
+                                <span class="text-muted me-2">Active Filters:</span>
+                                <span id="colorFilterBadge" style="display: none;" class="badge bg-primary me-2">
+                                    Color: <span id="colorFilterText"></span>
+                                    <a href="javascript:void(0)" onclick="clearColorFilter()" 
+                                       class="text-white ms-1" style="text-decoration: none;">×</a>
+                                </span>
+                                <span id="storageFilterBadge" style="display: none;" class="badge bg-secondary me-2">
+                                    Storage: <span id="storageFilterText"></span>
+                                    <a href="javascript:void(0)" onclick="clearStorageFilter()" 
+                                       class="text-white ms-1" style="text-decoration: none;">×</a>
+                                </span>
+                                <button onclick="clearAllFilters()" class="btn btn-sm btn-outline-danger">
+                                    Clear All
+                                </button>
+                            </div>
 
-                            <%
-                                List<Products> listProducts = (List<Products>) request.getAttribute("listProducts");
-                                List<Variants> listVariants = (List<Variants>) request.getAttribute("listVariants");
-
-                            %>
-
-                            <%                                for (Variants v : listVariants) {
-                            String nameProduct="";
-                            //int productID = 0;
-                                
-                                
-                                        for (Products p : listProducts) {
-                                            if (p.getProductID() == v.getProductID()) {
-                                                    nameProduct = p.getName();
-                                                    //productID = p.getProductID();
+                            <% if (listVariants != null && !listVariants.isEmpty()) { %>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>VariantID</th>
+                                            <th>Product Name</th>
+                                            <th>Color</th>
+                                            <th>Storage</th>
+                                            <th>Original Price</th>
+                                            <th>Discount Price</th>
+                                            <th>Final Price</th>
+                                            <th>Stock</th>
+                                            <th>Description</th>
+                                            <th>Image</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="variantsTableBody">
+                                        <%
+                                            for (Variants v : listVariants) {
+                                                // Tìm tên sản phẩm
+                                                String nameProduct = "";
+                                                for (Products p : listProducts) {
+                                                    if (p.getProductID() == v.getProductID()) {
+                                                        nameProduct = p.getName();
+                                                        break;
+                                                    }
                                                 }
-                                        }
-                            %>
 
-                            <tbody>
-                                <tr  onclick="window.location.href = 'admin?action=editProduct&vid=<%= v.getVariantID()%>&pid=<%= productID%>'">
-                                    <td><%= v.getVariantID()%></td>
-
-                                    
-                                    <td><%= nameProduct%></td>                                   
-                                    <td><%= v.getColor()%></td>
-                                    <td><%= v.getStorage()%></td>
-                                    <td><%= String.format("%,.0f", v.getPrice())%></td>
-                                    <td><%= String.format("%,.0f", v.getDiscountPrice())%></td>
-                                    <td><%= v.getStock()%></td>
-                                    <td><%= v.getDescription()%></td>
-                                    <td><%= v.getImageUrl()%></td>
-
-
-
-                                </tr>                          
-                            </tbody>
-
-                            <%
-
-                                }
-                            %>
-
-                        </table>
+                                                // Tính giá cuối cùng với promotion
+                                                double finalPrice = v.getDiscountPrice();
+                                                if (activePromotion != null) {
+                                                    finalPrice = v.getDiscountPrice() * (1 - activePromotion.getDiscountPercent() / 100.0);
+                                                }
+                                                boolean hasPromotion = activePromotion != null;
+                                        %>
+                                        <tr class="variant-row" 
+                                            data-color="<%= v.getColor().toLowerCase()%>" 
+                                            data-storage="<%= v.getStorage()%>"
+                                            onclick="window.location.href = 'admin?action=editProduct&vid=<%= v.getVariantID()%>&pid=<%= productID%>'" 
+                                            style="cursor: pointer;">
+                                            <td><span class="badge bg-primary">#<%= v.getVariantID()%></span></td>
+                                            <td><strong><%= nameProduct%></strong></td>
+                                            <td>
+                                                <span class="badge" style="background-color: <%= v.getColor().toLowerCase()%>; color: white;">
+                                                    <%= v.getColor()%>
+                                                </span>
+                                            </td>
+                                            <td><i class="bi bi-device-hdd me-1"></i><%= v.getStorage()%></td>
+                                            <td><span style="text-decoration: line-through; color: #999;">
+                                                    <%= String.format("%,.0f", v.getPrice())%> ₫
+                                                </span></td>
+                                            <td>
+                                                <% if (hasPromotion) {%>
+                                                <span style="text-decoration: line-through; color: #999;">
+                                                    <%= String.format("%,.0f", v.getDiscountPrice())%> ₫
+                                                </span>
+                                                <% } else {%>
+                                                <strong><%= String.format("%,.0f", v.getDiscountPrice())%> ₫</strong>
+                                                <% }%>
+                                            </td>
+                                            <td>
+                                                <strong class="text-danger fs-5">
+                                                    <%= String.format("%,.0f", finalPrice)%> ₫
+                                                </strong>
+                                                <% if (hasPromotion) {%>
+                                                <span class="badge bg-danger ms-1">
+                                                    -<%= activePromotion.getDiscountPercent()%>%
+                                                </span>
+                                                <% } %>
+                                            </td>
+                                            <td>
+                                                <% if (v.getStock() > 10) {%>
+                                                <span class="badge bg-success"><%= v.getStock()%> units</span>
+                                                <% } else if (v.getStock() > 0) {%>
+                                                <span class="badge bg-warning text-dark"><%= v.getStock()%> units</span>
+                                                <% } else { %>
+                                                <span class="badge bg-danger">Out of Stock</span>
+                                                <% }%>
+                                            </td>
+                                            <td><%= v.getDescription() != null ? (v.getDescription().length() > 50 ? v.getDescription().substring(0, 50) + "..." : v.getDescription()) : "N/A"%></td>
+                                            <td>
+                                                <% if (v.getImageUrl() != null && !v.getImageUrl().isEmpty()) {%>
+                                                <img src="<%= v.getImageUrl()%>" alt="Product" 
+                                                     style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
+                                                <% } else { %>
+                                                <span class="text-muted">No image</span>
+                                                <% } %>
+                                            </td>
+                                        </tr>
+                                        <% } %>
+                                    </tbody>
+                                </table>
+                                <div id="noResultsMessage" style="display: none;" class="text-center py-4">
+                                    <i class="bi bi-inbox fs-1 text-muted"></i>
+                                    <p class="text-muted mt-2">No variants found matching your filters.</p>
+                                </div>
+                            </div>
+                            <% } else { %>
+                            <div class="alert alert-info m-4" role="alert">
+                                <i class="bi bi-info-circle me-2"></i>No variants available for this product.
+                            </div>
+                            <% }%>
+                        </div>
                     </div>
                 </div>
             </div>
+        </div>
 
+        <!-- JS Libraries -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-            <!-- JS Libraries -->
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+        <!-- Custom JS -->
+        <script src="js/dashboard.js"></script>
+        <script>
+                                                // Global variables
+                                                let currentColorFilter = '';
+                                                let currentStorageFilter = '';
 
-            <!-- Custom JS -->
-            <script src="js/dashboard.js"></script>
+                                                document.getElementById("menu-toggle").addEventListener("click", function () {
+                                                    document.getElementById("wrapper").classList.toggle("toggled");
+                                                });
+
+                                                // ------------------ Autocomplete cho Color ------------------
+                                                var debounceTimer;
+                                                function handleColorSearch(str) {
+                                                    var box = document.getElementById("colorSuggestionBox");
+                                                    box.innerHTML = "";
+
+                                                    if (str.length < 1) {
+                                                        clearTimeout(debounceTimer);
+                                                        return;
+                                                    }
+
+                                                    clearTimeout(debounceTimer);
+                                                    debounceTimer = setTimeout(() => {
+                                                        var matches = allColors.filter(color =>
+                                                            color.toLowerCase().includes(str.toLowerCase())
+                                                        );
+
+                                                        if (matches.length > 0) {
+                                                            matches.slice(0, 5).forEach(color => {
+                                                                var item = document.createElement("button");
+                                                                item.type = "button";
+                                                                item.className = "list-group-item list-group-item-action";
+                                                                item.textContent = color;
+                                                                item.onclick = function () {
+                                                                    document.getElementById("searchColor").value = color;
+                                                                    box.innerHTML = "";
+                                                                    currentColorFilter = color;
+                                                                    applyFilters();
+                                                                };
+                                                                box.appendChild(item);
+                                                            });
+                                                        } else {
+                                                            var item = document.createElement("div");
+                                                            item.className = "list-group-item text-muted small";
+                                                            item.textContent = "No colors found.";
+                                                            box.appendChild(item);
+                                                        }
+                                                    }, 200);
+                                                }
+
+                                                // Ẩn suggestions khi click bên ngoài
+                                                document.addEventListener('click', function (e) {
+                                                    var searchInput = document.getElementById('searchColor');
+                                                    var suggestionBox = document.getElementById('colorSuggestionBox');
+                                                    if (!searchInput.contains(e.target) && !suggestionBox.contains(e.target)) {
+                                                        suggestionBox.innerHTML = "";
+                                                    }
+                                                });
+
+                                                // ------------------ Filter Functions ------------------
+                                                function selectStorage(storage) {
+                                                    currentStorageFilter = storage;
+                                                    applyFilters();
+                                                }
+
+                                                function applyFilters() {
+                                                    const colorInput = document.getElementById("searchColor").value.toLowerCase();
+                                                    currentColorFilter = colorInput;
+
+                                                    const rows = document.querySelectorAll('.variant-row');
+                                                    let visibleCount = 0;
+
+                                                    rows.forEach(row => {
+                                                        const rowColor = row.getAttribute('data-color');
+                                                        const rowStorage = row.getAttribute('data-storage');
+
+                                                        const matchColor = !currentColorFilter || rowColor.includes(currentColorFilter);
+                                                        const matchStorage = !currentStorageFilter || rowStorage === currentStorageFilter;
+
+                                                        if (matchColor && matchStorage) {
+                                                            row.style.display = '';
+                                                            visibleCount++;
+                                                        } else {
+                                                            row.style.display = 'none';
+                                                        }
+                                                    });
+
+                                                    // Update UI
+                                                    updateFilterDisplay();
+
+                                                    // Show/hide no results message
+                                                    const noResultsMsg = document.getElementById('noResultsMessage');
+                                                    const tableBody = document.getElementById('variantsTableBody');
+                                                    if (visibleCount === 0) {
+                                                        tableBody.style.display = 'none';
+                                                        noResultsMsg.style.display = 'block';
+                                                    } else {
+                                                        tableBody.style.display = '';
+                                                        noResultsMsg.style.display = 'none';
+                                                    }
+                                                }
+
+                                                function updateFilterDisplay() {
+                                                    const activeFiltersDiv = document.getElementById('activeFiltersDisplay');
+                                                    const colorBadge = document.getElementById('colorFilterBadge');
+                                                    const storageBadge = document.getElementById('storageFilterBadge');
+
+                                                    if (currentColorFilter || currentStorageFilter) {
+                                                        activeFiltersDiv.style.display = 'block';
+
+                                                        if (currentColorFilter) {
+                                                            colorBadge.style.display = 'inline-block';
+                                                            document.getElementById('colorFilterText').textContent = currentColorFilter;
+                                                        } else {
+                                                            colorBadge.style.display = 'none';
+                                                        }
+
+                                                        if (currentStorageFilter) {
+                                                            storageBadge.style.display = 'inline-block';
+                                                            document.getElementById('storageFilterText').textContent = currentStorageFilter;
+                                                        } else {
+                                                            storageBadge.style.display = 'none';
+                                                        }
+                                                    } else {
+                                                        activeFiltersDiv.style.display = 'none';
+                                                    }
+                                                }
+
+                                                function clearColorFilter() {
+                                                    currentColorFilter = '';
+                                                    document.getElementById('searchColor').value = '';
+                                                    applyFilters();
+                                                }
+
+                                                function clearStorageFilter() {
+                                                    currentStorageFilter = '';
+                                                    applyFilters();
+                                                }
+
+                                                function clearAllFilters() {
+                                                    currentColorFilter = '';
+                                                    currentStorageFilter = '';
+                                                    document.getElementById('searchColor').value = '';
+                                                    applyFilters();
+                                                }
+
+                                                // Press Enter to search
+                                                document.getElementById('searchColor').addEventListener('keypress', function (e) {
+                                                    if (e.key === 'Enter') {
+                                                        e.preventDefault();
+                                                        document.getElementById('colorSuggestionBox').innerHTML = '';
+                                                        applyFilters();
+                                                    }
+                                                });
+        </script>
+        <script>
+            document.getElementById("menu-toggle").addEventListener("click", function () {
+                document.getElementById("wrapper").classList.toggle("toggled");
+            });
+        </script>
     </body>
 </html>
