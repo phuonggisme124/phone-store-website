@@ -11,7 +11,6 @@ package model;
 // Class representing items in the shopping cart
 public class CartItems {
 
-    private int cartItemsID;  // Unique ID for each cart item
     private int cartID;       // ID of the cart that this item belongs to
     private int variantID;    // ID of the product variant
     private Variants variants; // Object representing detailed variant information
@@ -19,35 +18,30 @@ public class CartItems {
     private double price;     // Unit price of the product variant
 
     // Constructor to view detailed information of an item in the cart
-    public CartItems(int cartItemsID, int cartID, int quantity, Variants variants) {
-        this.cartItemsID = cartItemsID;
+    public CartItems(int cartID, int quantity, Variants variants) {
         this.cartID = cartID;
         this.quantity = quantity;
         this.variants = variants;
     }
 
     // Constructor with basic product and cart information
-    public CartItems(int cartItemsID, int cartID, int variantID, int quantity) {
-        this.cartItemsID = cartItemsID;
+    public CartItems(int cartID, int variantID, int quantity) {
+
         this.cartID = cartID;
         this.variantID = variantID;
         this.quantity = quantity;
     }
-
+    
+    //Constructor to display product information for payment
+    public CartItems(Variants variants) {
+        this.variants = variants;
+    }
     public int getVariantID() {
         return variantID;
     }
 
     public void setVariantID(int variantID) {
         this.variantID = variantID;
-    }
-
-    public int getCartItemsID() {
-        return cartItemsID;
-    }
-
-    public void setCartItemsID(int cartItemsID) {
-        this.cartItemsID = cartItemsID;
     }
 
     public int getCartID() {
@@ -63,7 +57,7 @@ public class CartItems {
     }
 
     // Setter method (method name should be corrected to setQuantity)
-    public void setQuality(int quantity) {
+    public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
 

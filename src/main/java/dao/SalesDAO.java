@@ -28,6 +28,13 @@ public class SalesDAO extends DBContext {
      * @param shipperId Shipper giao hàng
      */
     public void assignShipperForOrder(int orderId, int staffId, int shipperId) {
+<<<<<<< HEAD
+=======
+        String sql = "UPDATE Sales "
+                + "SET ShipperID = ?, StaffID = ? "
+                + "WHERE OrderID = ?;";
+
+>>>>>>> 8a98e4a (Implement payment and installment feature)
         try {
             // 1) Kiểm tra xem order đã tồn tại trong bảng Sales chưa
             String checkSql = "SELECT SaleID FROM Sales WHERE OrderID = ?";

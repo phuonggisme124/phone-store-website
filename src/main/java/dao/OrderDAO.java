@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -388,7 +389,75 @@ public class OrderDAO extends DBContext {
         return orders;
     }
 
+<<<<<<< HEAD
     //--------------------------------------------
+=======
+    // Test main method
+    public static void main(String[] args) {
+        OrderDAO dao = new OrderDAO();
+        List<Order> list = dao.getAllOrderForStaff();
+
+        if (list.isEmpty()) {
+            System.out.println("No orders found in the database!");
+        } else {
+            System.out.println("===== ORDER LIST (FOR STAFF) =====");
+            for (Order o : list) {
+                System.out.println("Order ID: " + o.getOrderID());
+
+                if (o.getBuyer() != null) {
+                    System.out.println("Buyer: " + o.getBuyer().getFullName()
+                            + " | Phone: " + o.getBuyer().getPhone());
+                } else {
+                    System.out.println("Buyer: (null)");
+                }
+
+                if (o.getShippers() != null) {
+                    System.out.println("Shipper: " + o.getShippers().getFullName()
+                            + " | Phone: " + o.getShippers().getPhone());
+                } else {
+                    System.out.println("Shipper: (not assigned)");
+                }
+
+                System.out.println("Address: " + o.getShippingAddress());
+                System.out.println("Total Amount: " + o.getTotalAmount());
+                System.out.println("Order Date: " + o.getOrderDate());
+                System.out.println("Status: " + o.getStatus());
+                System.out.println("--------------------------------------------");
+            }
+        }
+    }
+    // Add new order when payment successfully
+// Add new order when payment successfully - UPDATED TO RETURN OrderID
+
+    public int addNewOrder(Order o) {
+        String sql = "INSERT INTO Orders (UserID, Status, PaymentMethod, ShippingAddress, TotalAmount, IsInstalment, ReceiverName, ReceiverPhone) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        try {
+            // THAY ĐỔI: Thêm Statement.RETURN_GENERATED_KEYS
+            PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            ps.setInt(1, o.getUserID());
+            ps.setString(2, o.getStatus());
+            ps.setString(3, o.getPaymentMethod());
+            ps.setString(4, o.getShippingAddress());
+            ps.setDouble(5, o.getTotalAmount());
+            ps.setByte(6, o.isIsInstallment());
+            ps.setString(7, o.getBuyer().getFullName());
+            ps.setString(8, o.getBuyer().getPhone());
+            ps.executeUpdate();
+
+            // LẤY OrderID vừa được tự động sinh
+            ResultSet rs = ps.getGeneratedKeys();
+            if (rs.next()) {
+                int generatedOrderID = rs.getInt(1);
+                return generatedOrderID;
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
+        return -1; // Trả về -1 nếu có lỗi
+    }
+>>>>>>> 8a98e4a (Implement payment and installment feature)
 
     // Get all order details by OrderID
     public List<OrderDetails> getAllOrderDetailByOrderID(int oid) {
@@ -419,6 +488,7 @@ public class OrderDAO extends DBContext {
         return list;
     }
 
+<<<<<<< HEAD
     //--------------------------------------------
 
     /**
@@ -539,6 +609,8 @@ public class OrderDAO extends DBContext {
     }
 
     return list;
+=======
+>>>>>>> 8a98e4a (Implement payment and installment feature)
 }
 
     //--------------------------------------------

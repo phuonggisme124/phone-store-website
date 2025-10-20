@@ -73,6 +73,7 @@ public class Payment {
         this.paymentStatus = paymentStatus;
     }
 
+<<<<<<< HEAD
 //    @Override
 //    public String toString() {
 //        return "Payment{"
@@ -81,4 +82,16 @@ public class Payment {
 //                + ", amount="
 //    }
 
+=======
+    @Override
+    public String toString() {
+        return "Payment{" +
+                "paymentID=" + paymentID +
+                ", orderID=" + orderID +
+                ", amount=" + amount +
+                ", paymentDate=" + paymentDate +
+                ", paymentStatus='" + paymentStatus + '\'' +
+                '}';
+    }
+>>>>>>> 8a98e4a (Implement payment and installment feature)
 }

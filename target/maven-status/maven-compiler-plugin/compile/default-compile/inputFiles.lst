@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 D:\ki5\SWP\PhoneStoreWebsite\phone-store-website\src\main\java\model\Suppliers.java
 D:\ki5\SWP\PhoneStoreWebsite\phone-store-website\src\main\java\controller\VariantsServlet.java
 D:\ki5\SWP\PhoneStoreWebsite\phone-store-website\src\main\java\dao\SupplierDAO.java
@@ -86,3 +87,49 @@ D:\swp\group2\phonestorewebsite-Copy\phone-store-website-Copy\phone-store-websit
 D:\swp\group2\phonestorewebsite-Copy\phone-store-website-Copy\phone-store-website\src\main\java\model\CartItems.java
 D:\swp\group2\phonestorewebsite-Copy\phone-store-website-Copy\phone-store-website\src\main\java\model\Products.java
 >>>>>>> b3aa73e2ee74f1ed5c8cabd4d4a9db4c699ba832
+=======
+C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\model\OrderDetails.java
+C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\controller\LoginServlet.java
+C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\utils\DBContext.java
+C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\controller\PaymentServlet.java
+C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\dao\PaymentsDAO.java
+C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\model\Sale.java
+C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\dao\UsersDAO.java
+C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\dao\PromotionsDAO.java
+C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\dao\CartDAO.java
+C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\controller\UserServlet.java
+C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\controller\HomepageServlet.java
+C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\model\Users.java
+C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\controller\CartServlet.java
+C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\dao\SalesDAO.java
+C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\model\Variants.java
+C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\controller\AdminServlet.java
+C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\dao\SupplierDAO.java
+C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\controller\LogoutServlet.java
+C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\controller\test.java
+C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\dao\OrderDetailDAO.java
+C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\controller\ProductServlet.java
+C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\filter\AuthFilter.java
+C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\model\SupportTickets.java
+C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\dao\VariantsDAO.java
+C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\controller\VariantsServlet.java
+C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\dao\ProductDAO.java
+C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\model\CartItems.java
+C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\dao\CategoryDAO.java
+C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\model\Reviews.java
+C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\model\Promotions.java
+C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\dao\OrderDAO.java
+C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\model\Carts.java
+C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\controller\StaffServlet.java
+C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\model\Products.java
+C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\model\Order.java
+C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\controller\OrderServlet.java
+C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\model\Payment.java
+C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\dao\InterestRateDAO.java
+C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\model\Categories.java
+C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\controller\RegisterServlet.java
+C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\model\Category.java
+C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\model\Suppliers.java
+C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\model\InterestRate.java
+C:\Users\ADMIN\Downloads\PhoneStoreWebsite\src\main\java\model\Payments.java
+>>>>>>> 8a98e4a (Implement payment and installment feature)

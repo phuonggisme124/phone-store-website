@@ -4,11 +4,15 @@
 <%@page import="model.Variants"%>
 <%@page import="model.Products"%>
 <%@page import="java.util.List"%>
+<<<<<<< HEAD
 <%@ page import="model.Users" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@page contentType="text/html" pageEncoding="UTF-8" %>
+=======
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+>>>>>>> 8a98e4a (Implement payment and installment feature)
 <!DOCTYPE html>
 <html>
     <head>
@@ -16,68 +20,21 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="format-detection" content="telephone=no">
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <meta name="author" content="">
-        <meta name="keywords" content="">
-        <meta name="description" content="">
         <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="css/style.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<<<<<<< HEAD
         <link rel="stylesheet" href="css/rating.css">
+=======
+>>>>>>> 8a98e4a (Implement payment and installment feature)
         <link rel="stylesheet" href="css/product_detail.css">
         <link rel="stylesheet" href="css/gallery.css">
         <link rel="stylesheet" href="css/select_product.css">
-        <!--        <script src="js/product_detail.js"></script>-->
         <script src="js/modernizr.js"></script>
-        <!-- Swiper CSS -->
-        <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
-
-        <!-- Swiper JS -->
-        <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
     </head>
-    <body data-bs-spy="scroll" data-bs-target="#navbar" data-bs-root-margin="0px 0px -40%" data-bs-smooth-scroll="true" tabindex="0">
 
-
-        <div class="search-popup">
-            <div class="search-popup-container">
-
-                <form role="search" method="get" class="search-form" action="">
-                    <input type="search" id="search-form" class="search-field" placeholder="Type and press enter" value="" name="s" />
-                    <button type="submit" class="search-submit"><svg class="search"><use xlink:href="#search"></use></svg></button>
-                </form>
-
-                <h5 class="cat-list-title">Browse Categories</h5>
-
-                <ul class="cat-list">
-                    <li class="cat-list-item">
-                        <a href="#" title="Mobile Phones">Mobile Phones</a>
-                    </li>
-                    <li class="cat-list-item">
-                        <a href="#" title="Smart Watches">Smart Watches</a>
-                    </li>
-                    <li class="cat-list-item">
-                        <a href="#" title="Headphones">Headphones</a>
-                    </li>
-                    <li class="cat-list-item">
-                        <a href="#" title="Accessories">Accessories</a>
-                    </li>
-                    <li class="cat-list-item">
-                        <a href="#" title="Monitors">Monitors</a>
-                    </li>
-                    <li class="cat-list-item">
-                        <a href="#" title="Speakers">Speakers</a>
-                    </li>
-                    <li class="cat-list-item">
-                        <a href="#" title="Memory Cards">Memory Cards</a>
-                    </li>
-                </ul>
-
-            </div>
-        </div>
+    <body data-bs-spy="scroll" data-bs-target="#navbar" tabindex="0">
 
         <header id="header" class="site-header header-scrolled position-fixed text-black bg-light">
             <nav id="header-nav" class="navbar navbar-expand-lg px-3 mb-3">
@@ -85,6 +42,7 @@
                     <a class="navbar-brand" href="index.html">
                         <img src="images/main-logo.png" class="logo">
                     </a>
+<<<<<<< HEAD
                     <button class="navbar-toggler d-flex d-lg-none order-3 p-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#bdNavbar" aria-controls="bdNavbar" aria-expanded="false" aria-label="Toggle navigation">
                         <svg class="navbar-icon">
                         <use xlink:href="#navbar-icon"></use>
@@ -106,45 +64,47 @@
                                     List<Category> listCategory = (List<Category>) request.getAttribute("listCategory");
                                     int categoryID = (int) request.getAttribute("categoryID");
 
+=======
+>>>>>>> 8a98e4a (Implement payment and installment feature)
 
-                                %>
+                    <div class="offcanvas-body">
+                        <ul id="navbar" class="navbar-nav text-uppercase justify-content-end align-items-center flex-grow-1 pe-3">
+                            <li class="nav-item">
+                                <a class="nav-link me-4" href="homepage">Home</a>
+                            </li>
 
-                                <%                                for (Category c : listCategory) {
-                                %>
-                                <li class="nav-item">
-                                    <a class="nav-link me-4 <%= (categoryID == c.getCategoryId() ? "active" : "")%>" href="product?action=category&cID=<%= c.getCategoryId()%>"><%= c.getCategoryName()%></a>
-                                </li>
-                                <%
-                                    }
-                                %>
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link me-4 dropdown-toggle link-dark" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Pages</a>
-                                    <ul class="dropdown-menu">
-                                        <li>
-                                            <a href="about.html" class="dropdown-item">About</a>
-                                        </li>
-                                        <li>
-                                            <a href="blog.html" class="dropdown-item">Blog</a>
-                                        </li>
-                                        <li>
-                                            <a href="shop.html" class="dropdown-item">Shop</a>
-                                        </li>
-                                        <li>
-                                            <a href="cart.html" class="dropdown-item">Cart</a>
-                                        </li>
-                                        <li>
-                                            <a href="checkout.html" class="dropdown-item">Checkout</a>
-                                        </li>
-                                        <li>
-                                            <a href="single-post.html" class="dropdown-item">Single Post</a>
-                                        </li>
-                                        <li>
-                                            <a href="single-product.html" class="dropdown-item">Single Product</a>
-                                        </li>
-                                        <li>
-                                            <a href="contact.html" class="dropdown-item">Contact</a>
-                                        </li>
+                            <%
+                                List<Category> listCategory = (List<Category>) request.getAttribute("listCategory");
+                                int categoryID = (int) request.getAttribute("categoryID");
+                                for (Category c : listCategory) {
+                            %>
+                            <li class="nav-item">
+                                <a class="nav-link me-4 <%= (categoryID == c.getCategoryId() ? "active" : "")%>"
+                                   href="product?action=category&cID=<%= c.getCategoryId()%>"><%= c.getCategoryName()%></a>
+                            </li>
+                            <% } %>
+
+                            <li class="nav-item">
+                                <div class="user-items ps-5">
+                                    <ul class="d-flex justify-content-end list-unstyled align-items-center">
+                                        <%
+                                            model.Users user = (model.Users) session.getAttribute("user");
+                                            boolean isLoggedIn = (user != null);
+                                            String displayName = "";
+                                            int userID = user.getUserId();
+                                            if (isLoggedIn) {
+                                                displayName = (user.getFullName() != null && !user.getFullName().trim().isEmpty())
+                                                        ? user.getFullName() : user.getEmail();
+                                        %>
+                                        <li class="pe-3"><a href="cart.html"><svg class="cart"><use xlink:href="#cart"></use></svg></a></li>
+                                        <li class="pe-3"><a href="logout" class="nav-link p-0 text-dark fw-bold">Logout</a></li>
+                                        <li class="text-dark fw-bold"><%= displayName%></li>
+                                            <% } else { %>
+                                        <li class="pe-3"><a href="login.jsp" class="nav-link p-0 text-dark fw-bold">Login/Register</a></li>
+                                        <li class="text-dark fw-bold">Hello Guest</li>
+                                            <% } %>
                                     </ul>
+<<<<<<< HEAD
                                 </li>
 
                                 <li class="nav-item"> 
@@ -222,28 +182,39 @@
                                 </li>
                             </ul>
                         </div>
+=======
+                                </div>
+                            </li>
+                        </ul>
+>>>>>>> 8a98e4a (Implement payment and installment feature)
                     </div>
                 </div>
             </nav>
         </header>
 
+<<<<<<< HEAD
 
         <section id="billboard" class="position-relative overflow-hidden bg-light-blue">
 
         </section>
         <!-- detail -->
+=======
+>>>>>>> 8a98e4a (Implement payment and installment feature)
         <%
             ProductDAO pdao = new ProductDAO();
             int productID = (int) request.getAttribute("productID");
             //double rating = (double) request.getAttribute("rating");
             Variants variants = (Variants) request.getAttribute("variants");
+            int currentVariantID = variants.getVariantID();
             List<Variants> listVariants = (List<Variants>) request.getAttribute("listVariants");
             List<String> listStorage = (List<String>) request.getAttribute("listStorage");
-
         %>
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 8a98e4a (Implement payment and installment feature)
         <section id="billboard" class="bg-light-blue overflow-hidden mt-5 padding-large">
             <div class="container">
                 <h3><%= pdao.getNameByID(variants.getProductID())%></h3>
@@ -253,57 +224,49 @@
                 <!-- LEFT -->
                 <div class="product-left">
                     <div class="gallery">
-                        <!-- Radio buttons (?n) -->
-
                         <input type="radio" name="gallery" id="img1" checked>
                         <input type="radio" name="gallery" id="img2">
                         <input type="radio" name="gallery" id="img3">
                         <input type="radio" name="gallery" id="img4">
 
-                        <!-- ?nh l?n -->
                         <div class="main-image">
-                            <img src="images/post-item1.jpg" alt="?nh 1">
-                            <img src="images/post-item2.jpg" alt="?nh 2">
-                            <img src="images/post-item3.jpg" alt="?nh 3">
-                            <img src="images/post-item4.jpg" alt="?nh 4">
+                            <img src="images/post-item1.jpg" alt="img1">
+                            <img src="images/post-item2.jpg" alt="img2">
+                            <img src="images/post-item3.jpg" alt="img3">
+                            <img src="images/post-item4.jpg" alt="img4">
                         </div>
 
-                        <!-- Thumbnail -->
                         <div class="thumbnails">
-                            <label for="img1"><img src="images/post-item1.jpg" alt="thumb 1"></label>
-                            <label for="img2"><img src="images/post-item2.jpg" alt="thumb 2"></label>
-                            <label for="img3"><img src="images/post-item3.jpg" alt="thumb 3"></label>
-                            <label for="img4"><img src="images/post-item4.jpg" alt="thumb 4"></label>
+                            <label for="img1"><img src="images/post-item1.jpg" alt="thumb1"></label>
+                            <label for="img2"><img src="images/post-item2.jpg" alt="thumb2"></label>
+                            <label for="img3"><img src="images/post-item3.jpg" alt="thumb3"></label>
+                            <label for="img4"><img src="images/post-item4.jpg" alt="thumb4"></label>
                         </div>
                     </div>
                 </div>
 
                 <!-- RIGHT -->
-                <%
-                    String storage = variants.getStorage();
-                %>
-
                 <div class="product-right">
+<<<<<<< HEAD
 
                     <!--                <form action="product">-->
                     <!-- Giá -->
+=======
+>>>>>>> 8a98e4a (Implement payment and installment feature)
                     <div class="price-box">
                         <p>Price</p>
-                        <h2 id="price">
-                            <%= String.format("%,.0f", variants.getDiscountPrice())%> VND
-                        </h2>
+                        <h2 id="price"><%= String.format("%,.0f", variants.getDiscountPrice())%> VND</h2>
                     </div>
 
-                    <!-- Storage -->
-                    <% if (!storage.equals("N/A")) { %>
+                    <% if (!variants.getStorage().equals("N/A")) { %>
                     <div class="option-box">
                         <p>Version</p>
                         <div class="option-list">
                             <%
                                 int i = 0;
                                 for (String v : listStorage) {
-
                                     String storageId = "storage_" + i;
+<<<<<<< HEAD
 
                             %>
                             <input type="radio" id="<%= storageId%>"
@@ -315,17 +278,24 @@
 
                                     i += 1;
                                 }
+=======
+>>>>>>> 8a98e4a (Implement payment and installment feature)
                             %>
+                            <input type="radio" id="<%= storageId%>" name="storage"
+                                   <%= (variants.getStorage().equals(v)) ? "checked" : ""%> >
+                            <a href="product?action=selectStorage&pID=<%= variants.getProductID()%>&color=<%= variants.getColor()%>&storage=<%= v%>&cID=<%= categoryID%>"
+                               class="option-label"><%= v%></a>
+                            <% i++;
+                                } %>
                         </div>
                     </div>
-                    <%
-                        }
-                    %>
-                    <!-- Color -->
+                    <% } %>
+
+                    <!-- COLOR -->
                     <div class="option-box">
                         <p>Color</p>
-
                         <div class="color-list">
+<<<<<<< HEAD
 
                             <% int i = 0;
                                 for (Variants v : listVariants) {
@@ -339,23 +309,79 @@
                             <a href="product?action=selectStorage&pID=<%= variants.getProductID()%>&color=<%= colorV%>&storage=<%= variants.getStorage()%>&cID=<%= categoryID%>"   for="<%= colorId%>" class="color-label"
                                style="background-color:<%= colorV%>;">
                             </a>
+=======
+>>>>>>> 8a98e4a (Implement payment and installment feature)
                             <%
-                                    }
-                                    i += 1;
-                                }
+                                int j = 0;
+                                for (Variants v : listVariants) {
+                                    if (variants.getStorage().equals(v.getStorage())) {
+                                        String colorId = "color_" + j;
                             %>
+                            <input type="radio" id="<%= colorId%>" name="color"
+                                   value="<%= v.getColor()%>"
+                                   <%= (variants.getColor().equals(v.getColor())) ? "checked" : ""%> >
+                            <%currentVariantID = v.getVariantID();%>
+                            <a href="product?action=selectStorage&pID=<%= variants.getProductID()%>&color=<%= v.getColor()%>&storage=<%= variants.getStorage()%>&cID=<%= categoryID%>&vID=<%= v.getVariantID()%>"
+                               class="color-label"
+                               style="background-color:<%= v.getColor()%>;"></a>
+                            <% }
+                                    j++;
+                                }%>
                         </div>
-
-
                     </div>
 
+<<<<<<< HEAD
                     <div class="action-buttons">
                         <button class="buy-now">BUY NOW</button>
                         <button class="add-cart">? Add to cart</button>
 
+=======
+                    <!-- QUANTITY -->
+                    <div>
+                        <p>Quantity</p>
+                        <input type="number" name="quantity" id="quantity" value="1" min="1" max="99" required>
+>>>>>>> 8a98e4a (Implement payment and installment feature)
                     </div>
 
-                    <!--                </form>             -->
+                                        <!-- ACTION BUTTONS -->
+                                        <div class="action-buttons">
+                                                <% if (user != null) {%>
+                                                    <!-- BUY NOW FORM -->
+                                                    <form action="payment" method="get" style="display: inline-block;">
+                                                            <input type="hidden" name="variantID" value="<%= currentVariantID%>">
+                                                            <input type="hidden" name="quantity" class="hiddenQuantityInput" value="1">
+                                                            <!-- Trường này để phân biệt hành động 'buy now' và 'add to cart' ở phía server -->
+                                                            <input type="hidden" name="action" value="buyNowFromProductDetail">
+                                                            <button type="submit" class="buy-now">BUY NOW</button>
+                                                        </form>
+                                                
+                                                    <!-- ADD TO CART FORM -->
+                                                    <form action="${pageContext.request.contextPath}/cart" method="post" style="display: inline-block;">
+                                                            <input type="hidden" name="userID" value="<%= user.getUserId()%>">
+                                                            <input type="hidden" name="variantID" value="<%= currentVariantID%>">
+                                                            <input type="hidden" name="quantity" class="hiddenQuantityInput" value="1">
+                                                          
+                                                            <button type="submit" class="add-cart">Add to cart</button>
+                                                        </form>
+                                                
+                                                    <script>
+                                                            const qtyInput = document.getElementById('quantity');
+                                                            // Lấy tất cả các trường số lượng ẩn
+                                                            const hiddenQtyFields = document.querySelectorAll('.hiddenQuantityInput');
+                                                            qtyInput.addEventListener('input', () => {
+                                                                    // Cập nhật giá trị cho tất cả các trường ẩn khi số lượng thay đổi
+                                                                    hiddenQtyFields.forEach(field => {
+                                                                            field.value = qtyInput.value;
+                                                                    });
+                                                            });
+                                                    </script>
+
+                                                <% } else { %>
+                                                    <!-- If user is not logged in, BUY NOW button just goes to login -->
+                                                    <a href="login.jsp" class="buy-now">BUY NOW</a>
+                                                    <p class="text-danger fw-bold mt-2">Bạn cần <a href="login.jsp">đăng nhập</a> để thêm vào giỏ hàng.</p>
+                                                <% }%>
+                                            </div>
                 </div>
             </div>
         </section>
@@ -484,167 +510,19 @@
 
         <footer id="footer" class="overflow-hidden">
             <div class="container">
-                <div class="row">
-                    <div class="footer-top-area">
-                        <div class="row d-flex flex-wrap justify-content-between">
-                            <div class="col-lg-3 col-sm-6 pb-3">
-                                <div class="footer-menu">
-                                    <img src="images/main-logo.png" alt="logo">
-                                    <p>Nisi, purus vitae, ultrices nunc. Sit ac sit suscipit hendrerit. Gravida massa volutpat aenean odio erat nullam fringilla.</p>
-                                    <div class="social-links">
-                                        <ul class="d-flex list-unstyled">
-                                            <li>
-                                                <a href="#">
-                                                    <svg class="facebook">
-                                                    <use xlink:href="#facebook" />
-                                                    </svg>
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a href="#">
-                                                    <svg class="instagram">
-                                                    <use xlink:href="#instagram" />
-                                                    </svg>
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a href="#">
-                                                    <svg class="twitter">
-                                                    <use xlink:href="#twitter" />
-                                                    </svg>
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a href="#">
-                                                    <svg class="linkedin">
-                                                    <use xlink:href="#linkedin" />
-                                                    </svg>
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a href="#">
-                                                    <svg class="youtube">
-                                                    <use xlink:href="#youtube" />
-                                                    </svg>
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-2 col-sm-6 pb-3">
-                                <div class="footer-menu text-uppercase">
-                                    <h5 class="widget-title pb-2">Quick Links</h5>
-                                    <ul class="menu-list list-unstyled text-uppercase">
-                                        <li class="menu-item pb-2">
-                                            <a href="#">Home</a>
-                                        </li>
-                                        <li class="menu-item pb-2">
-                                            <a href="#">About</a>
-                                        </li>
-                                        <li class="menu-item pb-2">
-                                            <a href="#">Shop</a>
-                                        </li>
-                                        <li class="menu-item pb-2">
-                                            <a href="#">Blogs</a>
-                                        </li>
-                                        <li class="menu-item pb-2">
-                                            <a href="#">Contact</a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="col-lg-3 col-sm-6 pb-3">
-                                <div class="footer-menu text-uppercase">
-                                    <h5 class="widget-title pb-2">Help & Info Help</h5>
-                                    <ul class="menu-list list-unstyled">
-                                        <li class="menu-item pb-2">
-                                            <a href="#">Track Your Order</a>
-                                        </li>
-                                        <li class="menu-item pb-2">
-                                            <a href="#">Returns Policies</a>
-                                        </li>
-                                        <li class="menu-item pb-2">
-                                            <a href="#">Shipping + Delivery</a>
-                                        </li>
-                                        <li class="menu-item pb-2">
-                                            <a href="#">Contact Us</a>
-                                        </li>
-                                        <li class="menu-item pb-2">
-                                            <a href="#">Faqs</a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="col-lg-3 col-sm-6 pb-3">
-                                <div class="footer-menu contact-item">
-                                    <h5 class="widget-title text-uppercase pb-2">Contact Us</h5>
-                                    <p>Do you have any queries or suggestions? <a href="mailto:">yourinfo@gmail.com</a>
-                                    </p>
-                                    <p>If you need support? Just give us a call. <a href="">+55 111 222 333 44</a>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <p class="text-center mt-3">© 2023 MiniStore. Design by TemplatesJungle</p>
             </div>
-            <hr>
         </footer>
-        <div id="footer-bottom">
-            <div class="container">
-                <div class="row d-flex flex-wrap justify-content-between">
-                    <div class="col-md-4 col-sm-6">
-                        <div class="Shipping d-flex">
-                            <p>We ship with:</p>
-                            <div class="card-wrap ps-2">
-                                <img src="images/dhl.png" alt="visa">
-                                <img src="images/shippingcard.png" alt="mastercard">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 col-sm-6">
-                        <div class="payment-method d-flex">
-                            <p>Payment options:</p>
-                            <div class="card-wrap ps-2">
-                                <img src="images/visa.jpg" alt="visa">
-                                <img src="images/mastercard.jpg" alt="mastercard">
-                                <img src="images/paypal.jpg" alt="paypal">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 col-sm-6">
-                        <div class="copyright">
-                            <p>? Copyright 2023 MiniStore. Design by <a href="https://templatesjungle.com/">TemplatesJungle</a> Distribution by <a href="https://themewagon.com">ThemeWagon</a>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+
         <script src="js/jquery-1.11.0.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
-        <script type="text/javascript" src="js/bootstrap.bundle.min.js"></script>
-        <script type="text/javascript" src="js/plugins.js"></script>
-        <script type="text/javascript" src="js/script.js"></script>
+        <script src="js/bootstrap.bundle.min.js"></script>
+        <script src="js/script.js"></script>
         <script>
-            var swiper = new Swiper(".product-swiper", {
-                slidesPerView: 4,
-                spaceBetween: 30,
-                pagination: {
-                    el: ".swiper-pagination",
-                    clickable: true,
-                },
-                breakpoints: {
-                    320: {slidesPerView: 1},
-                    768: {slidesPerView: 2},
-                    1024: {slidesPerView: 4}
-                }
-            });
+                            const qtyInput = document.getElementById('quantity');
+                            const hiddenQty = document.getElementById('hiddenQuantity');
+                            qtyInput.addEventListener('input', () => hiddenQty.value = qtyInput.value);
         </script>
 
-
-        <!--    <script src="js/product_detail.js"></script>-->
 
     </body>
 </html>

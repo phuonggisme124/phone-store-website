@@ -36,7 +36,20 @@ public class Variants {
         this.description = description;
         this.imageUrl = imageUrl;
     }
-
+    
+        // Constructor for display in cart
+    public Variants(int variantID, int productID, String color, String storage, double price
+            , Double discountPrice, int stock,
+            String imageUrl) {
+        this.variantID = variantID;
+        this.productID = productID;
+        this.color = color;
+        this.stock = stock;
+        this.price = price;
+        this.discountPrice = discountPrice;
+        this.storage = storage;
+        this.imageUrl = imageUrl;
+    }
     //=================== GETTERS & SETTERS ===================//
     public int getVariantID() {
         return variantID;

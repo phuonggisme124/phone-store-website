@@ -1,25 +1,9 @@
-<%@page import="model.Category"%>
+<%-- File: homepage.jsp --%>
 <%@page import="model.Products"%>
 <%@page import="java.util.List"%>
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Ministore</title>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="format-detection" content="telephone=no">
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <meta name="author" content="">
-        <meta name="keywords" content="">
-        <meta name="description" content="">
-        <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
-        <link rel="stylesheet" type="text/css" href="css/style.css">
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 
+<<<<<<< HEAD
         <script src="js/modernizr.js"></script>
         <!-- Swiper CSS -->
         <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
@@ -192,8 +176,21 @@
 
                                 </ul>
                             </li>
+=======
+<%-- Nhúng header vào đây --%>
+<%@ include file="/layout/header.jsp" %>
 
 
+<section style="background-color: white" id="billboard" class="position-relative overflow-hidden bg-light-blue">
+    <%-- Code của billboard (swiper main-swiper)... --%>
+</section>
+>>>>>>> 8a98e4a (Implement payment and installment feature)
+
+<section id="company-services" class="padding-large">
+    <%-- Code của company-services... --%>
+</section>
+
+<<<<<<< HEAD
                             <div class="user-items ps-5">
                                 <ul class="d-flex justify-content-end list-unstyled align-items-center">
                                     <%
@@ -417,218 +414,59 @@
                 <h2 class="text-uppercase fw-bold">Smart Watches</h2>
                 <a href="shop.html" class="text-uppercase text-decoration-underline">Go to Shop</a>
             </div>
+=======
+<section id="mobile-products" class="product-store position-relative padding-large no-padding-top">
+    <div class="container">
+        <div class="row">
+            <div class="display-header d-flex justify-content-between pb-3">
+                <h2 class="display-7 text-dark text-uppercase">Mobile Products</h2>
+                <div class="btn-right">
+                    <a href="shop.html" class="btn btn-medium btn-normal text-uppercase">Go to Shop</a>
+                </div>
+            </div>
+>>>>>>> 8a98e4a (Implement payment and installment feature)
 
             <%
-                List<Products> watchproduct = (List<Products>) request.getAttribute("productList");
-                if (productList == null && request.getParameter("fromProduct") == null) {
-                    response.sendRedirect(request.getContextPath() + "/product?fromProduct=true");
-                    return;
-                }
+                List<Products> productList = (List<Products>) request.getAttribute("productList");
+                if (productList == null) {
+                    // Xử lý khi list rỗng hoặc null, có thể hiển thị thông báo
+                } else {
             %>
             <div class="swiper product-swiper">
                 <div class="swiper-wrapper">
-                    <%for (Products p : watchproduct) {%>
-                    <!-- Product 1 -->
+                    <% for (Products p : productList) {%>
                     <div class="swiper-slide">
                         <div class="product-card text-center position-relative">
                             <div class="image-holder">
+<<<<<<< HEAD
                                 <img src="img/<%= p.getVariants().get(0).getImageUrl()%>" alt="<%= p.getName()%>" class="img-fluid rounded-3">
+=======
+                                <img src="images/<%= p.getVariants().get(0).getImageUrl()%>" alt="<%= p.getName()%>" class="img-fluid rounded-3">
+>>>>>>> 8a98e4a (Implement payment and installment feature)
                             </div>
                             <div class="card-detail pt-3">
                                 <h3 class="card-title text-uppercase">
                                     <a href="product?action=viewDetail&pID=<%= p.getProductID()%>"><%=p.getName()%></a>
                                 </h3>
-                                <span class="item-price text-primary"><%= p.getVariants().get(0).getPrice()%></span>
+                                <span class="item-price text-primary">$<%= p.getVariants().get(0).getPrice()%></span>
                             </div>
                         </div>
                     </div>
-                    <%}%>
+                    <% } %>
                 </div>
             </div>
-        </div>
-    </section>
-
-
-    <section id="yearly-sale" class="bg-light-blue overflow-hidden mt-5 padding-xlarge" style="background-image: url('images/single-image1.png');background-position: right; background-repeat: no-repeat;">
-        <div class="row d-flex flex-wrap align-items-center">
-            <div class="col-md-6 col-sm-12">
-                <div class="text-content offset-4 padding-medium">
-                    <h3>10% off</h3>
-                    <h2 class="display-2 pb-5 text-uppercase text-dark">New year sale</h2>
-                    <a href="shop.html" class="btn btn-medium btn-dark text-uppercase btn-rounded-none">Shop Sale</a>
-                </div>
-            </div>
-            <div class="col-md-6 col-sm-12">
-
-            </div>
-        </div>
-    </section>
-    <div class="container padding-xlarge">
-        <footer id="footer" class="overflow-hidden">
-            <div class="container">
-                <div class="row">
-                    <div class="footer-top-area">
-                        <div class="row d-flex flex-wrap justify-content-between">
-                            <div class="col-lg-3 col-sm-6 pb-3">
-                                <div class="footer-menu">
-                                    <img src="images/main-logo.png" alt="logo">
-                                    <p>Nisi, purus vitae, ultrices nunc. Sit ac sit suscipit hendrerit. Gravida massa volutpat aenean odio erat nullam fringilla.</p>
-                                    <div class="social-links">
-                                        <ul class="d-flex list-unstyled">
-                                            <li>
-                                                <a href="#">
-                                                    <svg class="facebook">
-                                                    <use xlink:href="#facebook" />
-                                                    </svg>
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a href="#">
-                                                    <svg class="instagram">
-                                                    <use xlink:href="#instagram" />
-                                                    </svg>
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a href="#">
-                                                    <svg class="twitter">
-                                                    <use xlink:href="#twitter" />
-                                                    </svg>
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a href="#">
-                                                    <svg class="linkedin">
-                                                    <use xlink:href="#linkedin" />
-                                                    </svg>
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a href="#">
-                                                    <svg class="youtube">
-                                                    <use xlink:href="#youtube" />
-                                                    </svg>
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-2 col-sm-6 pb-3">
-                                <div class="footer-menu text-uppercase">
-                                    <h5 class="widget-title pb-2">Quick Links</h5>
-                                    <ul class="menu-list list-unstyled text-uppercase">
-                                        <li class="menu-item pb-2">
-                                            <a href="#">Home</a>
-                                        </li>
-                                        <li class="menu-item pb-2">
-                                            <a href="#">About</a>
-                                        </li>
-                                        <li class="menu-item pb-2">
-                                            <a href="#">Shop</a>
-                                        </li>
-                                        <li class="menu-item pb-2">
-                                            <a href="#">Blogs</a>
-                                        </li>
-                                        <li class="menu-item pb-2">
-                                            <a href="#">Contact</a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="col-lg-3 col-sm-6 pb-3">
-                                <div class="footer-menu text-uppercase">
-                                    <h5 class="widget-title pb-2">Help & Info Help</h5>
-                                    <ul class="menu-list list-unstyled">
-                                        <li class="menu-item pb-2">
-                                            <a href="#">Track Your Order</a>
-                                        </li>
-                                        <li class="menu-item pb-2">
-                                            <a href="#">Returns Policies</a>
-                                        </li>
-                                        <li class="menu-item pb-2">
-                                            <a href="#">Shipping + Delivery</a>
-                                        </li>
-                                        <li class="menu-item pb-2">
-                                            <a href="#">Contact Us</a>
-                                        </li>
-                                        <li class="menu-item pb-2">
-                                            <a href="#">Faqs</a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="col-lg-3 col-sm-6 pb-3">
-                                <div class="footer-menu contact-item">
-                                    <h5 class="widget-title text-uppercase pb-2">Contact Us</h5>
-                                    <p>Do you have any queries or suggestions? <a href="mailto:">yourinfo@gmail.com</a>
-                                    </p>
-                                    <p>If you need support? Just give us a call. <a href="">+55 111 222 333 44</a>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <hr>
-        </footer>
-    </div>
-
-
-
-
-    <div id="footer-bottom">
-        <div class="container">
-            <div class="row d-flex flex-wrap justify-content-between">
-                <div class="col-md-4 col-sm-6">
-                    <div class="Shipping d-flex">
-                        <p>We ship with:</p>
-                        <div class="card-wrap ps-2">
-                            <img src="images/dhl.png" alt="visa">
-                            <img src="images/shippingcard.png" alt="mastercard">
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4 col-sm-6">
-                    <div class="payment-method d-flex">
-                        <p>Payment options:</p>
-                        <div class="card-wrap ps-2">
-                            <img src="images/visa.jpg" alt="visa">
-                            <img src="images/mastercard.jpg" alt="mastercard">
-                            <img src="images/paypal.jpg" alt="paypal">
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4 col-sm-6">
-                    <div class="copyright">
-                        <p>? Copyright 2023 MiniStore. Design by <a href="https://templatesjungle.com/">TemplatesJungle</a> Distribution by <a href="https://themewagon.com">ThemeWagon</a>
-                        </p>
-                    </div>
-                </div>
-            </div>
+            <% } %>
         </div>
     </div>
-    <script src="js/jquery-1.11.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
-    <script type="text/javascript" src="js/bootstrap.bundle.min.js"></script>
-    <script type="text/javascript" src="js/plugins.js"></script>
-    <script type="text/javascript" src="js/script.js"></script>
-    <script>
-        var swiper = new Swiper(".product-swiper", {
-            slidesPerView: 4,
-            spaceBetween: 30,
-            pagination: {
-                el: ".swiper-pagination",
-                clickable: true,
-            },
-            breakpoints: {
-                320: {slidesPerView: 1},
-                768: {slidesPerView: 2},
-                1024: {slidesPerView: 4}
-            }
-        });
-    </script>
+</section>
 
-</body>
-</html>
+<section id="smart-watches" class="padding-large">
+     <%-- Tương tự, bạn có thể load danh sách smartwatch ở đây --%>
+</section>
+
+<section id="yearly-sale" class="bg-light-blue overflow-hidden mt-5 padding-xlarge" style="background-image: url('images/single-image1.png');background-position: right; background-repeat: no-repeat;">
+    <%-- Code của yearly-sale... --%>
+</section>
+
+<%-- Nhúng footer vào đây --%>
+<%@ include file="/layout/footer.jsp" %>

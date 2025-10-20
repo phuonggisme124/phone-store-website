@@ -20,12 +20,20 @@ public class Order {
     private String status;
     private LocalDateTime orderDate;
 
+<<<<<<< HEAD
     // --- Optional fields ---
     private boolean isInstalment;
     private Users buyer;
     private Users shippers;
     private String buyerName;
     private String buyerPhone;
+=======
+    // --- Optional fields (Allow Nulls) ---
+    private byte isInstalment;       // bit, Allow Nulls
+    private Users buyer;                // Object reference to the buyer (Users)
+    private Users shippers;             // Object reference to the shipper (Users)
+    
+>>>>>>> 8a98e4a (Implement payment and installment feature)
 
     // Constructor 1: Basic order info
     public Order(int orderID, Users buyer, String shippingAddress, double totalAmount, String status, LocalDateTime orderDate) {
@@ -48,6 +56,7 @@ public class Order {
         this.orderDate = orderDate;
     }
 
+<<<<<<< HEAD
     // Constructor 3: Full data from database (used by DAO)
     public Order(int orderId, int userId, String buyerName, String buyerPhone, String buyerAddress, double totalAmount, String paymentMethod, String status, LocalDateTime orderDate) {
         this.orderID = orderId;
@@ -64,13 +73,27 @@ public class Order {
     // Constructor 4: Create order with all DB fields
     public Order(int orderID, int userID, String paymentMethod, String shippingAddress, double totalAmount, String status, LocalDateTime orderDate, boolean isInstalment) {
         this.orderID = orderID;
+=======
+    /**
+     * Constructor for order creation including all database fields.
+     *
+     * @param userID Buyer ID
+     * @param paymentMethod Payment method
+     * @param shippingAddress Shipping address
+     * @param totalAmount Total price of the order
+     * @param status Order status
+     * @param isInstalment Whether the order is paid in instalments
+     * @param buyer
+     */
+    public Order( int userID, String paymentMethod, String shippingAddress, double totalAmount, String status, byte isInstalment, Users buyer) {
+>>>>>>> 8a98e4a (Implement payment and installment feature)
         this.userID = userID;
         this.paymentMethod = paymentMethod;
         this.shippingAddress = shippingAddress;
         this.totalAmount = totalAmount;
         this.status = status;
-        this.orderDate = orderDate;
         this.isInstalment = isInstalment;
+        this.buyer= buyer;
     }
 
     // --- Getters and Setters ---
@@ -130,11 +153,19 @@ public class Order {
         this.orderDate = orderDate;
     }
 
+<<<<<<< HEAD
     public boolean isInstalment() {
         return isInstalment;
     }
 
     public void setInstalment(boolean isInstalment) {
+=======
+    public byte isIsInstallment() {
+        return isInstalment;
+    }
+
+    public void setIsInstallment(byte isInstalment) {
+>>>>>>> 8a98e4a (Implement payment and installment feature)
         this.isInstalment = isInstalment;
     }
 
