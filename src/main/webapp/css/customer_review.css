@@ -1,0 +1,375 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : Oct 19, 2025, 2:25:58 PM
+    Author     : duynu
+*/
+.review-container {
+    max-width: 900px; /* Chiều rộng tối đa */
+    margin: 20px auto; /* Căn giữa */
+    padding: 20px;
+    border: 1px solid #ddd;
+    font-family: Arial, sans-serif;
+}
+
+.overall-rating, .rating-breakdown {
+    /* Chia làm 2 cột: điểm tổng quan và biểu đồ */
+    /* Có thể bọc cả 2 trong 1 div cha và dùng flex */
+}
+
+.overall-rating {
+    /* Kiểu cho số điểm lớn */
+}
+
+.score-display {
+    display: flex;
+    align-items: flex-start; /* Giúp số /5 nhỏ hơn căn trên */
+    margin-bottom: 5px;
+}
+
+.star-icon {
+    font-size: 30px; /* Kích thước icon sao nhỏ */
+    color: #ffc107; /* Màu vàng sao */
+}
+
+.main-score {
+    font-size: 48px; /* Điểm 4.9 lớn */
+    font-weight: bold;
+    margin-left: 5px;
+}
+
+.max-score {
+    font-size: 18px;
+    color: #666;
+    margin-top: 25px; /* Căn chỉnh để nằm trên */
+}
+
+.star-row {
+    display: flex; /* Xếp sao, thanh, % nằm ngang */
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.star-level {
+    width: 30px; /* Đảm bảo căn đều cột sao */
+}
+
+.progress-bar-wrap {
+    flex-grow: 1; /* Cho phép thanh chiếm hết không gian còn lại */
+    height: 10px;
+    background-color: #eee;
+    border-radius: 5px;
+    margin: 0 10px;
+    overflow: hidden; /* Cần thiết để thanh màu vàng nằm trong */
+}
+
+.progress-bar {
+    height: 100%;
+    background-color: #007bff; /* Màu xanh hoặc màu theo giao diện */
+    border-radius: 5px;
+    /* width: được set inline bằng JSP */
+}
+
+.percentage {
+    width: 40px; /* Đảm bảo căn đều cột phần trăm */
+    text-align: right;
+    font-weight: bold;
+}
+
+.user-review {
+    padding: 15px 0;
+    border-bottom: 1px solid #eee;
+}
+
+/* 1. Tạo khoảng đệm cho khu vực chứa Replies */
+.replies-section {
+    margin-top: 15px; /* Khoảng cách với comment gốc */
+    padding-left: 20px; /* Thụt lề sang phải 20px */
+    border-left: 3px solid #f0f0f0; /* Thêm đường kẻ dọc mờ để nhấn mạnh sự lồng cấp */
+}
+
+/* 2. Tạo kiểu cho từng Reply lồng cấp */
+.nested-comment {
+    margin-bottom: 15px; /* Khoảng cách giữa các reply (nếu có nhiều) */
+    padding-top: 5px;
+    /* Có thể không cần border-top nếu đã có border-left của replies-section */
+}
+
+/* 3. Kiểu cho tag đặc biệt (ví dụ: Quản trị viên) */
+.seller-tag {
+    margin-left: 10px;
+    background-color: #007bff; /* Màu xanh nổi bật */
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: normal;
+}
+
+.reply-date {
+    font-size: 12px;
+    color: #999;
+    margin-left: 10px;
+}
+
+/* ========================================= */
+/* Nút Kích hoạt Modal */
+/* ========================================= */
+.write-review-button {
+    width: 100%;
+    max-width: 400px;
+    display: block;
+    padding: 15px 30px;
+    background-color: #007bff;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    margin: 20px auto;
+    transition: background-color 0.3s ease;
+}
+.write-review-button:hover {
+    background-color: #0056b3;
+}
+
+/* ========================================= */
+/* Modal Overlay và Hộp Nội dung */
+/* ========================================= */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+    font-family: Arial, sans-serif;
+}
+.modal-content {
+    background-color: #fefefe;
+    max-width: 640px;
+    margin: 50px auto;
+    padding: 20px;
+    border-radius: 10px;
+    position: relative;
+}
+.close-button {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    line-height: 20px;
+}
+.close-button:hover {
+    color: #333;
+}
+
+/* ========================================= */
+/* Form Đánh Giá và Phần Tử */
+/* ========================================= */
+.review-form-container {
+    padding: 0;
+    margin: 0;
+}
+.product-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+.product-image {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+    margin-bottom: 10px;
+}
+.product-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Chọn Sao */
+.star-rating-selection {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    text-align: center;
+}
+.star-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+}
+.star-option input[type="radio"] {
+    display: none;
+}
+.star-icon {
+    font-size: 35px;
+    color: #ccc;
+    transition: color 0.3s;
+}
+.rating-text {
+    font-size: 12px;
+    margin-top: 5px;
+    color: #666;
+}
+/* 🎯 CSS cho Sao Sáng (Thêm class bằng JS) */
+.star-option.selected .star-icon,
+.star-option.hover .star-icon {
+    color: #ffc107;
+}
+
+/* Textarea */
+.comment-textarea {
+    width: 100%;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    resize: vertical;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+    font-size: 14px;
+}
+
+/* Tùy chọn & Gửi ảnh */
+.options-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    font-size: 14px;
+}
+.photo-upload-label {
+    color: #007bff;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+/* Vùng Preview Ảnh */
+.image-preview-container {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+.image-preview-container img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Ô Nhập Thông tin */
+.info-input-row {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+.info-input-row input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+/* Nút Gửi */
+.policy-check {
+    margin-bottom: 15px;
+    font-size: 13px;
+    color: #666;
+}
+.submit-button {
+    width: 100%;
+    padding: 12px;
+    background-color: #6daaf3;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+.submit-button:hover {
+    background-color: #4a8ae0;
+}
+
+.review-images-gallery {
+    display: flex; /* Xếp các ảnh thumbnail nằm ngang */
+    gap: 10px;    /* Khoảng cách giữa các ảnh */
+    margin-top: 10px;
+    margin-bottom: 15px; /* Khoảng cách với reply-section nếu có */
+    flex-wrap: wrap; /* Cho phép xuống dòng nếu số lượng ảnh nhiều */
+}
+
+.review-thumbnail {
+    width: 80px;      /* Kích thước thumbnail nhỏ */
+    height: 80px;     /* Kích thước thumbnail nhỏ */
+    object-fit: cover; /* Cắt ảnh để vừa với kích thước mà không bị méo */
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer; /* Cho biết ảnh có thể nhấp vào (ví dụ: để xem ảnh lớn) */
+    transition: transform 0.2s;
+}
+
+.review-thumbnail:hover {
+    transform: scale(1.05); /* Hiệu ứng phóng to nhẹ khi rê chuột */
+}
+
+/* Container Form (Tùy chọn: Nếu muốn nút căn chỉnh đặc biệt) */
+form {
+    display: inline-block; /* Giúp form chỉ chiếm không gian vừa đủ */
+    margin: 0;
+    padding: 0;
+}
+
+/* 1. Nút Xóa Chính */
+.delete-review-btn {
+    /* Thiết lập cơ bản */
+    background: none; /* Không có nền mặc định */
+    border: none; /* Không có viền mặc định */
+    padding: 5px 10px; /* Khoảng đệm bên trong nút */
+    cursor: pointer;
+    
+    /* Kiểu chữ và màu sắc (Màu đỏ là chuẩn cho nút xóa) */
+    color: #dc3545; /* Màu đỏ tiêu chuẩn (Bootstrap danger) */
+    font-size: 14px;
+    font-weight: 600; /* Chữ đậm nhẹ */
+    text-transform: capitalize; /* Viết hoa chữ cái đầu (tùy chọn) */
+    
+    /* Căn chỉnh nội dung (icon và chữ) */
+    display: flex;
+    align-items: center;
+    
+    /* Hiệu ứng mượt */
+    transition: all 0.2s ease-in-out;
+}
+
+/* 2. Hiệu ứng Hover */
+.delete-review-btn:hover {
+    color: #a71d2a; /* Đậm hơn khi hover */
+    background-color: #f8d7da; /* Nền đỏ nhạt khi hover để nhấn mạnh */
+    border-radius: 4px;
+}
+
+/* 3. Icon (Thùng rác) */
+.delete-icon {
+    margin-right: 5px; /* Khoảng cách giữa icon và chữ "Delete" */
+    font-size: 14px; /* Đảm bảo icon có kích thước phù hợp với chữ */
+    line-height: 1; /* Căn chỉnh icon với chữ */
+}

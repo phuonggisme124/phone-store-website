@@ -1,3 +1,7 @@
+<%@page import="java.io.File"%>
+<%@page import="dao.UsersDAO"%>
+<%@page import="model.Review"%>
+<%@page import="dao.ReviewDAO"%>
 <%@page import="model.Category"%>
 <%@page import="dao.ProductDAO"%>
 <%@page import="model.Variants"%>
@@ -21,10 +25,12 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
         <link rel="stylesheet" href="css/product_detail.css">
         <link rel="stylesheet" href="css/gallery.css">
         <link rel="stylesheet" href="css/select_product.css">
+        <link rel="stylesheet" href="css/customer_review.css">
         <!--        <script src="js/product_detail.js"></script>-->
         <script src="js/modernizr.js"></script>
         <!-- Swiper CSS -->
@@ -99,7 +105,7 @@
                                 <%
                                     List<Category> listCategory = (List<Category>) request.getAttribute("listCategory");
                                     int categoryID = (int) request.getAttribute("categoryID");
-                                    
+
 
                                 %>
 
@@ -209,23 +215,28 @@
 
 
         <section id="billboard" class="position-relative overflow-hidden bg-light-blue">
-            
+
         </section>
         <!-- detail -->
         <%
             ProductDAO pdao = new ProductDAO();
+            ReviewDAO rdao = new ReviewDAO();
+            UsersDAO udao = new UsersDAO();
             int productID = (int) request.getAttribute("productID");
+            double rating = (double) request.getAttribute("rating");
             Variants variants = (Variants) request.getAttribute("variants");
             List<Variants> listVariants = (List<Variants>) request.getAttribute("listVariants");
+            List<Variants> listVariantRating = (List<Variants>) request.getAttribute("listVariantRating");
+            List<Review> listReview = (List<Review>) request.getAttribute("listReview");
             List<String> listStorage = (List<String>) request.getAttribute("listStorage");
 
         %>
 
-        
+
 
         <section id="billboard" class="bg-light-blue overflow-hidden mt-5 padding-large">
             <div class="container">
-                <h3><%= pdao.getNameByID(productID)%></h3>
+                <h3><%= pdao.getNameByID(variants.getProductID())%></h3>
             </div>
 
             <div class="product-container">
@@ -287,7 +298,7 @@
                             %>
                             <input type="radio" id="<%= storageId%>"
                                    <%= (variants.getStorage().equals(v)) ? "checked" : ""%>>
-                            <a href="product?action=selectStorage&pID=<%= variants.getProductID()%>&color=<%= variants.getColor()%>&storage=<%= v%>&cID=<%= categoryID %>" for="" class="option-label">
+                            <a href="product?action=selectStorage&pID=<%= variants.getProductID()%>&color=<%= variants.getColor()%>&storage=<%= v%>&cID=<%= categoryID%>" for="" class="option-label">
                                 <%= v%>
                             </a>
                             <%
@@ -315,7 +326,7 @@
                             %>
                             <input type="radio" id="<%= colorId%>" name="color" value="<%= colorV%>"
                                    <%= (variants.getColor().equals(colorV)) ? "checked" : ""%>>
-                            <a href="product?action=selectStorage&pID=<%= variants.getProductID()%>&color=<%= colorV%>&storage=<%= variants.getStorage()%>&cID=<%= categoryID %>"   for="<%= colorId%>" class="color-label"
+                            <a href="product?action=selectStorage&pID=<%= variants.getProductID()%>&color=<%= colorV%>&storage=<%= variants.getStorage()%>&cID=<%= categoryID%>"   for="<%= colorId%>" class="color-label"
                                style="background-color:<%= colorV%>;">
                             </a>
                             <%
@@ -331,12 +342,197 @@
                     <div class="action-buttons">
                         <button class="buy-now">BUY NOW</button>
                         <button class="add-cart">? Add to cart</button>
+                        <button class="add-cart"><%= rating%></button>
                     </div>
 
                     <!--                </form>             -->
                 </div>
             </div>
         </section>
+
+        <!-- comment -->   
+        <div class="review-container">
+            <h2><%= pdao.getNameByID(productID)%> <%= variants.getStorage()%></h2>
+
+            <div class="overall-rating">
+                <div class="score-display">
+                    <span class="star-icon">&#9733;</span>
+                    <span class="main-score"><%= rating%></span>
+                    <span class="max-score">/5</span>
+                </div>
+
+                <p class="stats"><%= rdao.getTotalReview(listVariantRating, listReview)%> Review</p>
+            </div>
+
+            <div class="rating-breakdown">
+                <%
+                    for (int j = 5; j > 0; j--) {
+                        double percentRating = rdao.getPercentRating(listVariantRating, listReview, j);
+                %>
+                <div class="star-row">
+                    <span class="star-level"><%= j%>&#9733;</span>
+                    <div class="progress-bar-wrap">
+                        <div class="progress-bar" style="width: <%= percentRating%>%"></div>
+                    </div>
+                    <span class="percentage"><%= percentRating%>%</span>
+                </div>
+                <%
+                    }
+                %>
+            </div>
+            <%
+                if (isLoggedIn) {
+            %>
+            <button id="openReviewModal" class="write-review-button" type="button">
+                Write Review
+            </button>
+
+            <div id="reviewModal" class="modal">
+
+                <div class="modal-content">
+                    <span class="close-button">&times;</span>
+
+                    <form class="review-form-container" action="review" method="POST" enctype="multipart/form-data">
+
+                        <div class="product-header">
+                            <input type="hidden" name="vID" value="<%= variants.getVariantID()%>">
+                            <img src="path/to/iphone-image.png" alt="<%= pdao.getNameByID(productID)%> <%= variants.getStorage()%>" class="product-image">
+                            <h2 class="product-title"><%= pdao.getNameByID(productID)%> <%= variants.getStorage()%></h2>
+                        </div>
+
+                        <div id="star-rating-js" class="star-rating-selection">
+                            <%
+                                String[] ratingTexts = {"Very bad", "Bad", "Okay", "Good", "Excellent"};
+                                // L?p t? 1 ??n 5 theo yêu c?u c?a ??i ca
+                                for (int j = 1; j <= 5; j++) {
+                            %>
+                            <label class="star-option" data-rating-value="<%= j%>">
+                                <input type="radio" name="rating" value="<%= j%>" required> 
+                                <span class="star-icon">&#9733;</span> 
+                                <span class="rating-text"><%= ratingTexts[j - 1]%></span>
+                            </label>
+                            <%
+                                }
+                            %>
+                        </div>
+
+                        <textarea name="comment" class="comment-textarea" 
+                                  placeholder="Please share your thoughts..." rows="5" required></textarea>
+
+                        <div class="options-row">
+                            <span class="photo-upload">
+                                <input type="file" name="photos" id="photo-upload-input" accept="image/*" multiple style="display: none;">
+                                <label for="photo-upload-input" class="photo-upload-label">
+                                    <span class="camera-icon">?</span> Send photos (up to 3 photos)
+                                </label>
+                            </span>
+                        </div>
+
+                        <div id="image-preview-container" class="image-preview-container"></div>
+
+                        <div class="info-input-row">
+                            <input type="hidden" name="uID" value="<%= user.getUserId()%>" >
+                            <input type="hidden" name="phone" placeholder="S? ?i?n tho?i (b?t bu?c)" required>
+                        </div>
+
+                        <div class="policy-and-submit">
+
+                            <button type="submit" class="submit-button">Submit Review</button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+            <%
+                }
+            %>
+            <%
+                for (Variants v : listVariantRating) {
+                    for (Review r : listReview) {
+                        if (v.getVariantID() == r.getVariantID()) {
+            %>
+            <div class="user-review">
+                <div class="reviewer-info">
+                    <span class="name"><%= udao.getUserByID(r.getUserID()).getFullName()%></span>
+
+                </div>
+                <div class="review-header">
+                    <span class="star-rating">
+                        <%
+                            for (int j = 1; j <= r.getRating(); j++) {
+                        %>
+                        &#9733;
+                        <%
+                            }
+                        %>
+                    </span> <span class="recommend"></span>
+                </div>
+                <p class="review-content"><%= r.getComment()%></p>
+                <%
+
+                    if (isLoggedIn && user.getUserId() == r.getUserID()) {
+                %>
+                <form action="review?action=deleteReview" method="post">
+                    <button type="submit" name="rID" value="<%= r.getReviewID() %>" class="delete-review-btn" >
+                        <span class="delete-icon"><i class="fa-solid fa-trash"></i></span>Delete
+                    </button>
+                </form>
+
+                <%
+                    }
+                %>
+                <%
+                    List<String> listImage = rdao.getImages(r.getImage());
+                    if (listImage != null && !listImage.isEmpty()) {
+                %>
+                <div class="review-images-gallery">
+                    <%
+                        for (String image : listImage) {
+                    %>
+                    <img src="images_review/<%= image%>" 
+                         alt="<%= image%>" 
+                         class="review-thumbnail" 
+                         >
+                    <%
+                        }
+                    %>
+                </div>
+                <%
+                    }
+                %>
+                <%
+                    if (r.getReply() != null) {
+                %>
+                <div class="replies-section">
+
+
+                    <div class="nested-comment">
+                        <div class="reviewer-info">
+                            <span class="name"></span>
+
+                            <span class="tag seller-tag">MiniStore</span>
+
+                            <span class="tag reply-date"></span>
+                        </div>
+                        <p class="reply-content">
+                            <%= r.getReply()%>
+                        </p>
+                    </div>
+
+
+                </div>
+                <%
+                    }
+                %>
+            </div>
+            <%
+                        }
+                    }
+                }
+            %>
+        </div>
+
+
 
         <footer id="footer" class="overflow-hidden">
             <div class="container">
@@ -499,7 +695,36 @@
             });
         </script>
 
+        <script>
+            
 
+            // ======================== X? lý ?nh Preview ========================
+            var fileInput = document.getElementById('photo-upload-input');
+            var previewContainer = document.getElementById('image-preview-container');
+            const MAX_IMAGES = 3;
+
+            fileInput.addEventListener('change', function () {
+                previewContainer.innerHTML = '';
+                const files = fileInput.files;
+
+                for (let i = 0; i < files.length && i < MAX_IMAGES; i++) {
+                    const file = files[i];
+
+                    if (file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+
+                        reader.onload = function (e) {
+                            const img = document.createElement('img');
+                            img.src = e.target.result;
+                            img.alt = '?nh th?c t? s?n ph?m';
+                            previewContainer.appendChild(img);
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                }
+            });
+
+        </script>
         <!--    <script src="js/product_detail.js"></script>-->
 
     </body>

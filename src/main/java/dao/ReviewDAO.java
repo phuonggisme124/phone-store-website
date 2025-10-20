@@ -16,8 +16,6 @@ public class ReviewDAO extends DBContext {
         super();
     }
 
-    
-
     // Thêm reply cho review
     public void replyToReview(int reviewID, String reply) {
         String sql = "UPDATE Reviews SET Reply = ? WHERE ReviewID = ?";
@@ -125,6 +123,40 @@ public class ReviewDAO extends DBContext {
         return list;
     }
 
+    public List<Review> getReview() {
+        UsersDAO udao = new UsersDAO();
+        VariantsDAO vdao = new VariantsDAO();
+        String sql = "Select * from Reviews";
+        List<Review> list = new ArrayList<>();
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                int rID = rs.getInt("ReviewID");
+                int uID = rs.getInt("UserID");
+
+                int variantID = rs.getInt("VariantID");
+
+                int rating = rs.getInt("Rating");
+                String comment = rs.getString("Comment");
+
+                Timestamp reviewDateTimestamp = rs.getTimestamp("ReviewDate");
+                LocalDateTime reviewDate = (reviewDateTimestamp != null)
+                        ? reviewDateTimestamp.toLocalDateTime()
+                        : null;
+                String image = rs.getString("Image");
+                String reply = rs.getString("Reply");
+
+                list.add(new Review(rID, uID, variantID, rating, comment, reviewDate, image, reply));
+            }
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        return list;
+    }
+
     public Review getReviewByID(int rID) {
         UsersDAO udao = new UsersDAO();
         VariantsDAO vdao = new VariantsDAO();
@@ -175,4 +207,151 @@ public class ReviewDAO extends DBContext {
             System.out.println(e.getMessage());
         }
     }
+
+    public double getTotalRating(List<Variants> listVariantRating, List<Review> listReview) {
+        double totalRating = 0;
+        double rating = 0;
+        int count = 0;
+        int size = listVariantRating.size();
+        for (int i = 0; i < size; i++) {
+            int vID = listVariantRating.get(i).getVariantID();
+            for (Review r : listReview) {
+                if (vID == r.getVariantID()) {
+                    count += 1;
+                    rating += r.getRating();
+
+                }
+            }
+        }
+
+        if (count != 0) {
+            return totalRating = rating / count;
+        }
+        return totalRating;
+
+    }
+
+    public int getTotalReview(List<Variants> listVariantRating, List<Review> listReview) {
+
+        int count = 0;
+        int size = listVariantRating.size();
+        for (int i = 0; i < size; i++) {
+            int vID = listVariantRating.get(i).getVariantID();
+            for (Review r : listReview) {
+                if (vID == r.getVariantID()) {
+                    count += 1;
+
+                }
+            }
+        }
+        return count;
+    }
+
+    public double getPercentRating(List<Variants> listVariantRating, List<Review> listReview, int rating) {
+
+        int count = 0;
+        int countRating = 0;
+        int size = listVariantRating.size();
+        for (int i = 0; i < size; i++) {
+            int vID = listVariantRating.get(i).getVariantID();
+            for (Review r : listReview) {
+                if (vID == r.getVariantID()) {
+                    count += 1;
+                    if (rating == r.getRating()) {
+                        countRating += 1;
+                    }
+                }
+            }
+        }
+
+        if (count == 0) {
+            return 0;
+        }
+
+        return ((double) countRating / count) * 100;
+    }
+
+    public List<String> getImages(String img) {
+        if (img == null) {
+            return null;
+        }
+
+        List<String> list = new ArrayList<>();
+
+        String part[] = img.split("#");
+        for (String p : part) {
+            list.add(p);
+        }
+
+        return list;
+    }
+
+    public int getCurrentReviewID() {
+
+        String sql = "SELECT MAX(reviewID) AS ReviewID \n"
+                + "FROM Reviews;";
+
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                int id = rs.getInt("ReviewID");
+                return id;
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return 0;
+
+    }
+
+    public void deleteReview(int rID) {
+        String sql = "DELETE FROM Reviews\n"
+                + "WHERE ReviewID = ?;";
+
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, rID);
+            ps.executeUpdate();
+            ps.close();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void createReview(int uID, int vID, int rating, String comment) {
+        String sql = "INSERT INTO Reviews (UserID, VariantID, Rating, Comment) "
+                + "VALUES (?, ?, ?, ?)";
+
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, uID);
+            ps.setInt(2, vID);
+            ps.setInt(3, rating);
+            ps.setString(4, comment);
+
+            ps.executeUpdate();
+            ps.close();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void updateImageReview(int currentReviewID, String img) {
+        String sql = "UPDATE Reviews\n"
+                + "SET Image = ?\n"
+                + "Where ReviewID = ?;";
+
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, img);
+            ps.setInt(2, currentReviewID);
+            ps.executeUpdate();
+            ps.close();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
 }

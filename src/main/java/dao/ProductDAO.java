@@ -1,6 +1,6 @@
 package dao;
 
-import model.Category; 
+import model.Category;
 import utils.DBContext;
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -10,11 +10,11 @@ import model.Products;
 import model.Variants;
 
 /**
- * 
+ *
  * @author ADMIN
- * 
- * DAO class for managing Product data.
- * Provides CRUD operations and data retrieval for Products and Categories.
+ *
+ * DAO class for managing Product data. Provides CRUD operations and data
+ * retrieval for Products and Categories.
  */
 public class ProductDAO extends DBContext {
 
@@ -24,6 +24,7 @@ public class ProductDAO extends DBContext {
 
     /**
      * Retrieve all products from the database.
+     *
      * @return List of all Products.
      */
     public List<Products> getAllProduct() {
@@ -57,6 +58,7 @@ public class ProductDAO extends DBContext {
 
     /**
      * Retrieve the 5 newest products, ordered by creation date (descending).
+     *
      * @return List of the newest Products.
      */
     public List<Products> getNewestProduct() {
@@ -87,6 +89,7 @@ public class ProductDAO extends DBContext {
 
     /**
      * Retrieve all products ordered by creation date (descending).
+     *
      * @return List of Products.
      */
     public List<Products> getProduct() {
@@ -117,6 +120,7 @@ public class ProductDAO extends DBContext {
 
     /**
      * Retrieve a product by its ID.
+     *
      * @param pid Product ID.
      * @return Product object or null if not found.
      */
@@ -235,6 +239,7 @@ public class ProductDAO extends DBContext {
 
     /**
      * Retrieve all categories from the database.
+     *
      * @return List of Categories.
      */
     public List<Category> getAllCategory() {
@@ -258,8 +263,8 @@ public class ProductDAO extends DBContext {
     }
 
     /**
-     * Retrieve all products by category ID.
-     * Each product includes its list of variants.
+     * Retrieve all products by category ID. Each product includes its list of
+     * variants.
      */
     public List<Products> getAllProductByCategory(int cID) {
         String sql = "SELECT Products.*\n"
@@ -296,85 +301,85 @@ public class ProductDAO extends DBContext {
     }
 
     // Search theo tên sản phẩm
-public List<Products> getProductsByName(String name) {
-    String sql = "SELECT * FROM Products WHERE Name LIKE ?";
-    List<Products> list = new ArrayList<>();
-    try {
-        PreparedStatement ps = conn.prepareStatement(sql);
-        ps.setString(1, "%" + name + "%");
-        ResultSet rs = ps.executeQuery();
-        VariantsDAO vdao = new VariantsDAO();
-        while (rs.next()) {
-            int id = rs.getInt("ProductID");
-            int cateID = rs.getInt("CategoryID");
-            int supplierID = rs.getInt("SupplierID");
-            String pname = rs.getString("Name");
-            String brand = rs.getString("Brand");
-            int warrantyPeriod = rs.getInt("WarrantyPeriod");
-            Timestamp createdAtTimestamp = rs.getTimestamp("CreatedAt");
-            LocalDateTime createdAt = (createdAtTimestamp != null) ? createdAtTimestamp.toLocalDateTime() : null;
-            List<Variants> listVariant = vdao.getAllVariantByProductID(id);
-            list.add(new Products(id, cateID, supplierID, pname, brand, warrantyPeriod, createdAt, listVariant));
+    public List<Products> getProductsByName(String name) {
+        String sql = "SELECT * FROM Products WHERE Name LIKE ?";
+        List<Products> list = new ArrayList<>();
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, "%" + name + "%");
+            ResultSet rs = ps.executeQuery();
+            VariantsDAO vdao = new VariantsDAO();
+            while (rs.next()) {
+                int id = rs.getInt("ProductID");
+                int cateID = rs.getInt("CategoryID");
+                int supplierID = rs.getInt("SupplierID");
+                String pname = rs.getString("Name");
+                String brand = rs.getString("Brand");
+                int warrantyPeriod = rs.getInt("WarrantyPeriod");
+                Timestamp createdAtTimestamp = rs.getTimestamp("CreatedAt");
+                LocalDateTime createdAt = (createdAtTimestamp != null) ? createdAtTimestamp.toLocalDateTime() : null;
+                List<Variants> listVariant = vdao.getAllVariantByProductID(id);
+                list.add(new Products(id, cateID, supplierID, pname, brand, warrantyPeriod, createdAt, listVariant));
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
-    } catch (Exception e) {
-        System.out.println(e.getMessage());
+        return list;
     }
-    return list;
-}
 
 // Filter theo hãng (supplier)
-public List<Products> getProductsBySupplier(int supplierID) {
-    String sql = "SELECT * FROM Products WHERE SupplierID = ?";
-    List<Products> list = new ArrayList<>();
-    try {
-        PreparedStatement ps = conn.prepareStatement(sql);
-        ps.setInt(1, supplierID);
-        ResultSet rs = ps.executeQuery();
-        VariantsDAO vdao = new VariantsDAO();
-        while (rs.next()) {
-            int id = rs.getInt("ProductID");
-            int cateID = rs.getInt("CategoryID");
-            int sID = rs.getInt("SupplierID");
-            String pname = rs.getString("Name");
-            String brand = rs.getString("Brand");
-            int warrantyPeriod = rs.getInt("WarrantyPeriod");
-            Timestamp createdAtTimestamp = rs.getTimestamp("CreatedAt");
-            LocalDateTime createdAt = (createdAtTimestamp != null) ? createdAtTimestamp.toLocalDateTime() : null;
-            List<Variants> listVariant = vdao.getAllVariantByProductID(id);
-            list.add(new Products(id, cateID, sID, pname, brand, warrantyPeriod, createdAt, listVariant));
+    public List<Products> getProductsBySupplier(int supplierID) {
+        String sql = "SELECT * FROM Products WHERE SupplierID = ?";
+        List<Products> list = new ArrayList<>();
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, supplierID);
+            ResultSet rs = ps.executeQuery();
+            VariantsDAO vdao = new VariantsDAO();
+            while (rs.next()) {
+                int id = rs.getInt("ProductID");
+                int cateID = rs.getInt("CategoryID");
+                int sID = rs.getInt("SupplierID");
+                String pname = rs.getString("Name");
+                String brand = rs.getString("Brand");
+                int warrantyPeriod = rs.getInt("WarrantyPeriod");
+                Timestamp createdAtTimestamp = rs.getTimestamp("CreatedAt");
+                LocalDateTime createdAt = (createdAtTimestamp != null) ? createdAtTimestamp.toLocalDateTime() : null;
+                List<Variants> listVariant = vdao.getAllVariantByProductID(id);
+                list.add(new Products(id, cateID, sID, pname, brand, warrantyPeriod, createdAt, listVariant));
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
-    } catch (Exception e) {
-        System.out.println(e.getMessage());
+        return list;
     }
-    return list;
-}
 
 // Filter theo cả tên sản phẩm + hãng
-public List<Products> getProductsByNameAndSupplier(String name, int supplierID) {
-    String sql = "SELECT * FROM Products WHERE Name LIKE ? AND SupplierID = ?";
-    List<Products> list = new ArrayList<>();
-    try {
-        PreparedStatement ps = conn.prepareStatement(sql);
-        ps.setString(1, "%" + name + "%");
-        ps.setInt(2, supplierID);
-        ResultSet rs = ps.executeQuery();
-        VariantsDAO vdao = new VariantsDAO();
-        while (rs.next()) {
-            int id = rs.getInt("ProductID");
-            int cateID = rs.getInt("CategoryID");
-            int sID = rs.getInt("SupplierID");
-            String pname = rs.getString("Name");
-            String brand = rs.getString("Brand");
-            int warrantyPeriod = rs.getInt("WarrantyPeriod");
-            Timestamp createdAtTimestamp = rs.getTimestamp("CreatedAt");
-            LocalDateTime createdAt = (createdAtTimestamp != null) ? createdAtTimestamp.toLocalDateTime() : null;
-            List<Variants> listVariant = vdao.getAllVariantByProductID(id);
-            list.add(new Products(id, cateID, sID, pname, brand, warrantyPeriod, createdAt, listVariant));
+    public List<Products> getProductsByNameAndSupplier(String name, int supplierID) {
+        String sql = "SELECT * FROM Products WHERE Name LIKE ? AND SupplierID = ?";
+        List<Products> list = new ArrayList<>();
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, "%" + name + "%");
+            ps.setInt(2, supplierID);
+            ResultSet rs = ps.executeQuery();
+            VariantsDAO vdao = new VariantsDAO();
+            while (rs.next()) {
+                int id = rs.getInt("ProductID");
+                int cateID = rs.getInt("CategoryID");
+                int sID = rs.getInt("SupplierID");
+                String pname = rs.getString("Name");
+                String brand = rs.getString("Brand");
+                int warrantyPeriod = rs.getInt("WarrantyPeriod");
+                Timestamp createdAtTimestamp = rs.getTimestamp("CreatedAt");
+                LocalDateTime createdAt = (createdAtTimestamp != null) ? createdAtTimestamp.toLocalDateTime() : null;
+                List<Variants> listVariant = vdao.getAllVariantByProductID(id);
+                list.add(new Products(id, cateID, sID, pname, brand, warrantyPeriod, createdAt, listVariant));
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
-    } catch (Exception e) {
-        System.out.println(e.getMessage());
+        return list;
     }
-    return list;
-}
 
 }

@@ -19,6 +19,8 @@
 
         <!-- Custom CSS -->
         <link rel="stylesheet" href="css/dashboard_admin.css">
+        <link rel="stylesheet" href="css/admin_review.css">
+
         <link href="css/dashboard_table.css" rel="stylesheet">
     </head>
     <body>
@@ -118,10 +120,17 @@
                         <label class="form-label">Description</label>
                         <input type="text" class="form-control" name="description" value="">
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Image</label>
-                        <input type="text" class="form-control" name="img" value="">
+
+                    <div class="mb-3 options-row">
+                        <span class="photo-upload">
+                            <input type="file" name="photos" id="photo-upload-input" accept="image/*" multiple style="display: none;">
+                            <label for="photo-upload-input" class="photo-upload-label">
+                                <span class="camera-icon">📷</span> Send photos (up to 3 photos)
+                            </label>
+                        </span>
                     </div>
+
+                    <div id="image-preview-container" class="image-preview-container"></div>
 
                     <div class="mb-3">
                         <button type="submit" name="action" value="createVariant" class="btn btn-primary w-100">Create</button>
@@ -138,5 +147,33 @@
 
             <!-- Custom JS -->
             <script src="js/dashboard.js"></script>
+            <script>
+                // ======================== Xử lý Ảnh Preview ========================
+                var fileInput = document.getElementById('photo-upload-input');
+                var previewContainer = document.getElementById('image-preview-container');
+                
+
+                fileInput.addEventListener('change', function () {
+                    previewContainer.innerHTML = '';
+                    const files = fileInput.files;
+
+                    for (let i = 0; i < files.length; i++) {
+                        const file = files[i];
+
+                        if (file.type.startsWith('image/')) {
+                            const reader = new FileReader();
+
+                            reader.onload = function (e) {
+                                const img = document.createElement('img');
+                                img.src = e.target.result;
+                                img.alt = 'Ảnh thực tế sản phẩm';
+                                previewContainer.appendChild(img);
+                            };
+                            reader.readAsDataURL(file);
+                        }
+                    }
+                });
+
+            </script>
     </body>
 </html>

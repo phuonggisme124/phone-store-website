@@ -5,6 +5,7 @@
 package controller;
 
 import dao.ProductDAO;
+import dao.ReviewDAO;
 import dao.VariantsDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -16,6 +17,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
 import model.Category;
 import model.Products;
+import model.Review;
 import model.Variants;
 
 /**
@@ -67,7 +69,7 @@ public class ProductServlet extends HttpServlet {
         String action = request.getParameter("action");
         ProductDAO pdao = new ProductDAO();
         VariantsDAO vdao = new VariantsDAO();
-
+        ReviewDAO rdao = new ReviewDAO();
         // === Case 1: View product details ===
         if (action.equals("viewDetail")) {
             int productID = Integer.parseInt(request.getParameter("pID"));
@@ -83,14 +85,19 @@ public class ProductServlet extends HttpServlet {
                     listVariants.get(0).getStorage(),
                     listVariants.get(0).getColor()
             );
-
+            List<Variants> listVariantRating = vdao.getAllVariantByStorage(variants.getProductID(), variants.getStorage());
+            List<Review> listReview = rdao.getReview();
+            double rating = rdao.getTotalRating(listVariantRating, listReview);
             // Pass data to JSP
             request.setAttribute("categoryID", cID);
+            request.setAttribute("rating", rating);
             request.setAttribute("productID", productID);
             request.setAttribute("listStorage", listStorage);
             request.setAttribute("listVariants", listVariants);
             request.setAttribute("variants", variants);
             request.setAttribute("listCategory", listCategory);
+            request.setAttribute("listVariantRating", listVariantRating);
+            request.setAttribute("listReview", listReview);
 
             // Forward to product detail page
             request.getRequestDispatcher("productdetail.jsp").forward(request, response);
@@ -105,24 +112,29 @@ public class ProductServlet extends HttpServlet {
             Variants variants;
             List<Products> listProducts = pdao.getAllProduct();
             List<Variants> listVariants = vdao.getAllVariantByProductID(pID);
-            List<Variants> listVariantDetail = vdao.getAllVariantByStorage(pID, storage);
+            List<Variants> listVariantRating = vdao.getAllVariantByStorage(pID, storage);
             List<String> listStorage = vdao.getAllStorage(pID);
             List<Category> listCategory = pdao.getAllCategory();
-
+            
             // Retrieve specific variant
             variants = vdao.getVariant(pID, storage, color);
             if (variants == null) {
                 // If color not found, select first available variant
-                variants = vdao.getVariant(pID, storage, listVariantDetail.get(0).getColor());
+                variants = vdao.getVariant(pID, storage, listVariantRating.get(0).getColor());
             }
+            
+            List<Review> listReview = rdao.getReview();
+            double rating = rdao.getTotalRating(listVariantRating, listReview);
 
             // Send data to JSP
             request.setAttribute("productID", pID);
+            request.setAttribute("rating", rating);
             request.setAttribute("categoryID", cID);
             request.setAttribute("variants", variants);
             request.setAttribute("listProducts", listProducts);
             request.setAttribute("listVariants", listVariants);
-            request.setAttribute("listVariantDetail", listVariantDetail);
+            request.setAttribute("listVariantRating", listVariantRating);
+            request.setAttribute("listReview", listReview);
             request.setAttribute("listStorage", listStorage);
             request.setAttribute("listCategory", listCategory);
 

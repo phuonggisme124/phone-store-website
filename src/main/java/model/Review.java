@@ -10,7 +10,7 @@ public class Review {
 
     private int reviewID;      // ID của review
     private int userID;        // ID người dùng
-    private int productID;     // ID sản phẩm
+    private int variantID;     // ID sản phẩm
     private int rating;        // Đánh giá (1-5)
     private String comment;    // Nội dung review
     private LocalDateTime reviewDate;   // Ngày review
@@ -26,10 +26,10 @@ public class Review {
     public Review() {
     }
 
-    public Review(int reviewID, int userID, int productID, int rating, String comment, LocalDateTime reviewDate, String image, String reply) {
+    public Review(int reviewID, int userID, int variantID, int rating, String comment, LocalDateTime reviewDate, String image, String reply) {
         this.reviewID = reviewID;
         this.userID = userID;
-        this.productID = productID;
+        this.variantID = variantID;
         this.rating = rating;
         this.comment = comment;
         this.reviewDate = reviewDate;
@@ -85,12 +85,12 @@ public class Review {
         this.userID = userID;
     }
 
-    public int getProductID() {
-        return productID;
+    public int getVariantID() {
+        return variantID;
     }
 
-    public void setProductID(int productID) {
-        this.productID = productID;
+    public void setVariantID(int variantID) {
+        this.variantID = variantID;
     }
 
     public int getRating() {

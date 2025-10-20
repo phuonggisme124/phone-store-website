@@ -138,7 +138,7 @@
     <header id="header" class="site-header header-scrolled position-fixed text-black bg-light">
         <nav id="header-nav" class="navbar navbar-expand-lg px-3 mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" href="homepage">
+                <a class="navbar-brand" href="index.html">
                     <img src="images/main-logo.png" class="logo">
                 </a>
                 <button class="navbar-toggler d-flex d-lg-none order-3 p-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#bdNavbar" aria-controls="bdNavbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -155,50 +155,41 @@
                     </div>
                     <%
                         List<Category> listCategory = (List<Category>) request.getAttribute("listCategory");
+
+
                     %>
                     <div class="offcanvas-body">
                         <ul id="navbar" class="navbar-nav text-uppercase justify-content-end align-items-center flex-grow-1 pe-3">
-                            <li class="nav-item">
+                             <li class="nav-item">
                                 <a class="nav-link me-4 active" href="homepage">Home</a>
                             </li>
-                            <%
-                                for (Category c : listCategory) {
-                            %>
+
                             <li class="nav-item">
-                                <a class="nav-link me-4" href="product?action=category&cID=<%= c.getCategoryId()%>"><%= c.getCategoryName()%></a>
+                                <a class="nav-link me-4" href="product?action=category&cID=1">Phone</a>
                             </li>
-                            <%
-                                }
-                            %>
+                            <li class="nav-item">
+                                <a class="nav-link me-4" href="product?action=category&cID=3">Tablet</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link me-4" href="product?action=category&cID=4">Smartwatch</a>
+                            </li>
+
 
 
                             <li class="nav-item dropdown">
-                                <a class="nav-link me-4 dropdown-toggle link-dark" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Pages</a>
+                                <a class="nav-link me-4 dropdown-toggle link-dark" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Accessories</a>
                                 <ul class="dropdown-menu">
+                                    <%                                        for (Category c : listCategory) {
+                                            if (c.getCategoryId() != 1 && c.getCategoryId() != 3 && c.getCategoryId() != 4) {
+                                    %>
                                     <li>
-                                        <a href="about.html" class="dropdown-item">About</a>
+                                        <a href="product?action=category&cID=<%= c.getCategoryId()%>" class="dropdown-item"><%= c.getCategoryName()%></a>
                                     </li>
-                                    <li>
-                                        <a href="blog.html" class="dropdown-item">Blog</a>
-                                    </li>
-                                    <li>
-                                        <a href="shop.html" class="dropdown-item">Shop</a>
-                                    </li>
-                                    <li>
-                                        <a href="cart.html" class="dropdown-item">Cart</a>
-                                    </li>
-                                    <li>
-                                        <a href="checkout.html" class="dropdown-item">Checkout</a>
-                                    </li>
-                                    <li>
-                                        <a href="single-post.html" class="dropdown-item">Single Post</a>
-                                    </li>
-                                    <li>
-                                        <a href="single-product.html" class="dropdown-item">Single Product</a>
-                                    </li>
-                                    <li>
-                                        <a href="contact.html" class="dropdown-item">Contact</a>
-                                    </li>
+                                    <%
+                                            }
+                                        }
+                                    %>
+
                                 </ul>
                             </li>
 
@@ -206,18 +197,21 @@
                             <div class="user-items ps-5">
                                 <ul class="d-flex justify-content-end list-unstyled align-items-center">
                                     <%
-                                        
+                                        // B??C 1: L?y ??i t??ng Users t? session. 
+                                        // T?n thu?c t?nh ???c l?u l? "user" (nh? trong LoginServlet).
+                                        // D?ng t?n l?p ??y ?? model.Users (h?y ??m b?o t?n package l? ??ng)
                                         model.Users user = (model.Users) session.getAttribute("user");
 
                                         boolean isLoggedIn = (user != null);
-                                        String displayName = ""; 
+                                        String displayName = ""; // Bi?n ?? l?u tr? T?n ng??i d?ng ho?c Email
 
                                         if (isLoggedIn) {
-                                            
+                                            // B??C 2: D?ng ph??ng th?c getName() c? s?n ?? l?y t?n ng??i d?ng.
+                                            // Th?m logic ki?m tra null/r?ng ?? tr?nh l?i n?u t?n kh?ng ???c l?u.
                                             if (user.getFullName() != null && !user.getFullName().trim().isEmpty()) {
                                                 displayName = user.getFullName();
                                             } else {
-                                               
+                                                // N?u t?n b? r?ng, hi?n th? Email thay th? (t?y ch?n)
                                                 displayName = user.getEmail();
                                             }
                                     %>
@@ -228,8 +222,8 @@
                                     </li>
 
                                     <li class="pe-3">
-                                        <a href="cart.html"> 
-                                            <svg class="cart"><use xlink:href="#cart"></use></svg>
+                                        <a href="cart"> 
+                                            <svg class="cart"><use xlink:href="#cart" ></use></svg>
                                         </a>
                                     </li>
 
@@ -238,7 +232,7 @@
                                     </li>
 
                                     <li class="text-dark fw-bold">
-                                        <a href="user" class="nav-link p-0 text-dark text-uppercase fw-bold"> <%= displayName %> </a>
+                                        <%= displayName%>
                                     </li>
 
                                     <%
@@ -402,11 +396,11 @@
                         <div class="swiper-slide">
                             <div class="product-card text-center position-relative">
                                 <div class="image-holder">
-                                    <img src="images/iphone10.jpg" alt="<%= p.getName()%>" class="img-fluid rounded-3">
+                                    <img src="images/<%= p.getVariants().get(0).getImageUrl()%>" alt="<%= p.getName()%>" class="img-fluid rounded-3">
                                 </div>
                                 <div class="card-detail pt-3">
                                     <h3 class="card-title text-uppercase">
-                                        <a href="product?action=viewDetail&pID=<%= p.getProductID()%>"><%=p.getName()%></a>
+                                        <a href="product?action=viewDetail&pID=<%= p.getProductID() %>"><%=p.getName()%></a>
                                     </h3>
                                     <span class="item-price text-primary"><%= p.getVariants().get(0).getPrice()%></span>
                                 </div>
@@ -438,7 +432,7 @@
                     <div class="swiper-slide">
                         <div class="product-card text-center position-relative">
                             <div class="image-holder">
-                                <img src="images/iphone10.jpg" alt="<%= p.getName()%>" class="img-fluid rounded-3">
+                                <img src="img/<%= p.getVariants().get(0).getImageUrl()%>" alt="<%= p.getName()%>" class="img-fluid rounded-3">
                             </div>
                             <div class="card-detail pt-3">
                                 <h3 class="card-title text-uppercase">
@@ -632,7 +626,7 @@
                 320: {slidesPerView: 1},
                 768: {slidesPerView: 2},
                 1024: {slidesPerView: 4}
-            }c
+            }
         });
     </script>
 
