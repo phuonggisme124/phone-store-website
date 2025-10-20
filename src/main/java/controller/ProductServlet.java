@@ -5,6 +5,7 @@
 package controller;
 
 import dao.ProductDAO;
+import dao.ReviewDAO;
 import dao.VariantsDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -13,9 +14,14 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import model.Category;
 import model.Products;
+import model.Review;
 import model.Variants;
 
 /**
@@ -67,6 +73,7 @@ public class ProductServlet extends HttpServlet {
         String action = request.getParameter("action");
         ProductDAO pdao = new ProductDAO();
         VariantsDAO vdao = new VariantsDAO();
+        ReviewDAO rdao = new ReviewDAO();
 
         // === Case 1: View product details ===
         if (action.equals("viewDetail")) {
@@ -84,15 +91,27 @@ public class ProductServlet extends HttpServlet {
                     listVariants.get(0).getColor()
             );
 
+            List<Variants> listVariantRating = vdao.getAllVariantByStorage(variants.getProductID(), variants.getStorage());
+//            List<Review> listReview = rdao.getReview();
+            List<Review> listReview = new ArrayList<>();
+            try {
+                listReview = rdao.getReviewsByVariantID(variants.getVariantID());
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+            double rating = rdao.getTotalRating(listVariantRating, listReview);
+
             // Pass data to JSP
             request.setAttribute("categoryID", cID);
+            request.setAttribute("rating", rating);
             request.setAttribute("productID", productID);
             request.setAttribute("listStorage", listStorage);
             request.setAttribute("listVariants", listVariants);
             request.setAttribute("variants", variants);
             request.setAttribute("listCategory", listCategory);
-
-            // Forward to product detail page
+            request.setAttribute("listReview", listReview);
+            request.setAttribute("product", p);
             request.getRequestDispatcher("productdetail.jsp").forward(request, response);
 
             // === Case 2: Change storage variant ===
@@ -115,9 +134,13 @@ public class ProductServlet extends HttpServlet {
                 // If color not found, select first available variant
                 variants = vdao.getVariant(pID, storage, listVariantDetail.get(0).getColor());
             }
+            List<Variants> listVariantRating = listVariantDetail;
+            List<Review> listReview = rdao.getReview();
+            double rating = rdao.getTotalRating(listVariantRating, listReview);
 
             // Send data to JSP
             request.setAttribute("productID", pID);
+            request.setAttribute("rating", rating);
             request.setAttribute("categoryID", cID);
             request.setAttribute("variants", variants);
             request.setAttribute("listProducts", listProducts);
