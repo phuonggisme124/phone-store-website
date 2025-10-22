@@ -62,7 +62,7 @@
         %>
 
         <script>
-            const allProductNames = <%= new Gson().toJson(allProductNames) %>;
+            const allProductNames = <%= new Gson().toJson(allProductNames)%>;
         </script>
 
         <div class="d-flex" id="wrapper">
@@ -95,9 +95,9 @@
                             <!-- Search bar in navbar -->
                             <form action="admin" method="get" class="d-flex position-relative me-3" id="searchForm" autocomplete="off" style="width: 250px;">
                                 <input type="hidden" name="action" value="manageProduct">
-                                <input type="hidden" name="brandFilter" value="<%= currentBrand %>">
+                                <input type="hidden" name="brandFilter" value="<%= currentBrand%>">
                                 <input class="form-control me-2" type="text" id="searchProduct" name="productName"
-                                       placeholder="🔍 Search Product" value="<%= currentProductName %>"
+                                       placeholder="🔍 Search Product" value="<%= currentProductName%>"
                                        oninput="showSuggestions(this.value)">
                                 <button class="btn btn-outline-primary" type="submit">
                                     <i class="bi bi-search"></i>
@@ -109,7 +109,7 @@
                             <!-- Filter Brand -->
                             <form action="admin" method="get" class="dropdown me-3">
                                 <input type="hidden" name="action" value="manageProduct">
-                                <input type="hidden" name="productName" value="<%= currentProductName %>">
+                                <input type="hidden" name="productName" value="<%= currentProductName%>">
 
                                 <button class="btn btn-outline-secondary fw-bold dropdown-toggle"
                                         type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
@@ -118,18 +118,18 @@
                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="filterDropdown">
                                     <li><button type="submit" name="brandFilter" value="All" class="dropdown-item">All Brands</button></li>
                                     <li><hr class="dropdown-divider"></li>
-                                    <% for (String brand : allBrands) { %>
-                                    <li><button type="submit" name="brandFilter" value="<%= brand %>" class="dropdown-item">
-                                        <%= brand %>
-                                    </button></li>
-                                    <% } %>
+                                        <% for (String brand : allBrands) {%>
+                                    <li><button type="submit" name="brandFilter" value="<%= brand%>" class="dropdown-item">
+                                            <%= brand%>
+                                        </button></li>
+                                        <% }%>
                                 </ul>
                             </form>
 
                             <a href="logout" class="btn btn-outline-danger btn-sm me-3">Logout</a>
                             <div class="d-flex align-items-center">
                                 <img src="https://i.pravatar.cc/40" class="rounded-circle me-2" width="35">
-                                <span><%= currentUser.getFullName() %></span>
+                                <span><%= currentUser.getFullName()%></span>
                             </div>
                         </div>
                     </div>
@@ -206,7 +206,7 @@
                         <div class="alert alert-info m-4" role="alert">
                             <i class="bi bi-info-circle me-2"></i>No products available.
                         </div>
-                        <% } %>
+                        <% }%>
                     </div>
                 </div>
             </div>
@@ -218,59 +218,64 @@
         <!-- Custom JS -->
         <script src="js/dashboard.js"></script>
         <script>
-            // Menu toggle
+                                        var currentOrderID = null;
+                                        var myModal = null;
+
+                                        window.onload = function () {
+                                            myModal = new bootstrap.Modal(document.getElementById('shipperModal'));
+                                        };
+
+                                        function openModal(orderID) {
+                                            currentOrderID = orderID;
+                                            myModal.show();
+                                        }
+
+                                        function assignShipper(shipperID) {
+                                            var staffID = '<%= (currentUser != null) ? currentUser.getUserId() : ""%>';
+                                            if (!currentOrderID || !shipperID || !staffID) {
+                                                alert("Missing information!");
+                                                return;
+                                            }
+                                            window.location.href = "staff?action=assignShipper&orderID=" + currentOrderID + "&shipperID=" + shipperID;
+                                        }
+
+                                        // ------------------ Autocomplete ------------------
+                                        var debounceTimer;
+                                        function showSuggestions(str) {
+                                            clearTimeout(debounceTimer);
+                                            debounceTimer = setTimeout(() => {
+                                                var box = document.getElementById("suggestionBox");
+                                                box.innerHTML = "";
+                                                if (str.length < 1)
+                                                    return;
+
+                                                var matches = allPhones.filter(phone => phone.includes(str));
+                                                if (matches.length > 0) {
+                                                    matches.forEach(phone => {
+                                                        var item = document.createElement("button");
+                                                        item.type = "button";
+                                                        item.className = "list-group-item list-group-item-action";
+                                                        item.textContent = phone;
+                                                        item.onclick = function () {
+                                                            document.getElementById("searchPhone").value = phone;
+                                                            box.innerHTML = "";
+                                                            document.getElementById("searchForm").submit();
+                                                        };
+                                                        box.appendChild(item);
+                                                    });
+                                                } else {
+                                                    var item = document.createElement("div");
+                                                    item.className = "list-group-item text-muted small";
+                                                    item.textContent = "No phone numbers found.";
+                                                    box.appendChild(item);
+                                                }
+                                            }, 200);
+                                        }
+        </script>
+        <script>
             document.getElementById("menu-toggle").addEventListener("click", function () {
                 document.getElementById("wrapper").classList.toggle("toggled");
             });
-
-            // Autocomplete
-            var debounceTimer;
-            function showSuggestions(str) {
-                clearTimeout(debounceTimer);
-                debounceTimer = setTimeout(() => {
-                    var box = document.getElementById("suggestionBox");
-                    box.innerHTML = "";
-                    if (str.length < 1) return;
-
-                    var matches = allProductNames.filter(name => 
-                        name.toLowerCase().includes(str.toLowerCase())
-                    );
-                    
-                    if (matches.length > 0) {
-                        matches.slice(0, 5).forEach(name => {
-                            var item = document.createElement("button");
-                            item.type = "button";
-                            item.className = "list-group-item list-group-item-action";
-                            item.textContent = name;
-                            item.onclick = function () {
-                                document.getElementById("searchProduct").value = name;
-                                box.innerHTML = "";
-                                document.getElementById("searchForm").submit();
-                            };
-                            box.appendChild(item);
-                        });
-                    } else {
-                        var item = document.createElement("div");
-                        item.className = "list-group-item text-muted small";
-                        item.textContent = "No products found.";
-                        box.appendChild(item);
-                    }
-                }, 200);
-            }
-
-            // Ẩn suggestions khi click bên ngoài
-            document.addEventListener('click', function(e) {
-                var searchInput = document.getElementById('searchProduct');
-                var suggestionBox = document.getElementById('suggestionBox');
-                if (!searchInput.contains(e.target) && !suggestionBox.contains(e.target)) {
-                    suggestionBox.innerHTML = "";
-                }
-            });
         </script>
-                <script>
-    document.getElementById("menu-toggle").addEventListener("click", function () {
-        document.getElementById("wrapper").classList.toggle("toggled");
-    });
-</script>
     </body>
 </html>

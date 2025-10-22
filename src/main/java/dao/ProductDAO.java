@@ -6,6 +6,7 @@ import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import model.InterestRate;
 import model.Products;
 import model.Variants;
 
@@ -418,6 +419,30 @@ public class ProductDAO extends DBContext {
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    public List<InterestRate> getAllInterestRate() {
+        String sql = "Select * from InterestRates";
+        List<InterestRate> list = new ArrayList<>();
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                int id = rs.getInt("InterestRateID");
+                int instalmentPeriod = rs.getInt("InstalmentPeriod");
+                int percent = rs.getInt("Percent");
+                
+
+                
+
+                list.add(new InterestRate(id, percent, instalmentPeriod));
+            }
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        return list;
     }
 
 }

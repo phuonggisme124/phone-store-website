@@ -22,10 +22,10 @@ public class test {
         VariantsDAO vdao = new VariantsDAO();
         OrderDAO odao = new OrderDAO();
         
-        List<Order> list = odao.getAllOrder();
+        List<String> list = odao.getAllPhone();
         
-        for (Order o : list){
-            System.out.println("OrderID: "+ o.getOrderID());
+        for (String o : list){
+            System.out.println("OrderID: "+ o);
         }
         //}
         

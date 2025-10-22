@@ -1,4 +1,5 @@
 
+<%@page import="model.InterestRate"%>
 <%@page import="dao.ProductDAO"%>
 <%@page import="model.Variants"%>
 <%@page import="model.Payments"%>
@@ -82,6 +83,7 @@
                 </div>
                 <%
                     ProductDAO pdao = new ProductDAO();
+                    List<InterestRate> listInterestRate = (List<InterestRate>) request.getAttribute("listInterestRate");
                     List<Payments> listPayments = (List<Payments>) request.getAttribute("listPayments");
                     List<OrderDetails> listOrderDetails = (List<OrderDetails>) request.getAttribute("listOrderDetails");
                     byte isIntalment = (byte) request.getAttribute("isIntalment");
@@ -121,7 +123,15 @@
                                     <td><%= String.format("%,.0f", od.getVariant().getPrice())%></td>
 
                                     <td><%= od.getQuantity()%></td>
-                                    <td><%= od.getIntallmentPeriod()%></td>
+                                    <%
+                                        for (InterestRate iR : listInterestRate) {
+                                            if (od.getInterestRateID() == iR.getInterestRateID()) {
+                                    %>
+                                    <td><%= iR.getInstalmentPeriod() %></td>
+                                    <%
+                                            }
+                                        }
+                                    %>
                                     <td><%= String.format("%,.0f", od.getMonthlyPayment())%></td>
 
                                     <td><%= od.getInterestRate()%></td>

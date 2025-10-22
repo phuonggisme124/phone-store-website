@@ -436,12 +436,12 @@ public class OrderDAO extends DBContext {
                 int quantity = rs.getInt("Quantity");
                 double price = rs.getDouble("UnitPrice");
 
-                int instalmentPeriod = rs.getInt("InstalmentPeriod");
+                int interestRateID = rs.getInt("InterestRateID");
                 double monthlyPayment = rs.getDouble("MonthlyPayment");
                 double downPayment = rs.getDouble("DownPayment");
                 int interestRate = rs.getInt("InterestRate");
 
-                list.add(new OrderDetails(orderID, quantity, price, instalmentPeriod, monthlyPayment, downPayment, interestRate, variant));
+                list.add(new OrderDetails(orderID, quantity, price, interestRateID, monthlyPayment, downPayment, interestRate, variant));
             }
 
         } catch (Exception e) {
@@ -681,6 +681,125 @@ public class OrderDAO extends DBContext {
                 }
             }
 
+        }
+
+        return list;
+    }
+
+    public List<String> getAllPhone() {
+        String sql = "SELECT DISTINCT ReceiverPhone\n"
+                + "FROM Orders\n"
+                + "WHERE ReceiverPhone IS NOT NULL;";
+
+        List<String> list = new ArrayList<>();
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                String receiverPhone = rs.getString("ReceiverPhone");
+
+                list.add(receiverPhone);
+            }
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        return list;
+    }
+
+    public List<Order> getAllOrderByPhone(String phone) {
+        String sql = "Select * from Orders Where ReceiverPhone = ?";
+        List<Order> list = new ArrayList<>();
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, phone);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                int id = rs.getInt("OrderID");
+                int userID = rs.getInt("UserID");
+                Timestamp orderDateTimestamp = rs.getTimestamp("orderDate");
+                LocalDateTime orderDate = (orderDateTimestamp != null)
+                        ? orderDateTimestamp.toLocalDateTime()
+                        : null;
+                String status = rs.getString("Status");
+                String paymentMethod = rs.getString("PaymentMethod");
+                String shippingAddress = rs.getString("ShippingAddress");
+                double totalAmount = rs.getDouble("TotalAmount");
+                byte isInstalment = rs.getByte("IsInstalment");
+                String receiverName = rs.getString("ReceiverName");
+                String receiverPhone = rs.getString("ReceiverPhone");
+
+                list.add(new Order(id, userID, paymentMethod, shippingAddress, totalAmount, status, orderDate, isInstalment, receiverName, receiverPhone));
+            }
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        return list;
+    }
+
+    public List<Order> getAllOrderByPhoneAndStatus(String phone, String statusFilter) {
+        String sql = "Select * from Orders Where ReceiverPhone = ? And Status = ?";
+        List<Order> list = new ArrayList<>();
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, phone);
+            ps.setString(2, statusFilter);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                int id = rs.getInt("OrderID");
+                int userID = rs.getInt("UserID");
+                Timestamp orderDateTimestamp = rs.getTimestamp("orderDate");
+                LocalDateTime orderDate = (orderDateTimestamp != null)
+                        ? orderDateTimestamp.toLocalDateTime()
+                        : null;
+                String status = rs.getString("Status");
+                String paymentMethod = rs.getString("PaymentMethod");
+                String shippingAddress = rs.getString("ShippingAddress");
+                double totalAmount = rs.getDouble("TotalAmount");
+                byte isInstalment = rs.getByte("IsInstalment");
+                String receiverName = rs.getString("ReceiverName");
+                String receiverPhone = rs.getString("ReceiverPhone");
+
+                list.add(new Order(id, userID, paymentMethod, shippingAddress, totalAmount, status, orderDate, isInstalment, receiverName, receiverPhone));
+            }
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        return list;
+    }
+
+    public List<Order> getAllOrderByStatus(String statusFilter) {
+        String sql = "Select * from Orders Where Status = ?";
+        List<Order> list = new ArrayList<>();
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, statusFilter);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                int id = rs.getInt("OrderID");
+                int userID = rs.getInt("UserID");
+                Timestamp orderDateTimestamp = rs.getTimestamp("orderDate");
+                LocalDateTime orderDate = (orderDateTimestamp != null)
+                        ? orderDateTimestamp.toLocalDateTime()
+                        : null;
+                String status = rs.getString("Status");
+                String paymentMethod = rs.getString("PaymentMethod");
+                String shippingAddress = rs.getString("ShippingAddress");
+                double totalAmount = rs.getDouble("TotalAmount");
+                byte isInstalment = rs.getByte("IsInstalment");
+                String receiverName = rs.getString("ReceiverName");
+                String receiverPhone = rs.getString("ReceiverPhone");
+
+                list.add(new Order(id, userID, paymentMethod, shippingAddress, totalAmount, status, orderDate, isInstalment, receiverName, receiverPhone));
+            }
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
 
         return list;

@@ -29,6 +29,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import model.Category;
+import model.InterestRate;
 import model.Order;
 import model.OrderDetails;
 import model.Payments;
@@ -46,9 +47,9 @@ import model.Variants;
  */
 @WebServlet(name = "AdminServlet", urlPatterns = {"/admin"})
 @MultipartConfig(
-    fileSizeThreshold = 1024 * 1024 * 1,  // 1MB
-    maxFileSize = 1024 * 1024 * 10,       // 10MB
-    maxRequestSize = 1024 * 1024 * 15     // 15MB
+        fileSizeThreshold = 1024 * 1024 * 1, // 1MB
+        maxFileSize = 1024 * 1024 * 10, // 10MB
+        maxRequestSize = 1024 * 1024 * 15 // 15MB
 )
 public class AdminServlet extends HttpServlet {
 
@@ -123,10 +124,10 @@ public class AdminServlet extends HttpServlet {
             List<Products> listProducts = pdao.getAllProduct();
             List<Category> listCategory = ctdao.getAllCategories();
             List<Suppliers> listSupplier = sldao.getAllSupplier();
-            
-            for (Products product : listProducts){
+
+            for (Products product : listProducts) {
                 List<Variants> listVariant = vdao.getAllVariantByProductID(product.getProductID());
-                if(listVariant == null || listVariant.isEmpty()){
+                if (listVariant == null || listVariant.isEmpty()) {
                     pdao.deleteProductByProductID(product.getProductID());
                 }
             }
@@ -216,9 +217,10 @@ public class AdminServlet extends HttpServlet {
             request.getRequestDispatcher("admin_managepromotion_create.jsp").forward(request, response);
         } else if (action.equals("manageOrder")) {
             List<Order> listOrder = odao.getAllOrder();
-
+            List<String> listPhone = odao.getAllPhone();
             List<Sale> listSales = udao.getAllSales();
             request.setAttribute("listOrder", listOrder);
+            request.setAttribute("listPhone", listPhone);
 
             request.setAttribute("listSales", listSales);
             request.getRequestDispatcher("dashboard_admin_manageorder.jsp").forward(request, response);
@@ -228,9 +230,9 @@ public class AdminServlet extends HttpServlet {
 
             List<OrderDetails> listOrderDetails = odao.getAllOrderDetailByOrderID(oid);
             List<Payments> listPayments = paydao.getPaymentByOrderID(oid);
-
+            List<InterestRate> listInterestRate = pdao.getAllInterestRate();
             request.setAttribute("listOrderDetails", listOrderDetails);
-
+            request.setAttribute("listInterestRate", listInterestRate);
             request.setAttribute("listPayments", listPayments);
             request.setAttribute("isIntalment", isIntalment);
             request.getRequestDispatcher("admin_manageorder_detail.jsp").forward(request, response);
@@ -306,6 +308,44 @@ public class AdminServlet extends HttpServlet {
 
             request.setAttribute("listSales", listSales);
             request.getRequestDispatcher("admin_instalment_detail.jsp").forward(request, response);
+        } else if (action.equals("searchOrder")) {
+            String phone = request.getParameter("phone");
+            String status = request.getParameter("status");
+            List<String> listPhone = odao.getAllPhone();
+            List<Order> listOrder;
+            List<Sale> listSales = udao.getAllSales();
+            if (status.equals("Filter")) {
+                listOrder = odao.getAllOrderByPhone(phone);
+            } else {
+                listOrder = odao.getAllOrderByPhoneAndStatus(phone, status);
+            }
+
+            request.setAttribute("listOrder", listOrder);
+            request.setAttribute("phone", phone);
+            request.setAttribute("status", status);
+            request.setAttribute("listPhone", listPhone);
+            request.setAttribute("listSales", listSales);
+            request.getRequestDispatcher("dashboard_admin_manageorder.jsp").forward(request, response);
+        } else if (action.equals("filterOrder")) {
+            String phone = request.getParameter("phone");
+            String status = request.getParameter("status");
+            List<String> listPhone = odao.getAllPhone();
+            List<Order> listOrder;
+            List<Sale> listSales = udao.getAllSales();
+
+            if (phone == null || phone.isEmpty()) {
+                listOrder = odao.getAllOrderByStatus(status);
+            } else if (status.equals("Filter")) {
+                listOrder = odao.getAllOrderByPhone(phone);
+            } else {
+                listOrder = odao.getAllOrderByPhoneAndStatus(phone, status);
+            }
+            request.setAttribute("phone", phone);
+            request.setAttribute("status", status);
+            request.setAttribute("listOrder", listOrder);
+            request.setAttribute("listPhone", listPhone);
+            request.setAttribute("listSales", listSales);
+            request.getRequestDispatcher("dashboard_admin_manageorder.jsp").forward(request, response);
         } else {
             request.getRequestDispatcher("dashboard_admin.jsp").forward(request, response);
         }
@@ -391,18 +431,17 @@ public class AdminServlet extends HttpServlet {
             String ram = request.getParameter("ram");
             int batteryCapacity = Integer.parseInt(request.getParameter("batteryCapacity"));
             String touchscreen = request.getParameter("touchscreen");
-                    
-            
+
             pdao.createProduct(categoryID, supplierID, pName, brand, warrantyPeriod);
-            
+
             int currentProductID = pdao.getCurrentProductID();
             pdao.createSpecification(currentProductID, os, cpu, gpu, ram, batteryCapacity, touchscreen);
             List<Variants> listVariants = vdao.getAllVariantByProductID(currentProductID);
-            if(listVariants == null || listVariants.isEmpty()){
+            if (listVariants == null || listVariants.isEmpty()) {
                 response.sendRedirect("admin?action=createVariant&pid=" + currentProductID);
                 return;
             }
-            
+
             response.sendRedirect("admin?action=manageProduct");
         } else if (action.equals("createVariant")) {
             int pID = Integer.parseInt(request.getParameter("pID"));
@@ -414,7 +453,7 @@ public class AdminServlet extends HttpServlet {
             String description = request.getParameter("description");
 
             vdao.createVariant(pID, color, storage, price, stock, description);
-            
+
             // === Upload ảnh review ===
             String filePath = request.getServletContext().getRealPath("");
             String basePath = filePath.substring(0, filePath.indexOf("\\target"));
@@ -440,7 +479,6 @@ public class AdminServlet extends HttpServlet {
                 vdao.updateImageVariant(currentVariantID, img);
             }
 
-            
             vdao.updateDiscountPrice();
             response.sendRedirect("admin?action=productDetail&id=" + pID);
         } else if (action.equals("deleteVariant")) {

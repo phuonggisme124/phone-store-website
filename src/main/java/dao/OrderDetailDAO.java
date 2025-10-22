@@ -30,7 +30,7 @@ public class OrderDetailDAO extends DBContext {
             }
         } else {
             String sql = "INSERT INTO OrderDetails (OrderID, VariantID, Quantity, UnitPrice, "
-                    + "InstalmentPeriod, MonthlyPayment, DownPayment, InterestRate) "
+                    + "InterestRateID, MonthlyPayment, DownPayment, InterestRate) "
                     + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
             try {
                 PreparedStatement ps = conn.prepareStatement(sql);
@@ -38,7 +38,7 @@ public class OrderDetailDAO extends DBContext {
                 ps.setInt(2, oD.getVariantID());
                 ps.setInt(3, oD.getQuantity());
                 ps.setDouble(4, oD.getUnitPrice());
-                ps.setInt(5, oD.getInstalmentPeriod());
+                ps.setInt(5, oD.getInterestRate());
                 ps.setDouble(6, oD.getMonthlyPayment());
                 ps.setDouble(7, oD.getDownPayment());
                 ps.setInt(8, oD.getInterestRate());

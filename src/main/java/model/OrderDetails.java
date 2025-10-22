@@ -15,7 +15,7 @@ public class OrderDetails {
     private int variantID;          // ID of the product variant in this order
     private int quantity;           // Quantity of the product variant ordered
     private double unitPrice;       // Price per unit of the product variant
-    private int instalmentPeriod;   // Installment period (number of months)
+    private int interestRateID;   // Installment period (number of months)
     private double monthlyPayment;  // Monthly payment amount for the installment
     private double downPayment;     // Down payment made at the beginning
     private int interestRate;       // Interest rate applied to the installment
@@ -30,22 +30,22 @@ public class OrderDetails {
     }
 
     // Constructor for installment purchases
-    public OrderDetails(int orderID, int variantID, int quantity, double unitPrice, int instalmentPeriod, double monthlyPayment, double downPayment, int interestRate) {
+    public OrderDetails(int orderID, int variantID, int quantity, double unitPrice, int interestRateID, double monthlyPayment, double downPayment, int interestRate) {
         this.orderID = orderID;
         this.variantID = variantID;
         this.quantity = quantity;
         this.unitPrice = unitPrice;
-        this.instalmentPeriod = instalmentPeriod;
+        this.interestRateID = interestRateID;
         this.monthlyPayment = monthlyPayment;
         this.downPayment = downPayment;
         this.interestRate = interestRate;
     }
 
-    public OrderDetails(int orderID, int quantity, double unitPrice, int instalmentPeriod, double monthlyPayment, double downPayment, int interestRate, Variants variant) {
+    public OrderDetails(int orderID, int quantity, double unitPrice, int interestRateID, double monthlyPayment, double downPayment, int interestRate, Variants variant) {
         this.orderID = orderID;
         this.quantity = quantity;
         this.unitPrice = unitPrice;
-        this.instalmentPeriod = instalmentPeriod;
+        this.interestRateID = interestRateID;
         this.monthlyPayment = monthlyPayment;
         this.downPayment = downPayment;
         this.interestRate = interestRate;
@@ -54,12 +54,12 @@ public class OrderDetails {
     
     
 
-    public int getInstalmentPeriod() {
-        return instalmentPeriod;
+    public int getInterestRateID() {
+        return interestRateID;
     }
 
-    public void setInstalmentPeriod(int instalmentPeriod) {
-        this.instalmentPeriod = instalmentPeriod;
+    public void setInterestRateID(int interestRateID) {
+        this.interestRateID = interestRateID;
     }
     // GETTER - SETTER
 
@@ -73,13 +73,7 @@ public class OrderDetails {
     
     
     
-    public int getIntallmentPeriod() {
-        return instalmentPeriod;
-    }
-
-    public void setIntallmentPeriod(int instalmentPeriod) {
-        this.instalmentPeriod = instalmentPeriod;
-    }
+    
 
     public double getMonthlyPayment() {
         return monthlyPayment;

@@ -9,6 +9,7 @@ package model;
  * @author ADMIN
  */
 public class InterestRate {
+    private int interestRateID;
     private int percent;
     private int instalmentPeriod;
 
@@ -17,6 +18,23 @@ public class InterestRate {
         this.instalmentPeriod = instalmentPeriod;
     }
 
+    public InterestRate(int interestRateID, int percent, int instalmentPeriod) {
+        this.interestRateID = interestRateID;
+        this.percent = percent;
+        this.instalmentPeriod = instalmentPeriod;
+    }
+    
+    
+
+    public int getInterestRateID() {
+        return interestRateID;
+    }
+
+    public void setInterestRateID(int interestRateID) {
+        this.interestRateID = interestRateID;
+    }
+    
+    
     public int getPercent() {
         return percent;
     }
