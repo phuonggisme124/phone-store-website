@@ -47,6 +47,20 @@ public class Order {
         this.orderDate = orderDate;
     }
 
+    public Order(int orderID, int userID, String paymentMethod, String shippingAddress, double totalAmount, String status, LocalDateTime orderDate, byte isInstalment, String buyerName, String buyerPhone) {
+        this.orderID = orderID;
+        this.userID = userID;
+        this.paymentMethod = paymentMethod;
+        this.shippingAddress = shippingAddress;
+        this.totalAmount = totalAmount;
+        this.status = status;
+        this.orderDate = orderDate;
+        this.isInstalment = isInstalment;
+        this.buyerName = buyerName;
+        this.buyerPhone = buyerPhone;
+    }
+
+    
 
     /**
      * Constructor for order creation including all database fields.
@@ -70,6 +84,8 @@ public class Order {
         this.buyer= buyer;
     }
 
+    
+    
     // --- Getters and Setters ---
     public int getOrderID() {
         return orderID;

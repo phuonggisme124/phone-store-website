@@ -36,7 +36,7 @@
                 return;
             }
 
-            List<Products> listProducts = (List<Products>) request.getAttribute("listProducts");
+            List<Products> currentListProduct = (List<Products>) request.getAttribute("currentListProduct");
             List<Category> listCategory = (List<Category>) request.getAttribute("listCategory");
             List<Suppliers> listSupplier = (List<Suppliers>) request.getAttribute("listSupplier");
 
@@ -47,8 +47,8 @@
             // Tạo danh sách tên sản phẩm để autocomplete
             List<String> allProductNames = new ArrayList<>();
             Set<String> brandSet = new HashSet<>();
-            if (listProducts != null) {
-                for (Products p : listProducts) {
+            if (currentListProduct != null) {
+                for (Products p : currentListProduct) {
                     if (!allProductNames.contains(p.getName())) {
                         allProductNames.add(p.getName());
                     }
@@ -146,7 +146,7 @@
                 <div class="card shadow-sm border-0 p-4">
                     <div class="card-body p-0">
                         <h4 class="fw-bold ps-3 mb-4">Manage Products</h4>
-                        <% if (listProducts != null && !listProducts.isEmpty()) { %>
+                        <% if (currentListProduct != null && !currentListProduct.isEmpty()) { %>
                         <div class="table-responsive">
                             <table class="table table-hover align-middle mb-0">
                                 <thead class="table-light">
@@ -162,7 +162,7 @@
                                 </thead>
                                 <tbody>
                                     <%
-                                        for (Products p : listProducts) {
+                                        for (Products p : currentListProduct) {
                                             // Lọc theo Product Name nếu có search
                                             if (!currentProductName.isEmpty() && !p.getName().toLowerCase().contains(currentProductName.toLowerCase())) {
                                                 continue;

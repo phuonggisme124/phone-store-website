@@ -69,7 +69,7 @@
                 <div class="container-fluid p-4">
                     <input type="text" class="form-control w-25" placeholder="🔍 Search">
                 </div>
-                
+
 
                 <%
                     Variants variant = (Variants) request.getAttribute("variant");
@@ -109,11 +109,6 @@
                         <input type="text" class="form-control" name="brand" value="" required>
                     </div>
 
-
-
-
-
-
                     <div class="mb-3">
                         <label class="form-label">Warranty Period</label>
                         <input type="text" class="form-control" name="warrantyPeriod" value="" required>
@@ -131,8 +126,30 @@
                                 }
                             %>             
                         </select>
-
-
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">OS</label>
+                        <input type="text" class="form-control" name="os" value="" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">CPU</label>
+                        <input type="text" class="form-control" name="cpu" value="" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">GPU</label>
+                        <input type="text" class="form-control" name="gpu" value="" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">RAM</label>
+                        <input type="text" class="form-control" name="ram" value="" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Battery Capacity</label>
+                        <input type="number" class="form-control" name="batteryCapacity" value="" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Touchscreen</label>
+                        <input type="text" class="form-control" name="touchscreen" value="" required>
                     </div>
                     <div class="mb-3">
 

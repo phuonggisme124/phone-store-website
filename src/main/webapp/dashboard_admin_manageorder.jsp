@@ -1,3 +1,4 @@
+<%@page import="dao.UsersDAO"%>
 <%@page import="model.Sale"%>
 <%@page import="model.Order"%>
 <%@page import="model.Suppliers"%>
@@ -10,7 +11,7 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>Admin Dashboard</title>
+        <title>Admin Dashboard - Manage Order</title>
 
         <!-- Bootstrap -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -71,11 +72,20 @@
                     <input type="text" class="form-control w-25" placeholder="🔍 Search">
                 </div>
                 <div class="container-fluid p-4 ps-3">
-                    <a class="btn btn-primary px-4 py-2 rounded-pill shadow-sm" href="admin?action=createProduct">
-                        <i class="bi bi-box-seam me-2"></i> Create Product
+                    <a class="btn btn-primary px-4 py-2 rounded-pill shadow-sm" href="admin?action=showInstalment">
+                        <i class="bi bi-box-seam me-2"></i> Instalment
                     </a>
                 </div>
+                <%
+                    UsersDAO udao = new UsersDAO();
+                    List<Order> listOrder = (List<Order>) request.getAttribute("listOrder");
 
+                    List<Sale> listSales = (List<Sale>) request.getAttribute("listSales");
+                %>
+
+                <%
+                    if (listOrder != null && !listOrder.isEmpty()) {
+                %>
                 <!-- Table -->
                 <div class="card shadow-sm border-0 p-4">
                     <div class="card-body p-0">
@@ -84,9 +94,10 @@
                                 <tr>
                                     <th>OrderID</th>
                                     <th>User Name</th>
-                                    <th>Phone</th>
+                                    <th>Receiver Phone</th>
+                                    <th>Receiver Name</th>
                                     <th>Address</th>
-                                    <th>Instalment</th>
+
                                     <th>Method</th>
                                     <th>Order Date</th>
                                     <th>Total Amount</th>
@@ -97,11 +108,7 @@
                                 </tr>
                             </thead>
 
-                            <%
-                                List<Order> listOrder = (List<Order>) request.getAttribute("listOrder");
-                                List<Users> listUsers = (List<Users>) request.getAttribute("listUsers");
-                                List<Sale> listSales = (List<Sale>) request.getAttribute("listSales");
-                            %>
+
 
                             <%
                                 for (Order o : listOrder) {
@@ -112,56 +119,25 @@
                             <tbody>
                                 <tr  onclick="window.location.href = 'admin?action=orderDetail&id=<%= o.getOrderID()%>&isInstalment=<%= o.isIsInstallment()%>'">
                                     <td><%= o.getOrderID()%></td>
-                                    <%
-                                        for (Users u : listUsers) {
-                                            if (o.getUserID() == u.getUserId()) {
-                                    %>
-                                    <td><%= u.getFullName()%></td>                     
-                                    <td><%= u.getPhone()%></td>                     
-                                    <%
-                                                break;
-                                            }
-                                        }
-                                    %>
-                                    <td><%= o.getShippingAddress()%></td>   
-                                    <td><%= o.isIsInstallment()%></td>   
-                                    <td><%= o.getPaymentMethod()%></td>   
-                                    <td><%= o.getOrderDate()%></td>   
-                                    <td><%= String.format("%,.0f", o.getTotalAmount()) %></td>
-
+                                    <td><%= udao.getUserByID(o.getUserID()).getFullName()%></td>
+                                    <td><%= o.getBuyerPhone()%></td>
+                                    <td><%= o.getBuyerName()%></td>
+                                    <td><%= o.getShippingAddress()%></td>
+                                    <td><%= o.getPaymentMethod()%></td>
+                                    <td><%= o.getOrderDate()%></td>
+                                    <td><%= o.getTotalAmount()%></td>
                                     <%
                                         for (Sale s : listSales) {
                                             if (o.getOrderID() == s.getOrderID()) {
-                                                for (Users u : listUsers) {
-
                                     %>
+                                    <td><%= s.getStaff().getFullName()%></td>   
+                                    <td><%= s.getShipper().getFullName()%></td>   
                                     <%
-                                        if (s.getStaffID() == u.getUserId()) {
-                                    %>
-
-                                    <td><%= u.getFullName()%></td>
-                                    <%
-                                        }
-                                    %>
-                                    
-                                    <%
-                                        if (s.getShipperID()== u.getUserId()) {
-                                    %>
-
-                                    <td><%= u.getFullName()%></td>
-                                    <%
-                                        }
-                                    %>
-                                    
-                                    <%
-                                                    
-                                                }
                                             }
                                         }
                                     %>
-                                    <td><%= o.getStatus()%></td>   
 
-
+                                    <td><%= o.getStatus()%></td>
                                 </tr>                          
                             </tbody>
 
@@ -173,6 +149,15 @@
                         </table>
                     </div>
                 </div>
+                <%
+                    }else{
+                %>
+                <div class="container-fluid p-4 ps-3">
+                    <p>The order list is currently empty.</p>
+                </div>
+                <%
+                    }
+                %>
             </div>
 
 

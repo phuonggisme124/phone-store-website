@@ -301,6 +301,7 @@ public class UsersDAO extends DBContext {
      * @return list of Sale objects
      */
     public List<Sale> getAllSales() {
+        UsersDAO udao = new UsersDAO();
         String sql = "SELECT * FROM Sales";
         List<Sale> list = new ArrayList<>();
         try {
@@ -310,7 +311,7 @@ public class UsersDAO extends DBContext {
                 int saleID = rs.getInt("SaleID");
                 int orderID = rs.getInt("OrderID");
                 int staffID = rs.getInt("StaffID");
-
+                Users staff = udao.getUserByID(staffID);
                 // Convert timestamp to LocalDateTime (may be null)
                 Timestamp createdAtTimestamp = rs.getTimestamp("CreatedAt");
                 LocalDateTime createdAt = (createdAtTimestamp != null)
@@ -318,7 +319,8 @@ public class UsersDAO extends DBContext {
                         : null;
 
                 int shipperID = rs.getInt("ShipperID");
-                list.add(new Sale(saleID, shipperID, staffID, orderID, createdAt));
+                Users shipper = udao.getUserByID(shipperID);
+                list.add(new Sale(saleID, shipper, staff, orderID, createdAt));
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());

@@ -81,7 +81,7 @@
                     List<Category> listCategories = (List<Category>) request.getAttribute("listCategories");
                 %>
                 <!-- Table -->
-                <form action="admin" method="post" class="w-50 mx-auto bg-light p-4 rounded shadow">
+                <form action="admin" method="post" class="w-50 mx-auto bg-light p-4 rounded shadow" enctype="multipart/form-data">
                     <div class="mb-3">
                         <input type="hidden" class="form-control" name="vID" value="" readonly>
                     </div>

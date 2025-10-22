@@ -76,26 +76,22 @@
                     <input type="text" class="form-control w-25" placeholder="🔍 Search">
                 </div>
                 <div class="container-fluid p-4 ps-3">
-                    <a class="btn btn-primary px-4 py-2 rounded-pill shadow-sm" href="admin?action=viewPayment">
-                        <i class="bi bi-box-seam me-2"></i> View Payment
+                    <a class="btn btn-primary px-4 py-2 rounded-pill shadow-sm" href="admin?action=showInstalment">
+                        <i class="bi bi-box-seam me-2"></i> Instalment
                     </a>
                 </div>
                 <%
                     ProductDAO pdao = new ProductDAO();
                     List<Payments> listPayments = (List<Payments>) request.getAttribute("listPayments");
-                    List<Products> listProducts = (List<Products>) request.getAttribute("listProducts");
-                    List<Variants> listVariant = (List<Variants>) request.getAttribute("listVariant");
                     List<OrderDetails> listOrderDetails = (List<OrderDetails>) request.getAttribute("listOrderDetails");
-                    boolean isIntalment = (boolean) request.getAttribute("isIntalment");
+                    byte isIntalment = (byte) request.getAttribute("isIntalment");
                 %>
                 <!-- Table -->
                 <div class="card shadow-sm border-0 p-4">
                     <div class="card-body p-0">
                         <table class="table table-hover align-middle mb-0">
                             <%
-                                if (isIntalment) {
-
-
+                                if (isIntalment == 1) {
                             %>
                             <thead class="table-light">
                                 <tr>
@@ -106,36 +102,28 @@
                                     <th>Unit Price</th>
                                     <th>Quantity</th>
                                     <th>Instalment Period</th>
-                                    <th>Monthly Payment</th>
-
-                                    <th>Down Payment</th>
+                                    <th>Monthly Payment</th>                                   
                                     <th>Interest Rate</th>
 
 
                                 </tr>
                             </thead>
-                            <%                                for (OrderDetails od : listOrderDetails) {
+                            <%
+                                for (OrderDetails od : listOrderDetails) {
                             %>                      
                             <tbody>
                                 <tr  onclick="window.location.href = 'admin?action=orderDetail&id=<%= od.getOrderID()%>'">
                                     <td><%= od.getOrderID()%></td>
-                                    <%
-                                        for (Variants v : listVariant) {
-                                            if (od.getVariantID()== v.getVariantID()) {
-                                    %>
-                                    <td><%= pdao.getNameByID(v.getProductID())%></td>
-                                    <td><%= v.getColor()%></td>
-                                    <td><%= v.getStorage()%></td>
-                                    <td><%= String.format("%,.0f", v.getPrice()) %></td>
-                                    <%
-                                                break;
-                                            }
-                                        }
-                                    %>
-                                    <td><%= od.getQuanlity()%></td>
+
+                                    <td><%= pdao.getNameByID(od.getVariant().getProductID())%></td>
+                                    <td><%= od.getVariant().getColor()%></td>
+                                    <td><%= od.getVariant().getStorage()%></td>
+                                    <td><%= String.format("%,.0f", od.getVariant().getPrice())%></td>
+
+                                    <td><%= od.getQuantity()%></td>
                                     <td><%= od.getIntallmentPeriod()%></td>
                                     <td><%= String.format("%,.0f", od.getMonthlyPayment())%></td>
-                                    <td><%= String.format("%,.0f", od.getDownPayment())%></td>
+
                                     <td><%= od.getInterestRate()%></td>
                                 </tr>                          
                             </tbody>
@@ -144,6 +132,7 @@
                                 }
                             %>
 
+
                             <%
                             } else {
                             %>
@@ -151,21 +140,89 @@
                             <thead class="table-light">
                                 <tr>
 
+                                    <th>OrderID</th>
                                     <th>Product Name</th>
+                                    <th>Color</th>
+                                    <th>Storage</th>
+                                    <th>Unit Price</th>
                                     <th>Quantity</th>
-                                    <th>Instalment Period</th>
-                                    <th>Monthly Payment</th>
 
-                                    <th>Down Payment</th>
-                                    <th>Interest Rate</th>
+
 
 
                                 </tr>
                             </thead>
+
+                            <%
+                                for (OrderDetails od : listOrderDetails) {
+                            %>                      
+                            <tbody>
+                                <tr  onclick="window.location.href = 'admin?action=orderDetail&id=<%= od.getOrderID()%>'">
+                                    <td><%= od.getOrderID()%></td>
+
+                                    <td><%= pdao.getNameByID(od.getVariant().getProductID())%></td>
+                                    <td><%= od.getVariant().getColor()%></td>
+                                    <td><%= od.getVariant().getStorage()%></td>
+                                    <td><%= String.format("%,.0f", od.getVariant().getPrice())%></td>
+
+                                    <td><%= od.getQuantity()%></td>
+
+                                </tr>                          
+                            </tbody>
+                            <%
+                                }
+                            %>
                             <%
                                 }
                             %>
                         </table>
+
+
+                        <%
+                            if (isIntalment == 1) {
+                        %>
+                        <table class="table table-hover align-middle mb-0">
+                            <div class="card shadow-sm border-0 p-4">
+                                <h2>Information Instalment</h2>
+                            </div>
+
+                            <thead class="table-light">
+                                <tr>
+                                    <th>PaymentID</th>
+                                    <th>OrderID</th>
+                                    <th>Total Months</th>
+                                    <th>Current Months</th>
+                                    <th>Amount</th>
+                                    <th>Payment Date</th>
+                                    <th>Payment Status</th> 
+                                </tr>
+                            </thead>
+                            <%
+                                for (Payments p : listPayments) {
+                            %>
+                            <tbody>
+                                <tr  onclick="window.location.href = ''">
+                                    <td><%= p.getPaymentID()%></td>
+                                    <td><%= p.getOrderID()%></td>
+
+                                    <td><%= p.getTotalMonth()%></td>
+                                    <td><%= p.getCurrentMonth()%></td>
+                                    <td><%= p.getAmount()%></td>
+                                    <td><%= p.getPaymentDate()%></td>
+
+                                    <td><%= p.getPaymentStatus()%></td>
+
+                                </tr>                          
+                            </tbody>
+
+                            <%
+                                }
+                            %>
+
+                        </table>
+                        <%
+                            }
+                        %>
                     </div>
                 </div>
             </div>

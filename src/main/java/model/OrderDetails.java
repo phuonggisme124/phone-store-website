@@ -19,6 +19,7 @@ public class OrderDetails {
     private double monthlyPayment;  // Monthly payment amount for the installment
     private double downPayment;     // Down payment made at the beginning
     private int interestRate;       // Interest rate applied to the installment
+    private Variants variant;
 
     // Constructor for non-installment purchases
     public OrderDetails(int orderID, int variantID, int quantity, double unitPrice) {
@@ -40,6 +41,19 @@ public class OrderDetails {
         this.interestRate = interestRate;
     }
 
+    public OrderDetails(int orderID, int quantity, double unitPrice, int instalmentPeriod, double monthlyPayment, double downPayment, int interestRate, Variants variant) {
+        this.orderID = orderID;
+        this.quantity = quantity;
+        this.unitPrice = unitPrice;
+        this.instalmentPeriod = instalmentPeriod;
+        this.monthlyPayment = monthlyPayment;
+        this.downPayment = downPayment;
+        this.interestRate = interestRate;
+        this.variant = variant;
+    }
+    
+    
+
     public int getInstalmentPeriod() {
         return instalmentPeriod;
     }
@@ -48,6 +62,17 @@ public class OrderDetails {
         this.instalmentPeriod = instalmentPeriod;
     }
     // GETTER - SETTER
+
+    public Variants getVariant() {
+        return variant;
+    }
+
+    public void setVariant(Variants variant) {
+        this.variant = variant;
+    }
+    
+    
+    
     public int getIntallmentPeriod() {
         return instalmentPeriod;
     }

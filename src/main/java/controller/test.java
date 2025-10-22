@@ -4,9 +4,11 @@
  */
 package controller;
 
+import dao.OrderDAO;
 import dao.ReviewDAO;
 import dao.VariantsDAO;
 import java.util.List;
+import model.Order;
 import model.Review;
 import model.Variants;
 
@@ -18,14 +20,13 @@ public class test {
     public static void main(String[] args) {
         ReviewDAO rdao = new ReviewDAO();
         VariantsDAO vdao = new VariantsDAO();
-        int pID = 2;
-        String storage = "128GB";
-        List<Variants> listVariantRating = vdao.getAllVariantByStorage(pID, storage);
-        List<Review> listReview = rdao.getReview();
+        OrderDAO odao = new OrderDAO();
         
-        //for(int i= 5; i > 0 ; i--){
-        double rating = rdao.getPercentRating(listVariantRating, listReview, 5);
-        System.out.println(rating);
+        List<Order> list = odao.getAllOrder();
+        
+        for (Order o : list){
+            System.out.println("OrderID: "+ o.getOrderID());
+        }
         //}
         
     }

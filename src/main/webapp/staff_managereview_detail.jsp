@@ -1,3 +1,4 @@
+<%@page import="dao.ReviewDAO"%>
 <%@page import="dao.ProductDAO"%>
 <%@page import="java.util.List"%>
 <%@page import="model.Review"%>
@@ -60,30 +61,57 @@
                             <h4 class="fw-bold ps-3 mb-4">All Product Reviews</h4>
 
                             <% if (review != null) {%>
+                            <%
+                                
+                                ReviewDAO rdao = new ReviewDAO();
+                                
+                                List<String> listImage = rdao.getImages(review.getImage());
+                            %>
                             <div class="review-container">
                                 <!-- Left: Product Image -->
+                                <%
+                                    if (listImage != null && !listImage.isEmpty()) {
+                                %>
                                 <div class="review-left">
                                     <h3 class="product-name"><%= pdao.getNameByID(review.getVariant().getProductID())%> <%= review.getVariant().getStorage()%></h3>
 
                                     <!-- Radio buttons (ẩn) -->
-                                    <input type="radio" name="thumb" id="img1" checked>
-                                    <input type="radio" name="thumb" id="img2">
-                                    <input type="radio" name="thumb" id="img3">
+                                    <%
+                                        for (int i = 1; i <= listImage.size(); i++) {
+                                    %>
+                                    <input type="radio" name="thumb" id="img<%= i%>" <%= (i == 1) ? "checked" : ""%>>
+                                    <%
+                                        }
+                                    %>
 
-                                    <!-- Ảnh chính -->
+
+                                    <!-- Ảnh chính -->            
                                     <div class="main-image">
-                                        <img src="images/iphone15_black.jpg" class="image img1">
-                                        <img src="images/iphone15_silver.jpg" class="image img2">
-                                        <img src="images/iphone15_blue.jpg" class="image img3">
+                                        <%
+                                            for (int i = 1; i <= listImage.size(); i++) {
+                                        %>
+                                        <img src="images_review/<%= listImage.get(i - 1)%>" class="image img<%= i%>">
+                                        <%
+                                            }
+                                        %>
+
                                     </div>
 
                                     <!-- Thumbnail -->
                                     <div class="thumbnail-list">
-                                        <label for="img1"><img src="images/iphone15_black.jpg" alt="Black"></label>
-                                        <label for="img2"><img src="images/iphone15_silver.jpg" alt="Silver"></label>
-                                        <label for="img3"><img src="images/iphone15_blue.jpg" alt="Blue"></label>
+                                        <%
+                                            for (int i = 1; i <= listImage.size(); i++) {
+                                        %>
+                                        <label for="img<%= i%>"><img src="images_review/<%= listImage.get(i - 1)%>" alt="<%= listImage.get(i - 1)%>"></label>
+                                            <%
+                                                }
+                                            %>
+
                                     </div>
                                 </div>
+                                <%
+                                    }
+                                %>
 
                                 <!-- Right: Review Info -->
                                 <div class="review-right">
@@ -122,30 +150,30 @@
                 </div>
 
                 <!-- Modal Reply -->
-<!--                <div class="modal fade" id="replyModal" tabindex="-1">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Reply to Review</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                            </div>
-                            <form action="staff" method="post">
-                                <input type="hidden" name="action" value="replyReview">
-                                <input type="hidden" name="reviewID" id="modalReviewID">
-                                <div class="modal-body">
-                                    <div class="mb-3">
-                                        <label for="replyText" class="form-label">Reply</label>
-                                        <textarea class="form-control" id="replyText" name="reply" rows="3" required></textarea>
+                <!--                <div class="modal fade" id="replyModal" tabindex="-1">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Reply to Review</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <form action="staff" method="post">
+                                                <input type="hidden" name="action" value="replyReview">
+                                                <input type="hidden" name="reviewID" id="modalReviewID">
+                                                <div class="modal-body">
+                                                    <div class="mb-3">
+                                                        <label for="replyText" class="form-label">Reply</label>
+                                                        <textarea class="form-control" id="replyText" name="reply" rows="3" required></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="submit" class="btn btn-primary">Save Reply</button>
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                </div>
+                                            </form>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="submit" class="btn btn-primary">Save Reply</button>
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>-->
+                                </div>-->
 
             </div>
         </div>

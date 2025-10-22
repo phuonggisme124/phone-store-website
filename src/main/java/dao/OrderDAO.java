@@ -11,7 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 import model.Order;
 import model.OrderDetails;
+import model.Payment;
+import model.Payments;
+import model.Products;
 import model.Users;
+import model.Variants;
 import utils.DBContext;
 
 /**
@@ -25,12 +29,13 @@ public class OrderDAO extends DBContext {
     }
 
     /**
-     * Maps ResultSet data to an Order object.
-     * Note: This mapper is primarily used by simpler queries (like getAllOrders or getOrdersByShipperId)
-     * which only fetch buyer name, phone, and order details, but not shipper details.
+     * Maps ResultSet data to an Order object. Note: This mapper is primarily
+     * used by simpler queries (like getAllOrders or getOrdersByShipperId) which
+     * only fetch buyer name, phone, and order details, but not shipper details.
+     *
      * * @param rs The ResultSet containing order data.
      * @return A partially populated Order object.
-     * @throws SQLException 
+     * @throws SQLException
      */
     private Order mapResultSetToProduct(ResultSet rs) throws SQLException {
         int orderID = rs.getInt("OrderID");
@@ -41,7 +46,7 @@ public class OrderDAO extends DBContext {
         // Shipping address is usually pulled from the Order table itself, not the Users table
         // But in some queries it might come from the Order table (aliased as 'o')
         // We'll rely on the specific query to provide 'ShippingAddress'
-        String address = rs.getString("ShippingAddress"); 
+        String address = rs.getString("ShippingAddress");
         Users buyer = new Users(name, phone);
 
         // Order details
@@ -96,11 +101,13 @@ public class OrderDAO extends DBContext {
     }
 
     /**
-     * Get all orders for a specific staff member, including buyer and optional shipper info.
-     * Orders are included if the staff member is assigned (s.StaffID = ?) or if 
-     * the order hasn't been assigned to any staff (s.StaffID IS NULL), which is common 
-     * for newly created orders.
-     * * @param staffID The ID of the staff member (likely from the Sales table's StaffID)
+     * Get all orders for a specific staff member, including buyer and optional
+     * shipper info. Orders are included if the staff member is assigned
+     * (s.StaffID = ?) or if the order hasn't been assigned to any staff
+     * (s.StaffID IS NULL), which is common for newly created orders.
+     *
+     * * @param staffID The ID of the staff member (likely from the Sales
+     * table's StaffID)
      * @return List of Order objects with buyer and shipper details
      */
     public List<Order> getAllOrderForStaff(int staffID) {
@@ -147,11 +154,11 @@ public class OrderDAO extends DBContext {
                 // Thông tin đơn hàng
                 int orderID = rs.getInt("OrderID");
                 // Use o.ShippingAddress, which is more reliable for the order
-                String shippingAddress = rs.getString("ShippingAddress"); 
+                String shippingAddress = rs.getString("ShippingAddress");
                 BigDecimal total = rs.getBigDecimal("TotalAmount");
                 Timestamp orderDateTs = rs.getTimestamp("OrderDate");
                 String status = rs.getString("Status");
-                
+
                 // Convert to LocalDateTime
                 LocalDateTime orderDate = orderDateTs != null ? orderDateTs.toLocalDateTime() : null;
 
@@ -172,11 +179,11 @@ public class OrderDAO extends DBContext {
     }
 
     //--------------------------------------------
-
     /**
-     * Get list of orders assigned to a specific staff member.
-     * Note: This version's SQL specifically targets orders where the staff is assigned
-     * AND the staff's Role is 2 (assuming 2 is the role for staff/sales).
+     * Get list of orders assigned to a specific staff member. Note: This
+     * version's SQL specifically targets orders where the staff is assigned AND
+     * the staff's Role is 2 (assuming 2 is the role for staff/sales).
+     *
      * * @param staffId ID of the staff member
      * @return List of Order objects
      */
@@ -207,10 +214,10 @@ public class OrderDAO extends DBContext {
     }
 
     //--------------------------------------------
-
     /**
-     * Get list of orders by status for a specific staff member.
-     * Includes orders that belong to the staff or are unassigned, and match the status.
+     * Get list of orders by status for a specific staff member. Includes orders
+     * that belong to the staff or are unassigned, and match the status.
+     *
      * * @param staffID ID of the staff member
      * @param status The status to filter by
      * @return List of Order objects
@@ -286,7 +293,6 @@ public class OrderDAO extends DBContext {
     }
 
     //--------------------------------------------
-
     // Get list of orders assigned to a specific shipper
     public List<Order> getOrdersByShipperId(int shipperId) {
         List<Order> orders = new ArrayList<>();
@@ -315,7 +321,6 @@ public class OrderDAO extends DBContext {
     }
 
     //--------------------------------------------
-
     // Delete order by ID (including related records)
     public void deleteOrderByID(int id) {
         String sql1 = "DELETE FROM Payments WHERE OrderID = ?";
@@ -323,10 +328,7 @@ public class OrderDAO extends DBContext {
         String sql3 = "DELETE FROM OrderDetails WHERE OrderID = ?";
         String sql4 = "DELETE FROM Orders WHERE OrderID = ?";
 
-        try (PreparedStatement stmt1 = conn.prepareStatement(sql1); 
-             PreparedStatement stmt2 = conn.prepareStatement(sql2); 
-             PreparedStatement stmt3 = conn.prepareStatement(sql3); 
-             PreparedStatement stmt4 = conn.prepareStatement(sql4)) {
+        try (PreparedStatement stmt1 = conn.prepareStatement(sql1); PreparedStatement stmt2 = conn.prepareStatement(sql2); PreparedStatement stmt3 = conn.prepareStatement(sql3); PreparedStatement stmt4 = conn.prepareStatement(sql4)) {
 
             stmt1.setInt(1, id);
             stmt1.executeUpdate();
@@ -346,7 +348,6 @@ public class OrderDAO extends DBContext {
     }
 
     //--------------------------------------------
-
     // Update order status
     public void updateOrderStatus(int id, String status) {
         String sql = "UPDATE Orders SET Status = ? WHERE OrderID = ?";
@@ -360,7 +361,6 @@ public class OrderDAO extends DBContext {
     }
 
     //--------------------------------------------
-
     // Get orders by shipper and status
     public List<Order> getOrdersByShipperIdAndStatus(int shipperId, String status) {
         List<Order> orders = new ArrayList<>();
@@ -389,11 +389,8 @@ public class OrderDAO extends DBContext {
         return orders;
     }
 
-
-  
     // Add new order when payment successfully
 // Add new order when payment successfully - UPDATED TO RETURN OrderID
-
     public int addNewOrder(Order o) {
         String sql = "INSERT INTO Orders (UserID, Status, PaymentMethod, ShippingAddress, TotalAmount, IsInstalment, ReceiverName, ReceiverPhone) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
@@ -425,6 +422,7 @@ public class OrderDAO extends DBContext {
 
     // Get all order details by OrderID
     public List<OrderDetails> getAllOrderDetailByOrderID(int oid) {
+        VariantsDAO vdao = new VariantsDAO();
         String sql = "Select * from OrderDetails where OrderID = ?";
         List<OrderDetails> list = new ArrayList<>();
         try {
@@ -434,6 +432,7 @@ public class OrderDAO extends DBContext {
             while (rs.next()) {
                 int orderID = rs.getInt("OrderID");
                 int variantID = rs.getInt("VariantID");
+                Variants variant = vdao.getVariantByID(variantID);
                 int quantity = rs.getInt("Quantity");
                 double price = rs.getDouble("UnitPrice");
 
@@ -442,7 +441,7 @@ public class OrderDAO extends DBContext {
                 double downPayment = rs.getDouble("DownPayment");
                 int interestRate = rs.getInt("InterestRate");
 
-                list.add(new OrderDetails(orderID, variantID, quantity, price, instalmentPeriod, monthlyPayment, downPayment, interestRate));
+                list.add(new OrderDetails(orderID, quantity, price, instalmentPeriod, monthlyPayment, downPayment, interestRate, variant));
             }
 
         } catch (Exception e) {
@@ -452,12 +451,13 @@ public class OrderDAO extends DBContext {
         return list;
     }
 
-
     //--------------------------------------------
-
     /**
-     * Get all orders for a customer phone number, regardless of Staff or Shipper.
-     * * @param phone Customer phone number (supports partial match with LIKE '%...%').
+     * Get all orders for a customer phone number, regardless of Staff or
+     * Shipper.
+     *
+     * * @param phone Customer phone number (supports partial match with LIKE
+     * '%...%').
      * @return List of Order objects.
      */
     public List<Order> getOrdersByPhone(String phone) {
@@ -514,75 +514,75 @@ public class OrderDAO extends DBContext {
     }
 
     //--------------------------------------------
-    
     /**
      * Get orders for a customer phone number filtered by status.
-     * * @param phone Customer phone number (supports partial match with LIKE '%...%').
+     *
+     * * @param phone Customer phone number (supports partial match with LIKE
+     * '%...%').
      * @param status The status to filter by.
      * @return List of Order objects.
      */
- public List<Order> getOrdersByPhoneAndStatus(String phone, String status) {
-    List<Order> list = new ArrayList<>();
-    String sql = "SELECT o.OrderID, o.UserID, buyer.FullName AS BuyerName, buyer.Phone AS BuyerPhone, "
-            + "o.ShippingAddress AS BuyerAddress, o.TotalAmount, o.PaymentMethod, o.Status, o.OrderDate, "
-            + "shippers.UserID AS ShipperID, shippers.FullName AS ShipperName, shippers.Phone AS ShipperPhone "
-            + "FROM Orders o "
-            + "JOIN Users buyer ON o.UserID = buyer.UserID "
-            + "LEFT JOIN Sales s ON o.OrderID = s.OrderID "
-            + "LEFT JOIN Users shippers ON s.ShipperID = shippers.UserID "
-            + "WHERE buyer.Phone LIKE ? AND o.Status = ?";
+    public List<Order> getOrdersByPhoneAndStatus(String phone, String status) {
+        List<Order> list = new ArrayList<>();
+        String sql = "SELECT o.OrderID, o.UserID, buyer.FullName AS BuyerName, buyer.Phone AS BuyerPhone, "
+                + "o.ShippingAddress AS BuyerAddress, o.TotalAmount, o.PaymentMethod, o.Status, o.OrderDate, "
+                + "shippers.UserID AS ShipperID, shippers.FullName AS ShipperName, shippers.Phone AS ShipperPhone "
+                + "FROM Orders o "
+                + "JOIN Users buyer ON o.UserID = buyer.UserID "
+                + "LEFT JOIN Sales s ON o.OrderID = s.OrderID "
+                + "LEFT JOIN Users shippers ON s.ShipperID = shippers.UserID "
+                + "WHERE buyer.Phone LIKE ? AND o.Status = ?";
 
-    try (PreparedStatement ps = conn.prepareStatement(sql)) {
-        ps.setString(1, "%" + phone + "%");
-        ps.setString(2, status);
-        try (ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                // Người mua
-                Users buyer = new Users();
-                buyer.setFullName(rs.getString("BuyerName"));
-                buyer.setPhone(rs.getString("BuyerPhone"));
-                buyer.setAddress(rs.getString("BuyerAddress"));
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, "%" + phone + "%");
+            ps.setString(2, status);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    // Người mua
+                    Users buyer = new Users();
+                    buyer.setFullName(rs.getString("BuyerName"));
+                    buyer.setPhone(rs.getString("BuyerPhone"));
+                    buyer.setAddress(rs.getString("BuyerAddress"));
 
-                // Shipper (có thể null)
-                Users shipper = null;
-                int shipperID = rs.getInt("ShipperID");
-                if (shipperID != 0) {
-                    shipper = new Users();
-                    shipper.setUserId(shipperID);
-                    shipper.setFullName(rs.getString("ShipperName"));
-                    shipper.setPhone(rs.getString("ShipperPhone"));
+                    // Shipper (có thể null)
+                    Users shipper = null;
+                    int shipperID = rs.getInt("ShipperID");
+                    if (shipperID != 0) {
+                        shipper = new Users();
+                        shipper.setUserId(shipperID);
+                        shipper.setFullName(rs.getString("ShipperName"));
+                        shipper.setPhone(rs.getString("ShipperPhone"));
+                    }
+
+                    // Order
+                    int orderID = rs.getInt("OrderID");
+                    double total = rs.getBigDecimal("TotalAmount").doubleValue();
+                    Timestamp orderDateTs = rs.getTimestamp("OrderDate");
+                    LocalDateTime orderDate = orderDateTs != null ? orderDateTs.toLocalDateTime() : null;
+                    String orderStatus = rs.getString("Status");
+                    String paymentMethod = rs.getString("PaymentMethod");
+
+                    Order o = new Order(orderID, buyer, shipper,
+                            buyer.getAddress(), total, orderDate, orderStatus);
+                    o.setPaymentMethod(paymentMethod);
+
+                    list.add(o);
                 }
-
-                // Order
-                int orderID = rs.getInt("OrderID");
-                double total = rs.getBigDecimal("TotalAmount").doubleValue();
-                Timestamp orderDateTs = rs.getTimestamp("OrderDate");
-                LocalDateTime orderDate = orderDateTs != null ? orderDateTs.toLocalDateTime() : null;
-                String orderStatus = rs.getString("Status");
-                String paymentMethod = rs.getString("PaymentMethod");
-
-                Order o = new Order(orderID, buyer, shipper,
-                        buyer.getAddress(), total, orderDate, orderStatus);
-                o.setPaymentMethod(paymentMethod);
-
-                list.add(o);
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-    } catch (SQLException e) {
-        e.printStackTrace();
+
+        return list;
+
     }
 
-    return list;
-
-}
-
     //--------------------------------------------
-
     // Test main method
     public static void main(String[] args) {
         OrderDAO dao = new OrderDAO();
         // Use a placeholder staff ID for testing (e.g., 1)
-        List<Order> list = dao.getAllOrderForStaff(1); 
+        List<Order> list = dao.getAllOrderForStaff(1);
 
         if (list.isEmpty()) {
             System.out.println("No orders found for staff ID 1 or unassigned orders in the database!");
@@ -612,5 +612,77 @@ public class OrderDAO extends DBContext {
                 System.out.println("--------------------------------------------");
             }
         }
+    }
+
+    public List<Order> getAllOrder() {
+        String sql = "Select * from Orders";
+        List<Order> list = new ArrayList<>();
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                int id = rs.getInt("OrderID");
+                int userID = rs.getInt("UserID");
+                Timestamp orderDateTimestamp = rs.getTimestamp("orderDate");
+                LocalDateTime orderDate = (orderDateTimestamp != null)
+                        ? orderDateTimestamp.toLocalDateTime()
+                        : null;
+                String status = rs.getString("Status");
+                String paymentMethod = rs.getString("PaymentMethod");
+                String shippingAddress = rs.getString("ShippingAddress");
+                double totalAmount = rs.getDouble("TotalAmount");
+                byte isInstalment = rs.getByte("IsInstalment");
+                String receiverName = rs.getString("ReceiverName");
+                String receiverPhone = rs.getString("ReceiverPhone");
+
+                list.add(new Order(id, userID, paymentMethod, shippingAddress, totalAmount, status, orderDate, isInstalment, receiverName, receiverPhone));
+            }
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        return list;
+    }
+
+    public List<Order> getAllPendingInstalment(List<Order> listInstalment) {
+        PaymentsDAO pmdao = new PaymentsDAO();
+
+        List<Order> list = new ArrayList<>();
+        for (Order order : listInstalment) {
+            List<Payments> listPayment = pmdao.getPaymentByOrderID(order.getOrderID());
+            if (listPayment != null && !listPayment.isEmpty()) {
+                for (Payments payment : listPayment) {
+                    if (payment.getPaymentStatus().equals("Pending")) {
+                        list.add(order);
+                        break;
+                    }
+                }
+            }
+
+        }
+
+        return list;
+
+    }
+
+    public List<Order> getAllCompletedInstalment(List<Order> listInstalment) {
+        PaymentsDAO pmdao = new PaymentsDAO();
+
+        List<Order> list = new ArrayList<>();
+        for (Order order : listInstalment) {
+            List<Payments> listPayment = pmdao.getPaymentByOrderID(order.getOrderID());
+            if (listPayment != null && !listPayment.isEmpty()) {
+                for (Payments payment : listPayment) {
+                    if (payment.getPaymentStatus().equals("Completed")) {
+                        list.add(order);
+                        break;
+                    }
+                }
+            }
+
+        }
+
+        return list;
     }
 }

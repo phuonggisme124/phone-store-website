@@ -20,6 +20,9 @@ public class Sale {
     // The Users object representing the assigned shipper
     private Users shipper;  
     
+    // The Users object representing the assigned shipper
+    private Users staff;  
+    
     // Shipper ID (foreign key)
     private int shipperID;
     
@@ -63,6 +66,27 @@ public class Sale {
         this.orderID = orderID;
         this.createAt = createAt;
     }
+
+    public Sale(int saleID, Users shipper, Users staff, int orderID, LocalDateTime createAt) {
+        this.saleID = saleID;
+        this.shipper = shipper;
+        this.staff = staff;
+        this.orderID = orderID;
+        this.createAt = createAt;
+    }
+    
+    
+    
+
+    public Users getStaff() {
+        return staff;
+    }
+
+    public void setStaff(Users staff) {
+        this.staff = staff;
+    }
+    
+    
 
     // Getter and Setter for staffID
     public int getStaffID() {

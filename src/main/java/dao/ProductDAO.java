@@ -382,4 +382,42 @@ public class ProductDAO extends DBContext {
         return list;
     }
 
+    public int getCurrentProductID() {
+        String sql = "SELECT MAX(ProductID) AS ProductID \n"
+                + "FROM Products;";
+
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                int id = rs.getInt("ProductID");
+                return id;
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return 0;
+    }
+
+    public void createSpecification(int currentProductID, String os, String cpu, String gpu, String ram, int batteryCapacity, String touchscreen) {
+        String sql = "INSERT INTO Specifications (ProductID, OS, CPU, GPU, RAM, BatteryCapacity, Touchscreen) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, currentProductID);
+            ps.setString(2, os);
+            ps.setString(3, cpu);
+            ps.setString(4, gpu);
+            ps.setString(5, ram);
+            ps.setInt(6, batteryCapacity);
+            ps.setString(7, touchscreen);
+            ps.executeUpdate();
+            ps.close();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
 }
