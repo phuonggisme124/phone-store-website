@@ -132,7 +132,7 @@ public class OrderServlet extends HttpServlet {
         OrderDAO dao = new OrderDAO();
 
         // Retrieve order parameters
-        String status = request.getParameter("status");
+        String status = request.getParameter("newStatus");
         String orderIdParam = request.getParameter("orderID");
 
         // If missing parameters, redirect back
@@ -143,17 +143,9 @@ public class OrderServlet extends HttpServlet {
 
         int orderID = Integer.parseInt(orderIdParam);
 
-        // Update or delete order based on status
-        if (status.equalsIgnoreCase("Delivered")) {
-            // Delete delivered orders from database
-            dao.deleteOrderByID(orderID);
-        } else if (status.equalsIgnoreCase("Pending")) {
-            // Change status from Pending → In Transit
-            dao.updateOrderStatus(orderID, "In Transit");
-        } else if (status.equalsIgnoreCase("In Transit")) {
-            // Change status from In Transit → Delivered
-            dao.updateOrderStatus(orderID, "Delivered");
-        }
+     
+        dao.updateOrderStatus(orderID, status);
+        
 
         // Redirect back to order management page
         response.sendRedirect("order");

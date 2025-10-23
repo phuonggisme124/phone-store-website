@@ -1,6 +1,11 @@
+/*
+    Description: Product Detail Page Styles using the Dashboard's primary theme.
+    Primary Color: #3366ff
+*/
+
 body {
     font-family: 'Poppins', sans-serif;
-    background: #fdfdfd;
+    background: #f4f7fc; /* Sử dụng màu nền xám-xanh của dashboard */
     margin: 0;
     padding: 0;
 }
@@ -20,7 +25,8 @@ body {
     background-color: white;
     border-radius: 20px;
     padding: 20px;
-    box-shadow: 0 5px 20px rgba(114, 174, 200, 0.4);
+    /* Đổi màu đổ bóng sang màu xanh chủ đạo */
+    box-shadow: 0 8px 25px rgba(51, 102, 255, 0.15);
 }
 
 .main-image {
@@ -29,7 +35,7 @@ body {
 
 .image-slide {
     font-size: 100px;
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(244, 247, 252, 0.7); /* Nền nhạt hơn */
     border-radius: 20px;
     padding: 50px;
     margin-bottom: 20px;
@@ -41,8 +47,14 @@ body {
 }
 
 @keyframes fadeIn {
-    from {opacity: 0; transform: scale(0.95);}
-    to {opacity: 1; transform: scale(1);}
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
 .feature-box h3 {
@@ -68,7 +80,7 @@ body {
 .thumb {
     width: 50px;
     height: 50px;
-    background: rgba(255,255,255,0.6);
+    background: rgba(244, 247, 252, 0.9);
     border-radius: 12px;
     display: flex;
     align-items: center;
@@ -82,7 +94,8 @@ body {
 }
 
 .thumb.active {
-    border: 2px solid #72AEC8;
+    /* Đổi màu viền sang màu xanh chủ đạo */
+    border: 2px solid #3366ff;
 }
 
 .arrow {
@@ -101,17 +114,19 @@ body {
 }
 
 .tab {
-    background: white;
+    background: #f4f7fc; /* Màu nền tab giống màu body */
     border: none;
     padding: 12px;
     border-radius: 12px;
     font-weight: 500;
     cursor: pointer;
     transition: 0.3s;
+    color: #5a6a85; /* Màu chữ xám xanh của dashboard */
 }
 
 .tab.active, .tab:hover {
-    background: #72AEC8;
+    /* Đổi màu nền sang màu xanh chủ đạo */
+    background: #3366ff;
     color: white;
 }
 
@@ -121,11 +136,13 @@ body {
     background: white;
     border-radius: 20px;
     padding: 30px;
-    box-shadow: 0 5px 25px rgba(0,0,0,0.1);
+    /* Đổi màu đổ bóng sang màu xanh chủ đạo */
+    box-shadow: 0 8px 25px rgba(51, 102, 255, 0.15);
 }
 
 .price-box {
-    background: #e8f6ff;
+    /* Tạo màu nền xanh nhạt từ màu chủ đạo */
+    background: #e6efff;
     border-radius: 15px;
     padding: 20px;
     text-align: right;
@@ -149,7 +166,7 @@ body {
 }
 
 .option {
-    border: 2px solid #ccc;
+    border: 2px solid #e3e8f0; /* Viền xám xanh của dashboard */
     border-radius: 10px;
     padding: 10px 20px;
     cursor: pointer;
@@ -157,21 +174,23 @@ body {
 }
 
 .option.selected {
-    border-color: #72AEC8;
-    background: #D2E8EF;
+    /* Đổi màu viền và nền sang màu xanh chủ đạo */
+    border-color: #3366ff;
+    background: #e6efff;
 }
 
 .color {
     width: 35px;
     height: 35px;
     border-radius: 10px;
-    border: 2px solid #ccc;
+    border: 2px solid #e3e8f0; /* Viền xám xanh */
     cursor: pointer;
     transition: 0.3s;
 }
 
 .color.selected {
-    border: 2px solid #72AEC8;
+    /* Đổi màu viền sang màu xanh chủ đạo */
+    border: 2px solid #3366ff;
 }
 
 .action-buttons {
@@ -182,7 +201,8 @@ body {
 
 .buy-now {
     flex: 1;
-    background: #72AEC8;
+    /* Đổi màu nền sang màu xanh chủ đạo */
+    background: #3366ff;
     border: none;
     color: white;
     font-weight: 600;
@@ -193,14 +213,16 @@ body {
 }
 
 .buy-now:hover {
-    background: #5f99b1;
+    /* Tạo màu xanh đậm hơn cho hiệu ứng hover */
+    background: #2552cc;
 }
 
 .add-cart {
     flex: 1;
     background: white;
-    border: 2px solid #72AEC8;
-    color: #72AEC8;
+    /* Đổi màu viền và chữ sang màu xanh chủ đạo */
+    border: 2px solid #3366ff;
+    color: #3366ff;
     font-weight: 600;
     border-radius: 12px;
     padding: 15px;
@@ -209,7 +231,65 @@ body {
 }
 
 .add-cart:hover {
-    background: #72AEC8;
+    /* Đổi màu nền sang màu xanh chủ đạo */
+    background: #3366ff;
     color: white;
 }
-
+/* Giao diện cho ô chọn số lượng (Quantity) */
+.quantity-selector {
+    display: flex;
+    align-items: center;
+    border: 2px solid #e3e8f0;
+    border-radius: 12px;
+    width: fit-content;
+}
+.quantity-btn {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1.5rem;
+    font-weight: 500;
+    width: 40px;
+    height: 40px;
+    color: #72AEC8;
+    transition: background-color 0.2s ease;
+}
+.quantity-btn:hover {
+    background-color: #e1f3fa;
+}
+.quantity-btn.minus-btn {
+    border-right: 2px solid #e3e8f0;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
+.quantity-btn.plus-btn {
+    border-left: 2px solid #e3e8f0;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+.quantity-btn:disabled {
+    color: #ccc;
+    cursor: not-allowed;
+    background-color: #f8f9fa;
+}
+.quantity-input {
+    border: none;
+    text-align: center;
+    font-weight: 600;
+    font-size: 1.1rem;
+    width: 60px;
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+.quantity-input::-webkit-outer-spin-button,
+.quantity-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+.stock-error {
+    color: #dc3545;
+    font-weight: 500;
+    font-size: 0.9rem;
+    margin-top: 8px;
+    display: none;
+}

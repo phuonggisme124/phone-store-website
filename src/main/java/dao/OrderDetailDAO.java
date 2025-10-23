@@ -5,6 +5,9 @@
 package dao;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 import model.OrderDetails;
 import utils.DBContext;
 
@@ -47,6 +50,42 @@ public class OrderDetailDAO extends DBContext {
                 System.out.println(e.getMessage());
             }
         }
+    }
+
+    public List<OrderDetails> getOrderDetailByOrderID(int orderID) {
+        String sql = "SELECT od.OrderID, od.VariantID, od.UnitPrice, od.MonthlyPayment, od.Quantity , od.InstalmentPeriod, od.InterestRate\n"
+                + "FROM OrderDetails od\n"
+                + "WHERE od.OrderID = ?";
+        List<OrderDetails> oDList = new ArrayList<>();
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, orderID);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                int variantID = rs.getInt("VariantID");
+                double unitPrice = rs.getDouble("UnitPrice");
+                double monthlyPayment = rs.getDouble("MonthlyPayment");
+                int instalmentPeriod = rs.getInt("InstalmentPeriod");
+                int interestRate = rs.getInt("InterestRate");
+                int quantity = rs.getInt("Quantity");
+                OrderDetails od = new OrderDetails();
+                od.setOrderID(orderID);
+                od.setMonthlyPayment(monthlyPayment);
+                od.setInstalmentPeriod(instalmentPeriod);
+                od.setQuantity(quantity);
+                od.setUnitPrice(unitPrice);
+                od.setVariantID(variantID);
+                od.setInterestRate(interestRate);
+                oDList.add(od);
+
+            }
+            return oDList;
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+
+        }
+        return null;
     }
 
 }

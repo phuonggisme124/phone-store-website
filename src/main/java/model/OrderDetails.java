@@ -5,12 +5,13 @@
 package model;
 
 /**
- * Represents the details of an order, including product variant,
- * quantity, unit price, and installment information.
- * 
+ * Represents the details of an order, including product variant, quantity, unit
+ * price, and installment information.
+ *
  * @author USER
  */
 public class OrderDetails {
+
     private int orderID;            // Unique ID of the order
     private int variantID;          // ID of the product variant in this order
     private int quantity;           // Quantity of the product variant ordered
@@ -20,6 +21,18 @@ public class OrderDetails {
     private double downPayment;     // Down payment made at the beginning
     private int interestRate;       // Interest rate applied to the installment
     private Variants variant;
+    private int instalmentPeriod;
+
+    public int getInstalmentPeriod() {
+        return instalmentPeriod;
+    }
+
+    public void setInstalmentPeriod(int instalmentPeriod) {
+        this.instalmentPeriod = instalmentPeriod;
+    }
+
+    public OrderDetails() {
+    }
 
     // Constructor for non-installment purchases
     public OrderDetails(int orderID, int variantID, int quantity, double unitPrice) {
@@ -51,8 +64,6 @@ public class OrderDetails {
         this.interestRate = interestRate;
         this.variant = variant;
     }
-    
-    
 
     public int getInterestRateID() {
         return interestRateID;
@@ -70,10 +81,6 @@ public class OrderDetails {
     public void setVariant(Variants variant) {
         this.variant = variant;
     }
-    
-    
-    
-    
 
     public double getMonthlyPayment() {
         return monthlyPayment;
@@ -133,11 +140,11 @@ public class OrderDetails {
 
     @Override
     public String toString() {
-        return "OrderDetails{" + 
-               "orderID=" + orderID + 
-               ", VariantID=" + variantID + 
-               ", quantity=" + quantity + 
-               ", unitPrice=" + unitPrice + 
-               '}';
+        return "OrderDetails{"
+                + "orderID=" + orderID
+                + ", VariantID=" + variantID
+                + ", quantity=" + quantity
+                + ", unitPrice=" + unitPrice
+                + '}';
     }
 }

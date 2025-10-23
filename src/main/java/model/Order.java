@@ -83,6 +83,19 @@ public class Order {
         this.isInstalment = isInstalment;
         this.buyer= buyer;
     }
+    
+        public Order( int userID, int oderID, String paymentMethod, String shippingAddress, double totalAmount, String status, byte isInstalment, LocalDateTime orderDate, Users buyer) {
+
+        this.userID = userID;
+        this.orderID = oderID;
+        this.paymentMethod = paymentMethod;
+        this.shippingAddress = shippingAddress;
+        this.totalAmount = totalAmount;
+        this.status = status;
+        this.isInstalment = isInstalment;
+        this.orderDate = orderDate;
+        this.buyer= buyer;
+    }
 
     
     

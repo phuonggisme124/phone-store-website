@@ -6,6 +6,8 @@ package controller;
 
 import dao.UsersDAO;
 import dao.CategoryDAO; // ✅ thêm import này
+import dao.OrderDAO;
+import dao.OrderDetailDAO;
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
@@ -13,19 +15,17 @@ import java.io.IOException;
 import java.util.List;
 import model.Users;
 import model.Category;
+import model.Order;
+import model.OrderDetails;
 
 /**
  * Servlet Controller to handle user profile actions.
  *
- * Handles:
- * - Viewing profile (profile.jsp)
- * - Editing profile (editProfile.jsp)
+ * Handles: - Viewing profile (profile.jsp) - Editing profile (editProfile.jsp)
  * - Updating profile (POST)
  *
- * URL patterns:
- *   GET  /user?action=view   -> show profile.jsp
- *   GET  /user?action=edit   -> show editProfile.jsp
- *   POST /user?action=update -> save profile updates
+ * URL patterns: GET /user?action=view -> show profile.jsp GET /user?action=edit
+ * -> show editProfile.jsp POST /user?action=update -> save profile updates
  */
 @WebServlet(name = "UserServlet", urlPatterns = {"/user"})
 public class UserServlet extends HttpServlet {
@@ -37,7 +37,9 @@ public class UserServlet extends HttpServlet {
             throws ServletException, IOException {
 
         String action = request.getParameter("action");
-        if (action == null) action = "view";
+        if (action == null) {
+            action = "view";
+        }
 
         HttpSession session = request.getSession();
         Users user = (Users) session.getAttribute("user");
@@ -57,12 +59,33 @@ public class UserServlet extends HttpServlet {
                 request.setAttribute("user", user);
                 request.getRequestDispatcher("editProfile.jsp").forward(request, response);
                 break;
-
+            case "transaction":
+                OrderDAO oDAO = new OrderDAO();
+                String status = request.getParameter("status");
+                String orderIDStr = request.getParameter("orderID");
+                List<Order> oList;
+                if (status == null) {
+                     oList = oDAO.getOrdersByStatus(user.getUserId(), "All");
+                } else {
+                     oList = oDAO.getOrdersByStatus(user.getUserId(), status);
+                }
+                request.setAttribute("oList", oList);
+                if(orderIDStr != null) {
+                    int orderID = Integer.parseInt(orderIDStr);
+                    OrderDetailDAO oDDAO = new OrderDetailDAO();
+                    List<OrderDetails> oDList = oDDAO.getOrderDetailByOrderID(orderID);
+                    request.setAttribute("oDList", oDList);
+                }
+                        
+                request.getRequestDispatcher("customer_transaction.jsp").forward(request, response);
+                break;
             case "view":
+
             default:
                 request.setAttribute("user", user);
                 request.getRequestDispatcher("profile.jsp").forward(request, response);
                 break;
+
         }
     }
 

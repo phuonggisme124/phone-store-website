@@ -574,6 +574,67 @@ public class OrderDAO extends DBContext {
         }
 
         return list;
+    }
+
+    public List<Order> getOrdersByStatus(int userID, String status) {
+        List<Order> orders = new ArrayList<>();
+        String sql = null;
+        if (status.equalsIgnoreCase("All")) {
+            sql = "SELECT o.OrderID, o.UserID, o.OrderDate, o.Status, o.PaymentMethod, o.ShippingAddress, "
+                    + "o.TotalAmount, o.IsInstalment, o.ReceiverName, o.ReceiverPhone "
+                    + "FROM [Orders] o "
+                    + "WHERE o.UserID = ? AND o.Status IN ('In Transit', 'Delivered', 'Cancelled')";
+        } else {
+            sql = "SELECT o.OrderID, o.UserID, o.OrderDate, o.Status, o.PaymentMethod, o.ShippingAddress, "
+                    + "o.TotalAmount, o.IsInstalment, o.ReceiverName, o.ReceiverPhone "
+                    + "FROM [Orders] o "
+                    + "WHERE o.UserID = ? AND o.Status = ? "
+                    + "AND o.Status IN ('In Transit', 'Delivered', 'Cancelled')";
+        }
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, userID);
+            if (!status.equalsIgnoreCase("All")) {
+                stmt.setString(2, status);
+            }
+
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                // Người mua
+                Users receiver = new Users();
+                receiver.setFullName(rs.getString("ReceiverName"));
+                receiver.setPhone(rs.getString("ReceiverPhone"));
+                // Thông tin đơn hàng
+                int orderID = rs.getInt("OrderID");
+                BigDecimal total = rs.getBigDecimal("TotalAmount");
+                String shippingAdress = rs.getString("ShippingAddress");
+                Timestamp ts = rs.getTimestamp("OrderDate");
+                LocalDateTime orderDate = (ts != null) ? ts.toLocalDateTime() : null;
+                String paymentMethod = rs.getString("PaymentMethod");
+                String orderStatus = rs.getString("Status");
+                byte isInstalment = rs.getByte("IsInstalment");
+
+                Order o = new Order(
+                        userID,
+                        orderID,
+                        paymentMethod,
+                        shippingAdress,
+                        total != null ? total.doubleValue() : 0,
+                        orderStatus,
+                        isInstalment,
+                        orderDate,
+                        receiver
+                );
+
+                orders.add(o);
+            }
+             
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+      
+        return orders;
 
     }
 
@@ -804,4 +865,5 @@ public class OrderDAO extends DBContext {
 
         return list;
     }
+
 }
