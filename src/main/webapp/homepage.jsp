@@ -1,6 +1,10 @@
 <%@page import="model.Category"%>
 <%@page import="model.Products"%>
 <%@page import="java.util.List"%>
+<%@page import="java.util.Map" %>
+<%@page import="java.util.HashMap" %>
+<%@page import="model.Products" %> <%-- Thay model.Products b?ng gói (package) ?úng c?a b?n --%>
+<%@page import="model.Variants" %> <%-- Thay model.Variants b?ng gói (package) ?úng c?a b?n --%>
 <!DOCTYPE html>
 <html>
     <head>
@@ -9,24 +13,55 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="format-detection" content="telephone=no">
-        <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="author" content="">
         <meta name="keywords" content="">
         <meta name="description" content="">
-        <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
-        <link rel="stylesheet" type="text/css" href="css/style.css">
+
+
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <link rel="stylesheet" href="css/style.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
 
-        <script src="js/modernizr.js"></script>
-        <!-- Swiper CSS -->
-        <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
 
-        <!-- Swiper JS -->
+        <style>
+            #searchContainer {
+                position: relative !important;
+                max-width: 400px;
+            }
+            #searchResults {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background-color: #fff;
+                border: 1px solid #ccc;
+                z-index: 1000;
+                max-height: 400px;
+                overflow-y: auto;
+            }
+            .suggestion-item {
+                padding: 8px;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+            }
+            .suggestion-item:hover {
+                background-color: #f0f0f0;
+            }
+        </style>
+
+
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script> 
+        <script src="js/bootstrap.min.js"></script>
+        <script src="js/modernizr.js"></script>
         <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+        <script src="js/plugins.js"></script>
+        <script src="js/script.js"></script>      
     </head>
+
     <body data-bs-spy="scroll" data-bs-target="#navbar" data-bs-root-margin="0px 0px -40%" data-bs-smooth-scroll="true" tabindex="0">
         <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
     <symbol id="search" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
@@ -98,43 +133,6 @@
     </symbol>
     </svg>  
 
-    <div class="search-popup">
-        <div class="search-popup-container">
-
-            <form role="search" method="get" class="search-form" action="">
-                <input type="search" id="search-form" class="search-field" placeholder="Type and press enter" value="" name="s" />
-                <button type="submit" class="search-submit"><svg class="search"><use xlink:href="#search"></use></svg></button>
-            </form>
-
-            <h5 class="cat-list-title">Browse Categories</h5>
-
-            <ul class="cat-list">
-                <li class="cat-list-item">
-                    <a href="#" title="Mobile Phones">Mobile Phones</a>
-                </li>
-                <li class="cat-list-item">
-                    <a href="#" title="Smart Watches">Smart Watches</a>
-                </li>
-                <li class="cat-list-item">
-                    <a href="#" title="Headphones">Headphones</a>
-                </li>
-                <li class="cat-list-item">
-                    <a href="#" title="Accessories">Accessories</a>
-                </li>
-                <li class="cat-list-item">
-                    <a href="#" title="Monitors">Monitors</a>
-                </li>
-                <li class="cat-list-item">
-                    <a href="#" title="Speakers">Speakers</a>
-                </li>
-                <li class="cat-list-item">
-                    <a href="#" title="Memory Cards">Memory Cards</a>
-                </li>
-            </ul>
-
-        </div>
-    </div>
-
     <header id="header" class="site-header header-scrolled position-fixed text-black bg-light">
         <nav id="header-nav" class="navbar navbar-expand-lg px-3 mb-3">
             <div class="container-fluid">
@@ -155,20 +153,17 @@
                     </div>
                     <%
                         List<Category> listCategory = (List<Category>) request.getAttribute("listCategory");
-
-
                     %>
                     <div class="offcanvas-body">
                         <ul id="navbar" class="navbar-nav text-uppercase justify-content-end align-items-center flex-grow-1 pe-3">
                             <li class="nav-item">
                                 <a class="nav-link me-4 active" href="homepage">Home</a>
                             </li>
-
-                            <li class="nav-item">
-                                <a class="nav-link me-4" href="product?action=category&cID=1">Phone</a>
-                            </li>
                             <li class="nav-item">
                                 <a class="nav-link me-4" href="product?action=category&cID=3">Tablet</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link me-4" href="product?action=category&cID=1">Phone</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link me-4" href="product?action=category&cID=4">Smartwatch</a>
@@ -197,33 +192,90 @@
                             <div class="user-items ps-5">
                                 <ul class="d-flex justify-content-end list-unstyled align-items-center">
                                     <%
-                                        // B??C 1: L?y ??i t??ng Users t? session. 
-                                        // T?n thu?c t?nh ???c l?u l? "user" (nh? trong LoginServlet).
-                                        // D?ng t?n l?p ??y ?? model.Users (h?y ??m b?o t?n package l? ??ng)
                                         model.Users user = (model.Users) session.getAttribute("user");
 
                                         boolean isLoggedIn = (user != null);
-                                        String displayName = ""; // Bi?n ?? l?u tr? T?n ng??i d?ng ho?c Email
+                                        String displayName = "";
 
                                         if (isLoggedIn) {
-                                            // B??C 2: D?ng ph??ng th?c getName() c? s?n ?? l?y t?n ng??i d?ng.
-                                            // Th?m logic ki?m tra null/r?ng ?? tr?nh l?i n?u t?n kh?ng ???c l?u.
                                             if (user.getFullName() != null && !user.getFullName().trim().isEmpty()) {
                                                 displayName = user.getFullName();
                                             } else {
-                                                // N?u t?n b? r?ng, hi?n th? Email thay th? (t?y ch?n)
+
                                                 displayName = user.getEmail();
                                             }
                                     %>
+                                    
+                                    
+                                    <%
+                                        List<Products> productList1_search = (List<Products>) request.getAttribute("productList1");
+                                        List<Variants> variantsList_search = (List<Variants>) request.getAttribute("variantsList");
+
+                                        // Map ch?a tên s?n ph?m và CategoryID
+                                        Map<Integer, String> productNameMap_search = new HashMap<>();
+                                        Map<Integer, Integer> productCategoryMap_search = new HashMap<>();
+
+                                        if (productList1_search != null) {
+                                            for (Products p : productList1_search) {
+                                                productNameMap_search.put(p.getProductID(), p.getName());
+                                                productCategoryMap_search.put(p.getProductID(), p.getCategoryID());
+                                            }
+                                        }
+                                    %>
+
                                     <li class="search-item pe-3">
-                                        <a href="#" class="search-button">
+                                        <a href="#" class="search-button" id="searchToggleButton" aria-label="Open search bar">
                                             <svg class="search"><use xlink:href="#search"></use></svg>
                                         </a>
+
+                                        <div id="searchContainer" style="display: none;">
+                                            <input type="text" id="searchInput" placeholder="Find Product" autocomplete="off">
+
+                                            <div id="searchResults">
+                                                <%
+                                                    if (variantsList_search != null && !productNameMap_search.isEmpty()) {
+                                                        for (Variants v : variantsList_search) {
+                                                            String productName = productNameMap_search.get(v.getProductID());
+                                                            Integer categoryID = productCategoryMap_search.get(v.getProductID());
+                                                            if (productName != null && categoryID != null) {
+                                                                String image = (v.getImageUrl() != null) ? v.getImageUrl() : "";
+                                                                String color = (v.getColor() != null) ? v.getColor() : "N/A";
+                                                                String storage = (v.getStorage() != null) ? v.getStorage() : "N/A";
+                                                %>
+
+                                                <div class="suggestion-item" 
+                                                     style="display:none;" 
+                                                     data-variantid="<%= v.getVariantID()%>"
+                                                     data-pid="<%= v.getProductID()%>"
+                                                     data-cid="<%= categoryID%>"
+                                                     data-color="<%= color%>"
+                                                     data-storage="<%= storage%>">
+
+                                                    <img src="images/<%= image%>" width="40" style="margin-right:10px;" alt="<%= productName%>">
+                                                    <%= productName%> - <%= storage%> - <%= color%>
+                                                </div>
+
+                                                <%
+                                                            }
+                                                        }
+                                                    }
+                                                %>
+                                            </div>
+                                        </div>
                                     </li>
 
+                                    <!-- Form search -->
+                                    <form id="productSearchForm" action="product" method="GET" style="display:none;">
+                                        <input type="hidden" name="action" value="selectStorage">
+                                        <input type="hidden" name="pID" id="formPID">
+                                        <input type="hidden" name="cID" id="formCID">
+                                        <input type="hidden" name="storage" id="formStorage">
+                                        <input type="hidden" name="color" id="formColor">
+                                    </form>
+
                                     <li class="pe-3">
-                                        <a href="cart?userID=<%= user.getUserId() %>"> 
-                                            <svg class="cart"><use xlink:href="#cart" ></use></svg>
+                                        <a href="cart?userID=<%= user.getUserId()%>"> 
+                                            <svg class="cart"><use xlink:href="#cart"></use></svg>
                                         </a>
                                     </li>
 
@@ -234,6 +286,8 @@
                                     <li class="text-dark fw-bold">
                                         <%= displayName%>
                                     </li>
+
+
 
                                     <%
                                     } else {
@@ -257,7 +311,62 @@
                 </div>
             </div>
         </nav>
-    </header>
+    </header>                              
+    <!-- js c?a th?nh c?m ??ng-->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const searchToggleButton = document.getElementById('searchToggleButton');
+    const searchContainer = document.getElementById('searchContainer');
+    const searchInput = document.getElementById('searchInput');
+    const searchResults = document.getElementById('searchResults');
+    const allSuggestionItems = searchResults.querySelectorAll('.suggestion-item');
+
+    // Toggle search box
+    searchToggleButton.addEventListener('click', function (e) {
+        e.preventDefault();
+        if (searchContainer.style.display === 'none') {
+            searchContainer.style.display = 'block';
+            searchInput.focus();
+        } else {
+            searchContainer.style.display = 'none';
+            allSuggestionItems.forEach(item => item.style.display = 'none');
+            searchInput.value = '';
+        }
+    });
+
+    // Hi?n g?i ý khi gõ
+    searchInput.addEventListener('keyup', function () {
+        const query = searchInput.value.toLowerCase();
+        allSuggestionItems.forEach(item => {
+            const itemText = item.textContent.toLowerCase();
+            item.style.display = (query.length > 0 && itemText.includes(query)) ? 'flex' : 'none';
+        });
+    });
+
+    // Khi click vào g?i ý
+    allSuggestionItems.forEach(item => {
+        item.addEventListener('click', function () {
+            document.getElementById('formPID').value = this.dataset.pid;
+            document.getElementById('formCID').value = this.dataset.cid;
+            document.getElementById('formStorage').value = this.dataset.storage;
+            document.getElementById('formColor').value = this.dataset.color;
+            document.getElementById('productSearchForm').submit();
+        });
+    });
+
+    // Nh?n Enter ch?n g?i ý ??u tiên
+    searchInput.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const firstVisible = searchResults.querySelector('.suggestion-item[style*="display: flex"]');
+            if (firstVisible) firstVisible.click();
+        }
+    });
+});
+</script>
+
+    <!-- h?t js c?a th?nh --> 
 
     <section style="background-color: white" id="billboard" class="position-relative overflow-hidden bg-light-blue">
         <div class="swiper main-swiper">
@@ -400,7 +509,7 @@
                                 </div>
                                 <div class="card-detail pt-3">
                                     <h3 class="card-title text-uppercase">
-                                        <a href="product?action=viewDetail&pID=<%= p.getProductID() %>"><%=p.getName()%></a>
+                                        <a href="product?action=viewDetail&pID=<%= p.getProductID()%>"><%=p.getName()%></a>
                                     </h3>
                                     <span class="item-price text-primary"><%= p.getVariants().get(0).getPrice()%></span>
                                 </div>
@@ -602,7 +711,7 @@
                 </div>
                 <div class="col-md-4 col-sm-6">
                     <div class="copyright">
-                        <p>? Copyright 2023 MiniStore. Design by <a href="https://templatesjungle.com/">TemplatesJungle</a> Distribution by <a href="https://themewagon.com">ThemeWagon</a>
+                        <p>? Copyright 2025 MiniStore. Design by <a href="https://templatesjungle.com/">TemplatesJungle</a> Distribution by <a href="https://themewagon.com">ThemeWagon</a>
                         </p>
                     </div>
                 </div>
@@ -629,6 +738,7 @@
             }
         });
     </script>
+
 
 </body>
 </html>

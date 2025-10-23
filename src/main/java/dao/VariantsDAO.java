@@ -630,6 +630,7 @@ public class VariantsDAO extends DBContext {
         return list;
     }
 
+
     public int getCurrentVariantID() {
         String sql = "SELECT MAX(VariantID) AS VariantID\n"
                 + "FROM Variants;";
@@ -663,5 +664,6 @@ public class VariantsDAO extends DBContext {
             System.out.println(e.getMessage());
         }
     }
+
 
 }

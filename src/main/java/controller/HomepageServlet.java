@@ -1,112 +1,88 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package controller;
 
 import dao.ProductDAO;
+import dao.PromotionsDAO;
+import dao.VariantsDAO;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.util.List;
 import model.Category;
 import model.Products;
+import model.Promotions;
+import model.Users;
+import model.Variants;
 
-/**
- *
- * @author ADMIN
- */
 @WebServlet(name = "HomepageServlet", urlPatterns = {"/homepage"})
 public class HomepageServlet extends HttpServlet {
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet HomepageServlet</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet HomepageServlet at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
-    }
-
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method
-     *
-     * Workflow:
-     * 1. Create a ProductDAO instance to access data from the database.
-     * 2. Retrieve the newest products list.
-     * 3. Retrieve all product categories.
-     * 4. Set these lists as request attributes.
-     * 5. Forward the request to homepage.jsp for rendering..
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Create DAO object for database operations
-        ProductDAO dao = new ProductDAO();
 
-        // Retrieve the newest products from the database
-        List<Products> productList = dao.getNewestProduct();
+        // ====== KIỂM TRA ROLE ======
+        HttpSession session = request.getSession();
+        Users currentUser = (Users) session.getAttribute("user");
 
-        // Retrieve all categories from the database
-        List<Category> listCategory = dao.getAllCategory();
+        if (currentUser == null || currentUser.getRole() == null || currentUser.getRole() != 1) {
+            response.sendRedirect("login");
+            return;
+        }
 
-        // Store data in request attributes for access in JSP
-        request.setAttribute("productList", productList);
-        request.setAttribute("listCategory", listCategory);
+        // ====== NHẬN ACTION ======
+        String action = request.getParameter("action");
+        if (action == null || action.trim().isEmpty()) {
+            action = "viewhomepage"; // Mặc định
+        }
 
-        // Forward the request to the homepage.jsp view
-        request.getRequestDispatcher("homepage.jsp").forward(request, response);
+        // ====== KHAI BÁO DAO ======
+        ProductDAO pdao = new ProductDAO();
+        VariantsDAO vdao = new VariantsDAO();
+        PromotionsDAO pmtdao = new PromotionsDAO();
+
+        try {
+            if ("viewhomepage".equals(action)) {
+                // ====== HIỂN THỊ TRANG CHỦ ======
+                List<Products> productList = pdao.getNewestProduct();
+                List<Products> productList1 = pdao.getAllProduct();
+                List<Category> listCategory = pdao.getAllCategory();
+                List<Variants> variantsList = vdao.getAllVariant();
+
+                request.setAttribute("productList", productList);
+                request.setAttribute("productList1", productList1);
+                request.setAttribute("listCategory", listCategory);
+                request.setAttribute("variantsList", variantsList);
+
+                request.getRequestDispatcher("homepage.jsp").forward(request, response);
+
+            } else if ("viewpromotion".equals(action)) {
+                // ====== HIỂN THỊ KHUYẾN MÃI ======
+                List<Products> listProducts = pdao.getAllProduct();
+                List<Promotions> listPromotions = pmtdao.getAllPromotion();
+
+                request.setAttribute("listProducts", listProducts);
+                request.setAttribute("listPromotions", listPromotions);
+
+                request.getRequestDispatcher("customer_viewpromotion.jsp").forward(request, response);
+
+            } else {
+                // ====== ACTION KHÔNG HỢP LỆ → QUAY VỀ TRANG CHỦ ======
+                response.sendRedirect("homepage?action=viewhomepage");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error in HomepageServlet: " + e.getMessage());
+        }
     }
 
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        doGet(request, response);
     }
-
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
-
 }
