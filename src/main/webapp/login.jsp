@@ -6,6 +6,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
         <style>
             body {
                 background: #f8f9fa;
@@ -61,6 +62,20 @@
             .auth-form.active {
                 display: block;
             }
+
+            /* 2. CSS cho nút hiển thị mật khẩu */
+            .password-wrapper {
+                position: relative;
+            }
+
+            .password-icon {
+                position: absolute;
+                top: 50%;
+                right: 12px;
+                transform: translateY(-50%);
+                cursor: pointer;
+                color: #6c757d;
+            }
         </style>
     </head>
 
@@ -84,7 +99,10 @@
                     </div>
                     <div class="mb-3">
                         <label for="u_pwd" class="form-label">Password</label>
-                        <input type="password" class="form-control" name="password" id="u_pwd" required placeholder="Enter Password">
+                        <div class="password-wrapper">
+                            <input type="password" class="form-control" name="password" id="u_pwd" required placeholder="Enter Password">
+                            <i class="bi bi-eye-slash password-icon" id="toggleLoginPassword"></i>
+                        </div>
                     </div>
 
                     <% String error = (String) request.getAttribute("error"); %>
@@ -119,11 +137,17 @@
                     </div>
                     <div class="mb-3">
                         <label for="reg_pwd" class="form-label">Password</label>
-                        <input type="password" class="form-control" name="password" id="reg_pwd" required placeholder="Enter Password">
+                        <div class="password-wrapper">
+                            <input type="password" class="form-control" name="password" id="reg_pwd" required placeholder="Enter Password">
+                            <i class="bi bi-eye-slash password-icon" id="toggleRegisterPassword"></i>
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label for="reg_repwd" class="form-label">Repeat Password</label>
-                        <input type="password" class="form-control" name="rePassword" id="reg_repwd" required placeholder="Enter Repeat Password">
+                        <div class="password-wrapper">
+                            <input type="password" class="form-control" name="rePassword" id="reg_repwd" required placeholder="Enter Repeat Password">
+                            <i class="bi bi-eye-slash password-icon" id="toggleRegisterRePassword"></i>
+                        </div>
                     </div>
                     <div class="text-center mt-4">
                         <button type="submit" class="btn btn-dark w-100">Register</button>
@@ -140,17 +164,14 @@
                 const btnLogin = document.getElementById('btn-login');
                 const btnRegister = document.getElementById('btn-register');
 
-                // Ẩn tất cả form
                 loginForm.classList.remove('active');
                 registerForm.classList.remove('active');
 
-                // Reset nút về mặc định (outline-dark)
                 btnLogin.classList.remove('btn-dark');
                 btnLogin.classList.add('btn-outline-dark');
                 btnRegister.classList.remove('btn-dark');
                 btnRegister.classList.add('btn-outline-dark');
 
-                // Hiển thị form + tô nút tương ứng (dark)
                 if (formType === 'login') {
                     loginForm.classList.add('active');
                     btnLogin.classList.remove('btn-outline-dark');
@@ -163,18 +184,30 @@
             }
 
             // --- Cập nhật logic để đảm bảo form login luôn hiển thị đầu tiên ---
-            // Gọi hàm showForm('login') khi trang được tải xong để thiết lập trạng thái ban đầu.
             document.addEventListener('DOMContentLoaded', (event) => {
-                // Kiểm tra nếu có lỗi (chỉ có thể xảy ra khi Đăng nhập thất bại), 
-                // thì giữ nguyên form Đăng nhập đang hiển thị.
-                // Nếu không có lỗi, mặc định hiển thị form 'login'.
-
-                // Do logic JSP kiểm tra lỗi chỉ nằm trong form login, nên ta mặc định 
-                // hiển thị login form khi trang tải. Nếu có lỗi, nó sẽ tự hiển thị.
-                // Ta chỉ cần đảm bảo hàm này chạy để thiết lập nút chính xác.
                 showForm('login');
-            });
 
+                // 4. Thêm JavaScript để xử lý nút hiển thị mật khẩu
+                const setupPasswordToggle = (inputId, toggleId) => {
+                    const passwordInput = document.getElementById(inputId);
+                    const toggleIcon = document.getElementById(toggleId);
+
+                    toggleIcon.addEventListener('click', function () {
+                        // Lấy trạng thái hiện tại của ô input
+                        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                        passwordInput.setAttribute('type', type);
+                        
+                        // Đổi biểu tượng con mắt
+                        this.classList.toggle('bi-eye');
+                        this.classList.toggle('bi-eye-slash');
+                    });
+                };
+
+                // Gọi hàm cho tất cả các trường mật khẩu
+                setupPasswordToggle('u_pwd', 'toggleLoginPassword');
+                setupPasswordToggle('reg_pwd', 'toggleRegisterPassword');
+                setupPasswordToggle('reg_repwd', 'toggleRegisterRePassword');
+            });
         </script>
     </body>
 </html>

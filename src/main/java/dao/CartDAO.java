@@ -138,10 +138,11 @@ public class CartDAO extends DBContext {
             e.printStackTrace();
         }
     }
+
     public void updateQuantityByChange(int cartID, int variantID, int change) {
-    String sql = "UPDATE CartItems SET quantity = quantity + ? WHERE cartID = ? AND variantID = ?";
-    // thực thi PreparedStatement với change, cartID, variantID
-    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        String sql = "UPDATE CartItems SET quantity = quantity + ? WHERE cartID = ? AND variantID = ?";
+        // thực thi PreparedStatement với change, cartID, variantID
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, change);
             stmt.setInt(2, cartID);
             stmt.setInt(3, variantID);
@@ -149,12 +150,12 @@ public class CartDAO extends DBContext {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-}
+    }
 
     public void removeCartItem(int userID, int variantID) {
-            String sql = "DELETE FROM CartItems WHERE CartID = ? AND VariantID = ?";
-    // thực thi PreparedStatement với change, cartID, variantID
-    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        String sql = "DELETE FROM CartItems WHERE CartID = ? AND VariantID = ?";
+        // thực thi PreparedStatement với change, cartID, variantID
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, userID);
             stmt.setInt(2, variantID);
             stmt.executeUpdate();
@@ -163,6 +164,32 @@ public class CartDAO extends DBContext {
         }
     }
 
-  
+    public void ensureCartExists(int userID) {
+        String check = "SELECT CartID FROM Carts WHERE UserID = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(check)) {
+            stmt.setInt(1, userID);
+            ResultSet rs = stmt.executeQuery();
+            if (!rs.next()) {
+                String insert = "INSERT INTO Carts (UserID, CreatedAt) VALUES (?, GETDATE())";
+                try (PreparedStatement insertStmt = conn.prepareStatement(insert)) {
+                    insertStmt.setInt(1, userID);
+                    insertStmt.executeUpdate();
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void main(String[] args) {
+        CartDAO dao = new CartDAO();
+
+        int userID = 1;        // ID user có giỏ hàng (CartID = userID)
+        int variantID = 101;   // ID sản phẩm biến thể trong bảng Variants
+        int quantity = 2;      // Số lượng muốn thêm
+
+        dao.ensureCartExists(userID);
+        dao.addNewProductToCart(userID, variantID, quantity);
+    }
 
 }

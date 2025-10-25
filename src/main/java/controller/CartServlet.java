@@ -102,6 +102,7 @@ public class CartServlet extends HttpServlet {
             int variantID = Integer.parseInt(request.getParameter("variantID"));
             int quantity = Integer.parseInt(request.getParameter("quantity"));
             if (!cDAO.isAddedInCart(userID, variantID)) {
+                cDAO.ensureCartExists(userID);
                 cDAO.addNewProductToCart(userID, variantID, quantity);
             }
             response.sendRedirect(request.getHeader("referer"));
