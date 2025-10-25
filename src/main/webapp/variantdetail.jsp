@@ -2,6 +2,9 @@
 <%@page import="model.Variants"%>
 <%@page import="model.Products"%>
 <%@page import="java.util.List"%>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+
+<%@ include file="layout/header.jsp" %>
 <!DOCTYPE html>
 <html>
     <head>
@@ -330,7 +333,7 @@
                     <input type="hidden" name="action" value="variantDetail">
                     <input type="hidden" name="pID" value="<%= productID%>">
 
-                    <!-- Giá -->
+                    <!-- GiÃ¡ -->
                     <div class="price-box">
                         <p>Price</p>
                         <h2 id="price">
@@ -388,12 +391,12 @@
                 } else {
                 %>
 
-                <!-- Khi ?ã ch?n variant -->
+                <!-- Khi ?Ã£ ch?n variant -->
                 <form action="product">
                     <input type="hidden" name="action" value="variantDetail">
                     <input type="hidden" name="pID" value="<%= productID%>">
 
-                    <!-- Giá -->
+                    <!-- GiÃ¡ -->
                     <div class="price-box">
                         <p>Price</p>
                         <h2 id="price">

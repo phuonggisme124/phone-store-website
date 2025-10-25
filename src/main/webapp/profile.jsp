@@ -1,9 +1,9 @@
 <%@page import="java.util.List"%>
 <%@page import="model.Products"%>
 <%@page import="model.Category"%>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="model.Users" %>
-
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="layout/header.jsp" %>
 <!DOCTYPE html>
 <html lang="vi">
     <head>
@@ -157,9 +157,7 @@
                             </a>
                             <button type="button" class="btn-close btn-close-black" data-bs-dismiss="offcanvas" aria-label="Close" data-bs-target="#bdNavbar"></button>
                         </div>
-                        <%
-                            List<Category> listCategory = (List<Category>) request.getAttribute("listCategory");
-                        %>
+
                         <div class="offcanvas-body">
                             <ul id="navbar" class="navbar-nav text-uppercase justify-content-end align-items-center flex-grow-1 pe-3">
                                 <li class="nav-item">
@@ -215,10 +213,7 @@
                                             // B??C 1: L?y ??i t??ng Users t? session. 
                                             // T?n thu?c t?nh ???c l?u l? "user" (nh? trong LoginServlet).
                                             // D?ng t?n l?p ??y ?? model.Users (h?y ??m b?o t?n package l? ??ng)
-                                            model.Users user = (model.Users) session.getAttribute("user");
 
-                                            boolean isLoggedIn = (user != null);
-                                            String displayName = ""; // Bi?n ?? l?u tr? T?n ng??i d?ng ho?c Email
 
                                             if (isLoggedIn) {
                                                 // B??C 2: D?ng ph??ng th?c getName() c? s?n ?? l?y t?n ng??i d?ng.

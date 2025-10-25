@@ -7,8 +7,8 @@
 <%@page import="java.util.List"%>
 <%@ page import="java.text.NumberFormat" %>
 <%@ page import="java.util.Locale" %>
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
-
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="layout/header.jsp" %>
 <!DOCTYPE html>
 <html lang="en">
     <head>

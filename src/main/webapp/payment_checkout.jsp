@@ -1,9 +1,3 @@
-<%--
-    Document   : payment_step2
-    Created on : Oct 17, 2025
-    Author     : ADMIN
---%>
-
 <%@page import="model.InterestRate"%>
 <%@page import="java.util.List"%>
 <%@page import="dao.ProductDAO"%>
@@ -11,7 +5,8 @@
 <%@page import="java.util.Locale"%>
 <%@page import="model.CartItems"%>
 <%@page import="model.Carts"%>
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="layout/header.jsp" %>
 <!DOCTYPE html>
 <html lang="vi">
     <head>

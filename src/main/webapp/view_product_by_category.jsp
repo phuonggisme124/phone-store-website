@@ -9,7 +9,11 @@
 <%@page import="model.Variants"%>
 <%@page import="model.Products"%>
 <%@page import="java.util.List"%>
+<%@page import="java.util.Map" %>
+<%@page import="java.util.HashMap" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+
+<%@ include file="layout/header.jsp" %>
 
 <!DOCTYPE html>
 <html lang="vi">
@@ -47,19 +51,331 @@
             }
             .discount-tag::before {
                 content: ''; position: absolute; top: 0; left: -10px;
-                border-width: 13px 10px 13px 0; /* Chỉnh lại để cân đối hơn */
+                border-width: 13px 10px 13px 0;
                 border-style: solid; border-color: transparent #ef4444 transparent transparent;
+            }
+            
+            /* Search Section Styles */
+            #searchSection {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                padding: 40px 0;
+                margin-bottom: 30px;
+            }
+
+            #searchContainer {
+                position: relative;
+                max-width: 600px;
+                margin: 0 auto;
+            }
+
+            #searchInput {
+                width: 100%;
+                padding: 15px 50px 15px 20px;
+                border: none;
+                border-radius: 50px;
+                font-size: 16px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+                outline: none;
+            }
+
+            #searchInput:focus {
+                box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            }
+
+            .search-icon-btn {
+                position: absolute;
+                right: 5px;
+                top: 50%;
+                transform: translateY(-50%);
+                background: #667eea;
+                border: none;
+                border-radius: 50%;
+                width: 40px;
+                height: 40px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: all 0.3s;
+            }
+
+            .search-icon-btn:hover {
+                background: #764ba2;
+                transform: translateY(-50%) scale(1.1);
+            }
+
+            .search-icon-btn svg {
+                width: 20px;
+                height: 20px;
+                fill: white;
+            }
+
+            #searchResults {
+                position: absolute;
+                top: calc(100% + 10px);
+                left: 0;
+                width: 100%;
+                background-color: #fff;
+                border-radius: 15px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+                z-index: 1000;
+                max-height: 400px;
+                overflow-y: auto;
+                display: none;
+            }
+
+            #searchResults.show {
+                display: block;
+            }
+
+            .suggestion-item {
+                padding: 12px 15px;
+                cursor: pointer;
+                display: none;
+                align-items: center;
+                border-bottom: 1px solid #f0f0f0;
+                transition: all 0.2s;
+            }
+
+            .suggestion-item:hover {
+                background-color: #f8f9fa;
+                transform: translateX(5px);
+            }
+
+            .suggestion-item:last-child {
+                border-bottom: none;
+            }
+
+            .suggestion-item img {
+                border-radius: 8px;
+                margin-right: 12px;
+            }
+
+            .search-category-badge {
+                display: inline-block;
+                padding: 5px 15px;
+                background: rgba(255,255,255,0.3);
+                border-radius: 20px;
+                color: white;
+                font-size: 14px;
+                margin-bottom: 15px;
+            }
+
+            .no-results {
+                padding: 20px;
+                text-align: center;
+                color: #999;
             }
         </style>
     </head>
 
     <body class="bg-gray-100 text-gray-900 font-sans">
+        
+        <%
+            // Sử dụng lại biến currentCategoryId từ header.jsp (không khai báo lại)
+            String categoryName = "All Products";
+            
+            // Xác định tên category
+            if ("1".equals(currentCategoryId)) {
+                categoryName = "Phone";
+            } else if ("3".equals(currentCategoryId)) {
+                categoryName = "Tablet";
+            } else if ("4".equals(currentCategoryId)) {
+                categoryName = "Smartwatch";
+            }
+        %>
+        
+        <!-- Search Section - THEO CATEGORY -->
+        <section id="searchSection">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12 text-center mb-3">
+                        <h2 class="text-white">Find Your Perfect <%= categoryName %></h2>
+                        <span class="search-category-badge" id="categoryBadge">Searching in: <%= categoryName %></span>
+                    </div>
+                    <div class="col-12">
+                        <%
+                            List<Products> productList1_search = (List<Products>) request.getAttribute("productList1");
+                            List<Variants> variantsList_search = (List<Variants>) request.getAttribute("variantsList");
+
+                            Map<Integer, String> productNameMap_search = new HashMap<>();
+                            Map<Integer, Integer> productCategoryMap_search = new HashMap<>();
+
+                            if (productList1_search != null) {
+                                for (Products p : productList1_search) {
+                                    productNameMap_search.put(p.getProductID(), p.getName());
+                                    productCategoryMap_search.put(p.getProductID(), p.getCategoryID());
+                                }
+                            }
+                        %>
+
+                        <div id="searchContainer">
+                            <input type="text" id="searchInput" placeholder="Search for <%= categoryName.toLowerCase() %>..." autocomplete="off">
+                            <button class="search-icon-btn" type="button">
+                                <svg class="search"><use xlink:href="#search"></use></svg>
+                            </button>
+
+                            <div id="searchResults">
+                                <%
+                                    if (variantsList_search != null && !productNameMap_search.isEmpty()) {
+                                        for (Variants v : variantsList_search) {
+                                            String productName = productNameMap_search.get(v.getProductID());
+                                            Integer categoryID = productCategoryMap_search.get(v.getProductID());
+                                            if (productName != null && categoryID != null) {
+                                                String image = (v.getImageUrl() != null) ? v.getImageUrl() : "";
+                                                String color = (v.getColor() != null) ? v.getColor() : "N/A";
+                                                String storage = (v.getStorage() != null) ? v.getStorage() : "N/A";
+                                %>
+                                <div class="suggestion-item" 
+                                     data-variantid="<%= v.getVariantID()%>"
+                                     data-pid="<%= v.getProductID()%>"
+                                     data-cid="<%= categoryID%>"
+                                     data-color="<%= color%>"
+                                     data-storage="<%= storage%>"
+                                     data-productname="<%= productName%>">
+                                    <img src="images/<%= image%>" width="50" height="50" alt="<%= productName%>">
+                                    <div>
+                                        <strong><%= productName%></strong><br>
+                                        <small><%= storage%> - <%= color%></small>
+                                    </div>
+                                </div>
+                                <%
+                                            }
+                                        }
+                                    }
+                                %>
+                            </div>
+                        </div>
+
+                        <!-- Form search ẩn -->
+                        <form id="productSearchForm" action="product" method="GET" style="display:none;">
+                            <input type="hidden" name="action" value="selectStorage">
+                            <input type="hidden" name="pID" id="formPID">
+                            <input type="hidden" name="cID" id="formCID">
+                            <input type="hidden" name="storage" id="formStorage">
+                            <input type="hidden" name="color" id="formColor">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const searchInput = document.getElementById('searchInput');
+            const searchResults = document.getElementById('searchResults');
+            const allSuggestionItems = searchResults.querySelectorAll('.suggestion-item');
+            const categoryBadge = document.getElementById('categoryBadge');
+            const searchContainer = document.getElementById('searchContainer');
+            
+            // Lấy category hiện tại từ JSP
+            let currentCategory = '<%= currentCategoryId != null ? currentCategoryId : "all" %>';
+            
+            const categoryNames = {
+                'all': 'All Products',
+                '1': 'Phone',
+                '3': 'Tablet',
+                '4': 'Smartwatch'
+            };
+            
+            // Cập nhật badge
+            categoryBadge.textContent = 'Searching in: ' + (categoryNames[currentCategory] || 'All Products');
+            
+            // Lọc suggestions theo category
+            function filterByCategory(items) {
+                items.forEach(item => {
+                    const itemCategory = item.dataset.cid;
+                    if (currentCategory === 'all' || itemCategory === currentCategory) {
+                        item.dataset.categoryMatch = 'true';
+                    } else {
+                        item.dataset.categoryMatch = 'false';
+                    }
+                });
+            }
+            
+            filterByCategory(allSuggestionItems);
+
+            // Hiển thị gợi ý khi gõ
+            searchInput.addEventListener('keyup', function () {
+                const query = searchInput.value.toLowerCase().trim();
+                let hasResults = false;
+                
+                if (query.length > 0) {
+                    allSuggestionItems.forEach(item => {
+                        const productName = item.dataset.productname.toLowerCase();
+                        const itemText = item.textContent.toLowerCase();
+                        const categoryMatch = item.dataset.categoryMatch === 'true';
+                        
+                        if ((productName.includes(query) || itemText.includes(query)) && categoryMatch) {
+                            item.style.display = 'flex';
+                            hasResults = true;
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+                    
+                    if (hasResults) {
+                        searchResults.classList.add('show');
+                    } else {
+                        let noResultDiv = searchResults.querySelector('.no-results');
+                        if (!noResultDiv) {
+                            noResultDiv = document.createElement('div');
+                            noResultDiv.className = 'no-results';
+                            searchResults.appendChild(noResultDiv);
+                        }
+                        noResultDiv.textContent = 'No products found';
+                        noResultDiv.style.display = 'block';
+                        searchResults.classList.add('show');
+                    }
+                } else {
+                    searchResults.classList.remove('show');
+                    allSuggestionItems.forEach(item => {
+                        item.style.display = 'none';
+                    });
+                }
+            });
+
+            // Click vào suggestion
+            allSuggestionItems.forEach(item => {
+                item.addEventListener('click', function () {
+                    document.getElementById('formPID').value = this.dataset.pid;
+                    document.getElementById('formCID').value = this.dataset.cid;
+                    document.getElementById('formStorage').value = this.dataset.storage;
+                    document.getElementById('formColor').value = this.dataset.color;
+                    document.getElementById('productSearchForm').submit();
+                });
+            });
+
+            // Enter để chọn suggestion đầu tiên
+            searchInput.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const firstVisible = Array.from(allSuggestionItems).find(
+                        item => item.style.display === 'flex'
+                    );
+                    if (firstVisible) firstVisible.click();
+                }
+            });
+
+            // Click outside để đóng results
+            document.addEventListener('click', function(e) {
+                if (!searchContainer.contains(e.target)) {
+                    searchResults.classList.remove('show');
+                    const noResultDiv = searchResults.querySelector('.no-results');
+                    if (noResultDiv) {
+                        noResultDiv.style.display = 'none';
+                    }
+                }
+            });
+        });
+        </script>
+
         <div class="container max-w-7xl mx-auto p-4 sm:p-6">
 
             <%
                 String currentVariation = request.getParameter("variation");
                 if (currentVariation == null || currentVariation.isEmpty()) {
-                    currentVariation = "ALL"; // Giá trị mặc định
+                    currentVariation = "ALL";
                 }
             %>
 
@@ -139,7 +455,7 @@
                     <div class="relative">
                         <a href="product?action=viewDetail&vID=<%=v.getVariantID() %>&pID=<%=v.getProductID() %>" class="block w-full aspect-square overflow-hidden">
                             <img class="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
-                                 src="images/<%=v.getImageList()[0]%>"
+                                 src="images/<%=v.getImageUrl()%>"
                                  alt="<%=pName%>">
                         </a>
 
@@ -185,15 +501,15 @@
                     </div>
                 </div>
                 <%
-                        } // end for(Variants)
+                        }
                     } else {
                 %>
                 <p class="text-gray-500 col-span-full text-center">Không có sản phẩm nào để hiển thị.</p>
                 <%
-                    } // end if(listVariant != null)
+                    }
                 %>
             </div>
         </div>
 
-        </body>
+    </body>
 </html>

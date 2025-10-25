@@ -18,6 +18,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import model.Category;
 import model.Products;
 import model.Promotions;
@@ -157,37 +159,51 @@ public class ProductServlet extends HttpServlet {
             // Forward to product detail page
             request.getRequestDispatcher("productdetail.jsp").forward(request, response);
 
-            // === Case 3: Filter by category ===
-        } else if ("category".equals(action)) {
-            int cID = Integer.parseInt(request.getParameter("cID"));
-            String variation = request.getParameter("variation");
-            if (variation == null) {
-                variation = "ALL";
-            }
-            List<Products> listProduct = pdao.getAllProductByCategory(cID);
-            List<Variants> listVariant;
-            List<Review> listReview = rdao.getAllReview();
-            if (variation.equals("ALL")) {
-                listVariant = vdao.getAllVariantByCategory(cID);
-            } else if (variation.equals("PROMOTION")) {
-                listVariant = vdao.getAllVariantByCategory(cID);
-                PromotionsDAO promotionDAO = new PromotionsDAO();
-                List<Promotions> promotionsList = promotionDAO.getTheHighestPromotion();
-                request.setAttribute("promotionsList", promotionsList);
-            } else {
-                listVariant = vdao.getAllVariantByCategoryAndOrderByPrice(cID, variation);
-            }
-
-            // Set attributes for category page
-            request.setAttribute("listVariant", listVariant);
-            request.setAttribute("categoryID", cID);
-            request.setAttribute("listProduct", listProduct);
-            request.setAttribute("listReview", listReview);
-
-            // Forward to category JSP
-            request.getRequestDispatcher("view_product_by_category.jsp").forward(request, response);
-        }
+// === Case 3: Filter by category ===
+} else if ("category".equals(action)) {
+    int cID = Integer.parseInt(request.getParameter("cID"));
+    String variation = request.getParameter("variation");
+    if (variation == null) {
+        variation = "ALL";
     }
+    List<Products> listProduct = pdao.getAllProductByCategory(cID);
+    List<Variants> listVariant;
+    List<Review> listReview = rdao.getAllReview();
+    
+    if (variation.equals("ALL")) {
+        listVariant = vdao.getAllVariantByCategory(cID);
+    } else if (variation.equals("PROMOTION")) {
+        listVariant = vdao.getAllVariantByCategory(cID);
+        PromotionsDAO promotionDAO = new PromotionsDAO();
+        List<Promotions> promotionsList = promotionDAO.getTheHighestPromotion();
+        request.setAttribute("promotionsList", promotionsList);
+    } else {
+        listVariant = vdao.getAllVariantByCategoryAndOrderByPrice(cID, variation);
+    }
+    
+    // ====== THÊM DỮ LIỆU CHO THANH SEARCH ======
+    // Lấy TẤT CẢ products và variants để search
+    List<Products> productList1_search = pdao.getAllProduct();
+    List<Variants> variantsList_search = new ArrayList<>();
+            try {
+                variantsList_search = vdao.getAllVariants();
+            } catch (SQLException ex) {
+                Logger.getLogger(ProductServlet.class.getName()).log(Level.SEVERE, null, ex);
+            }
+    
+    request.setAttribute("productList1", productList1_search);
+    request.setAttribute("variantsList", variantsList_search);
+    // ============================================
+    
+    // Set attributes for category page
+    request.setAttribute("listVariant", listVariant);
+    request.setAttribute("categoryID", cID);
+    request.setAttribute("listProduct", listProduct);
+    request.setAttribute("listReview", listReview);
+    
+    // Forward to category JSP
+    request.getRequestDispatcher("view_product_by_category.jsp").forward(request, response);
+}}
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

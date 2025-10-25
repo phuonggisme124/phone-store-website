@@ -1,15 +1,9 @@
-
-<%-- 
-    Document   : payment
-    Created on : Oct 15, 2025, 3:01:17 PM
-    Author     : ADMIN
---%>
-
 <%@page import="model.CartItems"%>
 <%@page import="model.Carts"%>
 <%@page import="dao.ProductDAO"%>
 <%@page import="model.Variants"%>
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="layout/header.jsp" %>
 <!DOCTYPE html>
 <html lang="vi">
     <head>
@@ -65,7 +59,7 @@
                 </div>
 
                 <%
-                    model.Users user = (model.Users) session.getAttribute("user");
+
                     Carts cart = (Carts) session.getAttribute("cartCheckout");
                     ProductDAO pDAO = new ProductDAO();
                     double totalPrice = 0;

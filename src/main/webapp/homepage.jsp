@@ -1,11 +1,4 @@
-<<<<<<< HEAD
 <!-- ===================== HOMEPAGE.JSP ===================== -->
-=======
-<%@page import="dao.ProductDAO"%>
-<%@page import="java.text.NumberFormat"%>
-<%@page import="java.util.Locale"%>
-<%@page import="model.Category"%>
->>>>>>> 611c6893eed52e53c5b6c6d31a8bbf3f6d212e32
 <%@page import="model.Products"%>
 <%@page import="model.Variants"%>
 <%@page import="java.util.List"%>
@@ -15,6 +8,7 @@
 <%@page import="java.util.Locale"%>
 
 <%@ include file="layout/header.jsp" %>
+
 
 <style>
     #searchSection {
@@ -446,20 +440,16 @@ document.addEventListener("DOMContentLoaded", function () {
                 </div>
             </div>
 
-            <%
-<<<<<<< HEAD
-                List<Products> productList = (List<Products>) request.getAttribute("productList");
-                NumberFormat vnFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
-                
-=======
-                ProductDAO pDAO = new ProductDAO();
-                List<Products> watchproduct = pDAO.getAllProductByCategory(4);
->>>>>>> 611c6893eed52e53c5b6c6d31a8bbf3f6d212e32
-                if (productList == null && request.getParameter("fromProduct") == null) {
-                    response.sendRedirect(request.getContextPath() + "/product?fromProduct=true");
-                    return;
-                }
-            %>
+<%
+    List<Products> productList = (List<Products>) request.getAttribute("productList");
+    NumberFormat vnFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
+
+    if (productList == null && request.getParameter("fromProduct") == null) {
+        response.sendRedirect(request.getContextPath() + "/product?fromProduct=true");
+        return;
+    }
+%>
+
 
             <div class="swiper product-swiper">
                 <div class="swiper-wrapper">
@@ -470,11 +460,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     <div class="swiper-slide">
                         <div class="product-card text-center position-relative">
                             <div class="image-holder">
-<<<<<<< HEAD
-                                <img src="images/<%= p.getVariants().get(0).getImageUrl()%>" alt="<%= p.getName()%>" class="img-fluid rounded-3">
-=======
                                 <img src="images/<%= p.getVariants().get(0).getImageList()[0] %>" alt="<%= p.getName()%>" class="img-fluid rounded-3">
->>>>>>> 611c6893eed52e53c5b6c6d31a8bbf3f6d212e32
+
                             </div>
                             <div class="card-detail pt-3">
                                 <h3 class="card-title text-uppercase">
