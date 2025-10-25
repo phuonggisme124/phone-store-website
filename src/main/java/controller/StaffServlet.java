@@ -79,6 +79,7 @@ public class StaffServlet extends HttpServlet {
             try {
                 int orderID = Integer.parseInt(request.getParameter("orderID"));
                 int shipperID = Integer.parseInt(request.getParameter("shipperID"));
+                
                 sdao.assignShipperForOrder(orderID, currentUser.getUserId(), shipperID);
                 odao.updateOrderStatus(orderID, "In Transit");
             } catch (NumberFormatException e) {

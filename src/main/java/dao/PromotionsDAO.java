@@ -16,8 +16,8 @@ import utils.DBContext;
  *
  * @author duynu
  *
- * DAO class responsible for managing promotions data.
- * Provides methods for creating, reading, and updating promotion records.
+ * DAO class responsible for managing promotions data. Provides methods for
+ * creating, reading, and updating promotion records.
  */
 public class PromotionsDAO extends DBContext {
 
@@ -204,5 +204,42 @@ public class PromotionsDAO extends DBContext {
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    public List<Promotions> getTheHighestPromotion() {
+        String sql = "SELECT *\n"
+                + "FROM Promotions\n"
+                + "WHERE DiscountPercent = (SELECT MAX(DiscountPercent) FROM Promotions);";
+        List<Promotions> promotionsList = new ArrayList<>();
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                int pmtID = rs.getInt("PromotionID");
+                int discountPercent = rs.getInt("DiscountPercent");
+
+                // Convert timestamps
+                Timestamp startDateTimestamp = rs.getTimestamp("StartDate");
+                LocalDateTime startDate = (startDateTimestamp != null)
+                        ? startDateTimestamp.toLocalDateTime()
+                        : null;
+
+                Timestamp endDateTimestamp = rs.getTimestamp("EndDate");
+                LocalDateTime endDate = (endDateTimestamp != null)
+                        ? endDateTimestamp.toLocalDateTime()
+                        : null;
+
+                String status = rs.getString("Status");
+                int pid = rs.getInt("ProductID");
+
+                // Return promotion object
+                promotionsList.add(new Promotions(pmtID, discountPercent, startDate, endDate, status, pid));
+            }
+            return promotionsList;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
     }
 }

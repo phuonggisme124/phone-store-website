@@ -1,3 +1,5 @@
+<%@page import="java.text.NumberFormat"%>
+<%@page import="java.util.Locale"%>
 <%@page import="model.Category"%>
 <%@page import="model.Products"%>
 <%@page import="java.util.List"%>
@@ -136,7 +138,7 @@
     <header id="header" class="site-header header-scrolled position-fixed text-black bg-light">
         <nav id="header-nav" class="navbar navbar-expand-lg px-3 mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" href="index.html">
+                <a class="navbar-brand" href="homepage">
                     <img src="images/main-logo.png" class="logo">
                 </a>
                 <button class="navbar-toggler d-flex d-lg-none order-3 p-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#bdNavbar" aria-controls="bdNavbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -146,7 +148,7 @@
                 </button>
                 <div class="offcanvas offcanvas-end" tabindex="-1" id="bdNavbar" aria-labelledby="bdNavbarOffcanvasLabel">
                     <div class="offcanvas-header px-4 pb-0">
-                        <a class="navbar-brand" href="index.html">
+                        <a class="navbar-brand" href="homepage">
                             <img src="images/main-logo.png" class="logo">
                         </a>
                         <button type="button" class="btn-close btn-close-black" data-bs-dismiss="offcanvas" aria-label="Close" data-bs-target="#bdNavbar"></button>
@@ -490,7 +492,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 <!-- Swiper -->
                 <%
                     List<Products> productList = (List<Products>) request.getAttribute("productList");
-
+                    NumberFormat vnFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
                     // N?u kh?ng c? danh s?ch s?n ph?m v? ch?a t?ng ?i qua servlet Product
                     if (productList == null && request.getParameter("fromProduct") == null) {
                         response.sendRedirect(request.getContextPath() + "/product?fromProduct=true");
@@ -511,7 +513,7 @@ document.addEventListener("DOMContentLoaded", function () {
                                     <h3 class="card-title text-uppercase">
                                         <a href="product?action=viewDetail&pID=<%= p.getProductID()%>"><%=p.getName()%></a>
                                     </h3>
-                                    <span class="item-price text-primary"><%= p.getVariants().get(0).getPrice()%></span>
+                                    <span class="item-price text-primary"><%= vnFormat.format(p.getVariants().get(0).getPrice())%></span>
                                 </div>
                             </div>
                         </div>
@@ -547,7 +549,7 @@ document.addEventListener("DOMContentLoaded", function () {
                                 <h3 class="card-title text-uppercase">
                                     <a href="product?action=viewDetail&pID=<%= p.getProductID()%>"><%=p.getName()%></a>
                                 </h3>
-                                <span class="item-price text-primary"><%= p.getVariants().get(0).getPrice()%></span>
+                                <span class="item-price text-primary"><%= vnFormat.format(p.getVariants().get(0).getPrice())%></span>
                             </div>
                         </div>
                     </div>

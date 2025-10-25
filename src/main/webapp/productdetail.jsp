@@ -36,6 +36,13 @@
             Variants variants = (Variants) request.getAttribute("variants");
             int stock = variants.getStock();
             int currentVariantID = variants.getVariantID();
+            
+            //Get product from category page
+            String vIDFromProductByCategoryStr = (String) request.getAttribute("vID");
+            if(vIDFromProductByCategoryStr != null) {
+                currentVariantID = Integer.parseInt(vIDFromProductByCategoryStr);
+            }
+            
             List<Variants> listVariants = (List<Variants>) request.getAttribute("listVariants");
             List<Variants> listVariantRating = (List<Variants>) request.getAttribute("listVariantRating");
             List<Review> listReview = (List<Review>) request.getAttribute("listReview");

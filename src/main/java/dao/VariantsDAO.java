@@ -475,6 +475,45 @@ public class VariantsDAO extends DBContext {
         return list;
     }
 
+    //Get Variants by CID and order by Price
+    public List<Variants> getAllVariantByCategoryAndOrderByPrice(int cID, String variation) {
+        // Chỉ chấp nhận ASC hoặc DESC để tránh SQL Injection
+        if (!"ASC".equalsIgnoreCase(variation) && !"DESC".equalsIgnoreCase(variation)) {
+            variation = "ASC";
+        }
+
+        String sql = "SELECT v.VariantID, v.ProductID, v.Color, v.Storage, v.Price, v.DiscountPrice, v.Stock, v.Description, v.ImageURL "
+                + "FROM Products p "
+                + "JOIN Categories c ON p.CategoryID = c.CategoryID "
+                + "JOIN Variants v ON p.ProductID = v.ProductID "
+                + "WHERE c.CategoryID = ? "
+                + "ORDER BY v.Price " + variation;
+
+        List<Variants> list = new ArrayList<>();
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, cID);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                int variantId = rs.getInt("VariantID");
+                int productID = rs.getInt("ProductID");
+                String color = rs.getString("Color");
+                String storage = rs.getString("Storage");
+                double price = rs.getDouble("Price");
+                double discountPrice = rs.getDouble("DiscountPrice");
+                int stock = rs.getInt("Stock");
+                String description = rs.getString("Description");
+                String img = rs.getString("ImageURL");
+
+                list.add(new Variants(variantId, productID, color, storage, price, discountPrice, stock, description, img));
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return list;
+    }
+
     // ================== PHẦN MỚI THÊM ==================
     // Phương thức lọc variants theo color và storage (hỗ trợ tìm kiếm một phần)
     public List<Variants> searchVariants(String color, String storage) {
@@ -630,7 +669,6 @@ public class VariantsDAO extends DBContext {
         return list;
     }
 
-
     public int getCurrentVariantID() {
         String sql = "SELECT MAX(VariantID) AS VariantID\n"
                 + "FROM Variants;";
@@ -650,7 +688,7 @@ public class VariantsDAO extends DBContext {
     }
 
     public void updateImageVariant(int currentVariantID, String img) {
-       String sql = "UPDATE Variants\n"
+        String sql = "UPDATE Variants\n"
                 + "SET ImageURL = ?\n"
                 + "Where VariantID = ?;";
 
@@ -664,6 +702,6 @@ public class VariantsDAO extends DBContext {
             System.out.println(e.getMessage());
         }
     }
-
+    
 
 }

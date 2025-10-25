@@ -5,6 +5,7 @@
 package controller;
 
 import dao.ProductDAO;
+import dao.PromotionsDAO;
 import dao.ReviewDAO;
 import dao.VariantsDAO;
 import java.io.IOException;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import model.Category;
 import model.Products;
+import model.Promotions;
 import model.Review;
 import model.Variants;
 
@@ -57,19 +59,34 @@ public class ProductServlet extends HttpServlet {
 
         // === Case 1: View product details ===
         if ("viewDetail".equals(action)) {
+            String vID = request.getParameter("vID");
             int productID = Integer.parseInt(request.getParameter("pID"));
+
             List<Category> listCategory = pdao.getAllCategory();
             List<String> listStorage = vdao.getAllStorage(productID);
             Products p = pdao.getProductByID(productID);
             int cID = p.getCategoryID();
             List<Variants> listVariants = vdao.getAllVariantByProductID(productID);
 
-            // Default variant: first combination of storage and color
-            Variants variants = vdao.getVariant(
-                    productID,
-                    listVariants.get(0).getStorage(),
-                    listVariants.get(0).getColor()
-            );
+            Variants variants = null;
+
+            if (vID != null && !vID.isEmpty()) {
+                try {
+                    int variantID = Integer.parseInt(vID);
+                    variants = vdao.getVariantByID(variantID);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            if (variants == null) {
+                // fallback nếu không truyền vID
+                variants = vdao.getVariant(
+                        productID,
+                        listVariants.get(0).getStorage(),
+                        listVariants.get(0).getColor()
+                );
+            }
 
             List<Variants> listVariantRating = vdao.getAllVariantByStorage(variants.getProductID(), variants.getStorage());
 
@@ -85,6 +102,9 @@ public class ProductServlet extends HttpServlet {
 
             // Pass data to JSP
             request.setAttribute("categoryID", cID);
+            if (vID != null) {
+                request.setAttribute("vID", vID);
+            }
             request.setAttribute("rating", rating);
             request.setAttribute("productID", productID);
             request.setAttribute("listStorage", listStorage);
@@ -140,18 +160,32 @@ public class ProductServlet extends HttpServlet {
             // === Case 3: Filter by category ===
         } else if ("category".equals(action)) {
             int cID = Integer.parseInt(request.getParameter("cID"));
+            String variation = request.getParameter("variation");
+            if (variation == null) {
+                variation = "ALL";
+            }
             List<Products> listProduct = pdao.getAllProductByCategory(cID);
-            List<Variants> listVariant = vdao.getAllVariantByCategory(cID);
-            List<Category> listCategory = pdao.getAllCategory();
+            List<Variants> listVariant;
+            List<Review> listReview = rdao.getAllReview();
+            if (variation.equals("ALL")) {
+                listVariant = vdao.getAllVariantByCategory(cID);
+            } else if (variation.equals("PROMOTION")) {
+                listVariant = vdao.getAllVariantByCategory(cID);
+                PromotionsDAO promotionDAO = new PromotionsDAO();
+                List<Promotions> promotionsList = promotionDAO.getTheHighestPromotion();
+                request.setAttribute("promotionsList", promotionsList);
+            } else {
+                listVariant = vdao.getAllVariantByCategoryAndOrderByPrice(cID, variation);
+            }
 
             // Set attributes for category page
             request.setAttribute("listVariant", listVariant);
             request.setAttribute("categoryID", cID);
-            request.setAttribute("listCategory", listCategory);
             request.setAttribute("listProduct", listProduct);
+            request.setAttribute("listReview", listReview);
 
             // Forward to category JSP
-            request.getRequestDispatcher("category.jsp").forward(request, response);
+            request.getRequestDispatcher("view_product_by_category.jsp").forward(request, response);
         }
     }
 
