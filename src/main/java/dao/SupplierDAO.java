@@ -147,7 +147,7 @@ public class SupplierDAO extends DBContext {
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-    }
+    }   
 
     /**
      * Deletes a supplier from the database based on its ID.

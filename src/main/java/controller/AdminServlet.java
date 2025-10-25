@@ -140,7 +140,7 @@ public class AdminServlet extends HttpServlet {
 
             int id = Integer.parseInt(request.getParameter("id"));
             List<Variants> listVariants = vdao.getAllVariantByProductID(id);
-            List<Products> listProducts = pdao.getAllProduct();
+            List<Products> listProducts = pdao.getAllProduct()  ;
             //Promotions promotion = pmtdao.getPromotionByProductID(id);
 
             request.setAttribute("productID", id);
@@ -215,7 +215,9 @@ public class AdminServlet extends HttpServlet {
             List<Products> listProducts = pdao.getAllProduct();
             request.setAttribute("listProducts", listProducts);
             request.getRequestDispatcher("admin_managepromotion_create.jsp").forward(request, response);
-        } else if (action.equals("manageOrder")) {
+        
+        }
+        else if (action.equals("manageOrder")) {
             List<Order> listOrder = odao.getAllOrder();
             List<String> listPhone = odao.getAllPhone();
             List<Sale> listSales = udao.getAllSales();
@@ -237,8 +239,7 @@ public class AdminServlet extends HttpServlet {
             request.setAttribute("isIntalment", isIntalment);
             request.getRequestDispatcher("admin_manageorder_detail.jsp").forward(request, response);
         } else if (action.equals("manageReview")) {
-            List<Review> listReview = rdao.getAllReview();
-
+            List<Review> listReview = rdao.getAllReview();           
             request.setAttribute("listReview", listReview);
             request.getRequestDispatcher("dashboard_admin_managereview.jsp").forward(request, response);
         } else if (action.equals("reviewDetail")) {
@@ -250,71 +251,81 @@ public class AdminServlet extends HttpServlet {
             request.getRequestDispatcher("admin_managereview_detail.jsp").forward(request, response);
         } else if (action.equals("showInstalment")) {
             List<Order> listOrder = odao.getAllOrder();
-
+            List<String> listPhone = odao.getAllPhoneInstalment();
             List<Sale> listSales = udao.getAllSales();
             request.setAttribute("listOrder", listOrder);
+            request.setAttribute("listPhone", listPhone);
 
             request.setAttribute("listSales", listSales);
             request.getRequestDispatcher("admin_manageorder_instalment.jsp").forward(request, response);
-        } else if (action.equals("pendingInstalment")) {
+        } else if (action.equals("searchInstalment")) {
+            String phone = request.getParameter("phone");
+            String status = request.getParameter("status");
+            List<String> listPhone = odao.getAllPhoneInstalment();
+            List<Order> listOrder;
 
-            List<Order> listOrder = odao.getAllOrder();
-
-            List<Sale> listSales = udao.getAllSales();
-            List<Order> listInstalment = new ArrayList<>();
-
-            if (listOrder != null && !listOrder.isEmpty()) {
-
-                for (Order o : listOrder) {
-                    if (o.isIsInstallment() == 1) {
-                        listInstalment.add(o);
-                    }
-                }
-
+            if (status.equals("Filter") || status.equals("All")) {
+                listOrder = odao.getAllOrderInstalmentByPhone(phone);
+            } else if (status.equals("Pending")) {
+                List<Order> listInstalment = odao.getAllOrderInstalment();
+                listOrder = odao.getAllPendingInstalment(listInstalment);
+            } else {
+                List<Order> listInstalment = odao.getAllOrderInstalment();
+                listOrder = odao.getAllCompletedInstalment(listInstalment);
             }
 
-            List<Order> pendingInstalment = odao.getAllPendingInstalment(listInstalment);
-            request.setAttribute("pendingInstalment", pendingInstalment);
+            List<Sale> listSales = udao.getAllSales();
+
             request.setAttribute("listOrder", listOrder);
-            request.setAttribute("listInstalment", listInstalment);
+            request.setAttribute("listPhone", listPhone);
 
             request.setAttribute("action", action);
-
+            request.setAttribute("phone", phone);
+            request.setAttribute("status", status);
             request.setAttribute("listSales", listSales);
-            request.getRequestDispatcher("admin_instalment_detail.jsp").forward(request, response);
-        } else if (action.equals("completedInstalment")) {
+            request.getRequestDispatcher("admin_manageorder_instalment.jsp").forward(request, response);
+        } else if (action.equals("filterInstalment")) {
 
-            List<Order> listOrder = odao.getAllOrder();
+            String phone = request.getParameter("phone");
+            String status = request.getParameter("status");
+            List<String> listPhone = odao.getAllPhoneInstalment();
+            List<Order> listOrder;
 
-            List<Sale> listSales = udao.getAllSales();
-            List<Order> listInstalment = new ArrayList<>();
-
-            if (listOrder != null && !listOrder.isEmpty()) {
-
-                for (Order o : listOrder) {
-                    if (o.isIsInstallment() == 0) {
-                        listInstalment.add(o);
-                    }
+            if (phone == null || phone.isEmpty()) {
+                if (status.equals("Pending")) {
+                    List<Order> listInstalment = odao.getAllOrderInstalment();
+                    listOrder = odao.getAllPendingInstalment(listInstalment);
+                } else {
+                    List<Order> listInstalment = odao.getAllOrderInstalment();
+                    listOrder = odao.getAllCompletedInstalment(listInstalment);
                 }
-
+            }else{
+                if (status.equals("Pending")) {
+                    List<Order> listInstalment = odao.getAllOrderInstalment();
+                    listOrder = odao.getAllPendingInstalmentAndPhone(listInstalment, phone);
+                } else {
+                    List<Order> listInstalment = odao.getAllOrderInstalment();
+                    listOrder = odao.getAllCompletedInstalmentAndPhone(listInstalment, phone);
+                }
             }
 
-            List<Order> completedInstalment = odao.getAllCompletedInstalment(listInstalment);
-            request.setAttribute("completedInstalment", completedInstalment);
+            List<Sale> listSales = udao.getAllSales();
+            
             request.setAttribute("listOrder", listOrder);
-            request.setAttribute("listInstalment", listInstalment);
+            request.setAttribute("listPhone", listPhone);
 
             request.setAttribute("action", action);
-
+            request.setAttribute("phone", phone);
+            request.setAttribute("status", status);
             request.setAttribute("listSales", listSales);
-            request.getRequestDispatcher("admin_instalment_detail.jsp").forward(request, response);
+            request.getRequestDispatcher("admin_manageorder_instalment.jsp").forward(request, response);
         } else if (action.equals("searchOrder")) {
             String phone = request.getParameter("phone");
             String status = request.getParameter("status");
             List<String> listPhone = odao.getAllPhone();
             List<Order> listOrder;
             List<Sale> listSales = udao.getAllSales();
-            if (status.equals("Filter")) {
+            if (status.equals("Filter") || status.equals("All")) {
                 listOrder = odao.getAllOrderByPhone(phone);
             } else {
                 listOrder = odao.getAllOrderByPhoneAndStatus(phone, status);
@@ -333,9 +344,9 @@ public class AdminServlet extends HttpServlet {
             List<Order> listOrder;
             List<Sale> listSales = udao.getAllSales();
 
-            if (phone == null || phone.isEmpty()) {
-                listOrder = odao.getAllOrderByStatus(status);
-            } else if (status.equals("Filter")) {
+            if ((phone == null || phone.isEmpty()) && (status.equals("Filter") || status.equals("All"))) {
+                listOrder = odao.getAllOrder();
+            } else if (status.equals("Filter") || status.equals("All")) {
                 listOrder = odao.getAllOrderByPhone(phone);
             } else {
                 listOrder = odao.getAllOrderByPhoneAndStatus(phone, status);
@@ -346,7 +357,59 @@ public class AdminServlet extends HttpServlet {
             request.setAttribute("listPhone", listPhone);
             request.setAttribute("listSales", listSales);
             request.getRequestDispatcher("dashboard_admin_manageorder.jsp").forward(request, response);
-        } else {
+        }else if(action.equals("searchReview")){
+            int productID = Integer.parseInt(request.getParameter("productID"));
+            String storage = request.getParameter("storage");
+            int rating = Integer.parseInt(request.getParameter("rating"));
+            
+            List<Review> listReview;
+            if(rating == 0){
+                List<Variants> listVariant = vdao.getAllVariantByStorage(productID, storage);
+                listReview = rdao.getAllReviewByListVariant(listVariant);
+            }else{
+                List<Variants> listVariant = vdao.getAllVariantByStorage(productID, storage);
+                listReview = rdao.getAllReviewByListVariantAndRating(listVariant, rating);
+            }
+            
+            request.setAttribute("listReview", listReview);
+            request.setAttribute("productID", productID);
+            request.setAttribute("storage", storage);
+            request.setAttribute("rating", rating);
+            request.getRequestDispatcher("dashboard_admin_managereview.jsp").forward(request, response);
+            
+        }else if(action.equals("filterReview")){
+            int productID = Integer.parseInt(request.getParameter("productID"));
+            String storage = request.getParameter("storage");
+            int rating = Integer.parseInt(request.getParameter("rating"));
+            List<Review> listReview;
+            if((productID == 0) && (storage == null || storage.isEmpty())){
+                listReview = rdao.getAllReviewByRating(rating);
+            }else{
+                List<Variants> listVariant = vdao.getAllVariantByStorage(productID, storage);
+                listReview = rdao.getAllReviewByListVariantAndRating(listVariant, rating);
+            }
+            
+            request.setAttribute("listReview", listReview);
+            request.setAttribute("productID", productID);
+            request.setAttribute("storage", storage);
+            request.setAttribute("rating", rating);
+            request.getRequestDispatcher("dashboard_admin_managereview.jsp").forward(request, response);
+        }else if (action.equals("manageCategory")){
+            List<Category> listCategory = ctdao.getAllCategories();
+            
+            request.setAttribute("listCategory", listCategory);
+            request.getRequestDispatcher("dashboard_admin_managecategory.jsp").forward(request, response);
+            
+        }else if(action.equals("editCategory")){
+            int cateID = Integer.parseInt(request.getParameter("id"));
+            
+            Category catergory = ctdao.getCategoryByCategoryID(cateID);
+            request.setAttribute("catergory", catergory);
+            request.getRequestDispatcher("admin_managecategory_edit.jsp").forward(request, response);
+        }else if(action.equals("createCategory")){
+            request.getRequestDispatcher("admin_managecategory_create.jsp").forward(request, response);
+        }
+        else {
             request.getRequestDispatcher("dashboard_admin.jsp").forward(request, response);
         }
 
@@ -454,7 +517,7 @@ public class AdminServlet extends HttpServlet {
 
             vdao.createVariant(pID, color, storage, price, stock, description);
 
-            // === Upload ảnh review ===
+            
             String filePath = request.getServletContext().getRealPath("");
             String basePath = filePath.substring(0, filePath.indexOf("\\target"));
             String uploadDir = basePath + File.separator + "src" + File.separator + "main" + File.separator + "webapp" + File.separator + "images";
@@ -533,9 +596,34 @@ public class AdminServlet extends HttpServlet {
             pmtdao.createPromotion(pID, discountPercent, startDate, endDate, status);
             vdao.updateDiscountPrice();
             response.sendRedirect("admin?action=managePromotion");
-        } else if (action.equals("replyReview")) {
+        }else if(action.equals("deletePromotion")){
+            int pmtID = Integer.parseInt(request.getParameter("pmtID"));
+            
+            pmtdao.deletePromotion(pmtID);
+            response.sendRedirect("admin?action=managePromotion");
+        }else if(action.equals("updateCategory")){
+            int cateID = Integer.parseInt(request.getParameter("cateID"));
+            String name = request.getParameter("name");
+            String description = request.getParameter("description");
+            
+          
+            ctdao.editCategory(cateID, name, description);
+            response.sendRedirect("admin?action=manageCategory");
+                 
+        }else if(action.equals("deleteCategory")){
+            int cateID = Integer.parseInt(request.getParameter("cateID"));
+            System.out.println("delete cateID: "+ cateID);
+            ctdao.removeCategory(cateID);
+            response.sendRedirect("admin?action=manageCategory");
+        }else if(action.equals("createCategory")){
+            String name = request.getParameter("name");
+            String description = request.getParameter("description");
+            
+            ctdao.createCategory(name, description);
+            response.sendRedirect("admin?action=manageCategory");
+        }
+        else if (action.equals("replyReview")) {
             int rID = Integer.parseInt(request.getParameter("rID"));
-
             String reply = request.getParameter("reply");
 
             rdao.updateReview(rID, reply);

@@ -29,32 +29,18 @@
         <%
             Users user = (Users) session.getAttribute("user");
             String phone = (String) request.getAttribute("phone");
-            if(phone == null || phone.isEmpty()){
+            if (phone == null || phone.isEmpty()) {
                 phone = "";
             }
             String status = (String) request.getAttribute("status");
-            if(status == null || status.isEmpty()){
+            if (status == null || status.isEmpty()) {
                 status = "Filter";
             }
             List<String> listPhone = (List<String>) request.getAttribute("listPhone");
         %>
         <div class="d-flex" id="wrapper">
             <!-- Sidebar -->
-            <nav class="sidebar bg-white shadow-sm border-end">
-                <div class="sidebar-header p-3">
-                    <h4 class="fw-bold text-primary">Mantis</h4>
-                </div>
-                <ul class="list-unstyled ps-3">
-                    <li><a href="admin" ><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
-                    <li><a href="admin?action=manageProduct"><i class="bi bi-box me-2"></i>Products</a></li>
-                    <li><a href="admin?action=manageSupplier"><i class="bi bi-truck me-2"></i>Suppliers</a></li>
-                    <li><a href="admin?action=managePromotion"><i class="bi bi-tag me-2"></i></i>Promotions</a></li>
-                    <li><a href="admin?action=manageOrder" class="active"><i class="bi bi-bag me-2"></i>Orders</a></li>
-                    <li><a href="admin?action=manageReview"><i class="bi bi-bag me-2"></i>Reviews</a></li>
-                    <li><a href="admin?action=manageUser"><i class="bi bi-people me-2"></i>Users</a></li>
-                    <li><a href="#"><i class="bi bi-gear me-2"></i>Settings</a></li>
-                </ul>
-            </nav>
+            <%@ include file="sidebar.jsp" %>
 
             <!-- Page Content -->
             <div class="page-content flex-grow-1">
@@ -69,12 +55,12 @@
                             <!-- Search Phone -->
                             <form action="admin" method="get" class="d-flex position-relative me-3" id="searchForm" autocomplete="off">
                                 <input type="hidden" name="action" value="searchOrder">
-                                <input type="hidden" name="status" value="<%= status %>">
+                                <input type="hidden" name="status" value="<%= status%>">
                                 <div class="position-relative" style="width: 300px;">
                                     <input class="form-control" type="text" id="searchPhone" name="phone"
                                            placeholder="Search Phone Number..."
                                            oninput="fetchSuggestions(this.value)"
-                                           value="<%= phone %>">
+                                           value="<%= phone%>">
                                     <div id="suggestionBox" class="list-group position-absolute w-100"
                                          style="top: 100%; z-index: 1000;"></div>
                                 </div>
@@ -89,13 +75,13 @@
                             <form action="admin" method="get" class="dropdown me-3">
                                 <input type="hidden" name="action" value="filterOrder">
                                 <!-- Giữ lại phone nếu đang search -->
-                                <input type="hidden" name="phone" value="<%= phone %>">
+                                <input type="hidden" name="phone" value="<%= phone%>">
 
                                 <button class="btn btn-outline-secondary fw-bold dropdown-toggle" 
                                         type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="bi bi-funnel"></i>
                                     <span id="selectedStatus">
-                                        <%= status %>
+                                        <%= status%>
                                     </span>
                                 </button>
 
@@ -211,76 +197,77 @@
                 %>
             </div>
 
+        </div>
+        <!-- JS Libraries -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
-            <!-- JS Libraries -->
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+        <!-- Custom JS -->
+        <script src="js/dashboard.js"></script>
 
-            <!-- Custom JS -->
-            <script src="js/dashboard.js"></script>
-            
 
-            <script>
-                
-                const phoneNumbers = <%= new Gson().toJson(listPhone)%>;
-                const searchInput = document.getElementById("searchPhone");
-                const suggestionBox = document.getElementById("suggestionBox");
+        <script>
+
+                                    const phoneNumbers = <%= new Gson().toJson(listPhone)%>;
+                                    const searchInput = document.getElementById("searchPhone");
+                                    const suggestionBox = document.getElementById("suggestionBox");
 
 // Hàm hiển thị gợi ý
-                function fetchSuggestions(query) {
-                    query = query.trim().toLowerCase();
-                    suggestionBox.innerHTML = "";
+                                    function fetchSuggestions(query) {
+                                        query = query.trim().toLowerCase();
+                                        suggestionBox.innerHTML = "";
 
-                    if (!query) {
-                        suggestionBox.style.display = "none";
-                        return;
-                    }
+                                        if (!query) {
+                                            suggestionBox.style.display = "none";
+                                            return;
+                                        }
 
-                    const matches = phoneNumbers.filter(num => num.includes(query));
+                                        const matches = phoneNumbers.filter(num => num.includes(query));
 
-                    if (matches.length === 0) {
-                        suggestionBox.style.display = "none";
-                        return;
-                    }
+                                        if (matches.length === 0) {
+                                            suggestionBox.style.display = "none";
+                                            return;
+                                        }
 
-                    matches.forEach(num => {
-                        const item = document.createElement("button");
-                        item.type = "button";
-                        item.className = "list-group-item list-group-item-action";
-                        item.innerHTML = highlightMatch(num, query);
+                                        matches.forEach(num => {
+                                            const item = document.createElement("button");
+                                            item.type = "button";
+                                            item.className = "list-group-item list-group-item-action";
+                                            item.innerHTML = highlightMatch(num, query);
 
-                        item.addEventListener("click", () => {
-                            searchInput.value = num;
-                            suggestionBox.style.display = "none";
-                            document.getElementById("searchForm").submit();
-                        });
+                                            item.addEventListener("click", () => {
+                                                searchInput.value = num;
+                                                suggestionBox.style.display = "none";
+                                                document.getElementById("searchForm").submit();
+                                            });
 
-                        suggestionBox.appendChild(item);
-                    });
+                                            suggestionBox.appendChild(item);
+                                        });
 
-                    suggestionBox.style.display = "block";
-                }
+                                        suggestionBox.style.display = "block";
+                                    }
 
 // Tô đậm phần khớp
-                function highlightMatch(text, keyword) {
-                    const regex = new RegExp(`(${keyword})`, "gi");
-                    return text.replace(regex, `<strong>$1</strong>`);
-                }
+                                    function highlightMatch(text, keyword) {
+                                        const regex = new RegExp(`(${keyword})`, "gi");
+                                        return text.replace(regex, `<strong>$1</strong>`);
+                                    }
 
 // Ẩn box khi click ra ngoài
-                document.addEventListener("click", (e) => {
-                    if (!e.target.closest("#searchForm")) {
-                        suggestionBox.style.display = "none";
-                        
-                    }
-                });
+                                    document.addEventListener("click", (e) => {
+                                        if (!e.target.closest("#searchForm")) {
+                                            suggestionBox.style.display = "none";
 
-            </script>
+                                        }
+                                    });
 
-            <script>
-                document.getElementById("menu-toggle").addEventListener("click", function () {
-                    document.getElementById("wrapper").classList.toggle("toggled");
-                });
-            </script>
+        </script>
+
+        <script>
+            document.getElementById("menu-toggle").addEventListener("click", function () {
+                document.getElementById("wrapper").classList.toggle("toggled");
+            });
+        </script>
+
     </body>
 </html>

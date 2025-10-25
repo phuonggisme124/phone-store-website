@@ -242,4 +242,16 @@ public class PromotionsDAO extends DBContext {
         }
         return null;
     }
+
+    public void deletePromotion(int pmtID) {
+        String sql = "DELETE FROM Promotions WHERE PromotionID = ?";
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, pmtID);
+            ps.executeUpdate();
+            ps.close();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
 }

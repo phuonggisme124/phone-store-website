@@ -732,16 +732,19 @@ public class OrderDAO extends DBContext {
 
         List<Order> list = new ArrayList<>();
         for (Order order : listInstalment) {
+            boolean checkPending = false;
             List<Payments> listPayment = pmdao.getPaymentByOrderID(order.getOrderID());
             if (listPayment != null && !listPayment.isEmpty()) {
                 for (Payments payment : listPayment) {
-                    if (payment.getPaymentStatus().equals("Completed")) {
-                        list.add(order);
+                    if (payment.getPaymentStatus().equals("Pending")) {
+                        checkPending = true;
                         break;
                     }
                 }
             }
-
+            if (!checkPending) {
+                list.add(order);
+            }
         }
 
         return list;
@@ -865,5 +868,141 @@ public class OrderDAO extends DBContext {
 
         return list;
     }
+
+    public List<String> getAllPhoneInstalment() {
+        String sql = "SELECT DISTINCT ReceiverPhone\n"
+                + "FROM Orders\n"
+                + "WHERE ReceiverPhone IS NOT NULL\n"
+                + "  AND isInstalment = 1;";
+
+        List<String> list = new ArrayList<>();
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                String receiverPhone = rs.getString("ReceiverPhone");
+
+                list.add(receiverPhone);
+            }
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        return list;
+    }
+
+    public List<Order> getAllOrderInstalmentByPhone(String phone) {
+        String sql = "Select * from Orders Where ReceiverPhone = ? AND IsInstalment = 1";
+        List<Order> list = new ArrayList<>();
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, phone);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                int id = rs.getInt("OrderID");
+                int userID = rs.getInt("UserID");
+                Timestamp orderDateTimestamp = rs.getTimestamp("orderDate");
+                LocalDateTime orderDate = (orderDateTimestamp != null)
+                        ? orderDateTimestamp.toLocalDateTime()
+                        : null;
+                String status = rs.getString("Status");
+                String paymentMethod = rs.getString("PaymentMethod");
+                String shippingAddress = rs.getString("ShippingAddress");
+                double totalAmount = rs.getDouble("TotalAmount");
+                byte isInstalment = rs.getByte("IsInstalment");
+                String receiverName = rs.getString("ReceiverName");
+                String receiverPhone = rs.getString("ReceiverPhone");
+
+                list.add(new Order(id, userID, paymentMethod, shippingAddress, totalAmount, status, orderDate, isInstalment, receiverName, receiverPhone));
+            }
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        return list;
+    }
+
+    public List<Order> getAllOrderInstalment() {
+        String sql = "Select * from Orders Where IsInstalment = 1";
+        List<Order> list = new ArrayList<>();
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                int id = rs.getInt("OrderID");
+                int userID = rs.getInt("UserID");
+                Timestamp orderDateTimestamp = rs.getTimestamp("orderDate");
+                LocalDateTime orderDate = (orderDateTimestamp != null)
+                        ? orderDateTimestamp.toLocalDateTime()
+                        : null;
+                String status = rs.getString("Status");
+                String paymentMethod = rs.getString("PaymentMethod");
+                String shippingAddress = rs.getString("ShippingAddress");
+                double totalAmount = rs.getDouble("TotalAmount");
+                byte isInstalment = rs.getByte("IsInstalment");
+                String receiverName = rs.getString("ReceiverName");
+                String receiverPhone = rs.getString("ReceiverPhone");
+
+                list.add(new Order(id, userID, paymentMethod, shippingAddress, totalAmount, status, orderDate, isInstalment, receiverName, receiverPhone));
+            }
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        return list;
+    }
+
+    public List<Order> getAllPendingInstalmentAndPhone(List<Order> listInstalment, String phone) {
+        PaymentsDAO pmdao = new PaymentsDAO();
+
+        List<Order> list = new ArrayList<>();
+        for (Order order : listInstalment) {
+            if (order.getBuyerPhone()!= null && order.getBuyerPhone().equals(phone)) {
+                List<Payments> listPayment = pmdao.getPaymentByOrderID(order.getOrderID());
+                if (listPayment != null && !listPayment.isEmpty()) {
+                    for (Payments payment : listPayment) {
+                        if (payment.getPaymentStatus().equals("Pending")) {
+                            list.add(order);
+                            break;
+                        }
+                    }
+                }
+            }
+
+        }
+
+        return list;
+    }
+
+    public List<Order> getAllCompletedInstalmentAndPhone(List<Order> listInstalment, String phone) {
+        PaymentsDAO pmdao = new PaymentsDAO();
+
+        List<Order> list = new ArrayList<>();
+        for (Order order : listInstalment) {
+            if (order.getBuyerPhone()!= null && order.getBuyerPhone().equals(phone)) {
+                boolean checkPending = false;
+                List<Payments> listPayment = pmdao.getPaymentByOrderID(order.getOrderID());
+                if (listPayment != null && !listPayment.isEmpty()) {
+                    for (Payments payment : listPayment) {
+                        if (payment.getPaymentStatus().equals("Pending")) {
+                            checkPending = true;
+                            break;
+                        }
+                    }
+                }
+                if (!checkPending) {
+                    list.add(order);
+                }
+            }
+
+        }
+
+        return list;
+    }
+
 
 }

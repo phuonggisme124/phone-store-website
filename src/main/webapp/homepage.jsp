@@ -1,6 +1,9 @@
+
 <%@page import="dao.ProductDAO"%>
 <%@page import="java.text.NumberFormat"%>
 <%@page import="java.util.Locale"%>
+<%@page import="dao.VariantsDAO"%>
+<%@page import="model.Category"%>
 <%@page import="model.Products"%>
 <%@page import="model.Variants"%>
 <%@page import="java.util.List"%>
@@ -122,12 +125,14 @@
     }
 </style>
 
+<html>
 <section id="searchSection">
     <div class="container">
         <div class="row">
             <div class="col-12 text-center mb-3">
                 <h2 class="text-white">Find Your Perfect Product</h2>
                 <span class="search-category-badge" id="categoryBadge">Searching in: All Products</span>
+
             </div>
             <div class="col-12">
                 <%
@@ -144,6 +149,7 @@
                         }
                     }
                 %>
+
 
                 <div id="searchContainer">
                     <input type="text" id="searchInput" placeholder="Search for products..." autocomplete="off">
@@ -322,6 +328,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         <div class="col-md-5">
                             <div class="image-holder">
                                 <img src="images/banner-image.jpg" alt="banner">
+
                             </div>
                         </div>
                     </div>
