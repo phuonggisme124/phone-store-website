@@ -1,3 +1,4 @@
+<%@page import="dao.ProductDAO"%>
 <%@page import="java.text.NumberFormat"%>
 <%@page import="java.util.Locale"%>
 <%@page import="model.Category"%>
@@ -530,7 +531,8 @@ document.addEventListener("DOMContentLoaded", function () {
             </div>
 
             <%
-                List<Products> watchproduct = (List<Products>) request.getAttribute("productList");
+                ProductDAO pDAO = new ProductDAO();
+                List<Products> watchproduct = pDAO.getAllProductByCategory(4);
                 if (productList == null && request.getParameter("fromProduct") == null) {
                     response.sendRedirect(request.getContextPath() + "/product?fromProduct=true");
                     return;
@@ -543,7 +545,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     <div class="swiper-slide">
                         <div class="product-card text-center position-relative">
                             <div class="image-holder">
-                                <img src="img/<%= p.getVariants().get(0).getImageUrl()%>" alt="<%= p.getName()%>" class="img-fluid rounded-3">
+                                <img src="images/<%= p.getVariants().get(0).getImageList()[0] %>" alt="<%= p.getName()%>" class="img-fluid rounded-3">
                             </div>
                             <div class="card-detail pt-3">
                                 <h3 class="card-title text-uppercase">

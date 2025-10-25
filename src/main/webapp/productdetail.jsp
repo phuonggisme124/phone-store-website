@@ -36,13 +36,13 @@
             Variants variants = (Variants) request.getAttribute("variants");
             int stock = variants.getStock();
             int currentVariantID = variants.getVariantID();
-            
+
             //Get product from category page
             String vIDFromProductByCategoryStr = (String) request.getAttribute("vID");
-            if(vIDFromProductByCategoryStr != null) {
+            if (vIDFromProductByCategoryStr != null) {
                 currentVariantID = Integer.parseInt(vIDFromProductByCategoryStr);
             }
-            
+
             List<Variants> listVariants = (List<Variants>) request.getAttribute("listVariants");
             List<Variants> listVariantRating = (List<Variants>) request.getAttribute("listVariantRating");
             List<Review> listReview = (List<Review>) request.getAttribute("listReview");
@@ -98,23 +98,22 @@
             <div class="product-container">
                 <div class="product-left">
                     <div class="gallery">
-                        <input type="radio" name="gallery" id="img1" checked>
-                        <input type="radio" name="gallery" id="img2">
-                        <input type="radio" name="gallery" id="img3">
-                        <input type="radio" name="gallery" id="img4">
+                        <%for (int i = 0; i < variants.getImageList().length; i++) {%>
+                        <input type="radio" name="gallery" id="img<%= i + 1%>" <%=(i + 1 == 1) ? "checked" : ""%>>
+                        <% } %>
 
                         <div class="main-image">
-                            <img src="images/post-item1.jpg" alt="img1">
-                            <img src="images/post-item2.jpg" alt="img2">
-                            <img src="images/post-item3.jpg" alt="img3">
-                            <img src="images/post-item4.jpg" alt="img4">
+                            <%for (int i = 0; i < variants.getImageList().length; i++) {%>
+                            <img src="images/<%=variants.getImageList()[i] %>" alt="img<%=i + 1 %>">
+                            <% }%> 
                         </div>
 
                         <div class="thumbnails">
-                            <label for="img1"><img src="images/post-item1.jpg" alt="thumb1"></label>
-                            <label for="img2"><img src="images/post-item2.jpg" alt="thumb2"></label>
-                            <label for="img3"><img src="images/post-item3.jpg" alt="thumb3"></label>
-                            <label for="img4"><img src="images/post-item4.jpg" alt="thumb4"></label>
+                            <%for (int i = 0; i < variants.getImageList().length; i++) {%>
+                            <label for="img<%=i + 1 %>"><img src="images/<%=variants.getImageList()[i] %>" alt="thumb<%=i + 1%>"></label>
+                            <% }%> 
+                            
+                            
                         </div>
                     </div>
                 </div>

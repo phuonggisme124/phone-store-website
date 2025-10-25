@@ -123,19 +123,10 @@ public class Variants {
         this.imageUrl = imageUrl;
     }
 
-    //=================== toString ===================//
-    @Override
-    public String toString() {
-        return "Variants{"
-                + "variantID=" + variantID
-                + ", productID=" + productID
-                + ", color='" + color + '\''
-                + ", stock=" + stock
-                + ", price=" + price
-                + ", discountPrice=" + discountPrice
-                + ", storage='" + storage + '\''
-                + ", description='" + description + '\''
-                + ", imageUrl='" + imageUrl + '\''
-                + '}';
+    public String[] getImageList() {
+        if (this.imageUrl == null || this.imageUrl.isEmpty()) {
+            return new String[0];
+        }
+        return this.imageUrl.split("#");
     }
 }
