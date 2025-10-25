@@ -455,7 +455,7 @@
                     <div class="relative">
                         <a href="product?action=viewDetail&vID=<%=v.getVariantID() %>&pID=<%=v.getProductID() %>" class="block w-full aspect-square overflow-hidden">
                             <img class="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
-                                 src="images/<%=v.getImageUrl()%>"
+                                 src="images/<%=v.getImageList()[0]%>"
                                  alt="<%=pName%>">
                         </a>
 

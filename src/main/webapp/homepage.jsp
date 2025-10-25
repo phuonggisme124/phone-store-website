@@ -1,4 +1,8 @@
-<!-- ===================== HOMEPAGE.JSP ===================== -->
+
+<%@page import="dao.ProductDAO"%>
+<%@page import="java.text.NumberFormat"%>
+<%@page import="java.util.Locale"%>
+
 <%@page import="model.Products"%>
 <%@page import="model.Variants"%>
 <%@page import="java.util.List"%>
@@ -440,6 +444,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 </div>
             </div>
 
+<<<<<<< HEAD
 <%
     List<Products> productList = (List<Products>) request.getAttribute("productList");
     NumberFormat vnFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
@@ -451,6 +456,16 @@ document.addEventListener("DOMContentLoaded", function () {
 %>
 
 
+=======
+            <%
+                ProductDAO pDAO = new ProductDAO();
+                List<Products> watchproduct = pDAO.getAllProductByCategory(4);
+                if (productList == null && request.getParameter("fromProduct") == null) {
+                    response.sendRedirect(request.getContextPath() + "/product?fromProduct=true");
+                    return;
+                }
+            %>
+>>>>>>> 611c6893eed52e53c5b6c6d31a8bbf3f6d212e32
             <div class="swiper product-swiper">
                 <div class="swiper-wrapper">
                     <%
@@ -461,7 +476,10 @@ document.addEventListener("DOMContentLoaded", function () {
                         <div class="product-card text-center position-relative">
                             <div class="image-holder">
                                 <img src="images/<%= p.getVariants().get(0).getImageList()[0] %>" alt="<%= p.getName()%>" class="img-fluid rounded-3">
+<<<<<<< HEAD
 
+=======
+>>>>>>> 611c6893eed52e53c5b6c6d31a8bbf3f6d212e32
                             </div>
                             <div class="card-detail pt-3">
                                 <h3 class="card-title text-uppercase">
@@ -490,7 +508,7 @@ document.addEventListener("DOMContentLoaded", function () {
         </div>
 
         <%
-            List<Products> watchproduct = (List<Products>) request.getAttribute("watchproduct");
+             watchproduct = pDAO.getAllProductByCategory(4);
         %>
         <div class="swiper product-swiper">
             <div class="swiper-wrapper">
