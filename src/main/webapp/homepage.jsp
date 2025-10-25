@@ -1,18 +1,13 @@
-
 <%@page import="dao.ProductDAO"%>
 <%@page import="java.text.NumberFormat"%>
 <%@page import="java.util.Locale"%>
-
 <%@page import="model.Products"%>
 <%@page import="model.Variants"%>
 <%@page import="java.util.List"%>
 <%@page import="java.util.Map" %>
 <%@page import="java.util.HashMap" %>
-<%@page import="java.text.NumberFormat"%>
-<%@page import="java.util.Locale"%>
 
 <%@ include file="layout/header.jsp" %>
-
 
 <style>
     #searchSection {
@@ -127,62 +122,6 @@
     }
 </style>
 
-
-<!-- Banner Section -->
-<section style="background-color: white" id="billboard" class="position-relative overflow-hidden bg-light-blue">
-    <div class="swiper main-swiper">
-        <div class="swiper-wrapper">
-            <div class="swiper-slide">
-                <div class="container">
-                    <div class="row d-flex align-items-center">
-                        <div class="col-md-6">
-                            <div class="banner-content">
-                                <h1 class="display-2 text-uppercase text-dark pb-5">Your Products Are Great.</h1>
-                                <a href="shop.html" class="btn btn-medium btn-dark text-uppercase btn-rounded-none">Shop Product</a>
-                            </div>
-                        </div>
-                        <div class="col-md-5">
-                            <div class="image-holder">
-                                <img src="images/banner-image.jpg" alt="banner">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="swiper-slide">
-                <div class="container">
-                    <div class="row d-flex flex-wrap align-items-center">
-                        <div class="col-md-6">
-                            <div class="banner-content">
-                                <h1 class="display-2 text-uppercase text-dark pb-5">Technology Hack You Won't Get</h1>
-                                <a href="shop.html" class="btn btn-medium btn-dark text-uppercase btn-rounded-none">Shop Product</a>
-                            </div>
-                        </div>
-                        <div class="col-md-5">
-                            <div class="image-holder">
-                                <img src="images/banner-image.png" alt="banner">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="swiper-icon swiper-arrow swiper-arrow-prev">
-        <svg class="chevron-left">
-            <use xlink:href="#chevron-left" />
-        </svg>
-    </div>
-    <div class="swiper-icon swiper-arrow swiper-arrow-next">
-        <svg class="chevron-right">
-            <use xlink:href="#chevron-right" />
-        </svg>
-    </div>
-</section>
-
-
-
-<!-- Search Section - CH? ? HOMEPAGE -->
 <section id="searchSection">
     <div class="container">
         <div class="row">
@@ -244,7 +183,6 @@
                     </div>
                 </div>
 
-                <!-- Form search ?n -->
                 <form id="productSearchForm" action="product" method="GET" style="display:none;">
                     <input type="hidden" name="action" value="selectStorage">
                     <input type="hidden" name="pID" id="formPID">
@@ -369,11 +307,57 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 </script>
 
+<section style="background-color: white" id="billboard" class="position-relative overflow-hidden bg-light-blue">
+    <div class="swiper main-swiper">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide">
+                <div class="container">
+                    <div class="row d-flex align-items-center">
+                        <div class="col-md-6">
+                            <div class="banner-content">
+                                <h1 class="display-2 text-uppercase text-dark pb-5">Your Products Are Great.</h1>
+                                <a href="shop.html" class="btn btn-medium btn-dark text-uppercase btn-rounded-none">Shop Product</a>
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="image-holder">
+                                <img src="images/banner-image.jpg" alt="banner">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="swiper-slide">
+                <div class="container">
+                    <div class="row d-flex flex-wrap align-items-center">
+                        <div class="col-md-6">
+                            <div class="banner-content">
+                                <h1 class="display-2 text-uppercase text-dark pb-5">Technology Hack You Won't Get</h1>
+                                <a href="shop.html" class="btn btn-medium btn-dark text-uppercase btn-rounded-none">Shop Product</a>
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="image-holder">
+                                <img src="images/banner-image.png" alt="banner">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="swiper-icon swiper-arrow swiper-arrow-prev">
+        <svg class="chevron-left">
+            <use xlink:href="#chevron-left" />
+        </svg>
+    </div>
+    <div class="swiper-icon swiper-arrow swiper-arrow-next">
+        <svg class="chevron-right">
+            <use xlink:href="#chevron-right" />
+        </svg>
+    </div>
+</section>
 
-
-
-
-<!-- Company Services Section -->
 <section id="company-services" class="padding-large">
     <div class="container">
         <div class="row">
@@ -433,7 +417,6 @@ document.addEventListener("DOMContentLoaded", function () {
     </div>
 </section>
 
-<!-- Mobile Products Section -->
 <section id="mobile-products" class="product-store position-relative padding-large no-padding-top">
     <div class="container">
         <div class="row">
@@ -444,28 +427,16 @@ document.addEventListener("DOMContentLoaded", function () {
                 </div>
             </div>
 
-<<<<<<< HEAD
-<%
-    List<Products> productList = (List<Products>) request.getAttribute("productList");
-    NumberFormat vnFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
-
-    if (productList == null && request.getParameter("fromProduct") == null) {
-        response.sendRedirect(request.getContextPath() + "/product?fromProduct=true");
-        return;
-    }
-%>
-
-
-=======
             <%
-                ProductDAO pDAO = new ProductDAO();
-                List<Products> watchproduct = pDAO.getAllProductByCategory(4);
+                List<Products> productList = (List<Products>) request.getAttribute("productList");
+                NumberFormat vnFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
+
                 if (productList == null && request.getParameter("fromProduct") == null) {
                     response.sendRedirect(request.getContextPath() + "/product?fromProduct=true");
                     return;
                 }
             %>
->>>>>>> 611c6893eed52e53c5b6c6d31a8bbf3f6d212e32
+
             <div class="swiper product-swiper">
                 <div class="swiper-wrapper">
                     <%
@@ -475,11 +446,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     <div class="swiper-slide">
                         <div class="product-card text-center position-relative">
                             <div class="image-holder">
-                                <img src="images/<%= p.getVariants().get(0).getImageList()[0] %>" alt="<%= p.getName()%>" class="img-fluid rounded-3">
-<<<<<<< HEAD
-
-=======
->>>>>>> 611c6893eed52e53c5b6c6d31a8bbf3f6d212e32
+                                <img src="images/<%= p.getVariants().get(0).getImageUrl()%>" alt="<%= p.getName()%>" class="img-fluid rounded-3">
                             </div>
                             <div class="card-detail pt-3">
                                 <h3 class="card-title text-uppercase">
@@ -499,7 +466,6 @@ document.addEventListener("DOMContentLoaded", function () {
     </div>
 </section>
 
-<!-- Smart Watches Section -->
 <section id="smart-watches" class="padding-large">
     <div class="container">
         <div class="row d-flex justify-content-between align-items-center mb-4">
@@ -508,7 +474,9 @@ document.addEventListener("DOMContentLoaded", function () {
         </div>
 
         <%
-             watchproduct = pDAO.getAllProductByCategory(4);
+            // Merged logic: Initialize DAO and fetch watchproduct list
+            ProductDAO pDAO = new ProductDAO();
+            List<Products> watchproduct = pDAO.getAllProductByCategory(4);
         %>
         <div class="swiper product-swiper">
             <div class="swiper-wrapper">
@@ -538,7 +506,6 @@ document.addEventListener("DOMContentLoaded", function () {
     </div>
 </section>
 
-<!-- Yearly Sale Section -->
 <section id="yearly-sale" class="bg-light-blue overflow-hidden mt-5 padding-xlarge" 
          style="background-image: url('images/single-image1.png');background-position: right; background-repeat: no-repeat;">
     <div class="row d-flex flex-wrap align-items-center">
@@ -553,7 +520,6 @@ document.addEventListener("DOMContentLoaded", function () {
     </div>
 </section>
 
-<!-- Footer -->
 <div class="container padding-xlarge">
     <footer id="footer" class="overflow-hidden">
         <div class="container">

@@ -10,25 +10,13 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="layout/header.jsp" %>
 
-
-    <head>
-        <title>Product Detail</title>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
-        <link rel="stylesheet" type="text/css" href="css/style.css">
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
-        <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-        <link rel="stylesheet" href="css/product_detail.css">
-        <link rel="stylesheet" href="css/gallery.css">
-        <link rel="stylesheet" href="css/select_product.css">
-        <link rel="stylesheet" href="css/customer_review.css">
-        <script src="js/modernizr.js"></script>
-    </head>
-    <body data-bs-spy="scroll" data-bs-target="#navbar" tabindex="0">
-        <%
+<title>Product Detail</title>
+<link rel="stylesheet" href="css/product_detail.css">
+<link rel="stylesheet" href="css/gallery.css">
+<link rel="stylesheet" href="css/select_product.css">
+<link rel="stylesheet" href="css/customer_review.css">
+<script src="js/modernizr.js"></script>
+<%
             ProductDAO pdao = new ProductDAO();
             ReviewDAO rdao = new ReviewDAO();
             UsersDAO udao = new UsersDAO();
@@ -55,68 +43,6 @@
                 displayName = (user.getFullName() != null && !user.getFullName().trim().isEmpty()) ? user.getFullName() : user.getEmail();
             }
         %>
-        <header id="header" class="site-header header-scrolled position-fixed text-black bg-light">
-            <nav id="header-nav" class="navbar navbar-expand-lg px-3 mb-3">
-                <div class="container-fluid">
-                    <a class="navbar-brand" href="index.html">
-                        <img src="images/main-logo.png" class="logo">
-                    </a>
-                    <div class="offcanvas-body">
-                        <ul id="navbar" class="navbar-nav text-uppercase justify-content-end align-items-center flex-grow-1 pe-3">
-                            <li class="nav-item"><a class="nav-link me-4" href="homepage">Home</a></li>
-                                <% for (Category c : listCategory) {%>
-                            <li class="nav-item">
-                                <a class="nav-link me-4 <%= (categoryID == c.getCategoryId() ? "active" : "")%>" href="product?action=category&cID=<%= c.getCategoryId()%>"><%= c.getCategoryName()%></a>
-                            </li>
-                            <% } %>
-                            <li class="nav-item">
-                                <div class="user-items ps-5">
-                                    <ul class="d-flex justify-content-end list-unstyled align-items-center">
-                                        <% if (isLoggedIn) {%>
-                                        <li class="pe-3"><a href="cart.html"><svg class="cart"><use xlink:href="#cart"></use></svg></a></li>
-                                        <li class="pe-3"><a href="logout" class="nav-link p-0 text-dark fw-bold">Logout</a></li>
-                                        <li class="text-dark fw-bold"><%= displayName%></li>
-                                            <% } else { %>
-                                        <li class="pe-3"><a href="login.jsp" class="nav-link p-0 text-dark fw-bold">Login/Register</a></li>
-                                        <li class="text-dark fw-bold">Hello Guest</li>
-                                            <% }%>
-                                    </ul>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </nav>
-        </header>
-
-        <section id="billboard" class="bg-light-blue overflow-hidden mt-5 padding-large">
-            <div class="container">
-                <h3><%= pdao.getNameByID(variants.getProductID())%></h3>
-            </div>
-            <div class="product-container">
-                <div class="product-left">
-                    <div class="gallery">
-                        <%for (int i = 0; i < variants.getImageList().length; i++) {%>
-                        <input type="radio" name="gallery" id="img<%= i + 1%>" <%=(i + 1 == 1) ? "checked" : ""%>>
-                        <% } %>
-
-                        <div class="main-image">
-                            <%for (int i = 0; i < variants.getImageList().length; i++) {%>
-                            <img src="images/<%=variants.getImageList()[i] %>" alt="img<%=i + 1 %>">
-                            <% }%> 
-                        </div>
-
-                        <div class="thumbnails">
-                            <%for (int i = 0; i < variants.getImageList().length; i++) {%>
-                            <label for="img<%=i + 1 %>"><img src="images/<%=variants.getImageList()[i] %>" alt="thumb<%=i + 1%>"></label>
-                            <% }%> 
-                            
-                            
-                        </div>
-                    </div>
-                </div>
-
-
 
 <section id="billboard" class="bg-light-blue overflow-hidden padding-large" style="margin-top:-1px;">
     <div class="container">
@@ -139,7 +65,6 @@
                     <%for (int i = 0; i < variants.getImageList().length; i++) {%>
                     <label for="img<%=i + 1 %>"><img src="images/<%=variants.getImageList()[i] %>" alt="thumb<%=i + 1%>"></label>
                     <% }%> 
-                    
                     
                 </div>
             </div>
