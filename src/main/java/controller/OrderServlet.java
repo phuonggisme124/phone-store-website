@@ -19,14 +19,14 @@ import model.Users;
 
 /**
  * Servlet responsible for handling order-related operations.
- * 
+ *
  * Main features:
- *  - Display orders depending on the user's role (staff or shipper)
- *  - Update order status (Pending → In Transit → Delivered)
- *  - Delete delivered orders
- * 
+ * - Display orders depending on the user's role (staff or shipper)
+ * - Update order status (Pending → In Transit → Delivered)
+ * - Delete delivered orders
+ *
  * This servlet supports both GET (view orders) and POST (update order) methods.
- * 
+ *
  * Author: admin
  */
 @WebServlet(name = "OrderServlet", urlPatterns = {"/order"})
@@ -34,14 +34,14 @@ public class OrderServlet extends HttpServlet {
 
     /**
      * Handles the HTTP GET method.
-     * 
+     *
      * Workflow:
-     *  1. Retrieve current session and verify login status.
-     *  2. Identify user role (shipper or staff).
-     *  3. Fetch corresponding order list from OrderDAO.
-     *  4. Forward to the correct JSP based on user role.
-     * 
-     * @param request  HttpServletRequest object containing client request
+     * 1. Retrieve current session and verify login status.
+     * 2. Identify user role (shipper or staff).
+     * 3. Fetch corresponding order list from OrderDAO.
+     * 4. Forward to the correct JSP based on user role.
+     *
+     * @param request HttpServletRequest object containing client request
      * @param response HttpServletResponse object for sending response to the client
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
@@ -92,6 +92,11 @@ public class OrderServlet extends HttpServlet {
             request.setAttribute("orders", orders);
             targetPage = "staff";
 
+        } else if (userRole == 1) {
+            // Role 1: Normal customer
+            orders = dao.getOrdersByUserId(userID); // lấy danh sách đơn hàng theo ID người dùng
+            request.setAttribute("orders", orders);
+            targetPage = "orders.jsp"; // trang hiển thị danh sách đơn hàng
         } else {
             // Other roles → access denied, redirect to index
             System.err.println("User " + userID + " tried to access unsupported dashboard.");
@@ -105,16 +110,16 @@ public class OrderServlet extends HttpServlet {
 
     /**
      * Handles the HTTP POST method.
-     * 
+     *
      * Used for updating or deleting orders based on their current status.
-     * 
+     *
      * Workflow:
-     *  1. Get orderID and status from the request.
-     *  2. Depending on status:
-     *     - Pending → update to "In Transit"
-     *     - In Transit → update to "Delivered"
-     *     - Delivered → delete the order
-     *  3. Redirect back to /order after update.
+     * 1. Get orderID and status from the request.
+     * 2. Depending on status:
+     * - Pending → update to "In Transit"
+     * - In Transit → update to "Delivered"
+     * - Delivered → delete the order
+     * 3. Redirect back to /order after update.
      *
      * @param request HttpServletRequest object
      * @param response HttpServletResponse object

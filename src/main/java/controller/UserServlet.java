@@ -23,9 +23,9 @@ import model.Category;
  * - Updating profile (POST)
  *
  * URL patterns:
- *   GET  /user?action=view   -> show profile.jsp
- *   GET  /user?action=edit   -> show editProfile.jsp
- *   POST /user?action=update -> save profile updates
+ * GET /user?action=view -> show profile.jsp
+ * GET /user?action=edit -> show editProfile.jsp
+ * POST /user?action=update -> save profile updates
  */
 @WebServlet(name = "UserServlet", urlPatterns = {"/user"})
 public class UserServlet extends HttpServlet {
@@ -37,7 +37,9 @@ public class UserServlet extends HttpServlet {
             throws ServletException, IOException {
 
         String action = request.getParameter("action");
-        if (action == null) action = "view";
+        if (action == null) {
+            action = "view";
+        }
 
         HttpSession session = request.getSession();
         Users user = (Users) session.getAttribute("user");
@@ -63,6 +65,9 @@ public class UserServlet extends HttpServlet {
                 request.setAttribute("user", user);
                 request.getRequestDispatcher("profile.jsp").forward(request, response);
                 break;
+            case "changePassword":
+                request.getRequestDispatcher("changePassword.jsp").forward(request, response);
+                break;
         }
     }
 
@@ -71,47 +76,66 @@ public class UserServlet extends HttpServlet {
             throws ServletException, IOException {
 
         String action = request.getParameter("action");
-        if (!"update".equals(action)) {
-            response.sendRedirect("user?action=view");
-            return;
-        }
-
         HttpSession session = request.getSession();
         Users user = (Users) session.getAttribute("user");
 
         if (user == null) {
-            response.sendRedirect("user");
+            response.sendRedirect("login.jsp");
             return;
         }
 
-        // Get form data
-        String fullName = request.getParameter("fullName");
-        String email = request.getParameter("email");
-        String phone = request.getParameter("phone");
-        String address = request.getParameter("address");
-        String password = request.getParameter("password");
-
-        // Update user object
-        user.setFullName(fullName);
-        user.setEmail(email);
-        user.setPhone(phone);
-        user.setAddress(address);
-        user.setPassword(password);
-
-        // Update database
-        usersDAO.updateUserProfile(user);
-
-        // Save updated user back to session
-        session.setAttribute("user", user);
-
-        // ✅ Load lại category để header không mất khi reload trang
+        // ✅ Load category cho header
         CategoryDAO categoryDAO = new CategoryDAO();
         List<Category> listCategory = categoryDAO.getAllCategories();
         request.setAttribute("listCategory", listCategory);
 
-        // Send success message and reload page
-        request.setAttribute("message", "Profile updated successfully!");
-        request.setAttribute("user", user);
-        request.getRequestDispatcher("editProfile.jsp").forward(request, response);
+        // ✅ Phân biệt 2 hành động: cập nhật profile và đổi mật khẩu
+        if ("update".equals(action)) {
+            // ---------- Cập nhật hồ sơ ----------
+            String fullName = request.getParameter("fullName");
+            String email = request.getParameter("email");
+            String phone = request.getParameter("phone");
+            String address = request.getParameter("address");
+            String password = request.getParameter("password");
+
+            user.setFullName(fullName);
+            user.setEmail(email);
+            user.setPhone(phone);
+            user.setAddress(address);
+            user.setPassword(password);
+
+            usersDAO.updateUserProfile(user);
+            session.setAttribute("user", user);
+
+            request.setAttribute("message", "Cập nhật hồ sơ thành công!");
+            request.setAttribute("user", user);
+            request.getRequestDispatcher("editProfile.jsp").forward(request, response);
+
+        } else if ("updatePassword".equals(action)) {
+            // ---------- Đổi mật khẩu ----------
+            String oldPass = request.getParameter("oldPassword");
+            String newPass = request.getParameter("newPassword");
+            String confirmPass = request.getParameter("confirmPassword");
+
+            if (oldPass == null || newPass == null || confirmPass == null
+                    || oldPass.isEmpty() || newPass.isEmpty() || confirmPass.isEmpty()) {
+                request.setAttribute("error", "Vui lòng nhập đầy đủ thông tin!");
+            } else if (!user.getPassword().equals(oldPass)) {
+                request.setAttribute("error", "Mật khẩu hiện tại không đúng!");
+            } else if (!newPass.equals(confirmPass)) {
+                request.setAttribute("error", "Mật khẩu xác nhận không trùng khớp!");
+            } else {
+                usersDAO.updatePassword(user.getUserId(), newPass);
+                user.setPassword(newPass); // cập nhật lại session
+                session.setAttribute("user", user);
+                request.setAttribute("message", "Đổi mật khẩu thành công!");
+            }
+
+            request.getRequestDispatcher("changePassword.jsp").forward(request, response);
+
+        } else {
+            // Không có action hợp lệ
+            response.sendRedirect("user?action=view");
+        }
     }
 }

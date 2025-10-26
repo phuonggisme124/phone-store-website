@@ -5,6 +5,7 @@
 package dao;
 
 import java.security.MessageDigest;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -404,6 +405,19 @@ public class UsersDAO extends DBContext {
             }
         } else {
             System.out.println("No shippers found!");
+        }
+    }
+
+    public void updatePassword(int userId, String newPassword) {
+        String sql = "UPDATE Users SET Password = ? WHERE UserID = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, newPassword);
+            ps.setInt(2, userId);
+            ps.executeUpdate();
+            System.out.println("Password updated successfully for user ID " + userId);
+        } catch (SQLException e) {
+            System.err.println("Error updating password: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }

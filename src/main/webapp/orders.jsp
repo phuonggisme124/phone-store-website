@@ -1,14 +1,22 @@
+<%-- 
+    Document   : oders
+    Created on : Oct 15, 2025, 5:08:51 PM
+    Author     : LOQ
+--%>
 
-<%@page import="java.util.List"%>
-<%@page import="model.Products"%>
 <%@page import="model.Category"%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="model.Users" %>
+<%@ page import="java.util.List" %>
+<%@ page import="model.Order" %>
+
+<%
+    List<Order> orders = (List<Order>) request.getAttribute("orders");
+%>
 
 <!DOCTYPE html>
-<html lang="vi">
+<html>
     <head>
-        <title>Hồ sơ cá nhân | Phone Store</title>
+        <meta charset="UTF-8">
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -31,8 +39,7 @@
         <!-- Swiper JS -->
         <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
     </head>
-
-    <body data-bs-spy="scroll" data-bs-target="#navbar" data-bs-root-margin="0px 0px -40%" data-bs-smooth-scroll="true" tabindex="0">
+    <body>
         <header id="header" class="site-header header-scrolled position-fixed text-black bg-light">
             <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
             <symbol id="search" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
@@ -274,282 +281,240 @@
             </nav>
         </header>
 
+        <div class="container-fluid p-4">
+            <div class="row justify-content-center">
 
+                <!-- Sidebar -->
+                <div style="width: 400px; background-color: #fff; padding: 20px;">
+                    <h3 style="margin-top: 100px; margin-bottom: 50px; font-size: 1.5rem;">Anh/Chị <%= user.getFullName()%></h3>
 
-        <div style="display: flex; background-color: #f3f5f9; min-height: 100vh;">
-            <!-- Sidebar -->
-            <div style="width: 400px; background-color: #fff; padding: 20px;">
-                <h3 style="margin-top: 100px; margin-bottom: 50px; font-size: 1.5rem;">Anh/Chị <%= user.getFullName()%></h3>
+                    <!-- Nút 1: Đơn hàng đã mua -->
+                    <a href="order" class="btn btn-success active-tab"
+                       style="display: flex; align-items: center; background-color: #f2f3f5; color: #333; font-weight: 500;
+                       border-radius: 8px; padding: 10px 15px; text-decoration: none; margin-bottom: 15px;">
+                        <i class="fa fa-shopping-bag" style="margin-right: 10px;"></i>
+                        Đơn hàng đã mua
+                    </a>
 
-                <!-- Nút 1: Đơn hàng đã mua -->
-                <a href="order"
-                   style="display: flex; align-items: center; background-color: #f2f3f5; color: #333; font-weight: 500;
-                   border-radius: 8px; padding: 10px 15px; text-decoration: none; margin-bottom: 15px;">
-                    <i class="fa fa-shopping-bag" style="margin-right: 10px;"></i>
-                    My orders
-                </a>
+                    <!-- Nút 2: Thông tin và sổ địa chỉ -->
+                    <a href="profile.jsp"
+                       style="display: flex; align-items: center; background-color: #f2f3f5; color: #333; font-weight: 500;
+                       border-radius: 8px; padding: 10px 15px; text-decoration: none; margin-bottom: 25px;">
+                        <i class="fa fa-user" style="margin-right: 10px;"></i>
+                        Thông tin và sổ địa chỉ
+                    </a>
 
-                <!-- Nút 2: Thông tin và sổ địa chỉ -->
-                <a href="profile.jsp"
-                   style="display: flex; align-items: center; background-color: #f2f3f5; color: #333; font-weight: 500;
-                   border-radius: 8px; padding: 10px 15px; text-decoration: none; margin-bottom: 25px;">
-                    <i class="fa fa-user" style="margin-right: 10px;"></i>
-                    Infomation and address
-                </a>
+                    <!-- Nút Đăng xuất -->
+                    <form action="logout" method="post">
+                        <button type="submit"
+                                style="background-color: #ff4d4f; color: white; border: none; width: 100%; padding: 10px;
+                                border-radius: 8px; font-weight: 500; cursor: pointer;">
+                            Đăng Xuất
+                        </button>
+                    </form>
+                </div>
 
-                <!-- Nút 3: Change password -->
-                <a href="user?action=changePassword"
-                   style="display: flex; align-items: center; background-color: #f2f3f5; color: #333; font-weight: 500;
-                   border-radius: 8px; padding: 10px 15px; text-decoration: none; margin-bottom: 25px;">
-                    <i class="fa fa-user" style="margin-right: 10px;"></i>
-                    Change password
-                </a>
+                <!-- Nội dung chính -->
+                <div class="col-md-8 content" style="margin-top: 100px">
+                    <h3 class="fw-bold mb-4">Lịch sử đơn hàng</h3>
 
-                <!-- Nút Đăng xuất -->
-                <form action="logout" method="post">
-                    <button type="submit"
-                            style="background-color: #ff4d4f; color: white; border: none; width: 100%; padding: 10px;
-                            border-radius: 8px; font-weight: 500; cursor: pointer;">
-                        Đăng Xuất
-                    </button>
-                </form>
-            </div>
-
-
-            <!--  Nội dung chính -->    
-            <div class="container mb-5">
-                <div class="row justify-content-center">
-                    <div class="col-md-9 p-4" style="background-color: transparent; box-shadow: none; border: none;">
-                        <div class="card-body p-5">
-
-                            <!--  Banner Section -->
-                            <section class="py-5">
-                                <div class="container text-center">
-                                    <h1 class="fw-bold text-uppercase" style="margin-top: 50px;">Thông tin cá nhân</h1>
-                                    <p class="text-muted">Quản lý thông tin tài khoản của bạn tại Phone Store</p>
-                                </div>
-                            </section>
-
-                            <div class="row">
-                                <!-- Avatar + Tên -->
-                                <div class="col-md-4 text-center mb-4">
-                                    <img src="images/avatar.png"
-                                         alt="Avatar" class="rounded-circle border mb-3" width="150" height="150">
-                                    <h5 class="fw-bold"><%= user.getFullName()%></h5>
-                                    <p class="text-muted small">Mã người dùng: #<%= user.getUserId()%></p>
-                                </div>
-
-                                <!-- Thông tin chi tiết -->
-                                <div class="col-md-8">
-                                    <table class="table table-borderless">
-                                        <tbody>
-                                            <tr>
-                                                <th class="w-25 text-secondary">Họ và tên:</th>
-                                                <td><%= user.getFullName()%></td>
-                                            </tr>
-                                            <tr>
-                                                <th class="text-secondary">Email:</th>
-                                                <td><%= user.getEmail()%></td>
-                                            </tr>
-                                            <tr>
-                                                <th class="text-secondary">Số điện thoại:</th>
-                                                <td><%= user.getPhone() != null ? user.getPhone() : "Chưa cập nhật"%></td>
-                                            </tr>
-                                            <tr>
-                                                <th class="text-secondary">Địa chỉ:</th>
-                                                <td><%= user.getAddress() != null ? user.getAddress() : "Chưa cập nhật"%></td>
-                                            </tr>
-                                            <tr>
-                                                <th class="text-secondary">Ngày tạo tài khoản:</th>
-                                                <td><%= user.getCreatedAt() != null ? user.getCreatedAt() : "Không xác định"%></td>
-                                            </tr>
-                                            <tr>
-                                                <th class="text-secondary">Trạng thái:</th>
-                                                <td><%= user.getStatus() != null ? user.getStatus() : "Đang hoạt động"%></td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-
-                                    <div class="mt-4">
-                                        <a href="user?action=edit" class="btn btn-primary px-4 me-2">Chỉnh sửa thông tin</a>
-                                        <a href="logout" class="btn btn-outline-danger px-4">Đăng xuất</a>
-                                    </div>
-                                </div>
+                    <% if (orders == null || orders.isEmpty()) { %>
+                    <div class="alert alert-secondary text-center">
+                        Bạn chưa có đơn hàng nào.
+                    </div>
+                    <% } else { %>
+                    <% for (Order o : orders) {%>
+                    <div class="order-card">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h5 class="mb-1">Mã đơn hàng: #<%= o.getOrderID()%></h5>
+                                <p class="mb-1 text-muted">Ngày đặt: <%= o.getOrderDate()%></p>
+                                <p class="mb-1 text-muted">Trạng thái: 
+                                    <span class="fw-semibold <%= o.getStatus().equalsIgnoreCase("Completed") ? "text-success" : "text-warning"%>">
+                                        <%= o.getStatus()%>
+                                    </span>
+                                </p>
                             </div>
-
+                            <div class="col-md-4 text-end">
+                                <p class="fw-bold mb-2">Tổng tiền: <%= String.format("%,.0f", o.getTotalAmount())%>₫</p>
+                                <a href="orderDetail?id=<%= o.getOrderID()%>" class="btn btn-outline-primary btn-sm">Xem chi tiết</a>
+                            </div>
                         </div>
                     </div>
+                    <% } %>
+                    <% }%>
+
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="container padding-xlarge">
-        <footer id="footer" class="overflow-hidden">
-            <div class="container">
-                <div class="row">
-                    <div class="footer-top-area">
-                        <div class="row d-flex flex-wrap justify-content-between">
-                            <div class="col-lg-3 col-sm-6 pb-3">
-                                <div class="footer-menu">
-                                    <img src="images/main-logo.png" alt="logo">
-                                    <p>Nisi, purus vitae, ultrices nunc. Sit ac sit suscipit hendrerit. Gravida massa volutpat aenean odio erat nullam fringilla.</p>
-                                    <div class="social-links">
-                                        <ul class="d-flex list-unstyled">
-                                            <li>
-                                                <a href="#">
-                                                    <svg class="facebook">
-                                                    <use xlink:href="#facebook" />
-                                                    </svg>
-                                                </a>
+        <div class="container padding-xlarge">
+            <footer id="footer" class="overflow-hidden">
+                <div class="container">
+                    <div class="row">
+                        <div class="footer-top-area">
+                            <div class="row d-flex flex-wrap justify-content-between">
+                                <div class="col-lg-3 col-sm-6 pb-3">
+                                    <div class="footer-menu">
+                                        <img src="images/main-logo.png" alt="logo">
+                                        <p>Nisi, purus vitae, ultrices nunc. Sit ac sit suscipit hendrerit. Gravida massa volutpat aenean odio erat nullam fringilla.</p>
+                                        <div class="social-links">
+                                            <ul class="d-flex list-unstyled">
+                                                <li>
+                                                    <a href="#">
+                                                        <svg class="facebook">
+                                                        <use xlink:href="#facebook" />
+                                                        </svg>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="#">
+                                                        <svg class="instagram">
+                                                        <use xlink:href="#instagram" />
+                                                        </svg>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="#">
+                                                        <svg class="twitter">
+                                                        <use xlink:href="#twitter" />
+                                                        </svg>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="#">
+                                                        <svg class="linkedin">
+                                                        <use xlink:href="#linkedin" />
+                                                        </svg>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="#">
+                                                        <svg class="youtube">
+                                                        <use xlink:href="#youtube" />
+                                                        </svg>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-2 col-sm-6 pb-3">
+                                    <div class="footer-menu text-uppercase">
+                                        <h5 class="widget-title pb-2">Quick Links</h5>
+                                        <ul class="menu-list list-unstyled text-uppercase">
+                                            <li class="menu-item pb-2">
+                                                <a href="#">Home</a>
                                             </li>
-                                            <li>
-                                                <a href="#">
-                                                    <svg class="instagram">
-                                                    <use xlink:href="#instagram" />
-                                                    </svg>
-                                                </a>
+                                            <li class="menu-item pb-2">
+                                                <a href="#">About</a>
                                             </li>
-                                            <li>
-                                                <a href="#">
-                                                    <svg class="twitter">
-                                                    <use xlink:href="#twitter" />
-                                                    </svg>
-                                                </a>
+                                            <li class="menu-item pb-2">
+                                                <a href="#">Shop</a>
                                             </li>
-                                            <li>
-                                                <a href="#">
-                                                    <svg class="linkedin">
-                                                    <use xlink:href="#linkedin" />
-                                                    </svg>
-                                                </a>
+                                            <li class="menu-item pb-2">
+                                                <a href="#">Blogs</a>
                                             </li>
-                                            <li>
-                                                <a href="#">
-                                                    <svg class="youtube">
-                                                    <use xlink:href="#youtube" />
-                                                    </svg>
-                                                </a>
+                                            <li class="menu-item pb-2">
+                                                <a href="#">Contact</a>
                                             </li>
                                         </ul>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="col-lg-2 col-sm-6 pb-3">
-                                <div class="footer-menu text-uppercase">
-                                    <h5 class="widget-title pb-2">Quick Links</h5>
-                                    <ul class="menu-list list-unstyled text-uppercase">
-                                        <li class="menu-item pb-2">
-                                            <a href="#">Home</a>
-                                        </li>
-                                        <li class="menu-item pb-2">
-                                            <a href="#">About</a>
-                                        </li>
-                                        <li class="menu-item pb-2">
-                                            <a href="#">Shop</a>
-                                        </li>
-                                        <li class="menu-item pb-2">
-                                            <a href="#">Blogs</a>
-                                        </li>
-                                        <li class="menu-item pb-2">
-                                            <a href="#">Contact</a>
-                                        </li>
-                                    </ul>
+                                <div class="col-lg-3 col-sm-6 pb-3">
+                                    <div class="footer-menu text-uppercase">
+                                        <h5 class="widget-title pb-2">Help & Info Help</h5>
+                                        <ul class="menu-list list-unstyled">
+                                            <li class="menu-item pb-2">
+                                                <a href="#">Track Your Order</a>
+                                            </li>
+                                            <li class="menu-item pb-2">
+                                                <a href="#">Returns Policies</a>
+                                            </li>
+                                            <li class="menu-item pb-2">
+                                                <a href="#">Shipping + Delivery</a>
+                                            </li>
+                                            <li class="menu-item pb-2">
+                                                <a href="#">Contact Us</a>
+                                            </li>
+                                            <li class="menu-item pb-2">
+                                                <a href="#">Faqs</a>
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-lg-3 col-sm-6 pb-3">
-                                <div class="footer-menu text-uppercase">
-                                    <h5 class="widget-title pb-2">Help & Info Help</h5>
-                                    <ul class="menu-list list-unstyled">
-                                        <li class="menu-item pb-2">
-                                            <a href="#">Track Your Order</a>
-                                        </li>
-                                        <li class="menu-item pb-2">
-                                            <a href="#">Returns Policies</a>
-                                        </li>
-                                        <li class="menu-item pb-2">
-                                            <a href="#">Shipping + Delivery</a>
-                                        </li>
-                                        <li class="menu-item pb-2">
-                                            <a href="#">Contact Us</a>
-                                        </li>
-                                        <li class="menu-item pb-2">
-                                            <a href="#">Faqs</a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="col-lg-3 col-sm-6 pb-3">
-                                <div class="footer-menu contact-item">
-                                    <h5 class="widget-title text-uppercase pb-2">Contact Us</h5>
-                                    <p>Do you have any queries or suggestions? <a href="mailto:">yourinfo@gmail.com</a>
-                                    </p>
-                                    <p>If you need support? Just give us a call. <a href="">+55 111 222 333 44</a>
-                                    </p>
+                                <div class="col-lg-3 col-sm-6 pb-3">
+                                    <div class="footer-menu contact-item">
+                                        <h5 class="widget-title text-uppercase pb-2">Contact Us</h5>
+                                        <p>Do you have any queries or suggestions? <a href="mailto:">yourinfo@gmail.com</a>
+                                        </p>
+                                        <p>If you need support? Just give us a call. <a href="">+55 111 222 333 44</a>
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <hr>
-        </footer>
-    </div>
+                <hr>
+            </footer>
+        </div>
 
 
 
 
-    <div id="footer-bottom">
-        <div class="container">
-            <div class="row d-flex flex-wrap justify-content-between">
-                <div class="col-md-4 col-sm-6">
-                    <div class="Shipping d-flex">
-                        <p>We ship with:</p>
-                        <div class="card-wrap ps-2">
-                            <img src="images/dhl.png" alt="visa">
-                            <img src="images/shippingcard.png" alt="mastercard">
+        <div id="footer-bottom">
+            <div class="container">
+                <div class="row d-flex flex-wrap justify-content-between">
+                    <div class="col-md-4 col-sm-6">
+                        <div class="Shipping d-flex">
+                            <p>We ship with:</p>
+                            <div class="card-wrap ps-2">
+                                <img src="images/dhl.png" alt="visa">
+                                <img src="images/shippingcard.png" alt="mastercard">
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-md-4 col-sm-6">
-                    <div class="payment-method d-flex">
-                        <p>Payment options:</p>
-                        <div class="card-wrap ps-2">
-                            <img src="images/visa.jpg" alt="visa">
-                            <img src="images/mastercard.jpg" alt="mastercard">
-                            <img src="images/paypal.jpg" alt="paypal">
+                    <div class="col-md-4 col-sm-6">
+                        <div class="payment-method d-flex">
+                            <p>Payment options:</p>
+                            <div class="card-wrap ps-2">
+                                <img src="images/visa.jpg" alt="visa">
+                                <img src="images/mastercard.jpg" alt="mastercard">
+                                <img src="images/paypal.jpg" alt="paypal">
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-md-4 col-sm-6">
-                    <div class="copyright">
-                        <p>? Copyright 2023 MiniStore. Design by <a href="https://templatesjungle.com/">TemplatesJungle</a> Distribution by <a href="https://themewagon.com">ThemeWagon</a>
-                        </p>
+                    <div class="col-md-4 col-sm-6">
+                        <div class="copyright">
+                            <p>? Copyright 2023 MiniStore. Design by <a href="https://templatesjungle.com/">TemplatesJungle</a> Distribution by <a href="https://themewagon.com">ThemeWagon</a>
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    <script src="js/jquery-1.11.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
-    <script type="text/javascript" src="js/bootstrap.bundle.min.js"></script>
-    <script type="text/javascript" src="js/plugins.js"></script>
-    <script type="text/javascript" src="js/script.js"></script>
-    <script>
-        var swiper = new Swiper(".product-swiper", {
-            slidesPerView: 4,
-            spaceBetween: 30,
-            pagination: {
-                el: ".swiper-pagination",
-                clickable: true,
-            },
-            breakpoints: {
-                320: {slidesPerView: 1},
-                768: {slidesPerView: 2},
-                1024: {slidesPerView: 4}
-            }
-        });
-    </script>
+        <script src="js/jquery-1.11.0.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
+        <script type="text/javascript" src="js/bootstrap.bundle.min.js"></script>
+        <script type="text/javascript" src="js/plugins.js"></script>
+        <script type="text/javascript" src="js/script.js"></script>
+        <script>
+            var swiper = new Swiper(".product-swiper", {
+                slidesPerView: 4,
+                spaceBetween: 30,
+                pagination: {
+                    el: ".swiper-pagination",
+                    clickable: true,
+                },
+                breakpoints: {
+                    320: {slidesPerView: 1},
+                    768: {slidesPerView: 2},
+                    1024: {slidesPerView: 4}
+                }
+            });
+        </script>
 
-</body>
+    </body>
 </html>
+

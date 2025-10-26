@@ -298,4 +298,60 @@ public class OrderDAO extends DBContext {
 
         return list;
     }
+    // Get all orders belonging to a specific user (buyer)
+
+    public List<Order> getOrdersByUserId(int userId) {
+        List<Order> orders = new ArrayList<>();
+        String sql = "SELECT "
+                + "o.OrderID, "
+                + "o.OrderDate, "
+                + "o.ShippingAddress, "
+                + "o.TotalAmount, "
+                + "o.Status, "
+                + "s.ShipperID, "
+                + "shipper.FullName AS ShipperName, "
+                + "shipper.Phone AS ShipperPhone "
+                + "FROM Orders o "
+                + "LEFT JOIN Sales s ON o.OrderID = s.OrderID "
+                + "LEFT JOIN Users shipper ON s.ShipperID = shipper.UserID "
+                + "WHERE o.UserID = ? "
+                + "ORDER BY o.OrderDate DESC";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                // Buyer là user hiện tại
+                Users buyer = new Users();
+                buyer.setUserId(userId);
+
+                // Optional shipper (có thể null)
+                Users shipper = null;
+                int shipperID = rs.getInt("ShipperID");
+                if (shipperID > 0) {
+                    shipper = new Users();
+                    shipper.setUserId(shipperID);
+                    shipper.setFullName(rs.getString("ShipperName"));
+                    shipper.setPhone(rs.getString("ShipperPhone"));
+                }
+
+                // Thông tin đơn hàng
+                int orderID = rs.getInt("OrderID");
+                String address = rs.getString("ShippingAddress");
+                double total = rs.getBigDecimal("TotalAmount").doubleValue();
+                String status = rs.getString("Status");
+                Timestamp date = rs.getTimestamp("OrderDate");
+
+                Order o = new Order(orderID, buyer, shipper, address, total, date.toLocalDateTime(), status);
+                orders.add(o);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return orders;
+    }
+
 }
