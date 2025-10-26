@@ -6,7 +6,6 @@ package controller;
 
 import dao.OrderDAO;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -16,6 +15,10 @@ import jakarta.servlet.http.HttpSession;
 import java.util.List;
 import model.Order;
 import model.Users;
+import dao.CategoryDAO;
+import java.util.List;
+import model.Category;
+import model.OrderDetails;
 
 /**
  * Servlet responsible for handling order-related operations.
@@ -103,6 +106,44 @@ public class OrderServlet extends HttpServlet {
             response.sendRedirect("index.jsp");
             return;
         }
+
+        String orderIdParam = request.getParameter("id");
+        if (orderIdParam != null) {
+            try {
+                int orderId = Integer.parseInt(orderIdParam);
+                OrderDAO orderDAO = new OrderDAO();
+
+                // Lấy chi tiết đơn hàng
+                Order order = orderDAO.getOrderById(orderId);
+                List<OrderDetails> details = orderDAO.getAllOrderDetailByOrderID(orderId);
+
+                // Nếu không tìm thấy đơn
+                if (order == null) {
+                    response.sendRedirect("order");
+                    return;
+                }
+
+                // Đưa dữ liệu qua JSP
+                request.setAttribute("order", order);
+                request.setAttribute("details", details);
+
+                // Lấy danh mục để hiển thị navbar
+                CategoryDAO categoryDAO = new CategoryDAO();
+                List<Category> listCategory = categoryDAO.getAllCategories();
+                request.setAttribute("listCategory", listCategory);
+
+                // Forward qua trang chi tiết
+                request.getRequestDispatcher("orderDetail.jsp").forward(request, response);
+                return; // ✅ rất quan trọng, để không chạy tiếp phần phía dưới
+            } catch (NumberFormatException e) {
+                response.sendRedirect("order");
+                return;
+            }
+        }
+
+        CategoryDAO categoryDAO = new CategoryDAO();
+        List<Category> listCategory = categoryDAO.getAllCategories();
+        request.setAttribute("listCategory", listCategory);
 
         // 4. Forward to the appropriate JSP page
         request.getRequestDispatcher(targetPage).forward(request, response);

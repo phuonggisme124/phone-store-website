@@ -290,9 +290,9 @@
                 </a>
 
                 <!-- Nút 2: Thông tin và sổ địa chỉ -->
-                <a href="profile.jsp"
+                <a href="user"
                    style="display: flex; align-items: center; background-color: #f2f3f5; color: #333; font-weight: 500;
-                   border-radius: 8px; padding: 10px 15px; text-decoration: none; margin-bottom: 25px;">
+                   border-radius: 8px; padding: 10px 15px; text-decoration: none; margin-bottom: 15px;">
                     <i class="fa fa-user" style="margin-right: 10px;"></i>
                     Infomation and address
                 </a>

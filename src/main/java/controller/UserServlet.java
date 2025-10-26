@@ -112,7 +112,6 @@ public class UserServlet extends HttpServlet {
             request.getRequestDispatcher("editProfile.jsp").forward(request, response);
 
         } else if ("updatePassword".equals(action)) {
-            // ---------- Đổi mật khẩu ----------
             String oldPass = request.getParameter("oldPassword");
             String newPass = request.getParameter("newPassword");
             String confirmPass = request.getParameter("confirmPassword");
@@ -120,19 +119,20 @@ public class UserServlet extends HttpServlet {
             if (oldPass == null || newPass == null || confirmPass == null
                     || oldPass.isEmpty() || newPass.isEmpty() || confirmPass.isEmpty()) {
                 request.setAttribute("error", "Vui lòng nhập đầy đủ thông tin!");
-            } else if (!user.getPassword().equals(oldPass)) {
+            } // ✅ Hash oldPass trước khi so sánh
+            else if (!usersDAO.hashMD5(oldPass).equals(user.getPassword())) {
                 request.setAttribute("error", "Mật khẩu hiện tại không đúng!");
             } else if (!newPass.equals(confirmPass)) {
                 request.setAttribute("error", "Mật khẩu xác nhận không trùng khớp!");
             } else {
-                usersDAO.updatePassword(user.getUserId(), newPass);
-                user.setPassword(newPass); // cập nhật lại session
+                // ✅ Hash newPass khi lưu
+                usersDAO.updatePassword(user.getUserId(), usersDAO.hashMD5(newPass));
+                user.setPassword(usersDAO.hashMD5(newPass)); // cập nhật lại session
                 session.setAttribute("user", user);
                 request.setAttribute("message", "Đổi mật khẩu thành công!");
             }
 
             request.getRequestDispatcher("changePassword.jsp").forward(request, response);
-
         } else {
             // Không có action hợp lệ
             response.sendRedirect("user?action=view");

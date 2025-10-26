@@ -8,6 +8,8 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.List" %>
 <%@ page import="model.Order" %>
+<%@ page import="model.Users" %>
+<%@page import="model.Products"%>
 
 <%
     List<Order> orders = (List<Order>) request.getAttribute("orders");
@@ -25,8 +27,10 @@
         <meta name="author" content="">
         <meta name="keywords" content="">
         <meta name="description" content="">
+        <link rel="stylesheet" type="text/css" href="css/order.css">
         <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="css/style.css">
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -39,6 +43,7 @@
         <!-- Swiper JS -->
         <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
     </head>
+
     <body>
         <header id="header" class="site-header header-scrolled position-fixed text-black bg-light">
             <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
@@ -281,72 +286,98 @@
             </nav>
         </header>
 
-        <div class="container-fluid p-4">
-            <div class="row justify-content-center">
+        <div style="display: flex; background-color: #f3f5f9; min-height: 100vh;">
 
-                <!-- Sidebar -->
-                <div style="width: 400px; background-color: #fff; padding: 20px;">
-                    <h3 style="margin-top: 100px; margin-bottom: 50px; font-size: 1.5rem;">Anh/Chị <%= user.getFullName()%></h3>
+            <!-- Sidebar -->
+            <div style="width: 322px; background-color: #fff; padding: 20px;">
+                <h3 style="margin-top: 100px; margin-bottom: 50px; font-size: 1.5rem;">Anh/Chị <%= user.getFullName()%></h3>
 
-                    <!-- Nút 1: Đơn hàng đã mua -->
-                    <a href="order" class="btn btn-success active-tab"
-                       style="display: flex; align-items: center; background-color: #f2f3f5; color: #333; font-weight: 500;
-                       border-radius: 8px; padding: 10px 15px; text-decoration: none; margin-bottom: 15px;">
-                        <i class="fa fa-shopping-bag" style="margin-right: 10px;"></i>
-                        Đơn hàng đã mua
-                    </a>
+                <!-- Nút 1: Đơn hàng đã mua -->
+                <a href="order"
+                   style="display: flex; align-items: center; background-color: #f2f3f5; color: #333; font-weight: 500;
+                   border-radius: 8px; padding: 10px 15px; text-decoration: none; margin-bottom: 15px;">
+                    <i class="fa fa-shopping-bag" style="margin-right: 10px;"></i>
+                    My orders
+                </a>
 
-                    <!-- Nút 2: Thông tin và sổ địa chỉ -->
-                    <a href="profile.jsp"
-                       style="display: flex; align-items: center; background-color: #f2f3f5; color: #333; font-weight: 500;
-                       border-radius: 8px; padding: 10px 15px; text-decoration: none; margin-bottom: 25px;">
-                        <i class="fa fa-user" style="margin-right: 10px;"></i>
-                        Thông tin và sổ địa chỉ
-                    </a>
+                <!-- Nút 2: Thông tin và sổ địa chỉ -->
+                <a href="user"
+                   style="display: flex; align-items: center; background-color: #f2f3f5; color: #333; font-weight: 500;
+                   border-radius: 8px; padding: 10px 15px; text-decoration: none; margin-bottom: 15px;">
+                    <i class="fa fa-user" style="margin-right: 10px;"></i>
+                    Infomation and address
+                </a>
 
-                    <!-- Nút Đăng xuất -->
-                    <form action="logout" method="post">
-                        <button type="submit"
-                                style="background-color: #ff4d4f; color: white; border: none; width: 100%; padding: 10px;
-                                border-radius: 8px; font-weight: 500; cursor: pointer;">
-                            Đăng Xuất
-                        </button>
-                    </form>
-                </div>
+                <!-- Nút 3: Change password -->
+                <a href="user?action=changePassword"
+                   style="display: flex; align-items: center; background-color: #f2f3f5; color: #333; font-weight: 500;
+                   border-radius: 8px; padding: 10px 15px; text-decoration: none; margin-bottom: 25px;">
+                    <i class="fa fa-user" style="margin-right: 10px;"></i>
+                    Change password
+                </a>
 
-                <!-- Nội dung chính -->
-                <div class="col-md-8 content" style="margin-top: 100px">
-                    <h3 class="fw-bold mb-4">Lịch sử đơn hàng</h3>
+                <!-- Nút Đăng xuất -->
+                <form action="logout" method="post">
+                    <button type="submit"
+                            style="background-color: #ff4d4f; color: white; border: none; width: 100%; padding: 10px;
+                            border-radius: 8px; font-weight: 500; cursor: pointer;">
+                        Đăng Xuất
+                    </button>
+                </form>
+            </div>
 
-                    <% if (orders == null || orders.isEmpty()) { %>
-                    <div class="alert alert-secondary text-center">
-                        Bạn chưa có đơn hàng nào.
+            <!-- Nội dung chính -->
+            <div class="col-md-8 content" style="margin-top: 100px">
+                <div class="container mb-5">
+
+                    <!-- Order Tabs -->
+                    <div class="order-tabs-wrapper">
+                        <div class="order-tabs">
+                            <a href="#" class="tab-link active">Tất cả</a>
+                            <a href="#" class="tab-link">Đang giao</a>
+                            <a href="#" class="tab-link">Đã giao</a>
+                            <a href="#" class="tab-link">Đã hủy</a>
+                        </div>
                     </div>
-                    <% } else { %>
-                    <% for (Order o : orders) {%>
-                    <div class="order-card">
-                        <div class="row align-items-center">
-                            <div class="col-md-8">
-                                <h5 class="mb-1">Mã đơn hàng: #<%= o.getOrderID()%></h5>
-                                <p class="mb-1 text-muted">Ngày đặt: <%= o.getOrderDate()%></p>
-                                <p class="mb-1 text-muted">Trạng thái: 
-                                    <span class="fw-semibold <%= o.getStatus().equalsIgnoreCase("Completed") ? "text-success" : "text-warning"%>">
-                                        <%= o.getStatus()%>
-                                    </span>
-                                </p>
-                            </div>
-                            <div class="col-md-4 text-end">
-                                <p class="fw-bold mb-2">Tổng tiền: <%= String.format("%,.0f", o.getTotalAmount())%>₫</p>
-                                <a href="orderDetail?id=<%= o.getOrderID()%>" class="btn btn-outline-primary btn-sm">Xem chi tiết</a>
+
+                    <div class="row justify-content-center">
+                        <div class="col-md-9 p-4" style="background-color: transparent; box-shadow: none; border: none;">
+                            <div class="card-body">
+                                <h3 class="fw-bold mb-4">Order History</h3>
+
+                                <% if (orders == null || orders.isEmpty()) { %>
+                                <div class="alert alert-secondary text-center">
+                                    Bạn chưa có đơn hàng nào.
+                                </div>
+                                <% } else { %>
+                                <% for (Order o : orders) {%>
+                                <div class="order-card">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-8">
+                                            <h5 class="mb-1">Mã đơn hàng: #<%= o.getOrderID()%></h5>
+                                            <p class="mb-1 text-muted">Ngày đặt: <%= o.getOrderDate()%></p>
+                                            <p class="mb-1 text-muted">Trạng thái: 
+                                                <span class="fw-semibold <%= o.getStatus().equalsIgnoreCase("Completed") ? "text-success" : "text-warning"%>">
+                                                    <%= o.getStatus()%>
+                                                </span>
+                                            </p>
+                                        </div>
+                                        <div class="col-md-4 text-end">
+                                            <p class="fw-bold mb-2">Tổng tiền: <%= String.format("%,.0f", o.getTotalAmount())%>₫</p>
+                                            <a href="order?id=<%= o.getOrderID()%>" class="btn btn-outline-primary btn-sm">Xem chi tiết</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <% } %>
+                                <% }%>
+
                             </div>
                         </div>
                     </div>
-                    <% } %>
-                    <% }%>
-
                 </div>
             </div>
         </div>
+
 
         <div class="container padding-xlarge">
             <footer id="footer" class="overflow-hidden">

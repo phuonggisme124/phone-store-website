@@ -354,4 +354,34 @@ public class OrderDAO extends DBContext {
         return orders;
     }
 
+    public Order getOrderById(int orderId) {
+        String sql = "SELECT o.OrderID, o.UserID, o.PaymentMethod, o.ShippingAddress, o.TotalAmount, "
+                + "o.Status, o.OrderDate, o.IsInstalment, u.FullName AS BuyerName "
+                + "FROM [Order] o "
+                + "JOIN Users u ON o.UserID = u.UserID "
+                + "WHERE o.OrderID = ?";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, orderId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                Users buyer = new Users();
+                buyer.setUserId(rs.getInt("UserID"));
+                buyer.setFullName(rs.getString("BuyerName"));
+
+                return new Order(
+                        rs.getInt("OrderID"),
+                        buyer,
+                        rs.getString("ShippingAddress"),
+                        rs.getDouble("TotalAmount"),
+                        rs.getString("Status"),
+                        rs.getTimestamp("OrderDate").toLocalDateTime()
+                );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 }

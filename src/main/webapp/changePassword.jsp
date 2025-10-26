@@ -306,9 +306,9 @@
                 </a>
 
                 <!-- Nút 2: Thông tin và sổ địa chỉ -->
-                <a href="profile.jsp"
+                <a href="user"
                    style="display: flex; align-items: center; background-color: #f2f3f5; color: #333; font-weight: 500;
-                   border-radius: 8px; padding: 10px 15px; text-decoration: none; margin-bottom: 25px;">
+                   border-radius: 8px; padding: 10px 15px; text-decoration: none; margin-bottom: 15px;">
                     <i class="fa fa-user" style="margin-right: 10px;"></i>
                     Infomation and address
                 </a>
@@ -345,8 +345,8 @@
 
                             <div class="col-md-8" style="margin-left: 120px;">
                                 <div class="mx-auto">
-                                    <form id="changePasswordForm" action="UserServlet" method="post">
-                                        <input type="hidden" name="action" value="changePassword">
+                                    <form id="changePasswordForm" action="user" method="post">
+                                        <input type="hidden" name="action" value="updatePassword">
 
                                         <!-- Mật khẩu cũ -->
                                         <div class="mb-2">

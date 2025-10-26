@@ -420,4 +420,21 @@ public class UsersDAO extends DBContext {
             e.printStackTrace();
         }
     }
+
+    public boolean checkOldPassword(int userId, String oldPassword) {
+        String sql = "SELECT Password FROM Users WHERE UserID = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                String currentHash = rs.getString("Password");
+                String inputHash = hashMD5(oldPassword);
+                return currentHash.equals(inputHash);
+            }
+        } catch (Exception e) {
+            System.err.println("Error checking old password: " + e.getMessage());
+        }
+        return false;
+    }
+
 }
