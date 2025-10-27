@@ -274,20 +274,58 @@
             </nav>
         </header>
 
-        <!--  Banner Section -->
-        <section class="py-5 bg-light border-bottom mb-5">
-            <div class="container text-center">
-                <h1 class="fw-bold text-uppercase" style="margin-top: 50px;">Thông tin cá nhân</h1>
-                <p class="text-muted">Quản lý thông tin tài khoản của bạn tại Phone Store</p>
-            </div>
-        </section>
+        <div style="display: flex; background-color: #f3f5f9; min-height: 100vh;">
+            <!-- Sidebar -->
+            <div style="width: 400px; background-color: #fff; padding: 20px;">
+                <h3 style="margin-top: 100px; margin-bottom: 50px; font-size: 1.5rem;">Anh/Chị <%= user.getFullName()%></h3>
 
-        <!-- Content -->
-        <div class="container mb-5 mt-5">
-            <div class="row justify-content-center">
-                <div class="col-lg-8">
-                    <div class="card shadow-lg border-0 rounded-4">
+                <!-- Nút 1: Đơn hàng đã mua -->
+                <a href="order"
+                   style="display: flex; align-items: center; background-color: #f2f3f5; color: #333; font-weight: 500;
+                   border-radius: 8px; padding: 10px 15px; text-decoration: none; margin-bottom: 15px;">
+                    <i class="fa fa-shopping-bag" style="margin-right: 10px;"></i>
+                    My orders
+                </a>
+
+                <!-- Nút 2: Thông tin và sổ địa chỉ -->
+                <a href="user"
+                   style="display: flex; align-items: center; background-color: #f2f3f5; color: #333; font-weight: 500;
+                   border-radius: 8px; padding: 10px 15px; text-decoration: none; margin-bottom: 15px;">
+                    <i class="fa fa-user" style="margin-right: 10px;"></i>
+                    Infomation and address
+                </a>
+
+                <!-- Nút 3: Change password -->
+                <a href="changePassword.jsp"
+                   style="display: flex; align-items: center; background-color: #f2f3f5; color: #333; font-weight: 500;
+                   border-radius: 8px; padding: 10px 15px; text-decoration: none; margin-bottom: 25px;">
+                    <i class="fa fa-user" style="margin-right: 10px;"></i>
+                    Change password
+                </a>
+
+                <!-- Nút Đăng xuất -->
+                <form action="logout" method="post">
+                    <button type="submit"
+                            style="background-color: #ff4d4f; color: white; border: none; width: 100%; padding: 10px;
+                            border-radius: 8px; font-weight: 500; cursor: pointer;">
+                        Đăng Xuất
+                    </button>
+                </form>
+            </div>
+
+            <!-- Content -->
+            <div class="container mb-5">
+                <div class="row justify-content-center">
+                    <div class="col-md-9 p-4" style="background-color: transparent; box-shadow: none; border: none;">
                         <div class="card-body p-5">
+
+                            <!--  Banner Section -->
+                            <section class="py-5">
+                                <div class="container text-center">
+                                    <h1 class="fw-bold text-uppercase" style="margin-top: 50px;">Thông tin cá nhân</h1>
+                                    <p class="text-muted">Quản lý thông tin tài khoản của bạn tại Phone Store</p>
+                                </div>
+                            </section>
 
                             <div class="row">
                                 <!-- Avatar + Tên -->
@@ -323,11 +361,6 @@
                                             <label for="address" class="form-label">Địa chỉ</label>
                                             <input type="text" class="form-control" id="address" name="address"
                                                    value="<%= user.getAddress() != null ? user.getAddress() : ""%>">
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <label for="password" class="form-label">Mật khẩu mới</label>
-                                            <input type="password" class="form-control" id="password" name="password">
                                         </div>
 
                                         <%-- Thông báo sau khi cập nhật --%>

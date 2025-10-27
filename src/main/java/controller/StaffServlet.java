@@ -1,7 +1,15 @@
 package controller;
 
 import com.google.gson.Gson;
-import dao.*;
+import dao.CategoryDAO;
+import dao.OrderDAO;
+import dao.ProductDAO;
+import dao.ReviewDAO;
+import dao.SalesDAO;
+import dao.SupplierDAO;
+import dao.UsersDAO;
+import dao.VariantsDAO;
+
 import java.io.IOException;
 import java.util.List;
 import jakarta.servlet.ServletException;
@@ -10,7 +18,13 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import model.*;
+import model.Category;
+import model.Order;
+import model.Products;
+import model.Review;
+import model.Suppliers;
+import model.Users;
+import model.Variants;
 
 @WebServlet(name = "StaffServlet", urlPatterns = {"/staff"})
 public class StaffServlet extends HttpServlet {
@@ -79,7 +93,7 @@ public class StaffServlet extends HttpServlet {
             try {
                 int orderID = Integer.parseInt(request.getParameter("orderID"));
                 int shipperID = Integer.parseInt(request.getParameter("shipperID"));
-                
+
                 sdao.assignShipperForOrder(orderID, currentUser.getUserId(), shipperID);
                 odao.updateOrderStatus(orderID, "In Transit");
             } catch (NumberFormatException e) {
@@ -186,7 +200,7 @@ public class StaffServlet extends HttpServlet {
             throws ServletException, IOException {
         String action = request.getParameter("action");
         ReviewDAO reviewDAO = new ReviewDAO();
-        
+
         if ("replyReview".equals(action)) {
             try {
                 int reviewID = Integer.parseInt(request.getParameter("reviewID"));
