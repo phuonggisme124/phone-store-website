@@ -31,6 +31,7 @@ public class ProductDAO extends DBContext {
     public List<Products> getAllProduct() {
         String sql = "Select * from Products";
         List<Products> list = new ArrayList<>();
+        VariantsDAO vdao = new VariantsDAO();
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
@@ -46,8 +47,10 @@ public class ProductDAO extends DBContext {
                 LocalDateTime createdAt = (createdAtTimestamp != null)
                         ? createdAtTimestamp.toLocalDateTime()
                         : null;
-
-                list.add(new Products(id, cateID, supplierID, name, brand, warrantyPeriod, createdAt));
+                List<Variants> variants = vdao.getAllVariantByProductID(id);
+                Products p =  new Products(id, cateID, supplierID, name, brand, warrantyPeriod, createdAt);
+                p.setVariants(variants);
+                list.add(p);
             }
 
         } catch (Exception e) {

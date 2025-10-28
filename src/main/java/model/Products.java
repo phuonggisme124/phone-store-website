@@ -90,7 +90,8 @@ public class Products {
     public void setVariants(List<Variants> variants) {
         this.variants = variants;
     }
-
+    
+  
     /**
      * Minimal constructor for required fields only.
      */

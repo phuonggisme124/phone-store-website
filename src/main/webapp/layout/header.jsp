@@ -36,7 +36,7 @@
                 flex-grow: 1;
 
 
-                max-width: 150px;
+                max-width: 300px;
 
                 margin: 0 20px;
             }
