@@ -1,5 +1,7 @@
+<%@page import="java.util.HashMap"%>
+<%@page import="java.util.Map"%>
+<%@page import="model.Variants"%>
 <%@page import="dao.CategoryDAO"%>
-<!-- ===================== HEADER.JSP ===================== -->
 <%@page import="model.Category"%>
 <%@page import="model.Products"%>
 <%@page import="java.util.List"%>
@@ -7,7 +9,7 @@
 <html>
     <head>
         <title>Ministore</title>
-        <link rel="icon" type="image/x-icon" href="images/favicon.jpg"
+        <link rel="icon" type="image/x-icon" href="images/favicon.jpg">
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -25,11 +27,108 @@
         <script src="js/modernizr.js"></script>
         <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
         <script src="js/plugins.js"></script>
-        <script src="js/script.js"></script>    
+        <script src="js/script.js"></script> 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+        <style>
+            #headerSearchContainer {
+                position: relative;
+                flex-grow: 1;
+
+
+                max-width: 150px;
+
+                margin: 0 20px;
+            }
+
+            #headerSearchInput {
+                width: 100%;
+                padding: 10px 45px 10px 20px;
+                border: 1px solid #ddd;
+                border-radius: 50px;
+                font-size: 14px;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                outline: none;
+            }
+
+            #headerSearchInput:focus {
+                box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+                border-color: #667eea;
+            }
+
+            .header-search-icon-btn {
+                position: absolute;
+                right: 5px;
+                top: 50%;
+                transform: translateY(-50%);
+                background: #667eea;
+                border: none;
+                border-radius: 50%;
+                width: 32px;
+                height: 32px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: all 0.3s;
+            }
+
+            .header-search-icon-btn:hover {
+                background: #764ba2;
+            }
+
+            .header-search-icon-btn svg {
+                width: 16px;
+                height: 16px;
+                fill: white;
+            }
+
+            #headerSearchResults {
+                position: absolute;
+                top: calc(100% + 5px);
+                left: 0;
+                width: 100%;
+                background-color: #fff;
+                border-radius: 15px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+                z-index: 2000;
+                max-height: 400px;
+                overflow-y: auto;
+                display: none;
+            }
+
+            #headerSearchResults.show {
+                display: block;
+            }
+            .suggestion-item {
+                padding: 12px 15px;
+                cursor: pointer;
+                display: none;
+                align-items: center;
+                border-bottom: 1px solid #f0f0f0;
+                transition: all 0.2s;
+            }
+            .suggestion-item:hover {
+                background-color: #f8f9fa;
+                transform: translateX(5px);
+            }
+            .suggestion-item:last-child {
+                border-bottom: none;
+            }
+            .suggestion-item img {
+                border-radius: 8px;
+                margin-right: 12px;
+            }
+            .no-results {
+                padding: 20px;
+                text-align: center;
+                color: #999;
+            }
+        </style>
     </head>
 
     <body data-bs-spy="scroll" data-bs-target="#navbar" data-bs-root-margin="0px 0px -40%" data-bs-smooth-scroll="true" tabindex="0">
+
         <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
     <symbol id="search" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
         <title>Search</title>
@@ -65,19 +164,20 @@
         <path d="M5.338 1.59a61.44 61.44 0 0 0-2.837.856.481.481 0 0 0-.328.39c-.554 4.157.726 7.19 2.253 9.188a10.725 10.725 0 0 0 2.287 2.233c.346.244.652.42.893.533.12.057.218.095.293.118a.55.55 0 0 0 .101.025.615.615 0 0 0 .1-.025c.076-.023.174-.061.294-.118.24-.113.547-.29.893-.533a10.726 10.726 0 0 0 2.287-2.233c1.527-1.997 2.807-5.031 2.253-9.188a.48.48 0 0 0-.328-.39c-.651-.213-1.75-.56-2.837-.855C9.552 1.29 8.531 1.067 8 1.067c-.53 0-1.552.223-2.662.524zM5.072.56C6.157.265 7.31 0 8 0s1.843.265 2.928.56c1.11.3 2.229.655 2.887.87a1.54 1.54 0 0 1 1.044 1.262c.596 4.477-.787 7.795-2.465 9.99a11.775 11.775 0 0 1-2.517 2.453 7.159 7.159 0 0 1-1.048.625c-.28.132-.581.24-.829.24s-.548-.108-.829-.24a7.158 7.158 0 0 1-1.048-.625 11.777 11.777 0 0 1-2.517-2.453C1.928 10.487.545 7.169 1.141 2.692A1.54 1.54 0 0 1 2.185 1.43 62.456 62.456 0 0 1 5.072.56z" />
         <path d="M8 4.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V9a.5.5 0 0 1-1 0V7.5H6a.5.5 0 0 1 0-1h1.5V5a.5.5 0 0 1 .5-.5z" />
     </symbol>
-    </svg>  
-
+    </svg> 
     <header id="header" class="site-header header-scrolled position-fixed text-black bg-light">
         <nav id="header-nav" class="navbar navbar-expand-lg px-3 mb-3">
             <div class="container-fluid">
                 <a class="navbar-brand" href="homepage">
                     <img src="images/main-logo.png" class="logo">
                 </a>
+
                 <button class="navbar-toggler d-flex d-lg-none order-3 p-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#bdNavbar" aria-controls="bdNavbar" aria-expanded="false" aria-label="Toggle navigation">
                     <svg class="navbar-icon">
                     <use xlink:href="#navbar-icon"></use>
                     </svg>
                 </button>
+
                 <div class="offcanvas offcanvas-end" tabindex="-1" id="bdNavbar" aria-labelledby="bdNavbarOffcanvasLabel">
                     <div class="offcanvas-header px-4 pb-0">
                         <a class="navbar-brand" href="homepage">
@@ -132,7 +232,65 @@
                                     %>
                                 </ul>
                             </li>
-                            
+                            <li class="nav-item">
+                                <%-- Ki?m tra n?u action hi?n t?i là "viewpromotion" thì thêm class "active" --%>
+                                <a class="nav-link me-4 <%= ("viewpromotion".equals(currentAction)) ? "active" : ""%>"
+                                   href="homepage?action=viewpromotion">View Hot Promotions</a> <%-- Link ??n servlet v?i action=viewpromotion --%>
+                            </li>
+                            <li class="nav-item flex-grow-1"> 
+                                <div id="headerSearchContainer">
+                                    <%
+                                        List<Products> header_productList = (List<Products>) application.getAttribute("globalProductList");
+                                        List<Variants> header_variantsList = (List<Variants>) application.getAttribute("globalVariantsList");
+
+                                        Map<Integer, String> header_productNameMap = new HashMap<>();
+                                        Map<Integer, Integer> header_productCategoryMap = new HashMap<>();
+
+                                        if (header_productList != null) {
+                                            for (Products p : header_productList) {
+                                                header_productNameMap.put(p.getProductID(), p.getName());
+                                                header_productCategoryMap.put(p.getProductID(), p.getCategoryID());
+                                            }
+                                        }
+                                    %>
+
+                                    <input type="text" id="headerSearchInput" placeholder="Search for products..." autocomplete="off">
+                                    <button class="header-search-icon-btn" type="button">
+                                        <svg class="search"><use xlink:href="#search"></use></svg>
+                                    </button>
+
+                                    <div id="headerSearchResults">
+                                        <%
+                                            if (header_variantsList != null && !header_productNameMap.isEmpty()) {
+                                                for (Variants v : header_variantsList) {
+                                                    String productName = header_productNameMap.get(v.getProductID());
+                                                    Integer categoryID = header_productCategoryMap.get(v.getProductID());
+                                                    if (productName != null && categoryID != null) {
+                                                        String image = (v.getImageUrl() != null) ? v.getImageUrl() : "";
+                                                        String color = (v.getColor() != null) ? v.getColor() : "N/A";
+                                                        String storage = (v.getStorage() != null) ? v.getStorage() : "N/A";
+                                        %>
+                                        <div class="suggestion-item" 
+                                             data-variantid="<%= v.getVariantID()%>"
+                                             data-pid="<%= v.getProductID()%>"
+                                             data-cid="<%= categoryID%>"
+                                             data-color="<%= color%>"
+                                             data-storage="<%= storage%>"
+                                             data-productname="<%= productName%>">
+                                            <img src="images/<%= image%>" width="50" height="50" alt="<%= productName%>">
+                                            <div>
+                                                <strong><%= productName%></strong><br>
+                                                <small><%= storage%> - <%= color%></small>
+                                            </div>
+                                        </div>
+                                        <%
+                                                    }
+                                                }
+                                            }
+                                        %>
+                                    </div>
+                                </div>
+                            </li>
                             <div class="user-items ps-5">
                                 <ul class="d-flex justify-content-end list-unstyled align-items-center">
                                     <%
@@ -178,3 +336,93 @@
             </div>
         </nav>
     </header>
+
+    <form id="productSearchForm" action="product" method="GET" style="display:none;">
+        <input type="hidden" name="action" value="selectStorage">
+        <input type="hidden" name="pID" id="formPID">
+        <input type="hidden" name="cID" id="formCID">
+        <input type="hidden" name="storage" id="formStorage">
+        <input type="hidden" name="color" id="formColor">
+    </form>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const headerSearchInput = document.getElementById('headerSearchInput');
+            const headerSearchResults = document.getElementById('headerSearchResults');
+            const headerSearchContainer = document.getElementById('headerSearchContainer');
+            const headerAllSuggestionItems = headerSearchResults.querySelectorAll('.suggestion-item');
+
+            // Hi?n th? g?i ý khi gõ
+            headerSearchInput.addEventListener('keyup', function () {
+                const query = headerSearchInput.value.toLowerCase().trim();
+                let hasResults = false;
+
+                if (query.length > 0) {
+                    headerAllSuggestionItems.forEach(item => {
+                        const productName = item.dataset.productname.toLowerCase();
+                        const itemText = item.textContent.toLowerCase();
+
+                        if (productName.includes(query) || itemText.includes(query)) {
+                            item.style.display = 'flex';
+                            hasResults = true;
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+
+                    let noResultDiv = headerSearchResults.querySelector('.no-results');
+                    if (hasResults) {
+                        if (noResultDiv)
+                            noResultDiv.style.display = 'none';
+                    } else {
+                        if (!noResultDiv) {
+                            noResultDiv = document.createElement('div');
+                            noResultDiv.className = 'no-results';
+                            headerSearchResults.appendChild(noResultDiv);
+                        }
+                        noResultDiv.textContent = 'No products found';
+                        noResultDiv.style.display = 'block';
+                    }
+                    headerSearchResults.classList.add('show');
+                } else {
+                    headerSearchResults.classList.remove('show');
+                    headerAllSuggestionItems.forEach(item => {
+                        item.style.display = 'none';
+                    });
+                }
+            });
+
+            // Click vào suggestion
+            headerAllSuggestionItems.forEach(item => {
+                item.addEventListener('click', function () {
+                    document.getElementById('formPID').value = this.dataset.pid;
+                    document.getElementById('formCID').value = this.dataset.cid;
+                    document.getElementById('formStorage').value = this.dataset.storage;
+                    document.getElementById('formColor').value = this.dataset.color;
+                    document.getElementById('productSearchForm').submit();
+                });
+            });
+
+            // Enter ?? ch?n suggestion ??u tiên
+            headerSearchInput.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const firstVisible = Array.from(headerAllSuggestionItems).find(
+                            item => item.style.display === 'flex'
+                    );
+                    if (firstVisible)
+                        firstVisible.click();
+                }
+            });
+
+            // Click outside ?? ?óng results
+            document.addEventListener('click', function (e) {
+                if (headerSearchContainer && !headerSearchContainer.contains(e.target)) {
+                    headerSearchResults.classList.remove('show');
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>

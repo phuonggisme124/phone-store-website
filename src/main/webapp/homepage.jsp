@@ -9,7 +9,7 @@
 <%@page import="java.util.List"%>
 <%@page import="java.util.Map" %>
 <%@page import="java.util.HashMap" %>
-
+<link rel="stylesheet" type="text/css" href="css/home.css">
 <%@ include file="layout/header.jsp" %>
 
 <style>
@@ -126,7 +126,22 @@
 </style>
 
 <html>
-<section id="searchSection">
+
+
+<!-- Video Background -->
+    <section id="billboard">
+        <video autoplay muted loop playsinline>
+            <source src="<%= request.getContextPath()%>/video/demo.webm" type="video/webm">
+        </video>
+
+        <div class="overlay-content">
+            <h2>NEW ARRIVAL</h2>
+            <h1>iPhone 17</h1>
+            <a href="product?action=category&cID=1" class="btn-discover">Discover Now</a>
+        </div>
+    </section>
+    
+    <section id="searchSection">
     <div class="container">
         <div class="row">
             <div class="col-12 text-center mb-3">
@@ -312,58 +327,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 </script>
-
-<section style="background-color: white" id="billboard" class="position-relative overflow-hidden bg-light-blue">
-    <div class="swiper main-swiper">
-        <div class="swiper-wrapper">
-            <div class="swiper-slide">
-                <div class="container">
-                    <div class="row d-flex align-items-center">
-                        <div class="col-md-6">
-                            <div class="banner-content">
-                                <h1 class="display-2 text-uppercase text-dark pb-5">Your Products Are Great.</h1>
-                                <a href="shop.html" class="btn btn-medium btn-dark text-uppercase btn-rounded-none">Shop Product</a>
-                            </div>
-                        </div>
-                        <div class="col-md-5">
-                            <div class="image-holder">
-                                <img src="images/banner-image.jpg" alt="banner">
-
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="swiper-slide">
-                <div class="container">
-                    <div class="row d-flex flex-wrap align-items-center">
-                        <div class="col-md-6">
-                            <div class="banner-content">
-                                <h1 class="display-2 text-uppercase text-dark pb-5">Technology Hack You Won't Get</h1>
-                                <a href="shop.html" class="btn btn-medium btn-dark text-uppercase btn-rounded-none">Shop Product</a>
-                            </div>
-                        </div>
-                        <div class="col-md-5">
-                            <div class="image-holder">
-                                <img src="images/banner-image.png" alt="banner">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="swiper-icon swiper-arrow swiper-arrow-prev">
-        <svg class="chevron-left">
-            <use xlink:href="#chevron-left" />
-        </svg>
-    </div>
-    <div class="swiper-icon swiper-arrow swiper-arrow-next">
-        <svg class="chevron-right">
-            <use xlink:href="#chevron-right" />
-        </svg>
-    </div>
-</section>
 
 <section id="company-services" class="padding-large">
     <div class="container">

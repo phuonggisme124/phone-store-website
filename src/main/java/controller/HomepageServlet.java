@@ -43,14 +43,33 @@ public class HomepageServlet extends HttpServlet {
                 // ====== HIỂN THỊ TRANG CHỦ ======
                 List<Products> productList = pdao.getNewestProduct();
                 List<Products> productList1 = pdao.getAllProduct();
-
+ 
                 List<Variants> variantsList = vdao.getAllVariant();
-
+                List<Promotions> promotionsList = pmtdao.getAllPromotion(); 
                 request.setAttribute("productList", productList);
                 request.setAttribute("productList1", productList1);
+                request.setAttribute("listProduct", productList1); //của thịnh
                 request.setAttribute("variantsList", variantsList);
+                request.setAttribute("listVariant", variantsList); // của thịnh
+                request.setAttribute("promotionsList", promotionsList); //của thịnh
 
                 request.getRequestDispatcher("homepage.jsp").forward(request, response);
+
+            }else if ("viewpromotion".equals(action)) {
+                // ====== HIỂN THỊ TRANG CHỦ ======
+                List<Products> productList = pdao.getNewestProduct();
+                List<Products> productList1 = pdao.getAllProduct();
+ 
+                List<Variants> variantsList = vdao.getAllVariant();
+                List<Promotions> promotionsList = pmtdao.getAllPromotion(); 
+                request.setAttribute("productList", productList);
+                request.setAttribute("productList1", productList1);
+                request.setAttribute("listProduct", productList1); //của thịnh
+                request.setAttribute("variantsList", variantsList);
+                request.setAttribute("listVariant", variantsList); // của thịnh
+                request.setAttribute("promotionsList", promotionsList); //của thịnh
+
+                request.getRequestDispatcher("customer_view_promotion.jsp").forward(request, response);
 
             } else {
                 // ====== ACTION KHÔNG HỢP LỆ → QUAY VỀ TRANG CHỦ ======
