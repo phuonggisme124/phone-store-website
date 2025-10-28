@@ -231,7 +231,6 @@ public class ReviewDAO extends DBContext {
 
     }
 
-
     public int getTotalReview(List<Variants> listVariantRating, List<Review> listReview) {
 
         int count = 0;
@@ -406,4 +405,106 @@ public class ReviewDAO extends DBContext {
         }
         return list;
     }
+
+    public List<Review> getAllReviewByProductName(String productName) {
+        UsersDAO udao = new UsersDAO();
+        VariantsDAO vdao = new VariantsDAO();
+        String sql = "Select * from Reviews";
+        List<Review> list = new ArrayList<>();
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                int rID = rs.getInt("ReviewID");
+                int uID = rs.getInt("UserID");
+                Users user = udao.getUserByID(uID);
+                int variantID = rs.getInt("VariantID");
+                Variants variant = vdao.getVariantByID(variantID);
+                int rating = rs.getInt("Rating");
+                String comment = rs.getString("Comment");
+
+                Timestamp reviewDateTimestamp = rs.getTimestamp("ReviewDate");
+                LocalDateTime reviewDate = (reviewDateTimestamp != null)
+                        ? reviewDateTimestamp.toLocalDateTime()
+                        : null;
+                String image = rs.getString("Image");
+                String reply = rs.getString("Reply");
+
+                list.add(new Review(rID, user, variant, rating, comment, reviewDate, image, reply));
+            }
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        return list;
+    }
+
+    public List<Review> getAllReviewByListVariant(List<Variants> listVariant) {
+
+        List<Review> listReview = new ArrayList<>();
+        List<Review> listAllReview = getAllReview();
+
+        for (Variants v : listVariant) {
+            for (Review r : listAllReview) {
+                if (v.getVariantID() == r.getVariant().getVariantID()) {
+                    listReview.add(r);
+                }
+            }
+        }
+
+        return listReview;
+    }
+
+    public List<Review> getAllReviewByListVariantAndRating(List<Variants> listVariant, int rating) {
+        List<Review> listReview = new ArrayList<>();
+        List<Review> listAllReview = getAllReview();
+
+        for (Variants v : listVariant) {
+            for (Review r : listAllReview) {
+                if (v.getVariantID() == r.getVariant().getVariantID() && r.getRating() == rating) {
+                    listReview.add(r);
+                }
+            }
+        }
+
+        return listReview;
+    }
+
+    public List<Review> getAllReviewByRating(int ratingFilter) {
+        UsersDAO udao = new UsersDAO();
+        VariantsDAO vdao = new VariantsDAO();
+        String sql = "Select * from Reviews Where Rating = ?";
+        List<Review> list = new ArrayList<>();
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, ratingFilter);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                int rID = rs.getInt("ReviewID");
+                int uID = rs.getInt("UserID");
+                Users user = udao.getUserByID(uID);
+                int variantID = rs.getInt("VariantID");
+                Variants variant = vdao.getVariantByID(variantID);
+                int rating = rs.getInt("Rating");
+                String comment = rs.getString("Comment");
+
+                Timestamp reviewDateTimestamp = rs.getTimestamp("ReviewDate");
+                LocalDateTime reviewDate = (reviewDateTimestamp != null)
+                        ? reviewDateTimestamp.toLocalDateTime()
+                        : null;
+                String image = rs.getString("Image");
+                String reply = rs.getString("Reply");
+
+                list.add(new Review(rID, user, variant, rating, comment, reviewDate, image, reply));
+            }
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        return list;
+    }
+
+    
 }

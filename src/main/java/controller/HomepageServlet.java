@@ -25,14 +25,8 @@ public class HomepageServlet extends HttpServlet {
             throws ServletException, IOException {
 
         // ====== KIỂM TRA ROLE ======
-        HttpSession session = request.getSession();
-        Users currentUser = (Users) session.getAttribute("user");
-
-        if (currentUser == null || currentUser.getRole() == null || currentUser.getRole() != 1) {
-            response.sendRedirect("login");
-            return;
-        }
-
+//        HttpSession session = request.getSession();
+//        Users currentUser = (Users) session.getAttribute("user");
         // ====== NHẬN ACTION ======
         String action = request.getParameter("action");
         if (action == null || action.trim().isEmpty()) {
@@ -49,25 +43,33 @@ public class HomepageServlet extends HttpServlet {
                 // ====== HIỂN THỊ TRANG CHỦ ======
                 List<Products> productList = pdao.getNewestProduct();
                 List<Products> productList1 = pdao.getAllProduct();
-                List<Category> listCategory = pdao.getAllCategory();
+ 
                 List<Variants> variantsList = vdao.getAllVariant();
-
+                List<Promotions> promotionsList = pmtdao.getAllPromotion(); 
                 request.setAttribute("productList", productList);
                 request.setAttribute("productList1", productList1);
-                request.setAttribute("listCategory", listCategory);
+                request.setAttribute("listProduct", productList1); //của thịnh
                 request.setAttribute("variantsList", variantsList);
+                request.setAttribute("listVariant", variantsList); // của thịnh
+                request.setAttribute("promotionsList", promotionsList); //của thịnh
 
                 request.getRequestDispatcher("homepage.jsp").forward(request, response);
 
-            } else if ("viewpromotion".equals(action)) {
-                // ====== HIỂN THỊ KHUYẾN MÃI ======
-                List<Products> listProducts = pdao.getAllProduct();
-                List<Promotions> listPromotions = pmtdao.getAllPromotion();
+            }else if ("viewpromotion".equals(action)) {
+                // ====== HIỂN THỊ TRANG CHỦ ======
+                List<Products> productList = pdao.getNewestProduct();
+                List<Products> productList1 = pdao.getAllProduct();
+ 
+                List<Variants> variantsList = vdao.getAllVariant();
+                List<Promotions> promotionsList = pmtdao.getAllPromotion(); 
+                request.setAttribute("productList", productList);
+                request.setAttribute("productList1", productList1);
+                request.setAttribute("listProduct", productList1); //của thịnh
+                request.setAttribute("variantsList", variantsList);
+                request.setAttribute("listVariant", variantsList); // của thịnh
+                request.setAttribute("promotionsList", promotionsList); //của thịnh
 
-                request.setAttribute("listProducts", listProducts);
-                request.setAttribute("listPromotions", listPromotions);
-
-                request.getRequestDispatcher("customer_viewpromotion.jsp").forward(request, response);
+                request.getRequestDispatcher("customer_view_promotion.jsp").forward(request, response);
 
             } else {
                 // ====== ACTION KHÔNG HỢP LỆ → QUAY VỀ TRANG CHỦ ======

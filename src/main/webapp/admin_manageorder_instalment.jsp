@@ -1,3 +1,4 @@
+<%@page import="com.google.gson.Gson"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="dao.UsersDAO"%>
 <%@page import="model.Sale"%>
@@ -25,6 +26,18 @@
         <link href="css/dashboard_table.css" rel="stylesheet">
     </head>
     <body>
+        <%
+            Users user = (Users) session.getAttribute("user");
+            String phone = (String) request.getAttribute("phone");
+            if (phone == null || phone.isEmpty()) {
+                phone = "";
+            }
+            String status = (String) request.getAttribute("status");
+            if (status == null || status.isEmpty()) {
+                status = "Filter";
+            }
+            List<String> listPhone = (List<String>) request.getAttribute("listPhone");
+        %>
         <div class="d-flex" id="wrapper">
             <!-- Sidebar -->
             <nav class="sidebar bg-white shadow-sm border-end">
@@ -48,38 +61,62 @@
                 <!-- Navbar -->
                 <nav class="navbar navbar-light bg-white shadow-sm">
                     <div class="container-fluid">
-                        <button class="btn btn-outline-primary" id="menu-toggle"><i class="bi bi-list"></i></button>
-                        <form class="d-none d-md-flex ms-3">
-                            <input class="form-control" type="search" placeholder="Ctrl + K" readonly>
-                        </form>
+                        <button class="btn btn-outline-primary" id="menu-toggle">
+                            <i class="bi bi-list"></i>
+                        </button>
                         <div class="d-flex align-items-center ms-auto">
-                            <div class="position-relative me-3">
-                                <a href="logout">logout</a>
-                            </div>
-                            <i class="bi bi-bell me-3 fs-5"></i>
-                            <div class="position-relative me-3">
-                                <i class="bi bi-github fs-5"></i>
-                            </div>
-                            <div class="d-flex align-items-center">
+
+                            <!-- Search Phone -->
+                            <form action="admin" method="get" class="d-flex position-relative me-3" id="searchForm" autocomplete="off">
+                                <input type="hidden" name="action" value="searchInstalment">
+                                <input type="hidden" name="status" value="<%= status%>">
+                                <div class="position-relative" style="width: 300px;">
+                                    <input class="form-control" type="text" id="searchPhone" name="phone"
+                                           placeholder="Search Phone Number..."
+                                           oninput="fetchSuggestions(this.value)"
+                                           value="<%= phone%>">
+                                    <div id="suggestionBox" class="list-group position-absolute w-100"
+                                         style="top: 100%; z-index: 1000;"></div>
+                                </div>
+
+                                <button class="btn btn-outline-primary ms-2" type="submit">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                            </form>
+
+
+                            <!-- Filter Status -->
+                            <form action="admin" method="get" class="dropdown me-3">
+                                <input type="hidden" name="action" value="filterInstalment">
+                                <!-- Giữ lại phone nếu đang search -->
+                                <input type="hidden" name="phone" value="<%= phone%>">
+
+                                <button class="btn btn-outline-secondary fw-bold dropdown-toggle" 
+                                        type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-funnel"></i>
+                                    <span id="selectedStatus">
+                                        <%= status%>
+                                    </span>
+                                </button>
+
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="filterDropdown">
+                                    <li><button type="submit" name="status" value="All" class="dropdown-item">All</button></li>
+                                    <li><button type="submit" name="status" value="Pending" class="dropdown-item">Pending</button></li>
+                                    <li><button type="submit" name="status" value="Completed" class="dropdown-item">Completed</button></li> 
+                                </ul>
+                            </form>
+
+                            <a href="logout" class="btn btn-outline-danger btn-sm">Logout</a>
+                            <div class="d-flex align-items-center ms-3">
                                 <img src="https://i.pravatar.cc/40" class="rounded-circle me-2" width="35">
-                                <span>Admin</span>
+                                <span><%= user != null ? user.getFullName() : "Staff"%></span>
                             </div>
                         </div>
                     </div>
                 </nav>
 
                 <!-- Search bar -->
-                <div class="container-fluid p-4">
-                    <input type="text" class="form-control w-25" placeholder="🔍 Search">
-                </div>
-                <div class="container-fluid p-4 ps-3">
-                    <a class="btn btn-primary px-4 py-2 rounded-pill shadow-sm" href="admin?action=pendingInstalment">
-                        <i class="bi bi-box-seam me-2"></i> Pending
-                    </a>
-                    <a class="btn btn-primary px-4 py-2 rounded-pill shadow-sm" href="admin?action=completedInstalment">
-                        <i class="bi bi-box-seam me-2"></i> Done
-                    </a>
-                </div>
+                
                 <%
                     UsersDAO udao = new UsersDAO();
                     List<Order> listOrder = (List<Order>) request.getAttribute("listOrder");
@@ -171,13 +208,69 @@
                     }
                 %>
             </div>
+        </div>>
 
+        <!-- JS Libraries -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+        <script>
 
-            <!-- JS Libraries -->
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+                                    const phoneNumbers = <%= new Gson().toJson(listPhone)%>;
+                                    const searchInput = document.getElementById("searchPhone");
+                                    const suggestionBox = document.getElementById("suggestionBox");
 
-            <!-- Custom JS -->
-            <script src="js/dashboard.js"></script>
+// Hàm hiển thị gợi ý
+                                    function fetchSuggestions(query) {
+                                        query = query.trim().toLowerCase();
+                                        suggestionBox.innerHTML = "";
+
+                                        if (!query) {
+                                            suggestionBox.style.display = "none";
+                                            return;
+                                        }
+
+                                        const matches = phoneNumbers.filter(num => num.includes(query));
+
+                                        if (matches.length === 0) {
+                                            suggestionBox.style.display = "none";
+                                            return;
+                                        }
+
+                                        matches.forEach(num => {
+                                            const item = document.createElement("button");
+                                            item.type = "button";
+                                            item.className = "list-group-item list-group-item-action";
+                                            item.innerHTML = highlightMatch(num, query);
+
+                                            item.addEventListener("click", () => {
+                                                searchInput.value = num;
+                                                suggestionBox.style.display = "none";
+                                                document.getElementById("searchForm").submit();
+                                            });
+
+                                            suggestionBox.appendChild(item);
+                                        });
+
+                                        suggestionBox.style.display = "block";
+                                    }
+
+// Tô đậm phần khớp
+                                    function highlightMatch(text, keyword) {
+                                        const regex = new RegExp(`(${keyword})`, "gi");
+                                        return text.replace(regex, `<strong>$1</strong>`);
+                                    }
+
+// Ẩn box khi click ra ngoài
+                                    document.addEventListener("click", (e) => {
+                                        if (!e.target.closest("#searchForm")) {
+                                            suggestionBox.style.display = "none";
+
+                                        }
+                                    });
+
+        </script>
+
+        <!-- Custom JS -->
+        <script src="js/dashboard.js"></script>
     </body>
 </html>
