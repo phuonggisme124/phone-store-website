@@ -367,7 +367,6 @@
 
                                     <div class="mt-4">
                                         <a href="user?action=edit" class="btn btn-primary px-4 me-2">Chỉnh sửa thông tin</a>
-                                        <a href="logout" class="btn btn-outline-danger px-4">Đăng xuất</a>
                                     </div>
                                 </div>
                             </div>
