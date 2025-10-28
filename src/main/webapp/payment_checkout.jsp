@@ -418,7 +418,9 @@
                     document.querySelectorAll('.payment-option').forEach(el => el.classList.remove('selected'));
                     e.currentTarget.classList.add('selected');
                     const qrCodeImage = document.getElementById('qrCodeImage');
-                    const totalAmount = Math.round(parseFloat(document.getElementById('totalOrderAmount').dataset.amount));
+                    const totalAmount = 
+                            Math.round(parseFloat(document.getElementById('totalOrderAmount').dataset.amount));
+                    
                     const orderId = 'DH' + Math.floor(Date.now() / 1000);
                     document.getElementById('transferContent').innerText = 'TT ' + orderId;
                     const bankId = "970422";

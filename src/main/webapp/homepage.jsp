@@ -123,6 +123,38 @@
         text-align: center;
         color: #999;
     }
+    .product-card .image-holder {
+        position: relative;
+        width: 100%;
+        /* ?ây là k? thu?t t?o t? l? 1:1 (hình vuông) */
+        padding-top: 100%;
+        background-color: #f4f4f4; /* Thêm màu n?n nh?t cho ?? tr?ng */
+        border-radius: 8px; /* Bo góc cho ??p */
+        overflow: hidden; /* ?n ph?n ?nh th?a */
+    }
+    /* CSS cho s?n ph?m 8*/
+
+    .product-card .image-holder img {
+        /* B?t ?nh ph?i l?p ??y div cha */
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* 'cover' ?? l?p ??y, 'contain' ?? v?a v?n */
+
+        /* Gi? l?i hi?u ?ng c?a b?n */
+        transition: transform 0.3s ease;
+    }
+
+    .product-card:hover img {
+        transform: scale(1.08);
+    }
+
+    .swiper-slide {
+        height: auto !important;
+    }
+
 </style>
 
 <html>
@@ -338,7 +370,7 @@
                         </div>
                         <div class="icon-box-content">
                             <h3 class="card-title text-uppercase text-dark">Free delivery</h3>
-                            <p>Consectetur adipi elit lorem ipsum dolor sit amet.</p>
+                            <p>Connecting Your World.</p>
                         </div>
                     </div>
                 </div>
@@ -351,7 +383,7 @@
                         </div>
                         <div class="icon-box-content">
                             <h3 class="card-title text-uppercase text-dark">Quality guarantee</h3>
-                            <p>Dolor sit amet orem ipsu mcons ectetur adipi elit.</p>
+                            <p>Your Next Phone Starts Here.</p>
                         </div>
                     </div>
                 </div>
@@ -364,7 +396,7 @@
                         </div>
                         <div class="icon-box-content">
                             <h3 class="card-title text-uppercase text-dark">Daily offers</h3>
-                            <p>Amet consectetur adipi elit loreme ipsum dolor sit.</p>
+                            <p>Discover the Future of Mobile.</p>
                         </div>
                     </div>
                 </div>
@@ -377,7 +409,7 @@
                         </div>
                         <div class="icon-box-content">
                             <h3 class="card-title text-uppercase text-dark">100% secure payment</h3>
-                            <p>Rem Lopsum dolor sit amet, consectetur adipi elit.</p>
+                            <p>Find Your Perfect Device.</p>
                         </div>
                     </div>
                 </div>
@@ -387,7 +419,7 @@
 
     <section id="mobile-products" class="product-store position-relative padding-large no-padding-top">
         <div class="container">
-            <div class="row">
+            <div class="row mb-5">
                 <div class="display-header d-flex justify-content-between pb-3">
                     <h2 class="display-7 text-dark text-uppercase">Mobile Products</h2>
                     <div class="btn-right">
@@ -411,7 +443,101 @@
                             if (productList1 != null) {
                                 for (Products p : productList1) {
                                     if (p.getCategoryID() != null && p.getCategoryID() == 1) {
-                                        System.out.println("Product: " + p.getName() + " | CategoryID: " + p.getCategoryID());
+
+                        %>
+                        <div class="swiper-slide">
+                            <div class="product-card text-center position-relative">
+                                <div class="image-holder">
+                                    <img src="images/<%= p.getVariants().get(0).getImageUrl()%>" alt="<%= p.getName()%>" class="img-fluid rounded-3">
+                                </div>
+                                <div class="card-detail pt-3">
+                                    <h3 class="card-title text-uppercase">
+                                        <a href="product?action=viewDetail&pID=<%= p.getProductID()%>">
+                                            <%=p.getName()%>
+                                            <%=p.getVariants().get(0).getColor()%>
+                                            <%=p.getVariants().get(0).getStorage()%></a>
+                                    </h3>
+
+                                    <span class="item-price text-primary"><%= vnFormat.format(p.getVariants().get(0).getPrice())%></span>
+                                </div>
+                            </div>
+                        </div>
+                        <%         }
+                                }
+                            }
+                        %>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row  pb-3 mb-5" >
+                <div class="display-header d-flex justify-content-between pb-3">
+                    <h2 class="display-7 text-dark text-uppercase">SmartWatch</h2>
+                    <div class="btn-right">
+                        <a href="product?action=category&cID=1" class="btn btn-medium btn-normal text-uppercase">Go to Shop</a>
+                    </div>
+                </div>
+
+                <%
+                    if (productList1 == null && request.getParameter("fromProduct") == null) {
+                        response.sendRedirect(request.getContextPath() + "/product?fromProduct=true");
+                        return;
+                    }
+                %>
+
+                <div class="swiper product-swiper">
+                    <div class="swiper-wrapper">
+                        <%
+                            if (productList1 != null) {
+                                for (Products p : productList1) {
+                                    if (p.getCategoryID() != null && p.getCategoryID() == 2) {
+
+                        %>
+                        <div class="swiper-slide">
+                            <div class="product-card text-center position-relative">
+                                <div class="image-holder">
+                                    <img src="images/<%= p.getVariants().get(0).getImageUrl()%>" alt="<%= p.getName()%>" class="img-fluid rounded-3">
+                                </div>
+                                <div class="card-detail pt-3">
+                                    <h3 class="card-title text-uppercase">
+                                        <a href="product?action=viewDetail&pID=<%= p.getProductID()%>">
+                                            <%=p.getName()%>
+                                            <%=p.getVariants().get(0).getColor()%>
+                                            <%=p.getVariants().get(0).getStorage()%></a>
+                                    </h3>
+
+                                    <span class="item-price text-primary"><%= vnFormat.format(p.getVariants().get(0).getPrice())%></span>
+                                </div>
+                            </div>
+                        </div>
+                        <%         }
+                                }
+                            }
+                        %>
+                    </div>
+                </div>
+            </div>
+            <div class="row pb-3" >
+                <div class="display-header d-flex justify-content-between pb-3">
+                    <h2 class="display-7 text-dark text-uppercase">Tablet</h2>
+                    <div class="btn-right">
+                        <a href="product?action=category&cID=1" class="btn btn-medium btn-normal text-uppercase">Go to Shop</a>
+                    </div>
+                </div>
+
+                <%
+                    if (productList1 == null && request.getParameter("fromProduct") == null) {
+                        response.sendRedirect(request.getContextPath() + "/product?fromProduct=true");
+                        return;
+                    }
+                %>
+
+                <div class="swiper product-swiper">
+                    <div class="swiper-wrapper">
+                        <%
+                            if (productList1 != null) {
+                                for (Products p : productList1) {
+                                    if (p.getCategoryID() != null && p.getCategoryID() == 3) {
 
                         %>
                         <div class="swiper-slide">
@@ -441,97 +567,7 @@
         </div>
     </section>
 
-    <section id="Tablet" class="product-store position-relative padding-large">
-        <div class="container">
-            <div class="row d-flex justify-content-between align-items-center mb-4">
-                <h2 class="text-uppercase fw-bold">Tablet</h2>
-                <div class="btn-right">
-                    <a href="product?action=category&cID=3" class="btn btn-medium btn-normal text-uppercase">Go to Shop</a>
-                </div>
-            </div>
 
-            <%
-                // Merged logic: Initialize DAO and fetch watchproduct list
-                ProductDAO pDAO = new ProductDAO();
-                List<Products> tabletproduct = pDAO.getAllProduct();
-            %>
-            <div class="swiper product-swiper">
-                <div class="swiper-wrapper">
-                    <%
-                        if (tabletproduct != null) {
-                            for (Products p : tabletproduct) {
-                                if (p.getCategoryID() != null && p.getCategoryID() == 3) {
-                    %>
-                    <div class="swiper-slide">
-                        <div class="product-card text-center position-relative">
-                            <div class="image-holder">
-                                <img src="images/<%= p.getVariants().get(0).getImageUrl()%>" alt="<%= p.getName()%>" class="img-fluid rounded-3">
-                            </div>
-                            <div class="card-detail pt-3">
-                                <h3 class="card-title text-uppercase">
-                                    <a href="product?action=viewDetail&pID=<%= p.getProductID()%>">
-                                        <%=p.getName()%>
-                                        <%=p.getVariants().get(0).getColor()%>
-                                        <%=p.getVariants().get(0).getStorage()%>
-                                    </a>
-                                </h3>
-                                <span class="item-price text-primary"><%= vnFormat.format(p.getVariants().get(0).getPrice())%></span>
-                            </div>
-                        </div>
-                    </div>
-                    <%          }
-                            }
-                        }
-                    %>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="watchproduct" class="product-store position-relative">
-        <div class="container">
-            <div class="row d-flex justify-content-between align-items-center mb-4">
-                <h2 class="text-uppercase fw-bold">Watch</h2>
-                <div class="btn-right">
-                    <a href="product?action=category&cID=2" class="btn btn-medium btn-normal text-uppercase">Go to Shop</a>
-                </div>
-            </div>
-            <%
-                List<Products> watchproduct = pDAO.getAllProduct();
-            %>
-
-
-            <div class="swiper product-swiper">
-                <div class="swiper-wrapper">
-                    <%
-                        if (watchproduct != null) {
-                            for (Products p : watchproduct) {
-                                if (p.getCategoryID() != null && p.getCategoryID() == 2) {
-                    %>
-                    <div class="swiper-slide">
-                        <div class="product-card text-center position-relative">
-                            <div class="image-holder">
-                                <img src="images/<%= p.getVariants().get(0).getImageUrl()%>" alt="<%= p.getName()%>" class="img-fluid rounded-3">
-                            </div>
-                            <div class="card-detail pt-3">
-                                <h3 class="card-title text-uppercase">
-                                    <a href="product?action=viewDetail&pID=<%= p.getProductID()%>">
-                                        <%=p.getName()%>
-                                        <%=p.getVariants().get(0).getColor()%>
-                                    </a>
-                                </h3>
-                                <span class="item-price text-primary"><%= vnFormat.format(p.getVariants().get(0).getPrice())%></span>
-                            </div>
-                        </div>
-                    </div>
-                    <%          }
-                            }
-                        }
-                    %>
-                </div>
-            </div>
-        </div>
-    </section>
 
     <section id="yearly-sale" class="bg-light-blue overflow-hidden mt-5 padding-xlarge" 
              style="background-image: url('images/single-image1.png');background-position: right; background-repeat: no-repeat;">
@@ -556,7 +592,7 @@
                             <div class="col-lg-3 col-sm-6 pb-3">
                                 <div class="footer-menu">
                                     <img src="images/main-logo.png" alt="logo">
-                                    <p>Nisi, purus vitae, ultrices nunc. Sit ac sit suscipit hendrerit.</p>
+                                    <p>Unless, pure life, now ultrices. Let it be and let it be hendrerit.</p>
                                 </div>
                             </div>
                             <div class="col-lg-2 col-sm-6 pb-3">
@@ -589,7 +625,7 @@
             <div class="row d-flex flex-wrap justify-content-between">
                 <div class="col-md-4 col-sm-6">
                     <div class="copyright">
-                        <p>? Copyright 2025 MiniStore.</p>
+                        <p>Copyright 2025 MiniStore.</p>
                     </div>
                 </div>
             </div>
@@ -597,21 +633,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-        new Swiper(".product-swiper", {
-            slidesPerView: 1,
-            spaceBetween: 20,
-            breakpoints: {
-                576: { slidesPerView: 2 },
-                768: { slidesPerView: 3 },
-                1024: { slidesPerView: 4 }
-            },
-            pagination: { el: ".swiper-pagination", clickable: true },
-            navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" }
-        });
-    });
-    </script>
+
 
 </body>
 </html>

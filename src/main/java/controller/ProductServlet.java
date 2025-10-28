@@ -24,6 +24,7 @@ import model.Category;
 import model.Products;
 import model.Promotions;
 import model.Review;
+import model.Specification;
 import model.Variants;
 
 /**
@@ -91,7 +92,8 @@ public class ProductServlet extends HttpServlet {
             }
 
             List<Variants> listVariantRating = vdao.getAllVariantByStorage(variants.getProductID(), variants.getStorage());
-
+            Specification specification = pdao.getSpecificationByProductID(productID); 
+           
             // Lấy danh sách review theo VariantID
             List<Review> listReview = new ArrayList<>();
             try {
@@ -108,6 +110,7 @@ public class ProductServlet extends HttpServlet {
                 request.setAttribute("vID", vID);
             }
             request.setAttribute("rating", rating);
+            request.setAttribute("specification", specification);
             request.setAttribute("productID", productID);
             request.setAttribute("listStorage", listStorage);
             request.setAttribute("listVariants", listVariants);
@@ -143,7 +146,7 @@ public class ProductServlet extends HttpServlet {
 
             List<Review> listReview = rdao.getReview();
             double rating = rdao.getTotalRating(listVariantRating, listReview);
-
+            Specification specification = pdao.getSpecificationByProductID(pID); 
             // Send data to JSP
             request.setAttribute("productID", pID);
             request.setAttribute("rating", rating);
@@ -153,6 +156,7 @@ public class ProductServlet extends HttpServlet {
             request.setAttribute("listVariants", listVariants);
             request.setAttribute("listVariantRating", listVariantRating);
             request.setAttribute("listReview", listReview);
+            request.setAttribute("specification", specification);
             request.setAttribute("listStorage", listStorage);
             request.setAttribute("listCategory", listCategory);
 

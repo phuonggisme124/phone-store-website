@@ -402,7 +402,7 @@
             %>
 
             <div class="mb-4">
-                <h2 class="text-lg font-semibold text-gray-900 mb-3">Sắp xếp theo</h2>
+                <h2 class="text-lg font-semibold text-gray-900 mb-3">Filter By</h2>
                 <div class="flex flex-wrap gap-2 items-center">
 
                     <form action="product" method="get" class="flex flex-wrap gap-2 items-center">
@@ -411,21 +411,21 @@
 
                         <button name="variation" value="ALL" type="submit"
                                 class="px-4 py-1.5 text-sm font-medium rounded-full flex items-center gap-1.5 <%= "ALL".equals(currentVariation) ? "bg-custom-accent text-white" : "bg-white text-gray-800 border border-gray-300"%>">
-                            <i class="fa-solid fa-star fa-xs"></i> Phổ biến
+                            <i class="fa-solid fa-star fa-xs"></i> Popular
                         </button>
 
                         <button name="variation" value="PROMOTION" type="submit"
                                 class="px-4 py-1.5 text-sm font-medium rounded-full flex items-center gap-1.5 <%= isPromotionFilterActive ? "bg-custom-accent text-white" : "bg-white text-gray-800 border border-gray-300"%>">
-                            <i class="fa-solid fa-fire-flame-curved fa-xs"></i> Khuyến mãi HOT
+                            <i class="fa-solid fa-fire-flame-curved fa-xs"></i> HOT Promotion
                         </button>
 
                         <button name="variation" value="ASC" type="submit"
                                 class="px-4 py-1.5 text-sm font-medium rounded-full flex items-center gap-1.5 <%= "ASC".equals(currentVariation) ? "bg-custom-accent text-white" : "bg-white text-gray-800 border border-gray-300"%>">
-                            <i class="fa-solid fa-arrow-up-wide-short fa-xs"></i> Giá Thấp - Cao
+                            <i class="fa-solid fa-arrow-up-wide-short fa-xs"></i> Low - High Price
                         </button>
                         <button name="variation" value="DESC" type="submit"
                                 class="px-4 py-1.5 text-sm font-medium rounded-full flex items-center gap-1.5 <%= "DESC".equals(currentVariation) ? "bg-custom-accent text-white" : "bg-white text-gray-800 border border-gray-300"%>">
-                            <i class="fa-solid fa-arrow-down-wide-short fa-xs"></i> Giá Cao - Thấp
+                            <i class="fa-solid fa-arrow-down-wide-short fa-xs"></i> High - Low Price
                         </button>
                     </form>
                 </div>
@@ -534,7 +534,7 @@
                                 <span class="font-semibold text-gray-800"><%=String.format("%.1f", rating)%></span>
                             </div>
                             <% } else { %>
-                            <span class="text-gray-500 text-xs">Chưa có đánh giá</span>
+                            <span class="text-gray-500 text-xs">Be the first to review this product.</span>
                             <% } %>
                         </div>
                     </div>
@@ -543,10 +543,10 @@
                     }
                 } else {
                     // === THAY ĐỔI 3: Hiển thị thông báo tùy chỉnh ===
-                    String message = "Không có sản phẩm nào để hiển thị.";
+                    String message = "No products to display.";
                     // Nếu đang lọc KM và danh sách rỗng, đổi thông báo
                     if (isPromotionFilterActive) {
-                        message = "🔥 Rất tiếc! Hiện tại không có sản phẩm nào đang trong chương trình KHUYẾN MÃI HOT.";
+                        message = "🔥 Unfortunately, no products are featured in our HOT PROMOTION right now.";
                     }
                 %>
                 <div class="col-span-full text-center py-10 bg-white rounded-xl shadow-lg">

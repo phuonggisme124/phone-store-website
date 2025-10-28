@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import model.InterestRate;
 import model.Products;
+import model.Specification;
 import model.Variants;
 
 /**
@@ -446,6 +447,32 @@ public class ProductDAO extends DBContext {
         }
 
         return list;
+    }
+
+    public Specification getSpecificationByProductID(int productID) {
+        String sql = "Select * from Specifications WHERE ProductID = ? ";
+        List<InterestRate> list = new ArrayList<>();
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, productID);
+            ResultSet rs = ps.executeQuery();
+            if(rs.next()) {
+                int spectificationID = rs.getInt("SpecificationID");
+                int pID = rs.getInt("ProductID");
+                String os = rs.getString("OS");
+                String cpu = rs.getString("CPU");
+                String gpu = rs.getString("GPU");
+                String ram = rs.getString("RAM");
+                int batteryCapacity = rs.getInt("BatteryCapacity");
+                String touchscreen = rs.getString("Touchscreen");
+                return (new Specification(spectificationID, pID, os, cpu, gpu, ram, batteryCapacity, touchscreen));
+            }
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        return null;
     }
 
    

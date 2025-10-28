@@ -314,7 +314,10 @@
                                         <a href="logout" class="nav-link p-0 text-dark text-uppercase fw-bold">Logout</a> 
                                     </li>
                                     <li class="text-dark fw-bold">
-                                        <a href="user" class="nav-link p-0 text-dark text-uppercase fw-bold"> <%= displayName%> </a>
+
+                                        <a href="user?action=view" class="nav-link p-0 text-dark text-uppercase fw-bold"><%= displayName%></a> 
+                                        
+
                                     </li>
                                     <%
                                     } else {
