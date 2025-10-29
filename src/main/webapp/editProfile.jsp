@@ -360,7 +360,7 @@
                         <span>Profile & Address</span>
                     </a>
                     
-                    <a href="changePassword.jsp" class="sidebar-link">
+                    <a href="user?action=changePassword" class="sidebar-link">
                         <i class="fas fa-lock"></i>
                         <span>Change Password</span>
                     </a>

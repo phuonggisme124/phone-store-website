@@ -8,7 +8,9 @@ import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import model.Users;
 import model.Category;
 import model.Order;
@@ -37,7 +39,7 @@ public class UserServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
+        OrderDetailDAO orderDetailDAO = new OrderDetailDAO();
         String action = request.getParameter("action");
         if (action == null || action.isEmpty()) {
             action = "view";
@@ -61,32 +63,37 @@ public class UserServlet extends HttpServlet {
 
             case "transaction":
                 String status = request.getParameter("status");
+
+                OrderDAO orderDAO = new OrderDAO();
+                List<Order> oList;
                 if (status == null || status.equalsIgnoreCase("All")) {
-                    status = "All";
+                    oList = orderDAO.getOrdersByStatus(user.getUserId(), "All");
+                } else {
+                    oList = orderDAO.getOrdersByStatus(user.getUserId(), status);
                 }
-                List<Order> oList = orderDAO.getOrdersByStatus(user.getUserId(), status);
-                request.setAttribute("oList", oList);
-                
-                String orderIDStr = request.getParameter("orderID");
-                if (orderIDStr != null) {
-                    // FIXED: Added try-catch for NumberFormatException
-                    try {
-                        int orderID = Integer.parseInt(orderIDStr);
-                        List<OrderDetails> oDList = orderDetailDAO.getOrderDetailByOrderID(orderID);
-                        request.setAttribute("oDList", oDList);
-                    } catch (NumberFormatException e) {
-                        System.err.println("Invalid OrderID parameter: " + orderIDStr);
+
+                // TẠO MỘT MAP để chứa chi tiết cho TẤT CẢ các đơn hàng
+                Map<Integer, List<OrderDetails>> allOrderDetails = new HashMap<>();
+                if (oList != null) {
+                    for (Order o : oList) {
+                        List<OrderDetails> details = orderDetailDAO.getOrderDetailByOrderID(o.getOrderID());
+                        allOrderDetails.put(o.getOrderID(), details);
                     }
                 }
+
+                // Gửi cả danh sách đơn hàng và map chi tiết sang JSP
+                request.setAttribute("oList", oList);
+                request.setAttribute("allOrderDetails", allOrderDetails); // Gửi map này!
+
                 request.getRequestDispatcher("customer_transaction.jsp").forward(request, response);
                 break;
             
             // FIXED: Merged from conflicting branch
             case "changePassword":
-                request.getRequestDispatcher("changePassword.jsp").forward(request, response);
+                response.sendRedirect("changePassword.jsp");
                 break;
 
-            case "view":
+            
             default:
                 request.setAttribute("user", user);
                 request.getRequestDispatcher("profile.jsp").forward(request, response);
@@ -111,7 +118,7 @@ public class UserServlet extends HttpServlet {
 
         if ("update".equals(action)) {
             updateUserProfile(request, response, user, session);
-        } else if ("updatePassword".equals(action)) {
+        } else if ("changePassword".equals(action)) {
             updateUserPassword(request, response, user, session);
         } else {
             response.sendRedirect("user?action=view");

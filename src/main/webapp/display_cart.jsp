@@ -54,24 +54,7 @@
     </head>
     <body>
 
-        <header id="header" class="site-header header-scrolled position-fixed text-black bg-light">
-            <%-- Phần Header của bạn --%>
-            <nav id="header-nav" class="navbar navbar-expand-lg px-3 mb-3">
-                <div class="container-fluid">
-                    <a class="navbar-brand" href="homepage">
-                        <img src="images/main-logo.png" class="logo">
-                    </a>
-                    <div class="offcanvas-body">
-                         <ul id="navbar" class="navbar-nav text-uppercase justify-content-end align-items-center flex-grow-1 pe-3">
-                            <li class="nav-item">
-                                <a class="nav-link me-4" href="homepage">Home</a>
-                            </li>
-                             <%-- Vòng lặp Category --%>
-                         </ul>
-                    </div>
-                </div>
-            </nav>
-        </header>
+        
 
         <section id="banner-top" class="position-relative overflow-hidden bg-light-blue"></section>
 
@@ -83,7 +66,8 @@
             ProductDAO pDAO = new ProductDAO();
         %>
 
-        <section class="cart-container">
+        <section id="billboard" class="bg-light-blue overflow-hidden padding-large" >
+            <section class="cart-container">
             <h2 class="cart-title">🛒 Your Cart</h2>
 
             <% if (cart == null || cart.getListCartItems() == null || cart.getListCartItems().isEmpty()) { %>
@@ -170,6 +154,8 @@
             </div>
             <% } %>
         </section>
+        </section>
+        
 
         <footer> <%-- Phần Footer của bạn --%> </footer>
 

@@ -17,7 +17,7 @@
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-        
+
         <style>
             body {
                 background: white;
@@ -25,20 +25,20 @@
                 font-family: 'Jost', sans-serif;
                 padding-top: 80px;
             }
-            
+
             .profile-container {
                 max-width: 1400px;
                 margin: 40px auto;
                 padding: 0 20px;
             }
-            
+
             .profile-wrapper {
                 display: grid;
                 grid-template-columns: 320px 1fr;
                 gap: 30px;
                 margin-bottom: 50px;
             }
-            
+
             /* Sidebar Styling */
             .profile-sidebar {
                 background: rgba(255, 255, 255, 0.95);
@@ -50,7 +50,7 @@
                 position: sticky;
                 top: 100px;
             }
-            
+
             .profile-sidebar h3 {
                 font-size: 1.5rem;
                 font-weight: 600;
@@ -59,7 +59,7 @@
                 padding-bottom: 20px;
                 border-bottom: 2px solid #e2e8f0;
             }
-            
+
             .sidebar-link {
                 display: flex;
                 align-items: center;
@@ -73,36 +73,36 @@
                 position: relative;
                 overflow: hidden;
             }
-            
+
             .sidebar-link::before {
                 content: '';
                 position: absolute;
                 left: 0;
-top: 0;
+                top: 0;
                 height: 100%;
                 width: 4px;
                 background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                 transform: scaleY(0);
                 transition: transform 0.3s ease;
             }
-            
+
             .sidebar-link:hover {
                 background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
                 color: #667eea;
                 transform: translateX(5px);
             }
-            
+
             .sidebar-link:hover::before {
                 transform: scaleY(1);
             }
-            
+
             .sidebar-link i {
                 margin-right: 15px;
                 font-size: 1.1rem;
                 width: 24px;
                 text-align: center;
             }
-            
+
             .logout-btn {
                 background: linear-gradient(135deg, #f56565 0%, #c53030 100%);
                 color: white;
@@ -116,12 +116,12 @@ top: 0;
                 transition: all 0.3s ease;
                 box-shadow: 0 4px 15px rgba(245, 101, 101, 0.3);
             }
-            
+
             .logout-btn:hover {
                 transform: translateY(-2px);
                 box-shadow: 0 6px 20px rgba(245, 101, 101, 0.4);
             }
-            
+
             /* Main Content Styling */
             .profile-content {
                 background: rgba(255, 255, 255, 0.95);
@@ -130,12 +130,12 @@ top: 0;
                 padding: 50px;
                 box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
             }
-            
+
             .profile-header {
                 text-align: center;
                 margin-bottom: 50px;
             }
-            
+
             .profile-header h1 {
                 font-size: 2.5rem;
                 font-weight: 700;
@@ -144,12 +144,12 @@ top: 0;
                 -webkit-text-fill-color: transparent;
                 margin-bottom: 10px;
             }
-            
+
             .profile-header p {
                 color: #718096;
                 font-size: 1.1rem;
             }
-            
+
             /* Avatar Section */
             .avatar-section {
                 text-align: center;
@@ -158,22 +158,22 @@ top: 0;
                 border-radius: 20px;
                 margin-bottom: 30px;
             }
-            
+
             .avatar-wrapper {
                 position: relative;
                 display: inline-block;
                 margin-bottom: 20px;
             }
-            
+
             .avatar-wrapper img {
-width: 160px;
+                width: 160px;
                 height: 160px;
                 border-radius: 50%;
                 border: 6px solid white;
                 box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
                 object-fit: cover;
             }
-            
+
             .avatar-wrapper::after {
                 content: '';
                 position: absolute;
@@ -186,14 +186,14 @@ width: 160px;
                 z-index: -1;
                 opacity: 0.3;
             }
-            
+
             .avatar-section h5 {
                 font-size: 1.5rem;
                 font-weight: 600;
                 color: #2d3748;
                 margin-bottom: 8px;
             }
-            
+
             .user-id {
                 display: inline-block;
                 background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -203,7 +203,7 @@ width: 160px;
                 font-size: 0.9rem;
                 font-weight: 500;
             }
-            
+
             /* Info Table Styling */
             .info-table {
                 background: white;
@@ -211,20 +211,20 @@ width: 160px;
                 padding: 30px;
                 box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
             }
-            
+
             .info-table table {
                 width: 100%;
                 margin-bottom: 0;
             }
-            
+
             .info-table tr {
                 border-bottom: 1px solid #e2e8f0;
             }
-            
+
             .info-table tr:last-child {
                 border-bottom: none;
             }
-            
+
             .info-table th {
                 padding: 16px 0;
                 font-weight: 600;
@@ -232,13 +232,13 @@ width: 160px;
                 width: 35%;
                 font-size: 0.95rem;
             }
-            
+
             .info-table td {
                 padding: 16px 0;
                 color: #2d3748;
                 font-size: 1rem;
             }
-            
+
             /* Button Styling */
             .btn-primary {
                 background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -252,16 +252,16 @@ width: 160px;
                 text-decoration: none;
                 display: inline-block;
             }
-            
+
             .btn-primary:hover {
                 transform: translateY(-2px);
                 box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
                 color: white;
             }
-            
+
             .btn-outline-danger {
                 background: transparent;
-border: 2px solid #f56565;
+                border: 2px solid #f56565;
                 color: #f56565;
                 padding: 14px 32px;
                 border-radius: 12px;
@@ -270,47 +270,47 @@ border: 2px solid #f56565;
                 text-decoration: none;
                 display: inline-block;
             }
-            
+
             .btn-outline-danger:hover {
                 background: #f56565;
                 color: white;
                 transform: translateY(-2px);
             }
-            
+
             /* Responsive Design */
             @media (max-width: 992px) {
                 .profile-wrapper {
                     grid-template-columns: 1fr;
                 }
-                
+
                 .profile-sidebar {
                     position: relative;
                     top: 0;
                 }
-                
+
                 .profile-content {
                     padding: 30px 20px;
                 }
             }
-            
+
             @media (max-width: 576px) {
                 .profile-header h1 {
                     font-size: 1.8rem;
                 }
-                
+
                 .avatar-wrapper img {
                     width: 120px;
                     height: 120px;
                 }
-                
+
                 .sidebar-link {
                     padding: 12px 16px;
                 }
-                
+
                 .info-table th {
                     font-size: 0.85rem;
                 }
-                
+
                 .info-table td {
                     font-size: 0.9rem;
                 }
@@ -319,99 +319,102 @@ border: 2px solid #f56565;
     </head>
 
     <body>
-        <div class="profile-container">
-            <div class="profile-wrapper">
-                <!-- Sidebar -->
-                <aside class="profile-sidebar">
-                    <h3>Hello, <%= user.getFullName() %></h3>
-                    
-                    <a href="user?action=transaction" class="sidebar-link">
-                        <i class="fas fa-shopping-bag"></i>
-                        <span>My Orders</span>
-                    </a>
-                    
-                    <a href="user" class="sidebar-link">
-                        <i class="fas fa-user"></i>
-                        <span>Profile & Address</span>
-                    </a>
-                    
-                    <a href="user?action=changePassword" class="sidebar-link">
-                        <i class="fas fa-lock"></i>
-                        <span>Change Password</span>
-                    </a>
-                    
-                    <form action="logout" method="post">
-                        <button type="submit" class="logout-btn">
-                            <i class="fas fa-sign-out-alt"></i> Logout
-                        </button>
-                    </form>
-                </aside>
+        <section id="billboard" class="bg-light-blue overflow-hidden padding-large" >
+            <div class="profile-container">
+                <div class="profile-wrapper">
+                    <!-- Sidebar -->
+                    <aside class="profile-sidebar">
+                        <h3>Hello, <%= user.getFullName()%></h3>
 
-                <!-- Main Content -->
-                <main class="profile-content">
-                    <div class="profile-header">
-<h1>My Profile</h1>
-                        <p>Manage your account information</p>
-                    </div>
+                        <a href="user?action=transaction" class="sidebar-link">
+                            <i class="fas fa-shopping-bag"></i>
+                            <span>My Orders</span>
+                        </a>
 
-                    <div class="row">
-                        <!-- Avatar Section -->
-                        <div class="col-lg-4">
-                            <div class="avatar-section">
-                                <div class="avatar-wrapper">
-                                    <img src="images/avatar.png" alt="User Avatar">
-                                </div>
-                                <h5><%= user.getFullName() %></h5>
-                                <span class="user-id">ID: #<%= user.getUserId() %></span>
-                            </div>
+                        <a href="user" class="sidebar-link">
+                            <i class="fas fa-user"></i>
+                            <span>Profile & Address</span>
+                        </a>
+
+                        <a href="user?action=changePassword" class="sidebar-link">
+                            <i class="fas fa-lock"></i>
+                            <span>Change Password</span>
+                        </a>
+
+                        <form action="logout" method="post">
+                            <button type="submit" class="logout-btn">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </button>
+                        </form>
+                    </aside>
+
+                    <!-- Main Content -->
+                    <main class="profile-content">
+                        <div class="profile-header">
+                            <h1>My Profile</h1>
+                            <p>Manage your account information</p>
                         </div>
 
-                        <!-- Info Section -->
-                        <div class="col-lg-8">
-                            <div class="info-table">
-                                <table>
-                                    <tbody>
-                                        <tr>
-                                            <th><i class="fas fa-user" style="color: #667eea; margin-right: 8px;"></i>Full Name:</th>
-                                            <td><%= user.getFullName() %></td>
-                                        </tr>
-                                        <tr>
-                                            <th><i class="fas fa-envelope" style="color: #667eea; margin-right: 8px;"></i>Email:</th>
-                                            <td><%= user.getEmail() %></td>
-                                        </tr>
-                                        <tr>
-                                            <th><i class="fas fa-phone" style="color: #667eea; margin-right: 8px;"></i>Phone Number:</th>
-                                            <td><%= user.getPhone() != null ? user.getPhone() : "Chưa cập nhật" %></td>
-                                        </tr>
-                                        <tr>
-                                            <th><i class="fas fa-map-marker-alt" style="color: #667eea; margin-right: 8px;"></i>Address:</th>
-                                            <td><%= user.getAddress() != null ? user.getAddress() : "Chưa cập nhật" %></td>
-                                        </tr>
-                                        <tr>
-                                            <th><i class="fas fa-calendar" style="color: #667eea; margin-right: 8px;"></i>Created Date:</th>
-                                            <td><%= user.getCreatedAt() != null ? user.getCreatedAt() : "Không xác định" %></td>
-                                        </tr>
-                                        <tr>
-                                            <th><i class="fas fa-check-circle" style="color: #667eea; margin-right: 8px;"></i>Status:</th>
-<td><span style="color: #48bb78; font-weight: 600;"><%= user.getStatus() != null ? user.getStatus() : "Đang hoạt động" %></span></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                        <div class="row">
+                            <!-- Avatar Section -->
+                            <div class="col-lg-4">
+                                <div class="avatar-section">
+                                    <div class="avatar-wrapper">
+                                        <img src="images/avatar.png" alt="User Avatar">
+                                    </div>
+                                    <h5><%= user.getFullName()%></h5>
+                                    <span class="user-id">ID: #<%= user.getUserId()%></span>
+                                </div>
+                            </div>
 
-                                <div class="mt-4 d-flex gap-3">
-                                    <a href="user?action=edit" class="btn btn-primary">
-                                        <i class="fas fa-edit"></i> Edit Profile
-                                    </a>
-                                    <a href="logout" class="btn btn-outline-danger">
-                                        <i class="fas fa-sign-out-alt"></i> Logout
-                                    </a>
+                            <!-- Info Section -->
+                            <div class="col-lg-8">
+                                <div class="info-table">
+                                    <table>
+                                        <tbody>
+                                            <tr>
+                                                <th><i class="fas fa-user" style="color: #667eea; margin-right: 8px;"></i>Full Name:</th>
+                                                <td><%= user.getFullName()%></td>
+                                            </tr>
+                                            <tr>
+                                                <th><i class="fas fa-envelope" style="color: #667eea; margin-right: 8px;"></i>Email:</th>
+                                                <td><%= user.getEmail()%></td>
+                                            </tr>
+                                            <tr>
+                                                <th><i class="fas fa-phone" style="color: #667eea; margin-right: 8px;"></i>Phone Number:</th>
+                                                <td><%= user.getPhone() != null ? user.getPhone() : "Chưa cập nhật"%></td>
+                                            </tr>
+                                            <tr>
+                                                <th><i class="fas fa-map-marker-alt" style="color: #667eea; margin-right: 8px;"></i>Address:</th>
+                                                <td><%= user.getAddress() != null ? user.getAddress() : "Chưa cập nhật"%></td>
+                                            </tr>
+                                            <tr>
+                                                <th><i class="fas fa-calendar" style="color: #667eea; margin-right: 8px;"></i>Created Date:</th>
+                                                <td><%= user.getCreatedAt() != null ? user.getCreatedAt() : "Không xác định"%></td>
+                                            </tr>
+                                            <tr>
+                                                <th><i class="fas fa-check-circle" style="color: #667eea; margin-right: 8px;"></i>Status:</th>
+                                                <td><span style="color: #48bb78; font-weight: 600;"><%= user.getStatus() != null ? user.getStatus() : "Đang hoạt động"%></span></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+
+                                    <div class="mt-4 d-flex gap-3">
+                                        <a href="user?action=edit" class="btn btn-primary">
+                                            <i class="fas fa-edit"></i> Edit Profile
+                                        </a>
+                                        <a href="logout" class="btn btn-outline-danger">
+                                            <i class="fas fa-sign-out-alt"></i> Logout
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </main>
+                    </main>
+                </div>
             </div>
-        </div>
+        </section>
+
 
         <script src="js/jquery-1.11.0.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

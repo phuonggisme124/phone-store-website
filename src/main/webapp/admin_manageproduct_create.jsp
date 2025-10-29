@@ -53,7 +53,7 @@
 
                 <!-- Search bar -->
                 <div class="container-fluid p-4">
-                    <input type="text" class="form-control w-25" placeholder="🔍 Search">
+                    <h1 class="w-50 mx-auto bg-light p-4 rounded shadow">Create Product</h1>
                 </div>
 
 

@@ -1,420 +1,611 @@
-<%@page import="java.util.List"%>
-<%@page import="model.Products"%>
+<%-- 
+    Document   : changePassword
+    Created on : Oct 16, 2025, 3:50:10 PM
+    Author     : Hoa Hong Nhung
+--%>
+
 <%@page import="model.Category"%>
+<%@page import="java.util.List"%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="model.Users" %>
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="layout/header.jsp" %>
+<%
+    
+    if (user == null) {
+        response.sendRedirect("login.jsp");
+        return;
+    }
+
+    String message = (String) request.getAttribute("message");
+    String error = (String) request.getAttribute("error");
+%>
+
 <!DOCTYPE html>
-<html lang="vi">
+<html>
     <head>
-        <title>Hồ sơ cá nhân | Phone Store</title>
+        <meta charset="UTF-8">
+        <title>Đổi mật khẩu</title>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="format-detection" content="telephone=no">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="author" content="">
+        <meta name="keywords" content="">
+        <meta name="description" content="">
         <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="css/style.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-        
-        <style>
-            body {
-                background: white;
-                min-height: 100vh;
-                font-family: 'Jost', sans-serif;
-                padding-top: 80px;
-            }
-            
-            .profile-container {
-                max-width: 1400px;
-                margin: 40px auto;
-                padding: 0 20px;
-            }
-            
-            .profile-wrapper {
-                display: grid;
-                grid-template-columns: 320px 1fr;
-                gap: 30px;
-                margin-bottom: 50px;
-            }
-            
-            /* Sidebar Styling */
-            .profile-sidebar {
-                background: rgba(255, 255, 255, 0.95);
-                backdrop-filter: blur(10px);
-                border-radius: 24px;
-                padding: 40px 30px;
-                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
-                height: fit-content;
-                position: sticky;
-                top: 100px;
-            }
-            
-            .profile-sidebar h3 {
-                font-size: 1.5rem;
-                font-weight: 600;
-                color: #2d3748;
-                margin-bottom: 35px;
-                padding-bottom: 20px;
-                border-bottom: 2px solid #e2e8f0;
-            }
-            
-            .sidebar-link {
-                display: flex;
-                align-items: center;
-                padding: 16px 20px;
-                margin-bottom: 12px;
-                border-radius: 12px;
-                text-decoration: none;
-                color: #4a5568;
-                font-weight: 500;
-                transition: all 0.3s ease;
-                position: relative;
-                overflow: hidden;
-            }
-            
-            .sidebar-link::before {
-                content: '';
-                position: absolute;
-                left: 0;
-top: 0;
-                height: 100%;
-                width: 4px;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                transform: scaleY(0);
-                transition: transform 0.3s ease;
-            }
-            
-            .sidebar-link:hover {
-                background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-                color: #667eea;
-                transform: translateX(5px);
-            }
-            
-            .sidebar-link:hover::before {
-                transform: scaleY(1);
-            }
-            
-            .sidebar-link i {
-                margin-right: 15px;
-                font-size: 1.1rem;
-                width: 24px;
-                text-align: center;
-            }
-            
-            .logout-btn {
-                background: linear-gradient(135deg, #f56565 0%, #c53030 100%);
-                color: white;
-                border: none;
-                width: 100%;
-                padding: 16px;
-                border-radius: 12px;
-                font-weight: 600;
-                cursor: pointer;
-                margin-top: 25px;
-                transition: all 0.3s ease;
-                box-shadow: 0 4px 15px rgba(245, 101, 101, 0.3);
-            }
-            
-            .logout-btn:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 6px 20px rgba(245, 101, 101, 0.4);
-            }
-            
-            /* Main Content Styling */
-            .profile-content {
-                background: rgba(255, 255, 255, 0.95);
-                backdrop-filter: blur(10px);
-                border-radius: 24px;
-                padding: 50px;
-                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
-            }
-            
-            .profile-header {
-                text-align: center;
-                margin-bottom: 50px;
-            }
-            
-            .profile-header h1 {
-                font-size: 2.5rem;
-                font-weight: 700;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
-                margin-bottom: 10px;
-            }
-            
-            .profile-header p {
-                color: #718096;
-                font-size: 1.1rem;
-            }
-            
-            /* Avatar Section */
-            .avatar-section {
-                text-align: center;
-                padding: 30px;
-                background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
-                border-radius: 20px;
-                margin-bottom: 30px;
-            }
-            
-            .avatar-wrapper {
-                position: relative;
-                display: inline-block;
-                margin-bottom: 20px;
-            }
-            
-            .avatar-wrapper img {
-width: 160px;
-                height: 160px;
-                border-radius: 50%;
-                border: 6px solid white;
-                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-                object-fit: cover;
-            }
-            
-            .avatar-wrapper::after {
-                content: '';
-                position: absolute;
-                top: -5px;
-                left: -5px;
-                right: -5px;
-                bottom: -5px;
-                border-radius: 50%;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                z-index: -1;
-                opacity: 0.3;
-            }
-            
-            .avatar-section h5 {
-                font-size: 1.5rem;
-                font-weight: 600;
-                color: #2d3748;
-                margin-bottom: 8px;
-            }
-            
-            .user-id {
-                display: inline-block;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                color: white;
-                padding: 6px 16px;
-                border-radius: 20px;
-                font-size: 0.9rem;
-                font-weight: 500;
-            }
-            
-            /* Info Table Styling */
-            .info-table {
-                background: white;
-                border-radius: 16px;
-                padding: 30px;
-                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-            }
-            
-            .info-table table {
-                width: 100%;
-                margin-bottom: 0;
-            }
-            
-            .info-table tr {
-                border-bottom: 1px solid #e2e8f0;
-            }
-            
-            .info-table tr:last-child {
-                border-bottom: none;
-            }
-            
-            .info-table th {
-                padding: 16px 0;
-                font-weight: 600;
-                color: #4a5568;
-                width: 35%;
-                font-size: 0.95rem;
-            }
-            
-            .info-table td {
-                padding: 16px 0;
-                color: #2d3748;
-                font-size: 1rem;
-            }
-            
-            /* Button Styling */
-            .btn-primary {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                border: none;
-                padding: 14px 32px;
-                border-radius: 12px;
-                font-weight: 600;
-                transition: all 0.3s ease;
-                box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-                color: white;
-                text-decoration: none;
-                display: inline-block;
-            }
-            
-            .btn-primary:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-                color: white;
-            }
-            
-            .btn-outline-danger {
-                background: transparent;
-border: 2px solid #f56565;
-                color: #f56565;
-                padding: 14px 32px;
-                border-radius: 12px;
-                font-weight: 600;
-                transition: all 0.3s ease;
-                text-decoration: none;
-                display: inline-block;
-            }
-            
-            .btn-outline-danger:hover {
-                background: #f56565;
-                color: white;
-                transform: translateY(-2px);
-            }
-            
-            /* Responsive Design */
-            @media (max-width: 992px) {
-                .profile-wrapper {
-                    grid-template-columns: 1fr;
-                }
-                
-                .profile-sidebar {
-                    position: relative;
-                    top: 0;
-                }
-                
-                .profile-content {
-                    padding: 30px 20px;
-                }
-            }
-            
-            @media (max-width: 576px) {
-                .profile-header h1 {
-                    font-size: 1.8rem;
-                }
-                
-                .avatar-wrapper img {
-                    width: 120px;
-                    height: 120px;
-                }
-                
-                .sidebar-link {
-                    padding: 12px 16px;
-                }
-                
-                .info-table th {
-                    font-size: 0.85rem;
-                }
-                
-                .info-table td {
-                    font-size: 0.9rem;
-                }
-            }
-        </style>
+        <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+
+        <script src="js/modernizr.js"></script>
+        <!-- Swiper CSS -->
+        <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+
+        <!-- Swiper JS -->
+        <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+
     </head>
-
     <body>
-        <div class="profile-container" >
-            <div class="profile-wrapper">
-                <!-- Sidebar -->
-                <aside class="profile-sidebar">
-                    <h3>Hello, <%= user.getFullName() %></h3>
-                    
-                    <a href="user?action=transaction" class="sidebar-link">
-                        <i class="fas fa-shopping-bag"></i>
-                        <span>My Orders</span>
-                    </a>
-                    
-                    <a href="user" class="sidebar-link">
-                        <i class="fas fa-user"></i>
-                        <span>Profile & Address</span>
-                    </a>
-                    
-                    <a href="user?action=changePassword" class="sidebar-link">
-                        <i class="fas fa-lock"></i>
-                        <span>Change Password</span>
-                    </a>
-                    
-                    <form action="logout" method="post">
-                        <button type="submit" class="logout-btn">
-                            <i class="fas fa-sign-out-alt"></i> Logout
-                        </button>
+        <header id="header" class="site-header header-scrolled position-fixed text-black bg-light">
+            <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+            <symbol id="search" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+                <title>Search</title>
+                <path fill="currentColor" d="M19 3C13.488 3 9 7.488 9 13c0 2.395.84 4.59 2.25 6.313L3.281 27.28l1.439 1.44l7.968-7.969A9.922 9.922 0 0 0 19 23c5.512 0 10-4.488 10-10S24.512 3 19 3zm0 2c4.43 0 8 3.57 8 8s-3.57 8-8 8s-8-3.57-8-8s3.57-8 8-8z" />
+            </symbol>
+            <symbol xmlns="http://www.w3.org/2000/svg" id="user" viewBox="0 0 16 16">
+                <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3Zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+            </symbol>
+            <symbol xmlns="http://www.w3.org/2000/svg" id="cart" viewBox="0 0 16 16">
+                <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+            </symbol>
+            <svg xmlns="http://www.w3.org/2000/svg" id="chevron-left" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z" />
+            </svg>
+            <symbol xmlns="http://www.w3.org/2000/svg" id="chevron-right" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z" />
+            </symbol>
+            <symbol xmlns="http://www.w3.org/2000/svg" id="cart-outline" viewBox="0 0 16 16">
+                <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .49.598l-1 5a.5.5 0 0 1-.465.401l-9.397.472L4.415 11H13a.5.5 0 0 1 0 1H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM3.102 4l.84 4.479 9.144-.459L13.89 4H3.102zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+            </symbol>
+            <symbol xmlns="http://www.w3.org/2000/svg" id="quality" viewBox="0 0 16 16">
+                <path d="M9.669.864 8 0 6.331.864l-1.858.282-.842 1.68-1.337 1.32L2.6 6l-.306 1.854 1.337 1.32.842 1.68 1.858.282L8 12l1.669-.864 1.858-.282.842-1.68 1.337-1.32L13.4 6l.306-1.854-1.337-1.32-.842-1.68L9.669.864zm1.196 1.193.684 1.365 1.086 1.072L12.387 6l.248 1.506-1.086 1.072-.684 1.365-1.51.229L8 10.874l-1.355-.702-1.51-.229-.684-1.365-1.086-1.072L3.614 6l-.25-1.506 1.087-1.072.684-1.365 1.51-.229L8 1.126l1.356.702 1.509.229z" />
+                <path d="M4 11.794V16l4-1 4 1v-4.206l-2.018.306L8 13.126 6.018 12.1 4 11.794z" />
+            </symbol>
+            <symbol xmlns="http://www.w3.org/2000/svg" id="price-tag" viewBox="0 0 16 16">
+                <path d="M6 4.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm-1 0a.5.5 0 1 0-1 0 .5.5 0 0 0 1 0z" />
+                <path d="M2 1h4.586a1 1 0 0 1 .707.293l7 7a1 1 0 0 1 0 1.414l-4.586 4.586a1 1 0 0 1-1.414 0l-7-7A1 1 0 0 1 1 6.586V2a1 1 0 0 1 1-1zm0 5.586 7 7L13.586 9l-7-7H2v4.586z" />
+            </symbol>
+            <symbol xmlns="http://www.w3.org/2000/svg" id="shield-plus" viewBox="0 0 16 16">
+                <path d="M5.338 1.59a61.44 61.44 0 0 0-2.837.856.481.481 0 0 0-.328.39c-.554 4.157.726 7.19 2.253 9.188a10.725 10.725 0 0 0 2.287 2.233c.346.244.652.42.893.533.12.057.218.095.293.118a.55.55 0 0 0 .101.025.615.615 0 0 0 .1-.025c.076-.023.174-.061.294-.118.24-.113.547-.29.893-.533a10.726 10.726 0 0 0 2.287-2.233c1.527-1.997 2.807-5.031 2.253-9.188a.48.48 0 0 0-.328-.39c-.651-.213-1.75-.56-2.837-.855C9.552 1.29 8.531 1.067 8 1.067c-.53 0-1.552.223-2.662.524zM5.072.56C6.157.265 7.31 0 8 0s1.843.265 2.928.56c1.11.3 2.229.655 2.887.87a1.54 1.54 0 0 1 1.044 1.262c.596 4.477-.787 7.795-2.465 9.99a11.775 11.775 0 0 1-2.517 2.453 7.159 7.159 0 0 1-1.048.625c-.28.132-.581.24-.829.24s-.548-.108-.829-.24a7.158 7.158 0 0 1-1.048-.625 11.777 11.777 0 0 1-2.517-2.453C1.928 10.487.545 7.169 1.141 2.692A1.54 1.54 0 0 1 2.185 1.43 62.456 62.456 0 0 1 5.072.56z" />
+                <path d="M8 4.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V9a.5.5 0 0 1-1 0V7.5H6a.5.5 0 0 1 0-1h1.5V5a.5.5 0 0 1 .5-.5z" />
+            </symbol>
+            <symbol xmlns="http://www.w3.org/2000/svg" id="star-fill" viewBox="0 0 16 16">
+                <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
+            </symbol>
+            <symbol xmlns="http://www.w3.org/2000/svg" id="star-empty" viewBox="0 0 16 16">
+                <path d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288L8 2.223l1.847 3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.565.565 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z" />
+            </symbol>
+            <symbol xmlns="http://www.w3.org/2000/svg" id="star-half" viewBox="0 0 16 16">
+                <path d="M5.354 5.119 7.538.792A.516.516 0 0 1 8 .5c.183 0 .366.097.465.292l2.184 4.327 4.898.696A.537.537 0 0 1 16 6.32a.548.548 0 0 1-.17.445l-3.523 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256a.52.52 0 0 1-.146.05c-.342.06-.668-.254-.6-.642l.83-4.73L.173 6.765a.55.55 0 0 1-.172-.403.58.58 0 0 1 .085-.302.513.513 0 0 1 .37-.245l4.898-.696zM8 12.027a.5.5 0 0 1 .232.056l3.686 1.894-.694-3.957a.565.565 0 0 1 .162-.505l2.907-2.77-4.052-.576a.525.525 0 0 1-.393-.288L8.001 2.223 8 2.226v9.8z" />
+            </symbol>
+            <symbol xmlns="http://www.w3.org/2000/svg" id="quote" viewBox="0 0 24 24">
+                <path fill="currentColor" d="m15 17l2-4h-4V6h7v7l-2 4h-3Zm-9 0l2-4H4V6h7v7l-2 4H6Z" />
+            </symbol>
+            <symbol xmlns="http://www.w3.org/2000/svg" id="facebook" viewBox="0 0 24 24">
+                <path fill="currentColor" d="M9.198 21.5h4v-8.01h3.604l.396-3.98h-4V7.5a1 1 0 0 1 1-1h3v-4h-3a5 5 0 0 0-5 5v2.01h-2l-.396 3.98h2.396v8.01Z" />
+            </symbol>
+            <symbol xmlns="http://www.w3.org/2000/svg" id="youtube" viewBox="0 0 32 32">
+                <path fill="currentColor" d="M29.41 9.26a3.5 3.5 0 0 0-2.47-2.47C24.76 6.2 16 6.2 16 6.2s-8.76 0-10.94.59a3.5 3.5 0 0 0-2.47 2.47A36.13 36.13 0 0 0 2 16a36.13 36.13 0 0 0 .59 6.74a3.5 3.5 0 0 0 2.47 2.47c2.18.59 10.94.59 10.94.59s8.76 0 10.94-.59a3.5 3.5 0 0 0 2.47-2.47A36.13 36.13 0 0 0 30 16a36.13 36.13 0 0 0-.59-6.74ZM13.2 20.2v-8.4l7.27 4.2Z" />
+            </symbol>
+            <symbol xmlns="http://www.w3.org/2000/svg" id="twitter" viewBox="0 0 256 256">
+                <path fill="currentColor" d="m245.66 77.66l-29.9 29.9C209.72 177.58 150.67 232 80 232c-14.52 0-26.49-2.3-35.58-6.84c-7.33-3.67-10.33-7.6-11.08-8.72a8 8 0 0 1 3.85-11.93c.26-.1 24.24-9.31 39.47-26.84a110.93 110.93 0 0 1-21.88-24.2c-12.4-18.41-26.28-50.39-22-98.18a8 8 0 0 1 13.65-4.92c.35.35 33.28 33.1 73.54 43.72V88a47.87 47.87 0 0 1 14.36-34.3A46.87 46.87 0 0 1 168.1 40a48.66 48.66 0 0 1 41.47 24H240a8 8 0 0 1 5.66 13.66Z" />
+            </symbol>
+            <symbol xmlns="http://www.w3.org/2000/svg" id="instagram" viewBox="0 0 256 256">
+                <path fill="currentColor" d="M128 80a48 48 0 1 0 48 48a48.05 48.05 0 0 0-48-48Zm0 80a32 32 0 1 1 32-32a32 32 0 0 1-32 32Zm48-136H80a56.06 56.06 0 0 0-56 56v96a56.06 56.06 0 0 0 56 56h96a56.06 56.06 0 0 0 56-56V80a56.06 56.06 0 0 0-56-56Zm40 152a40 40 0 0 1-40 40H80a40 40 0 0 1-40-40V80a40 40 0 0 1 40-40h96a40 40 0 0 1 40 40ZM192 76a12 12 0 1 1-12-12a12 12 0 0 1 12 12Z" />
+            </symbol>
+            <symbol xmlns="http://www.w3.org/2000/svg" id="linkedin" viewBox="0 0 24 24">
+                <path fill="currentColor" d="M6.94 5a2 2 0 1 1-4-.002a2 2 0 0 1 4 .002zM7 8.48H3V21h4V8.48zm6.32 0H9.34V21h3.94v-6.57c0-3.66 4.77-4 4.77 0V21H22v-7.93c0-6.17-7.06-5.94-8.72-2.91l.04-1.68z" />
+            </symbol>
+            <symbol xmlns="http://www.w3.org/2000/svg" id="nav-icon" viewBox="0 0 16 16">
+                <path d="M14 10.5a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0 0 1h3a.5.5 0 0 0 .5-.5zm0-3a.5.5 0 0 0-.5-.5h-7a.5.5 0 0 0 0 1h7a.5.5 0 0 0 .5-.5zm0-3a.5.5 0 0 0-.5-.5h-11a.5.5 0 0 0 0 1h11a.5.5 0 0 0 .5-.5z" />
+            </symbol>
+            <symbol xmlns="http://www.w3.org/2000/svg" id="close" viewBox="0 0 16 16">
+                <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z" />
+            </symbol>
+            <symbol xmlns="http://www.w3.org/2000/svg" id="navbar-icon" viewBox="0 0 16 16">
+                <path d="M14 10.5a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0 0 1h3a.5.5 0 0 0 .5-.5zm0-3a.5.5 0 0 0-.5-.5h-7a.5.5 0 0 0 0 1h7a.5.5 0 0 0 .5-.5zm0-3a.5.5 0 0 0-.5-.5h-11a.5.5 0 0 0 0 1h11a.5.5 0 0 0 .5-.5z" />
+            </symbol>
+            </svg>  
+
+            <div class="search-popup">
+                <div class="search-popup-container">
+
+                    <form role="search" method="get" class="search-form" action="">
+                        <input type="search" id="search-form" class="search-field" placeholder="Type and press enter" value="" name="s" />
+                        <button type="submit" class="search-submit"><svg class="search"><use xlink:href="#search"></use></svg></button>
                     </form>
-                </aside>
 
-                <!-- Main Content -->
-                <main class="profile-content">
-                    <div class="profile-header">
-<h1>My Profile</h1>
-                        <p>Manage your account information</p>
-                    </div>
+                    <h5 class="cat-list-title">Browse Categories</h5>
 
-                    <div class="row">
-                        <!-- Avatar Section -->
-                        <div class="col-lg-4">
-                            <div class="avatar-section">
-                                <div class="avatar-wrapper">
-                                    <img src="images/avatar.png" alt="User Avatar">
-                                </div>
-                                <h5><%= user.getFullName() %></h5>
-                                <span class="user-id">ID: #<%= user.getUserId() %></span>
-                            </div>
-                        </div>
+                    <ul class="cat-list">
+                        <li class="cat-list-item">
+                            <a href="#" title="Mobile Phones">Mobile Phones</a>
+                        </li>
+                        <li class="cat-list-item">
+                            <a href="#" title="Smart Watches">Smart Watches</a>
+                        </li>
+                        <li class="cat-list-item">
+                            <a href="#" title="Headphones">Headphones</a>
+                        </li>
+                        <li class="cat-list-item">
+                            <a href="#" title="Accessories">Accessories</a>
+                        </li>
+                        <li class="cat-list-item">
+                            <a href="#" title="Monitors">Monitors</a>
+                        </li>
+                        <li class="cat-list-item">
+                            <a href="#" title="Speakers">Speakers</a>
+                        </li>
+                        <li class="cat-list-item">
+                            <a href="#" title="Memory Cards">Memory Cards</a>
+                        </li>
+                    </ul>
 
-                        <!-- Info Section -->
-                        <div class="col-lg-8">
-                            <div class="info-table">
-                                <table>
-                                    <tbody>
-                                        <tr>
-                                            <th><i class="fas fa-user" style="color: #667eea; margin-right: 8px;"></i></th>
-                                            <td><%= user.getFullName() %></td></th>
-                                            <td><%= user.getFullName() %></td>
-                                        </tr>
-                                        <tr>
-                                            <th><i class="fas fa-envelope" style="color: #667eea; margin-right: 8px;"></i>Email:</th>
-                                            <td><%= user.getEmail() %></td>
-                                        </tr>
-                                        <tr>
-                                            <th><i class="fas fa-phone" style="color: #667eea; margin-right: 8px;"></i>Phone Number:</th>
-                                            <td><%= user.getPhone() != null ? user.getPhone() : "Chưa cập nhật" %></td>
-                                        </tr>
-                                        <tr>
-                                            <th><i class="fas fa-map-marker-alt" style="color: #667eea; margin-right: 8px;"></i>Address:</th>
-                                            <td><%= user.getAddress() != null ? user.getAddress() : "Chưa cập nhật" %></td>
-                                        </tr>
-                                        <tr>
-                                            <th><i class="fas fa-calendar" style="color: #667eea; margin-right: 8px;"></i>Created Date:</th>
-                                            <td><%= user.getCreatedAt() != null ? user.getCreatedAt() : "Không xác định" %></td>
-                                        </tr>
-                                        <tr>
-                                            <th><i class="fas fa-check-circle" style="color: #667eea; margin-right: 8px;"></i>Status:</th>
-<td><span style="color: #48bb78; font-weight: 600;"><%= user.getStatus() != null ? user.getStatus() : "Đang hoạt động" %></span></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-
-                                <div class="mt-4 d-flex gap-3">
-                                    <a href="user?action=edit" class="btn btn-primary">
-                                        <i class="fas fa-edit"></i> Edit Profile
-                                    </a>
-                                    <a href="logout" class="btn btn-outline-danger">
-                                        <i class="fas fa-sign-out-alt"></i> Logout
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </main>
+                </div>
             </div>
+
+            <nav id="header-nav" class="navbar navbar-expand-lg px-3 mb-3">
+                <div class="container-fluid">
+                    <a class="navbar-brand" href="index.html">
+                        <img src="images/main-logo.png" class="logo">
+                    </a>
+                    <button class="navbar-toggler d-flex d-lg-none order-3 p-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#bdNavbar" aria-controls="bdNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                        <svg class="navbar-icon">
+                        <use xlink:href="#navbar-icon"></use>
+                        </svg>
+                    </button>
+                    <div class="offcanvas offcanvas-end" tabindex="-1" id="bdNavbar" aria-labelledby="bdNavbarOffcanvasLabel">
+                        <div class="offcanvas-header px-4 pb-0">
+                            <a class="navbar-brand" href="index.html">
+                                <img src="images/main-logo.png" class="logo">
+                            </a>
+                            <button type="button" class="btn-close btn-close-black" data-bs-dismiss="offcanvas" aria-label="Close" data-bs-target="#bdNavbar"></button>
+                        </div>
+                        
+                        <div class="offcanvas-body">
+                            <ul id="navbar" class="navbar-nav text-uppercase justify-content-end align-items-center flex-grow-1 pe-3">
+                                <li class="nav-item">
+                                    <a class="nav-link me-4 active" href="homepage">Home</a>
+                                </li>
+                                <%
+                                    if (listCategory != null) {
+                                        for (Category c : listCategory) {
+                                %>
+                                <li class="nav-item">
+                                    <a class="nav-link me-4" href="product?action=category&cID=<%= c.getCategoryId()%>">
+                                        <%= c.getCategoryName()%>
+                                    </a>
+                                </li>
+                                <%
+                                        }
+                                    }
+                                %>
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link me-4 dropdown-toggle link-dark" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Pages</a>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <a href="about.html" class="dropdown-item">About</a>
+                                        </li>
+                                        <li>
+                                            <a href="blog.html" class="dropdown-item">Blog</a>
+                                        </li>
+                                        <li>
+                                            <a href="shop.html" class="dropdown-item">Shop</a>
+                                        </li>
+                                        <li>
+                                            <a href="cart.html" class="dropdown-item">Cart</a>
+                                        </li>
+                                        <li>
+                                            <a href="checkout.html" class="dropdown-item">Checkout</a>
+                                        </li>
+                                        <li>
+                                            <a href="single-post.html" class="dropdown-item">Single Post</a>
+                                        </li>
+                                        <li>
+                                            <a href="single-product.html" class="dropdown-item">Single Product</a>
+                                        </li>
+                                        <li>
+                                            <a href="contact.html" class="dropdown-item">Contact</a>
+                                        </li>
+                                    </ul>
+                                </li>
+
+
+                                <div class="user-items ps-5">
+                                    <ul class="d-flex justify-content-end list-unstyled align-items-center">
+                                        <%
+                                            // B??C 1: L?y ??i t??ng Users t? session. 
+                                            // T?n thu?c t?nh ???c l?u l? "user" (nh? trong LoginServlet).
+                                            // D?ng t?n l?p ??y ?? model.Users (h?y ??m b?o t?n package l? ??ng)
+                                            
+
+                                            if (isLoggedIn) {
+                                                // B??C 2: D?ng ph??ng th?c getName() c? s?n ?? l?y t?n ng??i d?ng.
+                                                // Th?m logic ki?m tra null/r?ng ?? tr?nh l?i n?u t?n kh?ng ???c l?u.
+                                                if (user.getFullName() != null && !user.getFullName().trim().isEmpty()) {
+                                                    displayName = user.getFullName();
+                                                } else {
+                                                    // N?u t?n b? r?ng, hi?n th? Email thay th? (t?y ch?n)
+                                                    displayName = user.getEmail();
+                                                }
+
+
+                                        %>
+                                        <li class="search-item pe-3">
+                                            <a href="#" class="search-button">
+                                                <svg class="search"><use xlink:href="#search"></use></svg>
+                                            </a>
+                                        </li>
+
+                                        <li class="pe-3">
+                                            <a href="cart.html"> 
+                                                <svg class="cart"><use xlink:href="#cart"></use></svg>
+                                            </a>
+                                        </li>
+
+                                        <li class="pe-3">
+                                            <a href="logout" class="nav-link p-0 text-dark text-uppercase fw-bold">Logout</a> 
+                                        </li>
+
+                                        <li class="text-dark fw-bold">
+                                            <a href="user" class="nav-link p-0 text-dark text-uppercase fw-bold"> <%= displayName%> </a>
+                                        </li>
+
+                                        <%
+                                        } else {
+                                        %>
+
+                                        <li class="pe-3">
+                                            <a href="login.jsp" class="nav-link p-0 text-dark text-uppercase fw-bold">Login/Register</a>
+                                        </li>
+
+                                        <li class="text-dark fw-bold">
+                                            Hello Guest
+                                        </li>
+                                        <%
+                                            }
+                                        %>
+                                    </ul>
+                                </div>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </header>
+
+
+
+        <div style="display: flex; background-color: #f3f5f9; min-height: 100vh;">
+            <!-- Sidebar -->
+            <div style="width: 400px; background-color: #fff; padding: 20px;">
+                <h3 style="margin-top: 100px; margin-bottom: 50px; font-size: 1.5rem;">Anh/Chị <%= user.getFullName()%></h3>
+
+                <!-- Nút 1: Đơn hàng đã mua -->
+                <a href="order"
+                   style="display: flex; align-items: center; background-color: #f2f3f5; color: #333; font-weight: 500;
+                   border-radius: 8px; padding: 10px 15px; text-decoration: none; margin-bottom: 15px;">
+                    <i class="fa fa-shopping-bag" style="margin-right: 10px;"></i>
+                    My orders
+                </a>
+
+                <!-- Nút 2: Thông tin và sổ địa chỉ -->
+                <a href="user"
+                   style="display: flex; align-items: center; background-color: #f2f3f5; color: #333; font-weight: 500;
+                   border-radius: 8px; padding: 10px 15px; text-decoration: none; margin-bottom: 15px;">
+                    <i class="fa fa-user" style="margin-right: 10px;"></i>
+                    Infomation and address
+                </a>
+
+                <!-- Nút 3: Change password -->
+                <a href="changePassword.jsp"
+                   style="display: flex; align-items: center; background-color: #f2f3f5; color: #333; font-weight: 500;
+                   border-radius: 8px; padding: 10px 15px; text-decoration: none; margin-bottom: 25px;">
+                    <i class="fa fa-user" style="margin-right: 10px;"></i>
+                    Change password
+                </a>
+
+                <!-- Nút Đăng xuất -->
+                <form action="logout" method="post">
+                    <button type="submit"
+                            style="background-color: #ff4d4f; color: white; border: none; width: 100%; padding: 10px;
+                            border-radius: 8px; font-weight: 500; cursor: pointer;">
+                        Đăng Xuất
+                    </button>
+                </form>
+            </div>
+
+            <!-- Main -->
+            <div class="container mb-5">
+                <div class="row justify-content-center">
+                    <div class="col-md-9 p-4" style="background-color: transparent; box-shadow: none; border: none;">
+                        <div class="card-body p-5">
+                            <!-- Banner Section -->
+                            <section class="py-5">
+                                <div class="container text-center">
+                                    <h1 class="fw-bold text-uppercase" style="margin-top: 100px;">Đổi mật khẩu</h1>
+                                </div>
+                            </section>      
+
+                            <div class="col-md-8" style="margin-left: 120px;">
+                                <div class="mx-auto">
+                                    <form id="changePasswordForm" action="user" method="post">
+                                        <input type="hidden" name="action" value="updatePassword">
+
+                                        <!-- Mật khẩu cũ -->
+                                        <div class="mb-2">
+                                            <label class="form-label" for="oldPassword">Mật khẩu hiện tại</label>
+                                            <input class="form-control" type="password" name="oldPassword" id="oldPassword" required>
+                                            <small id="errorOld" class="text-danger"></small>
+                                        </div>
+
+                                        <!-- Mật khẩu mới -->
+                                        <div class="mb-2">
+                                            <label class="form-label" for="newPassword">Mật khẩu mới</label>
+                                            <input class="form-control" type="password" name="newPassword" id="newPassword" required>
+                                            <small id="errorNew" class="text-danger"></small>
+                                        </div>
+
+                                        <!-- Xác nhận mật khẩu mới -->
+                                        <div class="mb-2">
+                                            <label class="form-label" for="confirmPassword">Xác nhận mật khẩu mới</label>
+                                            <input class="form-control" type="password" name="confirmPassword" id="confirmPassword" required>
+                                            <small id="errorConfirm" class="text-danger"></small>
+                                        </div>
+
+                                        <% if (message != null) {%>
+                                        <div class="message text-success"><%= message%></div>
+                                        <% } %>
+                                        <% if (error != null) {%>
+                                        <div class="error text-danger"><%= error%></div>
+                                        <% }%>
+
+                                        <div class="d-flex justify-content-center">
+                                            <button type="submit" class="btn btn-secondary ms-2 px-4">Cập nhật mật khẩu</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ✅ Thêm đoạn script này ngay dưới phần container -->
+            <script>
+                const oldPassword = document.getElementById("oldPassword");
+                const newPassword = document.getElementById("newPassword");
+                const confirmPassword = document.getElementById("confirmPassword");
+
+                const errorOld = document.getElementById("errorOld");
+                const errorNew = document.getElementById("errorNew");
+                const errorConfirm = document.getElementById("errorConfirm");
+
+                // Kiểm tra mật khẩu cũ trống
+                oldPassword.addEventListener("input", () => {
+                    errorOld.textContent = oldPassword.value.trim() === "" ? "Vui lòng nhập mật khẩu hiện tại" : "";
+                });
+
+                // Kiểm tra độ mạnh của mật khẩu mới
+                newPassword.addEventListener("input", () => {
+                    const value = newPassword.value;
+                    const strongRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$/; // ít nhất 8 ký tự, có hoa, thường, số
+                    if (value === "") {
+                        errorNew.textContent = "";
+                    } else if (!strongRegex.test(value)) {
+                        errorNew.textContent = "Mật khẩu phải có ít nhất 8 ký tự, gồm chữ hoa, chữ thường và số.";
+                    } else {
+                        errorNew.textContent = "";
+                    }
+
+                    // Kiểm tra khớp lại mỗi khi mật khẩu mới thay đổi
+                    if (confirmPassword.value && confirmPassword.value !== value) {
+                        errorConfirm.textContent = "Mật khẩu xác nhận không khớp.";
+                    } else {
+                        errorConfirm.textContent = "";
+                    }
+                });
+
+                // Kiểm tra khớp mật khẩu xác nhận
+                confirmPassword.addEventListener("input", () => {
+                    if (confirmPassword.value === "") {
+                        errorConfirm.textContent = "";
+                    } else if (confirmPassword.value !== newPassword.value) {
+                        errorConfirm.textContent = "Mật khẩu xác nhận không khớp.";
+                    } else {
+                        errorConfirm.textContent = "";
+                    }
+                });
+
+                // Ngăn submit nếu có lỗi
+                document.getElementById("changePasswordForm").addEventListener("submit", (e) => {
+                    if (errorOld.textContent || errorNew.textContent || errorConfirm.textContent) {
+                        e.preventDefault();
+                        alert("Vui lòng sửa lỗi trước khi gửi biểu mẫu.");
+                    }
+                });
+            </script>
+
         </div>
 
+        <div class="container padding-xlarge">
+            <footer id="footer" class="overflow-hidden">
+                <div class="container">
+                    <div class="row">
+                        <div class="footer-top-area">
+                            <div class="row d-flex flex-wrap justify-content-between">
+                                <div class="col-lg-3 col-sm-6 pb-3">
+                                    <div class="footer-menu">
+                                        <img src="images/main-logo.png" alt="logo">
+                                        <p>Nisi, purus vitae, ultrices nunc. Sit ac sit suscipit hendrerit. Gravida massa volutpat aenean odio erat nullam fringilla.</p>
+                                        <div class="social-links">
+                                            <ul class="d-flex list-unstyled">
+                                                <li>
+                                                    <a href="#">
+                                                        <svg class="facebook">
+                                                        <use xlink:href="#facebook" />
+                                                        </svg>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="#">
+                                                        <svg class="instagram">
+                                                        <use xlink:href="#instagram" />
+                                                        </svg>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="#">
+                                                        <svg class="twitter">
+                                                        <use xlink:href="#twitter" />
+                                                        </svg>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="#">
+                                                        <svg class="linkedin">
+                                                        <use xlink:href="#linkedin" />
+                                                        </svg>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="#">
+                                                        <svg class="youtube">
+                                                        <use xlink:href="#youtube" />
+                                                        </svg>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-2 col-sm-6 pb-3">
+                                    <div class="footer-menu text-uppercase">
+                                        <h5 class="widget-title pb-2">Quick Links</h5>
+                                        <ul class="menu-list list-unstyled text-uppercase">
+                                            <li class="menu-item pb-2">
+                                                <a href="#">Home</a>
+                                            </li>
+                                            <li class="menu-item pb-2">
+                                                <a href="#">About</a>
+                                            </li>
+                                            <li class="menu-item pb-2">
+                                                <a href="#">Shop</a>
+                                            </li>
+                                            <li class="menu-item pb-2">
+                                                <a href="#">Blogs</a>
+                                            </li>
+                                            <li class="menu-item pb-2">
+                                                <a href="#">Contact</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-sm-6 pb-3">
+                                    <div class="footer-menu text-uppercase">
+                                        <h5 class="widget-title pb-2">Help & Info Help</h5>
+                                        <ul class="menu-list list-unstyled">
+                                            <li class="menu-item pb-2">
+                                                <a href="#">Track Your Order</a>
+                                            </li>
+                                            <li class="menu-item pb-2">
+                                                <a href="#">Returns Policies</a>
+                                            </li>
+                                            <li class="menu-item pb-2">
+                                                <a href="#">Shipping + Delivery</a>
+                                            </li>
+                                            <li class="menu-item pb-2">
+                                                <a href="#">Contact Us</a>
+                                            </li>
+                                            <li class="menu-item pb-2">
+                                                <a href="#">Faqs</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-sm-6 pb-3">
+                                    <div class="footer-menu contact-item">
+                                        <h5 class="widget-title text-uppercase pb-2">Contact Us</h5>
+                                        <p>Do you have any queries or suggestions? <a href="mailto:">yourinfo@gmail.com</a>
+                                        </p>
+                                        <p>If you need support? Just give us a call. <a href="">+55 111 222 333 44</a>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+            </footer>
+        </div>
+
+        <div id="footer-bottom">
+            <div class="container">
+                <div class="row d-flex flex-wrap justify-content-between">
+                    <div class="col-md-4 col-sm-6">
+                        <div class="Shipping d-flex">
+                            <p>We ship with:</p>
+                            <div class="card-wrap ps-2">
+                                <img src="images/dhl.png" alt="visa">
+                                <img src="images/shippingcard.png" alt="mastercard">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-sm-6">
+                        <div class="payment-method d-flex">
+                            <p>Payment options:</p>
+                            <div class="card-wrap ps-2">
+                                <img src="images/visa.jpg" alt="visa">
+                                <img src="images/mastercard.jpg" alt="mastercard">
+                                <img src="images/paypal.jpg" alt="paypal">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-sm-6">
+                        <div class="copyright">
+                            <p>? Copyright 2023 MiniStore. Design by <a href="https://templatesjungle.com/">TemplatesJungle</a> Distribution by <a href="https://themewagon.com">ThemeWagon</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <script src="js/jquery-1.11.0.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
+        <script type="text/javascript" src="js/bootstrap.bundle.min.js"></script>
+        <script type="text/javascript" src="js/plugins.js"></script>
+        <script type="text/javascript" src="js/script.js"></script>
+        <script>
+    var swiper = new Swiper(".product-swiper", {
+        slidesPerView: 4,
+        spaceBetween: 30,
+        pagination: {
+            el: ".swiper-pagination",
+            clickable: true,
+        },
+        breakpoints: {
+            320: {slidesPerView: 1},
+            768: {slidesPerView: 2},
+            1024: {slidesPerView: 4}
+        }
+    });
+        </script>
+
     </body>
 </html>
+
+

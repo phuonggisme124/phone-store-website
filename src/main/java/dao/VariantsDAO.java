@@ -181,8 +181,8 @@ public class VariantsDAO extends DBContext {
      * @param description Description text.
      * @param img Image URL.
      */
-    public void updateVariant(int vID, String color, String storage, double price, int stock, String description, String img) {
-        String sql = "UPDATE Variants SET Color = ?, Storage = ?, Price = ?, Stock = ?, Description = ?, ImageURL = ? WHERE VariantID = ?";
+    public void updateVariant(int vID, String color, String storage, double price, int stock, String description) {
+        String sql = "UPDATE Variants SET Color = ?, Storage = ?, Price = ?, Stock = ?, Description = ? WHERE VariantID = ?";
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, color);
@@ -190,8 +190,8 @@ public class VariantsDAO extends DBContext {
             ps.setDouble(3, price);
             ps.setInt(4, stock);
             ps.setString(5, description);
-            ps.setString(6, img);
-            ps.setInt(7, vID);
+
+            ps.setInt(6, vID);
             ps.executeUpdate();
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -702,6 +702,18 @@ public class VariantsDAO extends DBContext {
             System.out.println(e.getMessage());
         }
     }
-    
+
+    public List<String> getImages(String images) {
+        List<String> list = new ArrayList<>();
+
+        if (images != null && !images.isEmpty()) {
+            String[] token = images.split("#");
+            for (String t : token) {
+                list.add(t);
+            }
+        }
+
+        return list;
+    }
 
 }

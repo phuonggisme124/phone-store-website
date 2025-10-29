@@ -103,7 +103,7 @@ public class ReviewServlet extends HttpServlet {
             int currentReviewID = rdao.getCurrentReviewID();
             
             // === Upload ảnh review ===
-            String filePath = request.getServletContext().getRealPath("");
+            String filePath = request.getServletContext().getRealPath("images_review");
             String basePath = filePath.substring(0, filePath.indexOf("\\target"));
             String uploadDir = basePath + File.separator + "src" + File.separator + "main" + File.separator + "webapp" + File.separator + "images_review";
             
@@ -116,6 +116,7 @@ public class ReviewServlet extends HttpServlet {
                     String fileName = currentReviewID + "_" + Paths.get(part.getSubmittedFileName()).getFileName().toString();
                     img += fileName + "#";
                     part.write(uploadDir + File.separator + fileName);
+                    part.write(filePath + File.separator + fileName);
                 }
             }
             

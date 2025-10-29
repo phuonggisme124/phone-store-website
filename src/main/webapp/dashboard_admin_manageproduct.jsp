@@ -83,7 +83,7 @@
                                 <input type="hidden" name="action" value="manageProduct">
                                 <input type="hidden" name="brandFilter" value="<%= currentBrand%>">
                                 <input class="form-control me-2" type="text" id="searchProduct" name="productName"
-                                       placeholder="🔍 Search Product" value="<%= currentProductName%>"
+                                       placeholder="Search Product" value="<%= currentProductName%>"
                                        oninput="showSuggestions(this.value)">
                                 <button class="btn btn-outline-primary" type="submit">
                                     <i class="bi bi-search"></i>
@@ -120,8 +120,11 @@
                         </div>
                     </div>
                 </nav>
-
+                            
                 <!-- Create Product Button -->
+                <div class="container-fluid p-4 ps-3">
+                    <h1 class="fw-bold ps-3 mb-4 fw-bold text-primary">Manage Products</h1>
+                </div>
                 <div class="container-fluid p-4 ps-3">
                     <a class="btn btn-primary px-4 py-2 rounded-pill shadow-sm" href="admin?action=createProduct">
                         <i class="bi bi-box-seam me-2"></i> Create Product
@@ -131,7 +134,7 @@
                 <!-- Products Table -->
                 <div class="card shadow-sm border-0 p-4">
                     <div class="card-body p-0">
-                        <h4 class="fw-bold ps-3 mb-4">Manage Products</h4>
+                        
                         <% if (currentListProduct != null && !currentListProduct.isEmpty()) { %>
                         <div class="table-responsive">
                             <table class="table table-hover align-middle mb-0">

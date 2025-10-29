@@ -191,7 +191,7 @@ public class PaymentServlet extends HttpServlet {
 
                 // SỬA: Lấy từ cartCheckout thay vì cart
                 // Tạo Order và LẤY OrderID được tự động sinh
-                Order o = new Order(userID, "COD", specificAddress, totalPrice, "Pending", isInstalment, new Users(receiverName, receiverPhone));
+                Order o = new Order(userID, paymentMethod, specificAddress, totalPrice, "Pending", isInstalment, new Users(receiverName, receiverPhone));
 
                 int newOrderID = oDAO.addNewOrder(o);
                 o.setOrderID(newOrderID);

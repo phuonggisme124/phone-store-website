@@ -198,35 +198,71 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
 }
 
 /* Chọn Sao */
+/* ========================================= */
+/* CSS Hoàn Chỉnh cho Chọn Sao (Rating Stars) */
+/* ========================================= */
+
 .star-rating-selection {
     display: flex;
     justify-content: space-between;
     margin-bottom: 20px;
     text-align: center;
 }
+
 .star-option {
     display: flex;
     flex-direction: column;
     align-items: center;
     cursor: pointer;
+    flex: 1; /* Giúp 5 sao chiếm không gian đều nhau */
 }
+
+/* Ẩn nút radio mặc định */
 .star-option input[type="radio"] {
     display: none;
 }
+
+/* Style cho icon sao */
 .star-icon {
     font-size: 35px;
-    color: #ccc;
-    transition: color 0.3s;
+    color: #ccc; /* Màu sao mặc định (màu xám) */
+    transition: color 0.2s ease-in-out; /* Hiệu ứng chuyển màu mượt */
 }
+
+/* Style cho chữ (Very bad, Good, ...) */
 .rating-text {
     font-size: 12px;
     margin-top: 5px;
     color: #666;
+    transition: all 0.2s ease-in-out;
 }
-/* 🎯 CSS cho Sao Sáng (Thêm class bằng JS) */
-.star-option.selected .star-icon,
-.star-option.hover .star-icon {
-    color: #ffc107;
+
+/* --- 1. HIỆU ỨNG KHI RÊ CHUỘT (Pure CSS) --- */
+
+/* Khi rê chuột vào HỘP CHỨA, tất cả sao đều "sáng nháp" */
+.star-rating-selection:hover .star-option .star-icon {
+   color: #ffdb58; /* Màu vàng nhạt khi hover (màu preview) */
+}
+
+/* Khi rê chuột vào MỘT SAO, tất cả các sao "anh em" (~) NẰM SAU nó sẽ TẮT đi */
+.star-rating-selection .star-option:hover ~ .star-option .star-icon {
+   color: #ccc; /* Quay lại màu xám mặc định */
+}
+
+/* --- 2. HIỆU ỨNG KHI ĐÃ CHỌN (Click - Cần JavaScript) --- */
+
+/* * JavaScript sẽ thêm class "selected"
+ * cho TẤT CẢ các .star-option từ 1 đến sao được chọn.
+*/
+.star-option.selected .star-icon {
+    /* Dùng !important để "thắng" (override) hiệu ứng hover ở trên */
+    color: #ffc107 !important; /* Màu vàng đậm "chốt đơn" */
+}
+
+/* Làm cho text của sao được chọn cũng nổi bật lên */
+.star-option.selected .rating-text {
+    color: #333;
+    font-weight: 600; /* Chữ đậm hơn */
 }
 
 /* Textarea */
@@ -345,17 +381,17 @@ form {
     border: none; /* Không có viền mặc định */
     padding: 5px 10px; /* Khoảng đệm bên trong nút */
     cursor: pointer;
-    
+
     /* Kiểu chữ và màu sắc (Màu đỏ là chuẩn cho nút xóa) */
     color: #dc3545; /* Màu đỏ tiêu chuẩn (Bootstrap danger) */
     font-size: 14px;
     font-weight: 600; /* Chữ đậm nhẹ */
     text-transform: capitalize; /* Viết hoa chữ cái đầu (tùy chọn) */
-    
+
     /* Căn chỉnh nội dung (icon và chữ) */
     display: flex;
     align-items: center;
-    
+
     /* Hiệu ứng mượt */
     transition: all 0.2s ease-in-out;
 }

@@ -21,6 +21,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
 import java.io.File;
 import java.nio.file.Paths;
@@ -140,7 +141,7 @@ public class AdminServlet extends HttpServlet {
 
             int id = Integer.parseInt(request.getParameter("id"));
             List<Variants> listVariants = vdao.getAllVariantByProductID(id);
-            List<Products> listProducts = pdao.getAllProduct()  ;
+            List<Products> listProducts = pdao.getAllProduct();
             //Promotions promotion = pmtdao.getPromotionByProductID(id);
 
             request.setAttribute("productID", id);
@@ -215,9 +216,8 @@ public class AdminServlet extends HttpServlet {
             List<Products> listProducts = pdao.getAllProduct();
             request.setAttribute("listProducts", listProducts);
             request.getRequestDispatcher("admin_managepromotion_create.jsp").forward(request, response);
-        
-        }
-        else if (action.equals("manageOrder")) {
+
+        } else if (action.equals("manageOrder")) {
             List<Order> listOrder = odao.getAllOrder();
             List<String> listPhone = odao.getAllPhone();
             List<Sale> listSales = udao.getAllSales();
@@ -239,7 +239,7 @@ public class AdminServlet extends HttpServlet {
             request.setAttribute("isIntalment", isIntalment);
             request.getRequestDispatcher("admin_manageorder_detail.jsp").forward(request, response);
         } else if (action.equals("manageReview")) {
-            List<Review> listReview = rdao.getAllReview();           
+            List<Review> listReview = rdao.getAllReview();
             request.setAttribute("listReview", listReview);
             request.getRequestDispatcher("dashboard_admin_managereview.jsp").forward(request, response);
         } else if (action.equals("reviewDetail")) {
@@ -299,7 +299,7 @@ public class AdminServlet extends HttpServlet {
                     List<Order> listInstalment = odao.getAllOrderInstalment();
                     listOrder = odao.getAllCompletedInstalment(listInstalment);
                 }
-            }else{
+            } else {
                 if (status.equals("Pending")) {
                     List<Order> listInstalment = odao.getAllOrderInstalment();
                     listOrder = odao.getAllPendingInstalmentAndPhone(listInstalment, phone);
@@ -310,7 +310,7 @@ public class AdminServlet extends HttpServlet {
             }
 
             List<Sale> listSales = udao.getAllSales();
-            
+
             request.setAttribute("listOrder", listOrder);
             request.setAttribute("listPhone", listPhone);
 
@@ -357,59 +357,58 @@ public class AdminServlet extends HttpServlet {
             request.setAttribute("listPhone", listPhone);
             request.setAttribute("listSales", listSales);
             request.getRequestDispatcher("dashboard_admin_manageorder.jsp").forward(request, response);
-        }else if(action.equals("searchReview")){
+        } else if (action.equals("searchReview")) {
             int productID = Integer.parseInt(request.getParameter("productID"));
             String storage = request.getParameter("storage");
             int rating = Integer.parseInt(request.getParameter("rating"));
-            
+
             List<Review> listReview;
-            if(rating == 0){
+            if (rating == 0) {
                 List<Variants> listVariant = vdao.getAllVariantByStorage(productID, storage);
                 listReview = rdao.getAllReviewByListVariant(listVariant);
-            }else{
+            } else {
                 List<Variants> listVariant = vdao.getAllVariantByStorage(productID, storage);
                 listReview = rdao.getAllReviewByListVariantAndRating(listVariant, rating);
             }
-            
+
             request.setAttribute("listReview", listReview);
             request.setAttribute("productID", productID);
             request.setAttribute("storage", storage);
             request.setAttribute("rating", rating);
             request.getRequestDispatcher("dashboard_admin_managereview.jsp").forward(request, response);
-            
-        }else if(action.equals("filterReview")){
+
+        } else if (action.equals("filterReview")) {
             int productID = Integer.parseInt(request.getParameter("productID"));
             String storage = request.getParameter("storage");
             int rating = Integer.parseInt(request.getParameter("rating"));
             List<Review> listReview;
-            if((productID == 0) && (storage == null || storage.isEmpty())){
+            if ((productID == 0) && (storage == null || storage.isEmpty())) {
                 listReview = rdao.getAllReviewByRating(rating);
-            }else{
+            } else {
                 List<Variants> listVariant = vdao.getAllVariantByStorage(productID, storage);
                 listReview = rdao.getAllReviewByListVariantAndRating(listVariant, rating);
             }
-            
+
             request.setAttribute("listReview", listReview);
             request.setAttribute("productID", productID);
             request.setAttribute("storage", storage);
             request.setAttribute("rating", rating);
             request.getRequestDispatcher("dashboard_admin_managereview.jsp").forward(request, response);
-        }else if (action.equals("manageCategory")){
+        } else if (action.equals("manageCategory")) {
             List<Category> listCategory = ctdao.getAllCategories();
-            
+
             request.setAttribute("listCategory", listCategory);
             request.getRequestDispatcher("dashboard_admin_managecategory.jsp").forward(request, response);
-            
-        }else if(action.equals("editCategory")){
+
+        } else if (action.equals("editCategory")) {
             int cateID = Integer.parseInt(request.getParameter("id"));
-            
+
             Category catergory = ctdao.getCategoryByCategoryID(cateID);
             request.setAttribute("catergory", catergory);
             request.getRequestDispatcher("admin_managecategory_edit.jsp").forward(request, response);
-        }else if(action.equals("createCategory")){
+        } else if (action.equals("createCategory")) {
             request.getRequestDispatcher("admin_managecategory_create.jsp").forward(request, response);
-        }
-        else {
+        } else {
             request.getRequestDispatcher("dashboard_admin.jsp").forward(request, response);
         }
 
@@ -475,9 +474,60 @@ public class AdminServlet extends HttpServlet {
             int stock = Integer.parseInt(request.getParameter("stock"));
             int supplierID = Integer.parseInt(request.getParameter("supplierID"));
             String description = request.getParameter("description");
-            String img = request.getParameter("img");
+            //update images
+            //
+            String filePath = request.getServletContext().getRealPath("");
+            String basePath = filePath.substring(0, filePath.indexOf("\\target"));
+            String uploadDir = basePath + File.separator + "src" + File.separator + "main" + File.separator + "webapp" + File.separator + "images";
+            File uploadFolder = new File(uploadDir);
+            if (!uploadFolder.exists()) {
+                uploadFolder.mkdirs();
+            }
+            //Lấy ảnh mới
+            List<String> listNewImages = new ArrayList<>();
+            for (Part part : request.getParts()) {
+                if ("photos".equals(part.getName()) && part.getSize() > 0) {
+                    String fileName = vID + "_" + Paths.get(part.getSubmittedFileName()).getFileName().toString();
+                    listNewImages.add(fileName);
+                    part.write(uploadDir + File.separator + fileName);
+                }
+            }
+            //xóa ảnh có sẵn            
+            Variants variant = vdao.getVariantByID(vID);
+            List<String> listAllImages = vdao.getImages(variant.getImageUrl());
+            String imagesToDelete = request.getParameter("imagesToDelete");
+            if (imagesToDelete != null && !imagesToDelete.isEmpty()) {
+                List<String> listImagesDelete = vdao.getImages(imagesToDelete);
+                if (listAllImages != null) {
+                    listAllImages.removeAll(listImagesDelete);
+                }
+                
+                for (String imageDelete : listImagesDelete){
+                    File file = new File(uploadDir + File.separator + imageDelete);
+                    if (file.exists())
+                        file.delete();
+                }
+            }
+            
+            
+            
+            List<String> finalListImages = new ArrayList<>();
+            if (listAllImages != null) {
+                finalListImages.addAll(listAllImages);
+            }
 
-            vdao.updateVariant(vID, color, storage, price, stock, description, img);
+            finalListImages.addAll(listNewImages);
+
+            String img = "";
+            if (!finalListImages.isEmpty()) {
+
+                img = String.join("#", finalListImages);
+
+            }
+
+            vdao.updateImageVariant(vID, img);
+
+            vdao.updateVariant(vID, color, storage, price, stock, description);
             pdao.updateProduct(pID, supplierID, pName, brand, warrantyPeriod);
             vdao.updateDiscountPrice();
             response.sendRedirect("admin?action=manageProduct");
@@ -514,10 +564,17 @@ public class AdminServlet extends HttpServlet {
             double price = Double.parseDouble(request.getParameter("price"));
             int stock = Integer.parseInt(request.getParameter("stock"));
             String description = request.getParameter("description");
+            
+            Variants variant = vdao.getVariant(pID, storage, color);
+            if(variant != null){
+                HttpSession session = request.getSession();
+                session.setAttribute("exist", pName + " " + storage + " " + color +" already exists");
+                response.sendRedirect("admin?action=createVariant&pid=" + pID);
+                return;
+            }
 
             vdao.createVariant(pID, color, storage, price, stock, description);
 
-            
             String filePath = request.getServletContext().getRealPath("");
             String basePath = filePath.substring(0, filePath.indexOf("\\target"));
             String uploadDir = basePath + File.separator + "src" + File.separator + "main" + File.separator + "webapp" + File.separator + "images";
@@ -596,33 +653,31 @@ public class AdminServlet extends HttpServlet {
             pmtdao.createPromotion(pID, discountPercent, startDate, endDate, status);
             vdao.updateDiscountPrice();
             response.sendRedirect("admin?action=managePromotion");
-        }else if(action.equals("deletePromotion")){
+        } else if (action.equals("deletePromotion")) {
             int pmtID = Integer.parseInt(request.getParameter("pmtID"));
-            
+
             pmtdao.deletePromotion(pmtID);
             response.sendRedirect("admin?action=managePromotion");
-        }else if(action.equals("updateCategory")){
+        } else if (action.equals("updateCategory")) {
             int cateID = Integer.parseInt(request.getParameter("cateID"));
             String name = request.getParameter("name");
             String description = request.getParameter("description");
-            
-          
+
             ctdao.editCategory(cateID, name, description);
             response.sendRedirect("admin?action=manageCategory");
-                 
-        }else if(action.equals("deleteCategory")){
+
+        } else if (action.equals("deleteCategory")) {
             int cateID = Integer.parseInt(request.getParameter("cateID"));
-            System.out.println("delete cateID: "+ cateID);
+            System.out.println("delete cateID: " + cateID);
             ctdao.removeCategory(cateID);
             response.sendRedirect("admin?action=manageCategory");
-        }else if(action.equals("createCategory")){
+        } else if (action.equals("createCategory")) {
             String name = request.getParameter("name");
             String description = request.getParameter("description");
-            
+
             ctdao.createCategory(name, description);
             response.sendRedirect("admin?action=manageCategory");
-        }
-        else if (action.equals("replyReview")) {
+        } else if (action.equals("replyReview")) {
             int rID = Integer.parseInt(request.getParameter("rID"));
             String reply = request.getParameter("reply");
 

@@ -280,7 +280,7 @@
                                             <td><%= v.getDescription() != null ? (v.getDescription().length() > 50 ? v.getDescription().substring(0, 50) + "..." : v.getDescription()) : "N/A"%></td>
                                             <td>
                                                 <% if (v.getImageUrl() != null && !v.getImageUrl().isEmpty()) {%>
-                                                <img src="<%= v.getImageUrl()%>" alt="Product" 
+                                                <img src="images/<%= v.getImageList()[0] %>" alt="Product" 
                                                      style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
                                                 <% } else { %>
                                                 <span class="text-muted">No image</span>

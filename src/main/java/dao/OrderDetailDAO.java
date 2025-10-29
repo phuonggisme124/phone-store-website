@@ -53,7 +53,7 @@ public class OrderDetailDAO extends DBContext {
     }
 
     public List<OrderDetails> getOrderDetailByOrderID(int orderID) {
-        String sql = "SELECT od.OrderID, od.VariantID, od.UnitPrice, od.MonthlyPayment, od.Quantity , od.InstalmentPeriod, od.InterestRate\n"
+        String sql = "SELECT od.OrderID, od.VariantID, od.UnitPrice, od.MonthlyPayment, od.Quantity, od.InterestRate\n"
                 + "FROM OrderDetails od\n"
                 + "WHERE od.OrderID = ?";
         List<OrderDetails> oDList = new ArrayList<>();
@@ -65,13 +65,13 @@ public class OrderDetailDAO extends DBContext {
                 int variantID = rs.getInt("VariantID");
                 double unitPrice = rs.getDouble("UnitPrice");
                 double monthlyPayment = rs.getDouble("MonthlyPayment");
-                int instalmentPeriod = rs.getInt("InstalmentPeriod");
+
                 int interestRate = rs.getInt("InterestRate");
                 int quantity = rs.getInt("Quantity");
                 OrderDetails od = new OrderDetails();
                 od.setOrderID(orderID);
                 od.setMonthlyPayment(monthlyPayment);
-                od.setInstalmentPeriod(instalmentPeriod);
+
                 od.setQuantity(quantity);
                 od.setUnitPrice(unitPrice);
                 od.setVariantID(variantID);

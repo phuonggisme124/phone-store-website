@@ -475,7 +475,7 @@ public class OrderDAO extends DBContext {
                 + "o.TotalAmount, o.IsInstalment, o.ReceiverName, o.ReceiverPhone FROM [Orders] o WHERE o.UserID = ? ");
 
         if (status.equalsIgnoreCase("All")) {
-            sql.append("AND o.Status IN ('In Transit', 'Delivered', 'Cancelled')");
+            sql.append("AND o.Status IN ('In Transit', 'Delivered', 'Cancelled', 'Pending')");
         } else {
             sql.append("AND o.Status = ?");
         }
