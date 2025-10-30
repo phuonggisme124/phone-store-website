@@ -165,7 +165,7 @@
         <path d="M8 4.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V9a.5.5 0 0 1-1 0V7.5H6a.5.5 0 0 1 0-1h1.5V5a.5.5 0 0 1 .5-.5z" />
     </symbol>
     </svg> 
-    <header id="header" class="site-header header-scrolled position-fixed text-black bg-light">
+    <header id="header" class="site-header position-fixed">
         <nav id="header-nav" class="navbar navbar-expand-lg px-3 mb-3">
             <div class="container-fluid">
                 <a class="navbar-brand" href="homepage">
@@ -316,7 +316,7 @@
                                     <li class="text-dark fw-bold">
 
                                         <a href="user?action=view" class="nav-link p-0 text-dark text-uppercase fw-bold"><%= displayName%></a> 
-                                        
+
 
                                     </li>
                                     <%
@@ -425,7 +425,42 @@
                 }
             });
         });
+
+
     </script>
+    <script>
+
+// === CODE THÊM N?N TR?NG KHI CU?N ===
+        (function () {
+            // L?y ra ph?n header
+            const header = document.querySelector('header.site-header');
+
+            // ??t ng??ng cu?n (tính b?ng pixel), ví d? 50px
+            // T?c là cu?n xu?ng 50px thì n?n s? ??i
+            const scrollThreshold = 50;
+
+            if (!header) {
+                return; // D?ng l?i n?u không tìm th?y header
+            }
+
+            // L?ng nghe s? ki?n cu?n trang
+            window.addEventListener('scroll', function () {
+                // L?y v? trí cu?n hi?n t?i
+                let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+                // N?u cu?n qua ng??ng
+                if (scrollTop > scrollThreshold) {
+                    header.classList.add('header-scrolled');
+                }
+                // N?u cu?n ng??c l?i lên trên cùng
+                else {
+                    header.classList.remove('header-scrolled');
+                }
+            });
+
+        })();
+    </script>
+
 
 </body>
 </html>

@@ -106,9 +106,9 @@ a:hover {
 .bg-dark {
     background: var(--dark-color);
 }
-.bg-light {
+/*.bg-light {
     background: var(--light-color);
-}
+}*/
 .bg-light-blue {
     background: var(--light-blue-color);
 }

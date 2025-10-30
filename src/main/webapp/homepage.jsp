@@ -9,8 +9,9 @@
 <%@page import="java.util.List"%>
 <%@page import="java.util.Map" %>
 <%@page import="java.util.HashMap" %>
-<link rel="stylesheet" type="text/css" href="css/home.css">
 <%@ include file="layout/header.jsp" %>
+<link rel="stylesheet" type="text/css" href="css/home.css">
+
 
 <style>
     #searchSection {
@@ -154,6 +155,10 @@
     .swiper-slide {
         height: auto !important;
     }
+
+
+    /* hi?u ?ng menu */
+
 
 </style>
 
@@ -633,7 +638,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
-
+  
 
 </body>
 </html>
