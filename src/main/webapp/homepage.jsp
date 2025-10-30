@@ -263,8 +263,9 @@
             const categoryNames = {
                 'all': 'All Products',
                 '1': 'Phone',
+                '2': 'watch',
                 '3': 'Tablet',
-                '4': 'Smartwatch'
+                '5': 'Phone Case'
             };
 
             // C?p nh?t badge
@@ -479,7 +480,7 @@
                 <div class="display-header d-flex justify-content-between pb-3">
                     <h2 class="display-7 text-dark text-uppercase">SmartWatch</h2>
                     <div class="btn-right">
-                        <a href="product?action=category&cID=1" class="btn btn-medium btn-normal text-uppercase">Go to Shop</a>
+                        <a href="product?action=category&cID=4" class="btn btn-medium btn-normal text-uppercase">Go to Shop</a>
                     </div>
                 </div>
 

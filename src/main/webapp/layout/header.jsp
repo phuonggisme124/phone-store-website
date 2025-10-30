@@ -17,6 +17,7 @@
         <link rel="icon" type="image/png" href="images/favicon.png">
         <link rel="stylesheet" href="css/bootstrap.min.css">
         <link rel="stylesheet" href="css/style.css">
+        <link rel="stylesheet" href="css/home.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -208,7 +209,7 @@
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link me-4 <%= ("2".equals(currentCategoryId)) ? "active" : ""%>" 
-                                   href="product?action=category&cID=2" data-category="4">Smartwatch</a>
+                                   href="product?action=category&cID=2" data-category="2">Smartwatch</a>
                             </li>
                             <li class="nav-item dropdown">
                                 <a class="nav-link me-4 dropdown-toggle link-dark" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Accessories</a>

@@ -194,14 +194,17 @@
             // Xác định tên category
             if ("1".equals(currentCategoryId)) {
                 categoryName = "Phone";
+            } 
+            else if ("2".equals(currentCategoryId)) {
+                categoryName = "Watch";
             } else if ("3".equals(currentCategoryId)) {
                 categoryName = "Tablet";
-            } else if ("4".equals(currentCategoryId)) {
-                categoryName = "Smartwatch";
+            } else if ("5".equals(currentCategoryId)) {
+                categoryName = "Phone Case";
             }
         %>
 
-        <section id="searchSection">
+        <section id="searchSection" style="padding-top: 100px;">
             <div class="container">
                 <div class="row">
                     <div class="col-12 text-center mb-3">
@@ -289,7 +292,8 @@
                     'all': 'All Products',
                     '1': 'Phone',
                     '3': 'Tablet',
-                    '4': 'Smartwatch'
+                    '2': 'Smartwatch',
+                    '5': 'Phone Case'
                 };
 
                 // Cập nhật badge
