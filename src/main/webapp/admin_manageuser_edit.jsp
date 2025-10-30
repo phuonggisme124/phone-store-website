@@ -57,7 +57,16 @@
                     Users user = (Users) request.getAttribute("user");
                 %>
                 <!-- Table -->
-                <form action="admin" method="post" class="w-50 mx-auto bg-light p-4 rounded shadow">
+                <form action="user" method="post" class="w-50 mx-auto bg-light p-4 rounded shadow">
+                    <div class="mb-3" >
+                        <%                            
+                            if (session.getAttribute("exist") != null) {
+                                String exist = (String) session.getAttribute("exist");
+                                out.println("<p class='error-message'>" + exist + "</p>");
+                            }
+                            session.removeAttribute("exist");
+                        %>
+                    </div>
                     <div class="mb-3">
                         <input type="hidden" class="form-control" name="userId" value="<%= user.getUserId()%>" readonly>
                     </div>
@@ -101,8 +110,8 @@
                         </select>
                     </div>
                     <div class="d-flex gap-2">
-                        <button type="submit" name="action" value="update" class="btn btn-primary flex-fill">Update</button>
-                        <button type="submit" name="action" value="delete" class="btn btn-danger flex-fill">Delete</button>
+                        <button type="submit" name="action" value="updateUserAdmin" class="btn btn-primary flex-fill">Update</button>
+                        <button type="submit" name="action" value="deleteUserAdmin" class="btn btn-danger flex-fill">Delete</button>
                     </div>
 
                 </form>

@@ -14,6 +14,7 @@ import utils.DBContext;
 
 /**
  * Data Access Object (DAO) for the Users entity.
+ *
  * @author Admin
  */
 public class UsersDAO extends DBContext {
@@ -21,10 +22,11 @@ public class UsersDAO extends DBContext {
     public UsersDAO() {
         super();
     }
-    
+
     /**
-     * REFACTORED: Centralized helper method to map a ResultSet row to a Users object.
-     * This avoids code duplication.
+     * REFACTORED: Centralized helper method to map a ResultSet row to a Users
+     * object. This avoids code duplication.
+     *
      * @param rs The ResultSet to map.
      * @return A populated Users object.
      * @throws SQLException
@@ -47,14 +49,14 @@ public class UsersDAO extends DBContext {
 
     /**
      * Retrieve all users from the database.
+     *
      * @return a List of Users representing all user records
      */
     public List<Users> getAllUsers() {
         List<Users> list = new ArrayList<>();
         String sql = "SELECT * FROM Users";
         // REFACTORED: Use try-with-resources for automatic resource management.
-        try (PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        try (PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 list.add(mapResultSetToUser(rs)); // Use the helper method
             }
@@ -65,8 +67,9 @@ public class UsersDAO extends DBContext {
     }
 
     /**
-     * Hash a plaintext password using MD5.
-     * Note: MD5 is weak. For new applications, use bcrypt or Argon2.
+     * Hash a plaintext password using MD5. Note: MD5 is weak. For new
+     * applications, use bcrypt or Argon2.
+     *
      * @param pass plaintext password
      * @return hexadecimal MD5 hash of the password
      */
@@ -87,6 +90,7 @@ public class UsersDAO extends DBContext {
 
     /**
      * Authenticate a user by email and password.
+     *
      * @param email login email
      * @param pass plaintext password
      * @return Users object if authentication succeeds; null otherwise
@@ -108,40 +112,8 @@ public class UsersDAO extends DBContext {
     }
 
     /**
-     * Register a new user and return the created user object.
-     * @throws SQLException when DB insert fails
-     */
-    public Users register(String name, String email, String numberPhone, String address, String password) throws SQLException {
-        String sql = "INSERT INTO Users (FullName, Email, Phone, Password, Role, Address, CreatedAt, Status) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        
-        // REFACTORED: Use try-with-resources
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, name);
-            ps.setString(2, email);
-            ps.setString(3, numberPhone);
-            ps.setString(4, hashMD5(password));
-            ps.setInt(5, 1); // Default role for customer
-            ps.setString(6, address);
-            ps.setTimestamp(7, Timestamp.valueOf(LocalDateTime.now()));
-            ps.setString(8, "active");
-            
-            int affectedRows = ps.executeUpdate();
-            
-            // REFACTORED: Avoid unnecessary login() call. Create user object directly.
-            if (affectedRows > 0) {
-                 // To get the full user object with the generated ID, you'd need to requery
-                 // or use Statement.RETURN_GENERATED_KEYS. For now, returning null is simpler.
-                 // A better approach is to return the newly created user without the ID or just a boolean success.
-                 // Or, as originally intended, just log them in.
-                 return login(email, password);
-            }
-        }
-        return null;
-    }
-    
-    /**
      * Retrieve a user by ID.
+     *
      * @param id user ID
      * @return Users object if found; null otherwise
      */
@@ -182,23 +154,44 @@ public class UsersDAO extends DBContext {
     /**
      * Insert a new user with a specified role.
      */
-    public void register(String name, String email, String phone, String address, String password, int role) {
-        String sql = "INSERT INTO Users (FullName, Email, Phone, Password, Role, Address) VALUES (?, ?, ?, ?, ?, ?)";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, name);
-            ps.setString(2, email);
-            ps.setString(3, phone);
-            ps.setString(4, hashMD5(password));
-            ps.setInt(5, role);
-            ps.setString(6, address);
-            ps.executeUpdate();
-        } catch (SQLException e) {
+    public boolean register(String name, String email, String numberPhone, String address, String password, int role) {
+        String sqlToCheck = "SELECT * FROM Users WHERE Email = ?";
+        try (PreparedStatement psCheck = conn.prepareStatement(sqlToCheck)) {
+            psCheck.setString(1, email); // 
+            ResultSet rs = psCheck.executeQuery();
+            if (!rs.next()) {
+                String sql = "INSERT INTO Users (FullName, Email, Phone, Password, Role, Address, CreatedAt, Status) "
+                        + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                try (PreparedStatement psInsert = conn.prepareStatement(sql)) {
+                    psInsert.setString(1, name);
+                    psInsert.setString(2, email);
+                    psInsert.setString(3, numberPhone);
+                    psInsert.setString(4, hashMD5(password));
+                    psInsert.setInt(5, role); // Default role for customer
+                    psInsert.setString(6, address);
+                    psInsert.setTimestamp(7, Timestamp.valueOf(LocalDateTime.now()));
+                    psInsert.setString(8, "active");
+
+                    int affectedRows = psInsert.executeUpdate();
+                    if (affectedRows > 0) {
+                        return true;
+                    }
+
+                }
+            } else {
+                System.out.println("Email already exists!");
+                return false;
+            }
+        } catch (Exception e) {
             e.printStackTrace();
         }
+
+        return false;
     }
 
     /**
      * Delete a user by ID.
+     *
      * @param userId ID of the user to delete
      */
     public void deleteUser(int userId) {
@@ -212,27 +205,28 @@ public class UsersDAO extends DBContext {
     }
 
     /**
-     * REFACTORED: This method is better placed in a SalesDAO but is optimized here.
-     * Retrieves all sales records with staff and shipper info in a single query.
+     * REFACTORED: This method is better placed in a SalesDAO but is optimized
+     * here. Retrieves all sales records with staff and shipper info in a single
+     * query.
+     *
      * @return list of Sale objects
      */
     public List<Sale> getAllSales() {
         List<Sale> list = new ArrayList<>();
         // REFACTORED: Use JOINs to prevent the N+1 query problem.
         String sql = "SELECT "
-                   + "s.SaleID, s.OrderID, s.CreatedAt, "
-                   + "staff.UserID AS StaffID, staff.FullName AS StaffName, staff.Phone as StaffPhone, "
-                   + "shipper.UserID AS ShipperID, shipper.FullName AS ShipperName, shipper.Phone as ShipperPhone "
-                   + "FROM Sales s "
-                   + "LEFT JOIN Users staff ON s.StaffID = staff.UserID "
-                   + "LEFT JOIN Users shipper ON s.ShipperID = shipper.UserID";
+                + "s.SaleID, s.OrderID, s.CreatedAt, "
+                + "staff.UserID AS StaffID, staff.FullName AS StaffName, staff.Phone as StaffPhone, "
+                + "shipper.UserID AS ShipperID, shipper.FullName AS ShipperName, shipper.Phone as ShipperPhone "
+                + "FROM Sales s "
+                + "LEFT JOIN Users staff ON s.StaffID = staff.UserID "
+                + "LEFT JOIN Users shipper ON s.ShipperID = shipper.UserID";
 
-        try (PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        try (PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 Users staff = new Users(rs.getInt("StaffID"), rs.getString("StaffName"), rs.getString("StaffPhone"));
                 Users shipper = new Users(rs.getInt("ShipperID"), rs.getString("ShipperName"), rs.getString("ShipperPhone"));
-                
+
                 Timestamp createdAtTimestamp = rs.getTimestamp("CreatedAt");
                 LocalDateTime createdAt = (createdAtTimestamp != null) ? createdAtTimestamp.toLocalDateTime() : null;
 
@@ -246,13 +240,13 @@ public class UsersDAO extends DBContext {
 
     /**
      * Retrieve all users who have role = 3 (shippers).
+     *
      * @return List of Users objects representing shippers
      */
     public List<Users> getAllShippers() {
         List<Users> list = new ArrayList<>();
         String sql = "SELECT * FROM Users WHERE Role = 3";
-        try (PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        try (PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 list.add(mapResultSetToUser(rs));
             }
@@ -264,6 +258,7 @@ public class UsersDAO extends DBContext {
 
     /**
      * Update the personal information of a user.
+     *
      * @param user Users object containing updated profile data
      */
     public void updateUserProfile(Users user) {
@@ -320,7 +315,7 @@ public class UsersDAO extends DBContext {
         }
         return false;
     }
-    
+
     // FIXED: Moved this method inside the class definition
     /**
      * Lấy tất cả số điện thoại khách hàng đã đặt hàng.
@@ -328,8 +323,7 @@ public class UsersDAO extends DBContext {
     public List<String> getAllBuyerPhones() {
         List<String> phones = new ArrayList<>();
         String sql = "SELECT DISTINCT u.Phone FROM Orders o JOIN Users u ON o.UserID = u.UserID WHERE u.Phone IS NOT NULL AND u.Phone <> ''";
-        try (PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        try (PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 phones.add(rs.getString("Phone"));
             }
@@ -358,5 +352,33 @@ public class UsersDAO extends DBContext {
         System.out.println("\n--- All Buyer Phones ---");
         List<String> phones = dao.getAllBuyerPhones();
         phones.forEach(System.out::println);
+    }
+
+    public Users getUserByEmail(String email) {
+        String sql = "SELECT * FROM Users WHERE Email =?";
+
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, email);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                int id = rs.getInt("UserID");
+                String fullName = rs.getString("FullName");
+                String e = rs.getString("Email");
+                String phone = rs.getString("Phone");
+                String pass = rs.getString("Password");
+                int role = rs.getInt("Role");
+                String address = rs.getString("Address");
+                String status = rs.getString("Status");
+
+                Timestamp createdAtTimestamp = rs.getTimestamp("CreatedAt");
+                LocalDateTime createdAt = (createdAtTimestamp != null) ? createdAtTimestamp.toLocalDateTime() : null;
+
+                return new Users(id, fullName, e, phone, pass, role, address, createdAt, status);
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
     }
 }

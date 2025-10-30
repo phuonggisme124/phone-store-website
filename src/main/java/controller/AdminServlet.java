@@ -107,18 +107,19 @@ public class AdminServlet extends HttpServlet {
             action = "dashboard";
         }
 
-        if (action.equals("editAccount")) {
+        if (action.equals("manageUser")) {
 
+            List<Users> listUsers = udao.getAllUsers();
+            request.setAttribute("listUsers", listUsers);
+
+            request.getRequestDispatcher("dashboard_admin_manageuser.jsp").forward(request, response);
+            
+        }else if (action.equals("editAccount")) {
             int id = Integer.parseInt(request.getParameter("id"));
             Users user = udao.getUserByID(id);
             request.setAttribute("user", user);
 
             request.getRequestDispatcher("admin_manageuser_edit.jsp").forward(request, response);
-        } else if (action.equals("manageUser")) {
-            List<Users> listUsers = udao.getAllUsers();
-            request.setAttribute("listUsers", listUsers);
-
-            request.getRequestDispatcher("dashboard_admin_manageuser.jsp").forward(request, response);
         } else if (action.equals("createAccount")) {
             request.getRequestDispatcher("admin_manageuser_create.jsp").forward(request, response);
         } else if (action.equals("manageProduct")) {
@@ -433,35 +434,7 @@ public class AdminServlet extends HttpServlet {
         VariantsDAO vdao = new VariantsDAO();
         PromotionsDAO pmtdao = new PromotionsDAO();
         ReviewDAO rdao = new ReviewDAO();
-        if (action.equals("update")) {
-            int userId = Integer.parseInt(request.getParameter("userId"));
-            String name = request.getParameter("name");
-            String email = request.getParameter("email");
-            String phone = request.getParameter("phone");
-            String address = request.getParameter("address");
-            int role = Integer.parseInt(request.getParameter("role"));
-            String status = request.getParameter("status");
-
-            udao.updateUser(userId, name, email, phone, address, role, status);
-
-            response.sendRedirect("admin?action=manageUser");
-
-        } else if (action.equals("createAccount")) {
-            String name = request.getParameter("name");
-            String email = request.getParameter("email");
-            String password = request.getParameter("password");
-            String phone = request.getParameter("phone");
-            String address = request.getParameter("address");
-            int role = Integer.parseInt(request.getParameter("role"));
-
-            udao.register(name, email, phone, address, password, role);
-            response.sendRedirect("admin?action=manageUser");
-        } else if (action.equals("delete")) {
-            int userId = Integer.parseInt(request.getParameter("userId"));
-            udao.deleteUser(userId);
-
-            response.sendRedirect("admin?action=manageUser");
-        } else if (action.equals("updateProduct")) {
+        if (action.equals("updateProduct")) {
 
             int vID = Integer.parseInt(request.getParameter("vID"));
             int pID = Integer.parseInt(request.getParameter("pID"));
@@ -501,16 +474,15 @@ public class AdminServlet extends HttpServlet {
                 if (listAllImages != null) {
                     listAllImages.removeAll(listImagesDelete);
                 }
-                
-                for (String imageDelete : listImagesDelete){
+
+                for (String imageDelete : listImagesDelete) {
                     File file = new File(uploadDir + File.separator + imageDelete);
-                    if (file.exists())
+                    if (file.exists()) {
                         file.delete();
+                    }
                 }
             }
-            
-            
-            
+
             List<String> finalListImages = new ArrayList<>();
             if (listAllImages != null) {
                 finalListImages.addAll(listAllImages);
@@ -564,11 +536,11 @@ public class AdminServlet extends HttpServlet {
             double price = Double.parseDouble(request.getParameter("price"));
             int stock = Integer.parseInt(request.getParameter("stock"));
             String description = request.getParameter("description");
-            
+
             Variants variant = vdao.getVariant(pID, storage, color);
-            if(variant != null){
+            if (variant != null) {
                 HttpSession session = request.getSession();
-                session.setAttribute("exist", pName + " " + storage + " " + color +" already exists");
+                session.setAttribute("exist", pName + " " + storage + " " + color + " already exists");
                 response.sendRedirect("admin?action=createVariant&pid=" + pID);
                 return;
             }

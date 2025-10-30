@@ -8,9 +8,12 @@ import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import model.Users;
 import model.Category;
 import model.Order;
@@ -29,6 +32,7 @@ public class UserServlet extends HttpServlet {
 
     /**
      * Helper method to load common data needed for the header.
+     *
      * @param request The servlet request.
      */
     private void loadCommonData(HttpServletRequest request) {
@@ -87,13 +91,12 @@ public class UserServlet extends HttpServlet {
 
                 request.getRequestDispatcher("customer_transaction.jsp").forward(request, response);
                 break;
-            
+
             // FIXED: Merged from conflicting branch
             case "changePassword":
                 response.sendRedirect("changePassword.jsp");
                 break;
 
-            
             default:
                 request.setAttribute("user", user);
                 request.getRequestDispatcher("profile.jsp").forward(request, response);
@@ -108,7 +111,7 @@ public class UserServlet extends HttpServlet {
         String action = request.getParameter("action");
         HttpSession session = request.getSession();
         Users user = (Users) session.getAttribute("user");
-
+        UsersDAO udao = new UsersDAO();
         if (user == null) {
             response.sendRedirect("login.jsp");
             return;
@@ -120,6 +123,53 @@ public class UserServlet extends HttpServlet {
             updateUserProfile(request, response, user, session);
         } else if ("changePassword".equals(action)) {
             updateUserPassword(request, response, user, session);
+        } else if (action.equals("updateUserAdmin")) {
+            int userId = Integer.parseInt(request.getParameter("userId"));
+            String name = request.getParameter("name");
+            String email = request.getParameter("email");
+
+            String phone = request.getParameter("phone");
+            String address = request.getParameter("address");
+            int role = Integer.parseInt(request.getParameter("role"));
+            String status = request.getParameter("status");
+
+            Users u = udao.getUserByEmail(email);
+            if (u != null) {
+
+                session.setAttribute("exist", email + " already exists!");
+
+                response.sendRedirect("admin?action=editAccount&id=" + userId);
+
+                return;
+            }
+            udao.updateUser(userId, name, email, phone, address, role, status);
+
+            response.sendRedirect("admin?action=manageUser");
+
+        } else if (action.equals("createAccountAdmin")) {
+            String name = request.getParameter("name");
+            String email = request.getParameter("email");
+            String password = request.getParameter("password");
+            String phone = request.getParameter("phone");
+            String address = request.getParameter("address");
+            int role = Integer.parseInt(request.getParameter("role"));
+
+            boolean isRegistered = udao.register(name, email, phone, address, password, role);
+            if (!isRegistered) {
+
+                session.setAttribute("exist", email + " already exists!");
+
+                response.sendRedirect("admin?action=createAccount");
+
+                return;
+            }
+
+            response.sendRedirect("admin?action=manageUser");
+        } else if (action.equals("deleteUserAdmin")) {
+            int userId = Integer.parseInt(request.getParameter("userId"));
+            udao.deleteUser(userId);
+
+            response.sendRedirect("admin?action=manageUser");
         } else {
             response.sendRedirect("user?action=view");
         }
@@ -132,7 +182,7 @@ public class UserServlet extends HttpServlet {
         String phone = request.getParameter("phone");
         String address = request.getParameter("address");
         // Password is not updated here for security. It's handled in updateUserPassword.
-        
+
         user.setFullName(fullName);
         user.setEmail(email);
         user.setPhone(phone);
@@ -159,11 +209,11 @@ public class UserServlet extends HttpServlet {
         } else {
             // Let the DAO handle the hashing
             usersDAO.updatePassword(user.getUserId(), newPass);
-            
+
             // Update the password in the session object to keep it in sync
             user.setPassword(usersDAO.hashMD5(newPass));
             session.setAttribute("user", user);
-            
+
             request.setAttribute("message", "Đổi mật khẩu thành công!");
         }
 

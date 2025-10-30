@@ -51,12 +51,21 @@
                 <div class="container-fluid p-4">
                     <input type="text" class="form-control w-25" placeholder="🔍 Search">
                 </div>
-                
 
-                
+
+
                 <!-- Table -->
-                <form action="admin?action=createAccount" method="post" class="w-50 mx-auto bg-light p-4 rounded shadow">
-                    
+
+                <form action="user?action=createAccountAdmin" method="post" class="w-50 mx-auto bg-light p-4 rounded shadow">
+                    <div class="mb-3" >
+                        <%                            
+                            if (session.getAttribute("exist") != null) {
+                                String exist = (String) session.getAttribute("exist");
+                                out.println("<p class='error-message'>" + exist + "</p>");
+                            }
+                            session.removeAttribute("exist");
+                        %>
+                    </div>
 
                     <div class="mb-3">
                         <label class="form-label">Name</label>
@@ -70,17 +79,17 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Password</label>
-                        <input type="text" class="form-control" name="password" value="">
+                        <input type="text" class="form-control" name="password" value="" required="">
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Phone</label>
-                        <input type="text" class="form-control" name="phone" value="">
+                        <input type="tel" pattern="^0[0-9]{9}$" class="form-control" name="phone" value="" required="">
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Address</label>
-                        <input type="text" class="form-control" name="address" value="">
+                        <input type="text"   class="form-control" name="address" value="" required="">
                     </div>
-                    
+
                     <div class="mb-3">
                         <label class="form-label">Role</label>
                         <select class="form-select" name="role" id="role">
@@ -90,7 +99,7 @@
                             <option value="3" >Shipper</option>               
                         </select>
                     </div>
-                    
+
                     <button type="submit" class="btn btn-primary w-100">Create</button>
                 </form>
             </div>
