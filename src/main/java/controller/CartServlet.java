@@ -81,7 +81,7 @@ public class CartServlet extends HttpServlet {
         request.setAttribute("listCategory", listCategory);
 
         // Forward the request to the homepage.jsp view
-        request.getRequestDispatcher("display_cart.jsp").forward(request, response);
+        request.getRequestDispatcher("customer/display_cart.jsp").forward(request, response);
     }
 
     /**

@@ -112,16 +112,16 @@ public class AdminServlet extends HttpServlet {
             List<Users> listUsers = udao.getAllUsers();
             request.setAttribute("listUsers", listUsers);
 
-            request.getRequestDispatcher("dashboard_admin_manageuser.jsp").forward(request, response);
+            request.getRequestDispatcher("admin/dashboard_admin_manageuser.jsp").forward(request, response);
             
         }else if (action.equals("editAccount")) {
             int id = Integer.parseInt(request.getParameter("id"));
             Users user = udao.getUserByID(id);
             request.setAttribute("user", user);
 
-            request.getRequestDispatcher("admin_manageuser_edit.jsp").forward(request, response);
+            request.getRequestDispatcher("admin/admin_manageuser_edit.jsp").forward(request, response);
         } else if (action.equals("createAccount")) {
-            request.getRequestDispatcher("admin_manageuser_create.jsp").forward(request, response);
+            request.getRequestDispatcher("admin/admin_manageuser_create.jsp").forward(request, response);
         } else if (action.equals("manageProduct")) {
             List<Products> listProducts = pdao.getAllProduct();
             List<Category> listCategory = ctdao.getAllCategories();
@@ -137,7 +137,7 @@ public class AdminServlet extends HttpServlet {
             request.setAttribute("currentListProduct", currentListProduct);
             request.setAttribute("listCategory", listCategory);
             request.setAttribute("listSupplier", listSupplier);
-            request.getRequestDispatcher("dashboard_admin_manageproduct.jsp").forward(request, response);
+            request.getRequestDispatcher("admin/dashboard_admin_manageproduct.jsp").forward(request, response);
         } else if (action.equals("productDetail")) {
 
             int id = Integer.parseInt(request.getParameter("id"));
@@ -150,7 +150,7 @@ public class AdminServlet extends HttpServlet {
             request.setAttribute("listProducts", listProducts);
             request.setAttribute("listVariants", listVariants);
 
-            request.getRequestDispatcher("admin_manageproduct_detail.jsp").forward(request, response);
+            request.getRequestDispatcher("admin/admin_manageproduct_detail.jsp").forward(request, response);
         } else if (action.equals("editProduct")) {
             int vid = Integer.parseInt(request.getParameter("vid"));
             int pid = Integer.parseInt(request.getParameter("pid"));
@@ -162,39 +162,39 @@ public class AdminServlet extends HttpServlet {
             request.setAttribute("product", product);
             request.setAttribute("listSupplier", listSupplier);
 
-            request.getRequestDispatcher("admin_manageproduct_edit.jsp").forward(request, response);
+            request.getRequestDispatcher("admin/admin_manageproduct_edit.jsp").forward(request, response);
         } else if (action.equals("createProduct")) {
             List<Suppliers> listSupplier = sldao.getAllSupplier();
             List<Category> listCategories = ctdao.getAllCategories();
             request.setAttribute("listSupplier", listSupplier);
             request.setAttribute("listCategories", listCategories);
-            request.getRequestDispatcher("admin_manageproduct_create.jsp").forward(request, response);
+            request.getRequestDispatcher("admin/admin_manageproduct_create.jsp").forward(request, response);
         } else if (action.equals("createVariant")) {
             int pid = Integer.parseInt(request.getParameter("pid"));
             Products product = pdao.getProductByID(pid);
 
             request.setAttribute("product", product);
             request.setAttribute("productID", pid);
-            request.getRequestDispatcher("admin_manageproduct_createvariant.jsp").forward(request, response);
+            request.getRequestDispatcher("admin/admin_manageproduct_createvariant.jsp").forward(request, response);
         } else if (action.equals("deleteProduct")) {
             int pid = Integer.parseInt(request.getParameter("pid"));
             vdao.deleteVariantByProductID(pid);
             pdao.deleteProductByProductID(pid);
-            response.sendRedirect("admin?action=manageProduct");
+            response.sendRedirect("admin/admin?action=manageProduct");
         } else if (action.equals("manageSupplier")) {
             List<Suppliers> listSupplier = sldao.getAllSupplier();
             request.setAttribute("listSupplier", listSupplier);
 
-            request.getRequestDispatcher("dashboard_admin_managesupplier.jsp").forward(request, response);
+            request.getRequestDispatcher("admin/dashboard_admin_managesupplier.jsp").forward(request, response);
         } else if (action.equals("editSupplier")) {
             int supplierID = Integer.parseInt(request.getParameter("id"));
 
             Suppliers supplier = sldao.getSupplierByID(supplierID);
             request.setAttribute("supplier", supplier);
-            request.getRequestDispatcher("admin_managesupplier_edit.jsp").forward(request, response);
+            request.getRequestDispatcher("admin/admin_managesupplier_edit.jsp").forward(request, response);
         } else if (action.equals("createSupplier")) {
 
-            request.getRequestDispatcher("admin_managesupplier_create.jsp").forward(request, response);
+            request.getRequestDispatcher("admin/admin_managesupplier_create.jsp").forward(request, response);
         } else if (action.equals("managePromotion")) {
             List<Products> listProducts = pdao.getAllProduct();
             List<Promotions> listPromotions = pmtdao.getAllPromotion();
@@ -202,7 +202,7 @@ public class AdminServlet extends HttpServlet {
             request.setAttribute("listProducts", listProducts);
             request.setAttribute("listPromotions", listPromotions);
 
-            request.getRequestDispatcher("dashboard_admin_managepromotion.jsp").forward(request, response);
+            request.getRequestDispatcher("admin/dashboard_admin_managepromotion.jsp").forward(request, response);
         } else if (action.equals("editPromotion")) {
             int pmtID = Integer.parseInt(request.getParameter("pmtID"));
             int pID = Integer.parseInt(request.getParameter("pID"));
@@ -212,11 +212,11 @@ public class AdminServlet extends HttpServlet {
             request.setAttribute("promotion", promotion);
             request.setAttribute("product", product);
 
-            request.getRequestDispatcher("admin_managepromotion_edit.jsp").forward(request, response);
+            request.getRequestDispatcher("admin/admin_managepromotion_edit.jsp").forward(request, response);
         } else if (action.equals("createPromotion")) {
             List<Products> listProducts = pdao.getAllProduct();
             request.setAttribute("listProducts", listProducts);
-            request.getRequestDispatcher("admin_managepromotion_create.jsp").forward(request, response);
+            request.getRequestDispatcher("admin/admin_managepromotion_create.jsp").forward(request, response);
 
         } else if (action.equals("manageOrder")) {
             List<Order> listOrder = odao.getAllOrder();
@@ -226,7 +226,7 @@ public class AdminServlet extends HttpServlet {
             request.setAttribute("listPhone", listPhone);
 
             request.setAttribute("listSales", listSales);
-            request.getRequestDispatcher("dashboard_admin_manageorder.jsp").forward(request, response);
+            request.getRequestDispatcher("admin/dashboard_admin_manageorder.jsp").forward(request, response);
         } else if (action.equals("orderDetail")) {
             int oid = Integer.parseInt(request.getParameter("id"));
             byte isIntalment = Byte.parseByte(request.getParameter("isInstalment"));
@@ -238,18 +238,18 @@ public class AdminServlet extends HttpServlet {
             request.setAttribute("listInterestRate", listInterestRate);
             request.setAttribute("listPayments", listPayments);
             request.setAttribute("isIntalment", isIntalment);
-            request.getRequestDispatcher("admin_manageorder_detail.jsp").forward(request, response);
+            request.getRequestDispatcher("admin/admin_manageorder_detail.jsp").forward(request, response);
         } else if (action.equals("manageReview")) {
             List<Review> listReview = rdao.getAllReview();
             request.setAttribute("listReview", listReview);
-            request.getRequestDispatcher("dashboard_admin_managereview.jsp").forward(request, response);
+            request.getRequestDispatcher("admin/dashboard_admin_managereview.jsp").forward(request, response);
         } else if (action.equals("reviewDetail")) {
             int rID = Integer.parseInt(request.getParameter("rID"));
 
             Review review = rdao.getReviewByID(rID);
 
             request.setAttribute("review", review);
-            request.getRequestDispatcher("admin_managereview_detail.jsp").forward(request, response);
+            request.getRequestDispatcher("admin/admin_managereview_detail.jsp").forward(request, response);
         } else if (action.equals("showInstalment")) {
             List<Order> listOrder = odao.getAllOrder();
             List<String> listPhone = odao.getAllPhoneInstalment();
@@ -258,7 +258,7 @@ public class AdminServlet extends HttpServlet {
             request.setAttribute("listPhone", listPhone);
 
             request.setAttribute("listSales", listSales);
-            request.getRequestDispatcher("admin_manageorder_instalment.jsp").forward(request, response);
+            request.getRequestDispatcher("admin/admin_manageorder_instalment.jsp").forward(request, response);
         } else if (action.equals("searchInstalment")) {
             String phone = request.getParameter("phone");
             String status = request.getParameter("status");
@@ -284,7 +284,7 @@ public class AdminServlet extends HttpServlet {
             request.setAttribute("phone", phone);
             request.setAttribute("status", status);
             request.setAttribute("listSales", listSales);
-            request.getRequestDispatcher("admin_manageorder_instalment.jsp").forward(request, response);
+            request.getRequestDispatcher("admin/admin_manageorder_instalment.jsp").forward(request, response);
         } else if (action.equals("filterInstalment")) {
 
             String phone = request.getParameter("phone");
@@ -319,7 +319,7 @@ public class AdminServlet extends HttpServlet {
             request.setAttribute("phone", phone);
             request.setAttribute("status", status);
             request.setAttribute("listSales", listSales);
-            request.getRequestDispatcher("admin_manageorder_instalment.jsp").forward(request, response);
+            request.getRequestDispatcher("admin/admin_manageorder_instalment.jsp").forward(request, response);
         } else if (action.equals("searchOrder")) {
             String phone = request.getParameter("phone");
             String status = request.getParameter("status");
@@ -337,7 +337,7 @@ public class AdminServlet extends HttpServlet {
             request.setAttribute("status", status);
             request.setAttribute("listPhone", listPhone);
             request.setAttribute("listSales", listSales);
-            request.getRequestDispatcher("dashboard_admin_manageorder.jsp").forward(request, response);
+            request.getRequestDispatcher("admin/dashboard_admin_manageorder.jsp").forward(request, response);
         } else if (action.equals("filterOrder")) {
             String phone = request.getParameter("phone");
             String status = request.getParameter("status");
@@ -357,7 +357,7 @@ public class AdminServlet extends HttpServlet {
             request.setAttribute("listOrder", listOrder);
             request.setAttribute("listPhone", listPhone);
             request.setAttribute("listSales", listSales);
-            request.getRequestDispatcher("dashboard_admin_manageorder.jsp").forward(request, response);
+            request.getRequestDispatcher("admin/dashboard_admin_manageorder.jsp").forward(request, response);
         } else if (action.equals("searchReview")) {
             int productID = Integer.parseInt(request.getParameter("productID"));
             String storage = request.getParameter("storage");
@@ -376,7 +376,7 @@ public class AdminServlet extends HttpServlet {
             request.setAttribute("productID", productID);
             request.setAttribute("storage", storage);
             request.setAttribute("rating", rating);
-            request.getRequestDispatcher("dashboard_admin_managereview.jsp").forward(request, response);
+            request.getRequestDispatcher("admin/dashboard_admin_managereview.jsp").forward(request, response);
 
         } else if (action.equals("filterReview")) {
             int productID = Integer.parseInt(request.getParameter("productID"));
@@ -394,23 +394,23 @@ public class AdminServlet extends HttpServlet {
             request.setAttribute("productID", productID);
             request.setAttribute("storage", storage);
             request.setAttribute("rating", rating);
-            request.getRequestDispatcher("dashboard_admin_managereview.jsp").forward(request, response);
+            request.getRequestDispatcher("admin/dashboard_admin_managereview.jsp").forward(request, response);
         } else if (action.equals("manageCategory")) {
             List<Category> listCategory = ctdao.getAllCategories();
 
             request.setAttribute("listCategory", listCategory);
-            request.getRequestDispatcher("dashboard_admin_managecategory.jsp").forward(request, response);
+            request.getRequestDispatcher("admin/dashboard_admin_managecategory.jsp").forward(request, response);
 
         } else if (action.equals("editCategory")) {
             int cateID = Integer.parseInt(request.getParameter("id"));
 
             Category catergory = ctdao.getCategoryByCategoryID(cateID);
             request.setAttribute("catergory", catergory);
-            request.getRequestDispatcher("admin_managecategory_edit.jsp").forward(request, response);
+            request.getRequestDispatcher("admin/admin_managecategory_edit.jsp").forward(request, response);
         } else if (action.equals("createCategory")) {
-            request.getRequestDispatcher("admin_managecategory_create.jsp").forward(request, response);
+            request.getRequestDispatcher("admin/admin_managecategory_create.jsp").forward(request, response);
         } else {
-            request.getRequestDispatcher("dashboard_admin.jsp").forward(request, response);
+            request.getRequestDispatcher("admin/dashboard_admin.jsp").forward(request, response);
         }
 
     }

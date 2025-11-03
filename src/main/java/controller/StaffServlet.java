@@ -77,7 +77,7 @@ public class StaffServlet extends HttpServlet {
 
             request.setAttribute("listOrders", listOrders);
             request.setAttribute("listShippers", shippers);
-            request.getRequestDispatcher("dashboard_staff_manageorder.jsp").forward(request, response);
+            request.getRequestDispatcher("staff/dashboard_staff_manageorder.jsp").forward(request, response);
         } // ========================= AJAX GỢI Ý SĐT =========================
         else if ("searchPhone".equals(action)) {
             String term = request.getParameter("term");
@@ -131,7 +131,7 @@ public class StaffServlet extends HttpServlet {
             request.setAttribute("listCategory", listCategory);
             request.setAttribute("listSupplier", listSupplier);
 
-            request.getRequestDispatcher("dashboard_staff_manageproduct.jsp").forward(request, response);
+            request.getRequestDispatcher("staff/dashboard_staff_manageproduct.jsp").forward(request, response);
         } // ========================= CHI TIẾT SẢN PHẨM (VARIANTS) =========================
         else if ("productDetail".equals(action)) {
             try {
@@ -169,7 +169,7 @@ public class StaffServlet extends HttpServlet {
                 request.setAttribute("allStorages", vdao.getAllStorages());
                 request.setAttribute("selectedProductId", productId);
 
-                request.getRequestDispatcher("staff_manageproduct_detail.jsp").forward(request, response);
+                request.getRequestDispatcher("staff/staff_manageproduct_detail.jsp").forward(request, response);
             } catch (Exception e) {
                 e.printStackTrace();
                 response.sendRedirect("error.jsp");
@@ -180,7 +180,7 @@ public class StaffServlet extends HttpServlet {
                 List<Review> listReview = rdao.getAllReview();
 
                 request.setAttribute("listReview", listReview);
-                request.getRequestDispatcher("staff_managereview.jsp").forward(request, response);
+                request.getRequestDispatcher("staff/staff_managereview.jsp").forward(request, response);
             } catch (Exception e) {
                 e.printStackTrace();
                 response.sendRedirect("error.jsp");

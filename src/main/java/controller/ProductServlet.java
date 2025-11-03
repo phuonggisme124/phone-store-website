@@ -121,7 +121,7 @@ public class ProductServlet extends HttpServlet {
             request.setAttribute("product", p);
 
             // Forward to product detail page
-            request.getRequestDispatcher("productdetail.jsp").forward(request, response);
+            request.getRequestDispatcher("public/productdetail.jsp").forward(request, response);
 
             // === Case 2: Change storage variant ===
         } else if ("selectStorage".equals(action)) {
@@ -161,7 +161,7 @@ public class ProductServlet extends HttpServlet {
             request.setAttribute("listCategory", listCategory);
 
             // Forward to product detail page
-            request.getRequestDispatcher("productdetail.jsp").forward(request, response);
+            request.getRequestDispatcher("public/productdetail.jsp").forward(request, response);
 
 // === Case 3: Filter by category ===
 } else if ("category".equals(action)) {
@@ -206,7 +206,7 @@ public class ProductServlet extends HttpServlet {
     request.setAttribute("listReview", listReview);
     
     // Forward to category JSP
-    request.getRequestDispatcher("view_product_by_category.jsp").forward(request, response);
+    request.getRequestDispatcher("public/view_product_by_category.jsp").forward(request, response);
 }}
 
     @Override
@@ -219,23 +219,23 @@ public class ProductServlet extends HttpServlet {
 
             String storage = request.getParameter("storage");
             if (storage == null) {
-                request.getRequestDispatcher("homepage.jsp").forward(request, response);
+                request.getRequestDispatcher("public/homepage.jsp").forward(request, response);
                 return;
             }
             String color = request.getParameter("color");
             if (color == null) {
-                request.getRequestDispatcher("homepage.jsp").forward(request, response);
+                request.getRequestDispatcher("public/homepage.jsp").forward(request, response);
                 return;
             }
             List<Variants> listVariants = vdao.getAllVariantByColor(pID, color);
             Variants variants = vdao.getVariant(pID, storage, color);
             if (listVariants.isEmpty()) {
-                request.getRequestDispatcher("homepage.jsp").forward(request, response);
+                request.getRequestDispatcher("public/homepage.jsp").forward(request, response);
                 return;
             }
             request.setAttribute("variants", variants);
             request.setAttribute("listVariants", listVariants);
-            request.getRequestDispatcher("homepage.jsp").forward(request, response);
+            request.getRequestDispatcher("public/homepage.jsp").forward(request, response);
         }
     }
 

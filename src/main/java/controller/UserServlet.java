@@ -64,7 +64,7 @@ public class UserServlet extends HttpServlet {
         switch (action) {
             case "edit":
                 request.setAttribute("user", user);
-                request.getRequestDispatcher("editProfile.jsp").forward(request, response);
+                request.getRequestDispatcher("customer/editProfile.jsp").forward(request, response);
                 break;
             
             case "transaction":
@@ -91,7 +91,7 @@ public class UserServlet extends HttpServlet {
                 request.setAttribute("oList", oList);
                 request.setAttribute("allOrderDetails", allOrderDetails); // Gửi map này!
 
-                request.getRequestDispatcher("customer_transaction.jsp").forward(request, response);
+                request.getRequestDispatcher("customer/customer_transaction.jsp").forward(request, response);
                 break;
             case "payInstallment":
                 
@@ -107,17 +107,17 @@ public class UserServlet extends HttpServlet {
                 
                 request.setAttribute("oList", oList);
                 request.setAttribute("allPayments", allPayments);
-                request.getRequestDispatcher("instalment.jsp").forward(request, response);
+                request.getRequestDispatcher("customer/instalment.jsp").forward(request, response);
                 break;
 
             // FIXED: Merged from conflicting branch
             case "changePassword":
-                response.sendRedirect("changePassword.jsp");
+                response.sendRedirect("customer/changePassword.jsp");
                 break;
             
             default:
                 request.setAttribute("user", user);
-                request.getRequestDispatcher("profile.jsp").forward(request, response);
+                request.getRequestDispatcher("customer/profile.jsp").forward(request, response);
                 break;
         }
     }

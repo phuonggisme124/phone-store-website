@@ -66,7 +66,7 @@ public class PaymentServlet extends HttpServlet {
                 carts.add(cart);
 
                 session.setAttribute("cartCheckout", carts);
-                request.getRequestDispatcher("payment.jsp").forward(request, response);
+                request.getRequestDispatcher("customer/payment.jsp").forward(request, response);
 
             } catch (NumberFormatException e) {
                 // BƯỚC 3: XỬ LÝ LỖI URL KHÔNG HỢP LỆ
@@ -96,7 +96,7 @@ public class PaymentServlet extends HttpServlet {
             // Lưu vào cartCheckout, KHÔNG ghi đè cart gốc
             session.setAttribute("cartCheckout", cartSelectedItemsList);
 
-            request.getRequestDispatcher("payment.jsp").forward(request, response);
+            request.getRequestDispatcher("customer/payment.jsp").forward(request, response);
 
         } else {
             List<Carts> carts = (List<Carts>) session.getAttribute("cartCheckout");
@@ -115,7 +115,7 @@ public class PaymentServlet extends HttpServlet {
             request.setAttribute("receiverPhone", receiverPhone);
             request.setAttribute("specificAddress", specificAddress);
 
-            request.getRequestDispatcher("payment_checkout.jsp").forward(request, response);
+            request.getRequestDispatcher("customer/payment_checkout.jsp").forward(request, response);
         }
     }
 
