@@ -129,7 +129,7 @@
 
                 <!-- Create Promotion Button -->
                 <div class="container-fluid p-4">
-                    <a class="btn btn-primary px-4 py-2 rounded-pill shadow-sm" href="admin?action=createPromotion">
+                    <a class="btn btn-primary px-4 py-2 rounded-pill shadow-sm" href="promotion?action=createPromotion">
                         <i class="bi bi-tag-fill me-2"></i> Create Promotion
                     </a>
                 </div>
@@ -203,13 +203,13 @@
                                                 String status = pmt.getStatus();
                                                 if (status != null && status.equalsIgnoreCase("Active")) {
                                                     statusBadge = "<span class='badge bg-success'>Active</span>";
-                                                } else if (status != null && status.equalsIgnoreCase("Expired")) {
-                                                    statusBadge = "<span class='badge bg-secondary'>Expired</span>";
+                                                } else if (status != null && status.equalsIgnoreCase("Pending")) {
+                                                    statusBadge = "<span class='badge bg-warning'>Pending</span>";
                                                 } else {
-                                                    statusBadge = "<span class='badge bg-danger'>Inactive</span>";
+                                                    statusBadge = "<span class='badge bg-danger'>Expired</span>";
                                                 }
                                         %>
-                                        <tr onclick="window.location.href = 'admin?action=editPromotion&pmtID=<%= pmt.getPromotionID()%>&pID=<%= pmt.getProductID()%>'" style="cursor: pointer;">
+                                        <tr onclick="window.location.href = 'promotion?action=editPromotion&pmtID=<%= pmt.getPromotionID()%>&pID=<%= pmt.getProductID()%>'" style="cursor: pointer;">
                                             <td>#<%= pmt.getPromotionID()%></td>
                                             <td><%= productName%></td>
                                             <td><%= discountBadge %></td>

@@ -1,3 +1,4 @@
+
 <%@page import="model.Promotions"%>
 <%@page import="model.Variants"%>
 <%@page import="model.Products"%>
@@ -34,7 +35,7 @@
                 return;
             }
 
-            int productID = (int) request.getAttribute("productID");
+            int pID = (int) request.getAttribute("pID");
             List<Products> listProducts = (List<Products>) request.getAttribute("listProducts");
             List<Variants> listVariants = (List<Variants>) request.getAttribute("listVariants");
             List<Promotions> listPromotions = (List<Promotions>) request.getAttribute("listPromotions");
@@ -57,7 +58,7 @@
             Promotions activePromotion = null;
             if (listPromotions != null) {
                 for (Promotions pmt : listPromotions) {
-                    if (pmt.getProductID() == productID && "Active".equalsIgnoreCase(pmt.getStatus())) {
+                    if (pmt.getProductID() == pID && "Active".equalsIgnoreCase(pmt.getStatus())) {
                         activePromotion = pmt;
                         break;
                     }
@@ -67,7 +68,7 @@
             // Tìm thông tin product hiện tại
             Products currentProduct = null;
             for (Products p : listProducts) {
-                if (p.getProductID() == productID) {
+                if (p.getProductID() == pID) {
                     currentProduct = p;
                     break;
                 }
@@ -151,11 +152,15 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <a class="btn btn-primary px-4 py-2 rounded-pill shadow-sm me-2" 
-                               href="admin?action=createVariant&pid=<%= productID%>">
+                               href="variants?action=createVariant&pID=<%= pID%>">
                                 <i class="bi bi-sliders me-2"></i> Create Variant
                             </a>
+                            <a class="btn btn-primary px-4 py-2 rounded-pill shadow-sm me-2" 
+                               href="product?action=updateProduct&pID=<%= pID%>">
+                                <i class="bi bi-sliders me-2"></i> Update Product
+                            </a>
                             <a class="btn btn-danger px-4 py-2 rounded-pill shadow-sm" 
-                               href="admin?action=deleteProduct&pid=<%= productID%>">
+                               href="product?action=deleteProduct&pID=<%= pID%>">
                                 <i class="bi bi-trash me-2"></i> Delete Product
                             </a>
                         </div>
@@ -236,7 +241,7 @@
                                         <tr class="variant-row" 
                                             data-color="<%= v.getColor().toLowerCase()%>" 
                                             data-storage="<%= v.getStorage()%>"
-                                            onclick="window.location.href = 'admin?action=editProduct&vid=<%= v.getVariantID()%>&pid=<%= productID%>'" 
+                                            onclick="window.location.href = 'variants?action=editVariant&vid=<%= v.getVariantID()%>&pID=<%= pID%>'" 
                                             style="cursor: pointer;">
                                             <td><span class="badge bg-primary">#<%= v.getVariantID()%></span></td>
                                             <td><strong><%= nameProduct%></strong></td>

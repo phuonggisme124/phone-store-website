@@ -60,48 +60,43 @@
                 </div>
 
 
-                <%                    int productID = (int) request.getAttribute("productID");
-                    Variants variant = (Variants) request.getAttribute("variant");
+                <%                    int pID = (int) request.getAttribute("pID");
                     Products product = (Products) request.getAttribute("product");
-                    List<Suppliers> listSupplier = (List<Suppliers>) request.getAttribute("listSupplier");
-                    List<Category> listCategories = (List<Category>) request.getAttribute("listCategories");
-
 
                 %>
                 <!-- Table -->
-                <form action="admin" method="post" class="w-50 mx-auto bg-light p-4 rounded shadow" enctype="multipart/form-data">
+                <form action="variants?action=createVariant" method="post" class="w-50 mx-auto bg-light p-4 rounded shadow" enctype="multipart/form-data">
+                    <%                        if (session.getAttribute("existVariant") != null) {
+                            String exist = (String) session.getAttribute("existVariant");
+                            out.println("<p class='error-message'>" + exist + "</p>");
+                        }
+                        session.removeAttribute("existVariant");
+                    %>
                     <div class="mb-3">
-                        <input type="hidden" class="form-control" name="vID" value="" readonly>
+                        <input type="hidden" class="form-control" name="pID" value="<%= pID%>">
                     </div>
                     <div class="mb-3">
-                        <%                            if (session.getAttribute("exist") != null) {
-                                String res = (String) session.getAttribute("exist");
-                                out.println("<p>" + res + "</p>");
-                            }
-                            session.removeAttribute("exist");
-                        %>
-                    </div>
-
-                    <div class="mb-3">
-                        <input type="hidden" class="form-control" name="pID" value="<%= productID%>" readonly>
+                        <input type="hidden" class="form-control" name="ctID" value="<%= product.getCategoryID() %>">
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Name</label>
                         <input type="text" class="form-control" name="pName" value="<%= product.getName()%>" required>
                     </div>
-
-
-
-
                     <div class="mb-3">
                         <label class="form-label">Color</label>
                         <input type="text" class="form-control" name="color" value="" required>
 
                     </div>
-                    <div class="mb-3">
+                    <%
+                        if (product.getCategoryID() == 1 || product.getCategoryID() == 3) {
+                    %>
+                    <div class="mb-3" >
                         <label class="form-label">Storage</label>
-                        <input type="text" class="form-control" name="storage" value="" required>
+                        <input type="text" class="form-control" name="storage" value="">
                     </div>
+                    <%
+                        }
+                    %>
                     <div class="mb-3">
                         <label class="form-label">Price</label>
                         <input type="text" class="form-control" name="price" value="" required>
@@ -129,10 +124,8 @@
                     <div id="image-preview-container" class="image-preview-container"></div>
 
                     <div class="mb-3">
-                        <button type="submit" name="action" value="createVariant" class="btn btn-primary w-100">Create</button>
+                        <button type="submit"  class="btn btn-primary w-100">Create Variant</button>
                     </div>
-
-
                 </form>
             </div>
 

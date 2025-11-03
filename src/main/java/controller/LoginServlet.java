@@ -41,7 +41,7 @@ public class LoginServlet extends HttpServlet {
         }
 
         // Redirect the user back to the login page after logout
-        response.sendRedirect("login.jsp");
+        request.getRequestDispatcher("login.jsp").forward(request, response);
     }
 
     /**

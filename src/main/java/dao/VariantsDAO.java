@@ -716,6 +716,7 @@ public class VariantsDAO extends DBContext {
         return list;
     }
 
+
     public boolean decreaseQuantity(int variantID, int quantityToSubtract) {
     String sql = "UPDATE Variants SET Stock = Stock - ? WHERE VariantID = ? AND Stock >= ?";
     try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -729,5 +730,33 @@ public class VariantsDAO extends DBContext {
         return false;
     }
 }
+
+    public Variants getVariantByProductIDAndColor(int pID, String color) {
+        String sql = "SELECT * FROM Variants Where ProductID = ? And Color = ?";
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, pID);
+            ps.setString(2, color);
+            
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                int variantId = rs.getInt("VariantID");
+                int productID = rs.getInt("ProductID");
+                String colorV = rs.getString("Color");
+                String storageV = rs.getString("Storage");
+                double price = rs.getDouble("Price");
+                double discountPrice = rs.getDouble("DiscountPrice");
+                int stock = rs.getInt("Stock");
+                String description = rs.getString("Description");
+                String img = rs.getString("ImageURL");
+                return new Variants(variantId, productID, colorV, storageV, price, discountPrice, stock, description, img);
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+
 
 }

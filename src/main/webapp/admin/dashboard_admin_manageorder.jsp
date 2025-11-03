@@ -90,7 +90,7 @@
                                     <li><button type="submit" name="status" value="Pending" class="dropdown-item">Pending</button></li>
                                     <li><button type="submit" name="status" value="In Transit" class="dropdown-item">In Transit</button></li>
                                     <li><button type="submit" name="status" value="Delivered" class="dropdown-item">Delivered</button></li>
-                                    <li><button type="submit" name="status" value="Delay" class="dropdown-item">Delay</button></li>
+                                    <li><button type="submit" name="status" value="Delayed" class="dropdown-item">Delayed</button></li>
                                     <li><button type="submit" name="status" value="Cancelled" class="dropdown-item">Cancelled</button></li>
                                 </ul>
                             </form>
@@ -154,7 +154,7 @@
                             %>
 
                             <tbody>
-                                <tr  onclick="window.location.href = 'admin?action=orderDetail&id=<%= o.getOrderID()%>&isInstalment=<%= o.isIsInstallment()%>'">
+                                <tr  onclick="window.location.href = 'order?action=orderDetail&id=<%= o.getOrderID()%>&isInstalment=<%= o.isIsInstallment()%>'">
                                     <td><%= o.getOrderID()%></td>
                                     <td><%= udao.getUserByID(o.getUserID()).getFullName()%></td>
                                     <td><%= o.getBuyerPhone()%></td>

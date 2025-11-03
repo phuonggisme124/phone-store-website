@@ -151,7 +151,7 @@
                                 <tr data-productname="<%= fullProductName%>"
                                     data-productid="<%= r.getVariant().getProductID()%>"
                                     data-storage="<%= r.getVariant().getStorage()%>"
-                                    onclick="window.location.href = 'admin?action=reviewDetail&rID=<%= r.getReviewID()%>'">
+                                    onclick="window.location.href = 'review?action=reviewDetail&rID=<%= r.getReviewID()%>'">
 
                                     <td><%= r.getReviewID()%></td>
                                     <td><%= r.getUser().getFullName()%></td>

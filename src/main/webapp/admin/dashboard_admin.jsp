@@ -12,7 +12,7 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
         <!-- Custom CSS -->
-        <link rel="stylesheet" href="css/dashboard_admin.css">
+        <link rel="stylesheet" href="<%= request.getContextPath() %>/css/dashboard_admin.css">
     </head>
     <body>
         <div class="d-flex" id="wrapper">
@@ -108,6 +108,6 @@
         <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
         <!-- Custom JS -->
-        <script src="js/dashboard.js"></script>
+        <script src="<%= request.getContextPath() %>/js/dashboard.js"></script>
     </body>
 </html>

@@ -60,7 +60,7 @@
                     Suppliers supplier = (Suppliers) request.getAttribute("supplier");
                 %>
                 <!-- Table -->
-                <form action="admin" method="post" class="w-50 mx-auto bg-light p-4 rounded shadow">
+                <form action="supplier" method="post" class="w-50 mx-auto bg-light p-4 rounded shadow">
                     <div class="mb-3">
                         <input type="hidden" class="form-control" name="sID" value="<%= supplier.getSupplierID()%>" readonly>
                     </div>

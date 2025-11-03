@@ -122,7 +122,7 @@
                             <p><strong>Comment:</strong></p>
                             <p class="comment"><%= review.getComment()%></p>
 
-                            <form action="admin?action=replyReview" method="post">
+                            <form action="review?action=replyReview" method="post">
                                 <p><strong>Reply:</strong></p>
 
                                 <div class="reply-box">

@@ -126,7 +126,7 @@
                     <h1 class="fw-bold ps-3 mb-4 fw-bold text-primary">Manage Products</h1>
                 </div>
                 <div class="container-fluid p-4 ps-3">
-                    <a class="btn btn-primary px-4 py-2 rounded-pill shadow-sm" href="admin?action=createProduct">
+                    <a class="btn btn-primary px-4 py-2 rounded-pill shadow-sm" href="product?action=createProduct">
                         <i class="bi bi-box-seam me-2"></i> Create Product
                     </a>
                 </div>
@@ -178,7 +178,7 @@
                                                 }
                                             }
                                     %>
-                                    <tr onclick="window.location.href = 'admin?action=productDetail&id=<%= p.getProductID()%>'" style="cursor: pointer;">
+                                    <tr onclick="window.location.href = 'product?action=productDetail&pID=<%= p.getProductID()%>'" style="cursor: pointer;">
                                         <td>#<%= p.getProductID()%></td>
                                         <td><%= categoryName%></td>
                                         <td><%= supplierName%></td>

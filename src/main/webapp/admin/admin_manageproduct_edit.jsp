@@ -3,7 +3,7 @@
 <%@page import="model.Variants"%>
 <%@page import="java.util.List"%>
 <%@page import="model.Users"%>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -65,60 +65,53 @@
                     List<Suppliers> listSupplier = (List<Suppliers>) request.getAttribute("listSupplier");
                 %>
                 <!-- Table -->
-                <form action="admin" method="post" class="w-50 mx-auto bg-light p-4 rounded shadow" enctype="multipart/form-data">
+                <form action="variants" method="post" class="w-50 mx-auto bg-light p-4 rounded shadow" enctype="multipart/form-data">
                     <div class="mb-3">
                         <input type="hidden" class="form-control" name="vID" value="<%= variant.getVariantID()%>" readonly>
                     </div>
-
+                    <div class="mb-3">
+                        <input type="hidden" class="form-control" name="ctID" value="<%= product.getCategoryID() %>" readonly>
+                    </div>
+                    
                     <div class="mb-3">
                         <input type="hidden" class="form-control" name="pID" value="<%= product.getProductID()%>" readonly>
                     </div>
-
+                    <%                        if (session.getAttribute("existVariant") != null) {
+                            String exist = (String) session.getAttribute("existVariant");
+                            out.println("<p class='error-message'>" + exist + "</p>");
+                        }
+                        session.removeAttribute("existVariant");
+                    %>
                     <div class="mb-3">
                         <label class="form-label">Name</label>
                         <input type="text" class="form-control" name="pName" value="<%= product.getName()%>" required>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Brand</label>
-                        <input type="text" class="form-control" name="brand" value="<%= product.getBrand()%>" required>
-                    </div>
-
-
-
-                    <div class="mb-3">
+                    <div class="mb-3" >
                         <label class="form-label">Color</label>
                         <input type="text" class="form-control" name="color" value="<%= variant.getColor()%>" required>
 
                     </div>
-                    <div class="mb-3">
+                    <%
+                        if (product.getCategoryID() == 1 || product.getCategoryID() == 3) {
+                    %>
+                    <div class="mb-3" >
                         <label class="form-label">Storage</label>
                         <input type="text" class="form-control" name="storage" value="<%= variant.getStorage()%>">
                     </div>
+                    <%
+                        }
+                    %>
                     <div class="mb-3">
                         <label class="form-label">Price</label>
                         <input type="text" class="form-control" name="price" value="<%= String.format("%.0f", variant.getPrice())%>">
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Warranty Period</label>
-                        <input type="text" class="form-control" name="warrantyPeriod" value="<%= product.getWarrantyPeriod()%>" required>
-                    </div>
+
                     <div class="mb-3">
                         <label class="form-label">Stock</label>
                         <input type="text" class="form-control" name="stock" value="<%= variant.getStock()%>">
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Supplier</label>
-                        <select class="form-select" name="supplierID" id="supplierID">
-                            <%
-                                for (Suppliers sl : listSupplier) {
-                            %>
-                            <option value="<%= sl.getSupplierID()%>" <%= (sl.getSupplierID() == product.getSupplierID() ? "selected" : "")%>><%= sl.getName()%></option>
-                            <%
-                                }
-                            %>             
-                        </select>
-                    </div>
+
                     <div class="mb-3">
                         <label class="form-label">Description</label>
                         <input type="text" class="form-control" name="description" value="<%= variant.getDescription()%>">
@@ -171,7 +164,7 @@
                     </div>
 
                     <div class="d-flex gap-2">
-                        <button type="submit" name="action" value="updateProduct" class="btn btn-primary flex-fill">Update</button>
+                        <button type="submit" name="action" value="updateVariant" class="btn btn-primary flex-fill">Update</button>
                         <button type="submit" name="action" value="deleteVariant" class="btn btn-danger flex-fill">Delete</button>
                     </div>
 

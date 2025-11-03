@@ -91,7 +91,7 @@
 
                 <!-- Create Supplier Button -->
                 <div class="container-fluid p-4 ps-3">
-                    <a class="btn btn-primary px-4 py-2 rounded-pill shadow-sm" href="admin?action=createSupplier">
+                    <a class="btn btn-primary px-4 py-2 rounded-pill shadow-sm" href="supplier?action=createSupplier">
                         <i class="bi bi-box-seam me-2"></i> Create Supplier
                     </a>
                 </div>
@@ -120,7 +120,7 @@
                                                 continue;
                                             }
                                     %>
-                                    <tr onclick="window.location.href = 'admin?action=editSupplier&id=<%= s.getSupplierID()%>'" style="cursor: pointer;">
+                                    <tr onclick="window.location.href = 'supplier?action=editSupplier&id=<%= s.getSupplierID()%>'" style="cursor: pointer;">
                                         <td>#<%= s.getSupplierID()%></td>
                                         <td><%= s.getName()%></td>
                                         <td><%= s.getPhone()%></td>

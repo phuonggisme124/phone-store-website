@@ -57,19 +57,17 @@
                 </div>
 
 
-                <%
-
-                    List<Products> listProducts = (List<Products>) request.getAttribute("listProducts");
+                <%                    List<Products> listProducts = (List<Products>) request.getAttribute("listProducts");
                 %>
                 <!-- Table -->
-                <form action="admin" method="post" class="w-50 mx-auto bg-light p-4 rounded shadow">
+                <form action="promotion" id="promotionForm" method="post" class="w-50 mx-auto bg-light p-4 rounded shadow">
                     <div class="mb-3">
                         <input type="hidden" class="form-control" name="pmtID" value="" readonly>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Product Name</label>
                         <select class="form-select" name="pID" id="pID">
-                            <option selected="">Select Product</option>
+                            <option selected="" value="">Select Product</option>
                             <%
                                 for (Products p : listProducts) {
                             %>                    
@@ -78,35 +76,40 @@
                                 }
                             %>
                         </select>
+                        <p id="productError" class="text-danger mt-2" style="display:none;">Please select a product!</p>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Discount Percent</label>
-                        <input type="number" class="form-control" name="discountPercent" value="" required>
+                        <input type="text" class="form-control"  name="discountPercent" id="discountPercent"  value="">
+                        <p id="discountError" class="text-danger mt-2" style="display:none;">Please enter a number in this field!</p>
+                        <p id="discountRangeError" class="text-danger mt-2" style="display:none;">Please enter number 0 to 100!</p>
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label">Start Date</label>
-                        <input type="text" class="form-control" name="startDate" value="" required>
+                        <input type="text" 
+                               placeholder="dd-MM-yyyy"
+                               class="form-control" 
+                               name="startDate" 
+                               id="startDate" 
+                               value="">
+                        <p id="startDateError" class="text-danger mt-2" style="display:none;">Please enter a value in this field!</p>
+                        <p id="formatStartDateError" class="text-danger mt-2" style="display:none;">Please enter format dd-MM-yyyy!</p>
+                        <p id="conditionStartDate" class="text-danger mt-2" style="display:none;">Start date cannot be before today!</p>
                     </div>
-
-
 
                     <div class="mb-3">
                         <label class="form-label">End Date</label>
-                        <input type="text" class="form-control" name="endDate" value="" required>
-
+                        <input type="text" 
+                               placeholder="dd-MM-yyyy"
+                               class="form-control" 
+                               name="endDate" 
+                               id="endDate" 
+                               value="">
+                        <p id="endDateError" class="text-danger mt-2" style="display:none;">Please enter a value in this field!</p>
+                        <p id="formatEndDateError" class="text-danger mt-2" style="display:none;">Please enter format dd-MM-yyyy!</p>
+                        <p id="conditionEndDate" class="text-danger mt-2" style="display:none;">End date cannot be before start date!</p>
                     </div>
-                    <!--                    <div class="mb-3">
-                                            <label class="form-label">Status</label>
-                                            <select class="form-select" name="status" id="status">
-                    
-                                                <option value="active" >Active</option>
-                                                <option value="expired" >Expired</option>
-                    
-                                            </select>
-                                        </div>-->
-
-
 
                     <div class="mb-3">
                         <button type="submit" name="action" value="createPromotion" class="btn btn-primary w-100">Create</button>
@@ -122,5 +125,149 @@
 
             <!-- Custom JS -->
             <script src="js/dashboard.js"></script>
+            <script>
+                document.getElementById("promotionForm").addEventListener("submit", function (e) {
+                    const product = document.getElementById("pID");
+                    const startDate = document.getElementById("startDate");
+                    const endDate = document.getElementById("endDate");
+                    const discountPercent = document.getElementById("discountPercent");
+
+                    const productError = document.getElementById("productError");
+                    const startDateError = document.getElementById("startDateError");
+                    const endDateError = document.getElementById("endDateError");
+                    const formatStartDateError = document.getElementById("formatStartDateError");
+                    const formatEndDateError = document.getElementById("formatEndDateError");
+                    const discountError = document.getElementById("discountError");
+                    const discountRangeError = document.getElementById("discountRangeError");
+                    const conditionStartDate = document.getElementById("conditionStartDate");
+                    const conditionEndDate = document.getElementById("conditionEndDate");
+
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+
+
+
+
+
+                    let isValid = true;
+                    // Regex check dd-MM-yyyy
+                    const dateRegex = /^(0[1-9]|[12][0-9]|3[01])\-(0[1-9]|1[0-2])\-[0-9]{4}$/;
+
+                    // Check product
+                    if (product.value === "") {
+                        productError.style.display = "block";
+                        product.classList.add("is-invalid");
+                        isValid = false;
+                    } else {
+                        productError.style.display = "none";
+                        product.classList.remove("is-invalid");
+                    }
+
+                    //check start date
+                    if (startDate.value === "") {
+                        startDateError.style.display = "block";
+                        startDate.classList.add("is-invalid");
+                        isValid = false;
+                    } else {
+                        startDateError.style.display = "none";
+                        startDate.classList.remove("is-invalid");
+                        if (!dateRegex.test(startDate.value)) {
+                            formatStartDateError.style.display = "block";
+                            startDate.classList.add("is-invalid");
+                            isValid = false;
+                        } else {
+                            formatStartDateError.style.display = "none";
+                            startDate.classList.remove("is-invalid");
+
+                            const [day, month, year] = startDate.value.split('-');
+                            const startDateValue = new Date(year, month - 1, day);
+                            if (startDateValue < today) {
+                                conditionStartDate.style.display = "block";
+                                startDate.classList.add("is-invalid");
+                                isValid = false;
+                            } else {
+                                conditionStartDate.style.display = "none";
+                                startDate.classList.remove("is-invalid");
+                            }
+
+                        }
+                    }
+
+
+
+
+
+                    //check end date
+
+                    if (endDate.value === "") {
+                        endDateError.style.display = "block";
+                        endDate.classList.add("is-invalid");
+                        isValid = false;
+                    } else {
+                        endDateError.style.display = "none";
+                        endDate.classList.remove("is-invalid");
+                        if (!dateRegex.test(endDate.value)) {
+                            formatEndDateError.style.display = "block";
+                            endDate.classList.add("is-invalid");
+                            isValid = false;
+                        } else {
+                            formatEndDateError.style.display = "none";
+                            endDate.classList.remove("is-invalid");
+                            const [sday, smonth, syear] = startDate.value.split('-');
+                            const startDateValue = new Date(syear, smonth - 1, sday);
+                            const [eday, emonth, eyear] = endDate.value.split('-');
+                            const endDateValue = new Date(eyear, emonth - 1, eday);
+                            if (endDateValue < startDateValue) {
+                                conditionEndDate.style.display = "block";
+                                endDate.classList.add("is-invalid");
+                                isValid = false;
+                            } else {
+                                conditionEndDate.style.display = "none";
+                                endDate.classList.remove("is-invalid");
+                            }
+
+                        }
+                    }
+
+
+
+                    // check discount
+                    if (discountPercent.value.trim() === "") {
+                        discountError.style.display = "block";
+                        discountRangeError.style.display = "none";
+                        discountPercent.classList.add("is-invalid");
+                        isValid = false;
+                    } else {
+                        const discount = Number(discountPercent.value.trim());
+                        if (isNaN(discount)) {
+                            discountError.style.display = "block";
+                            discountRangeError.style.display = "none";
+                            discountPercent.classList.add("is-invalid");
+                            isValid = false;
+                        } else if (discount < 0 || discount > 100) {
+                            discountError.style.display = "none";
+                            discountRangeError.style.display = "block";
+                            discountPercent.classList.add("is-invalid");
+                            isValid = false;
+                        } else {
+                            discountError.style.display = "none";
+                            discountRangeError.style.display = "none";
+                            discountPercent.classList.remove("is-invalid");
+                        }
+                    }
+
+
+
+
+                    if (!isValid) {
+                        e.preventDefault();
+                        document.querySelector(".is-invalid").scrollIntoView({
+                            behavior: "smooth",
+                            block: "center"
+                        });
+                    }
+                });
+            </script>
+
     </body>
 </html>

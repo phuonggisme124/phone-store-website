@@ -354,9 +354,9 @@ public class UsersDAO extends DBContext {
         phones.forEach(System.out::println);
     }
 
-    public Users getUserByEmail(String email) {
+    public boolean getUserByEmail(String email) {
         String sql = "SELECT * FROM Users WHERE Email =?";
-
+        
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, email);
@@ -374,11 +374,14 @@ public class UsersDAO extends DBContext {
                 Timestamp createdAtTimestamp = rs.getTimestamp("CreatedAt");
                 LocalDateTime createdAt = (createdAtTimestamp != null) ? createdAtTimestamp.toLocalDateTime() : null;
 
-                return new Users(id, fullName, e, phone, pass, role, address, createdAt, status);
+                Users u = new Users(id, fullName, e, phone, pass, role, address, createdAt, status);
+                if(u != null){
+                    return true;
+                }
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-        return null;
+        return false;
     }
 }

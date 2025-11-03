@@ -10,6 +10,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import model.Category;
 import model.Products;
@@ -23,6 +25,14 @@ public class HomepageServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        
+        // ====== KHAI BÁO DAO ======
+        ProductDAO pdao = new ProductDAO();
+        VariantsDAO vdao = new VariantsDAO();
+        PromotionsDAO pmtdao = new PromotionsDAO();
+        
+        pmtdao.updateAllStatus();
+        
 
         // ====== KIỂM TRA ROLE ======
 //        HttpSession session = request.getSession();
@@ -33,10 +43,8 @@ public class HomepageServlet extends HttpServlet {
             action = "viewhomepage"; // Mặc định
         }
 
-        // ====== KHAI BÁO DAO ======
-        ProductDAO pdao = new ProductDAO();
-        VariantsDAO vdao = new VariantsDAO();
-        PromotionsDAO pmtdao = new PromotionsDAO();
+        
+        
 
         try {
             if ("viewhomepage".equals(action)) {

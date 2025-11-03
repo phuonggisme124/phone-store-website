@@ -16,9 +16,13 @@ import java.util.List;
 import model.Order;
 import model.Users;
 import dao.CategoryDAO;
+import dao.PaymentsDAO;
+import dao.ProductDAO;
 import java.util.List;
 import model.Category;
+import model.InterestRate;
 import model.OrderDetails;
+import model.Payments;
 
 /**
  * Servlet responsible for handling order-related operations.
@@ -53,7 +57,16 @@ public class OrderServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // 1. Get current session
+        String action = request.getParameter("action");
+        PaymentsDAO paydao = new PaymentsDAO();
+        ProductDAO pdao = new ProductDAO();
+        OrderDAO dao = new OrderDAO();
+        if(action == null){
+            action = "null";
+        }
+        
+        if(action.equals("null")){
+            // 1. Get current session
         HttpSession session = request.getSession(false);
 
         // 2. Verify login (redirect to login page if user is not logged in)
@@ -66,7 +79,7 @@ public class OrderServlet extends HttpServlet {
         int userID = currentUser.getUserId();
         int userRole = currentUser.getRole();
 
-        OrderDAO dao = new OrderDAO();
+        
         String targetPage = "";
         List<Order> orders = null;
 
@@ -147,6 +160,20 @@ public class OrderServlet extends HttpServlet {
 
         // 4. Forward to the appropriate JSP page
         request.getRequestDispatcher(targetPage).forward(request, response);
+        }else if (action.equals("orderDetail")) {
+            int oid = Integer.parseInt(request.getParameter("id"));
+            byte isIntalment = Byte.parseByte(request.getParameter("isInstalment"));
+
+            List<OrderDetails> listOrderDetails = dao.getAllOrderDetailByOrderID(oid);
+            List<Payments> listPayments = paydao.getPaymentByOrderID(oid);
+            List<InterestRate> listInterestRate = pdao.getAllInterestRate();
+            request.setAttribute("listOrderDetails", listOrderDetails);
+            request.setAttribute("listInterestRate", listInterestRate);
+            request.setAttribute("listPayments", listPayments);
+            request.setAttribute("isIntalment", isIntalment);
+            request.getRequestDispatcher("admin_manageorder_detail.jsp").forward(request, response);
+        }
+        
     }
 
     /**

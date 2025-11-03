@@ -150,20 +150,30 @@ public class UserServlet extends HttpServlet {
             String address = request.getParameter("address");
             int role = Integer.parseInt(request.getParameter("role"));
             String status = request.getParameter("status");
-            
-            Users u = udao.getUserByEmail(email);
-            if (u != null) {
-                
-                session.setAttribute("exist", email + " already exists!");
-                
-                response.sendRedirect("admin?action=editAccount&id=" + userId);
-                
-                return;
+
+
+            Users u = udao.getUserByID(userId);
+            if (email.equalsIgnoreCase(u.getEmail())) {
+                udao.updateUser(userId, name, email, phone, address, role, status);
+
+                response.sendRedirect("admin?action=manageUser");
+
+            } else {
+                boolean isEmail = udao.getUserByEmail(email);
+                if (isEmail) {
+                    session.setAttribute("exist", email + " already exists!");
+
+                    response.sendRedirect("admin?action=editAccount&id=" + userId);
+
+                } else {
+                    udao.updateUser(userId, name, email, phone, address, role, status);
+
+                    response.sendRedirect("admin?action=manageUser");
+                }
+
             }
-            udao.updateUser(userId, name, email, phone, address, role, status);
-            
-            response.sendRedirect("admin?action=manageUser");
-            
+
+
         } else if (action.equals("createAccountAdmin")) {
             String name = request.getParameter("name");
             String email = request.getParameter("email");

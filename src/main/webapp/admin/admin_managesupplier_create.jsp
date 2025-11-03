@@ -55,7 +55,7 @@
 
                 
                 <!-- Table -->
-                <form action="admin?action=createSupplier" method="post" class="w-50 mx-auto bg-light p-4 rounded shadow">
+                <form action="supplier?action=createSupplier" method="post" class="w-50 mx-auto bg-light p-4 rounded shadow">
                     
 
                     <div class="mb-3">
