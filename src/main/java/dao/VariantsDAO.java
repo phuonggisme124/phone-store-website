@@ -716,4 +716,18 @@ public class VariantsDAO extends DBContext {
         return list;
     }
 
+    public boolean decreaseQuantity(int variantID, int quantityToSubtract) {
+    String sql = "UPDATE Variants SET Stock = Stock - ? WHERE VariantID = ? AND Stock >= ?";
+    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setInt(1, quantityToSubtract);
+        ps.setInt(2, variantID);
+        ps.setInt(3, quantityToSubtract); // tránh âm số lượng
+        int rowsAffected = ps.executeUpdate();
+        return rowsAffected > 0;
+    } catch (SQLException e) {
+        System.out.println("Error decreasing quantity: " + e.getMessage());
+        return false;
+    }
+}
+
 }

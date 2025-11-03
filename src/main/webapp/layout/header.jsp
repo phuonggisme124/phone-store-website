@@ -324,7 +324,7 @@
                                     } else {
                                     %>
                                     <li class="pe-3">
-                                        <a href="login.jsp" class="nav-link p-0 text-dark text-uppercase fw-bold">Login/Register</a>
+                                        <a href="login" class="nav-link p-0 text-dark text-uppercase fw-bold">Login/Register</a>
                                     </li>
                                     <li class="text-dark fw-bold">
                                         Hello Guest

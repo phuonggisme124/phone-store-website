@@ -43,7 +43,7 @@ public class DBContext {
                     + "databaseName=PhoneStore;"
                     + "user=sa;"
 
-                    + "password=123456;"
+                    + "password=6789;"
 
                     + "encrypt=true;trustServerCertificate=true;";
 

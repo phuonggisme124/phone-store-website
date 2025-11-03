@@ -7,18 +7,20 @@ package dao;
 import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import model.Order;
 import model.OrderDetails;
 import model.Payments;
 import utils.DBContext;
 
 /**
- * Data Access Object for handling payment-related database operations.
- * This class connects to the database and retrieves payment information
- * associated with specific orders.
+ * Data Access Object for handling payment-related database operations. This
+ * class connects to the database and retrieves payment information associated
+ * with specific orders.
  *
  * Author: duynu
  */
@@ -32,7 +34,8 @@ public class PaymentsDAO extends DBContext {
      * Retrieves all payment records associated with a specific order ID.
      *
      * @param oid The ID of the order to retrieve payments for.
-     * @return A list of Payments objects representing all payments linked to the order.
+     * @return A list of Payments objects representing all payments linked to
+     * the order.
      */
     public List<Payments> getPaymentByOrderID(int oid) {
         String sql = "SELECT * FROM Payments WHERE OrderID = ?";
@@ -74,4 +77,44 @@ public class PaymentsDAO extends DBContext {
         // Return the list of payments
         return list;
     }
+
+    public void insertNewPayment(Order o, int instalmentPeriod) {
+        String sql = "INSERT INTO Payments (OrderID, Amount, PaymentDate, PaymentStatus, TotalMonths, CurrentMonth) "
+                + "VALUES (?, ?, ?, ?, ?, ?)";
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            for (int i = 1; i <= instalmentPeriod; i++) {
+                ps.setInt(1, o.getOrderID());
+                ps.setDouble(2, o.getTotalAmount() / instalmentPeriod); // chia đều số tiền mỗi tháng
+                ps.setDate(3, java.sql.Date.valueOf(o.getOrderDate().toLocalDate().plusMonths(i))); // cộng dồn tháng
+                ps.setString(4, "Unpaid");
+                ps.setInt(5, instalmentPeriod);
+                ps.setInt(6, i);
+                ps.addBatch(); // thêm vào batch
+            }
+            ps.executeBatch(); // thực thi toàn bộ cùng lúc
+            ps.close();
+        } catch (SQLException e) {
+            System.out.println("insertNewPayment: " + e.getMessage());
+        }
+    }
+
+    public void updatePaymentStatusToPaid(int paymentID) {
+        // Câu lệnh SQL này cập nhật cả trạng thái VÀ ngày thanh toán
+        String sql = "UPDATE Payments SET PaymentStatus = 'Paid' WHERE PaymentID = ?";
+
+        try {
+            // Tạo PreparedStatement
+            PreparedStatement ps = conn.prepareStatement(sql);
+            // Gán các giá trị vào tham số '?'
+            ps.setInt(1, paymentID);  // Tham số 2: ID của thanh toán
+            // Thực thi lệnh update
+            ps.executeUpdate();
+            // Đóng PreparedStatement
+            ps.close();
+        } catch (SQLException e) {
+            System.out.println("updatePaymentStatusToPaid: " + e.getMessage());
+        }
+    }
+
 }

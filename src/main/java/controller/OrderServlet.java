@@ -80,13 +80,13 @@ public class OrderServlet extends HttpServlet {
                 orders = dao.getOrdersByShipperId(userID);
                 request.setAttribute("orders", orders);
                 request.setAttribute("shipperName", currentUser.getFullName());
-                targetPage = "dashboard_shipper.jsp";
+                targetPage = "shipper/dashboard_shipper.jsp";
             } else {
                 // If status filter is provided, get orders by that status
                 orders = dao.getOrdersByShipperIdAndStatus(userID, status);
                 request.setAttribute("orders", orders);
                 request.setAttribute("shipperName", currentUser.getFullName());
-                targetPage = "dashboard_shipper.jsp";
+                targetPage = "shipper/dashboard_shipper.jsp";
             }
 
         } else if (userRole == 2) {

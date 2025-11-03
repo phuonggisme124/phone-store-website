@@ -53,7 +53,7 @@ public class HomepageServlet extends HttpServlet {
                 request.setAttribute("listVariant", variantsList); // của thịnh
                 request.setAttribute("promotionsList", promotionsList); //của thịnh
 
-                request.getRequestDispatcher("homepage.jsp").forward(request, response);
+                request.getRequestDispatcher("public/homepage.jsp").forward(request, response);
 
             }else if ("viewpromotion".equals(action)) {
                 // ====== HIỂN THỊ TRANG CHỦ ======
