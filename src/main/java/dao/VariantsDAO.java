@@ -181,8 +181,8 @@ public class VariantsDAO extends DBContext {
      * @param description Description text.
      * @param img Image URL.
      */
-    public void updateVariant(int vID, String color, String storage, double price, int stock, String description, String img) {
-        String sql = "UPDATE Variants SET Color = ?, Storage = ?, Price = ?, Stock = ?, Description = ?, ImageURL = ? WHERE VariantID = ?";
+    public void updateVariant(int vID, String color, String storage, double price, int stock, String description) {
+        String sql = "UPDATE Variants SET Color = ?, Storage = ?, Price = ?, Stock = ?, Description = ? WHERE VariantID = ?";
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, color);
@@ -190,8 +190,8 @@ public class VariantsDAO extends DBContext {
             ps.setDouble(3, price);
             ps.setInt(4, stock);
             ps.setString(5, description);
-            ps.setString(6, img);
-            ps.setInt(7, vID);
+
+            ps.setInt(6, vID);
             ps.executeUpdate();
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -702,6 +702,61 @@ public class VariantsDAO extends DBContext {
             System.out.println(e.getMessage());
         }
     }
-    
+
+    public List<String> getImages(String images) {
+        List<String> list = new ArrayList<>();
+
+        if (images != null && !images.isEmpty()) {
+            String[] token = images.split("#");
+            for (String t : token) {
+                list.add(t);
+            }
+        }
+
+        return list;
+    }
+
+
+    public boolean decreaseQuantity(int variantID, int quantityToSubtract) {
+    String sql = "UPDATE Variants SET Stock = Stock - ? WHERE VariantID = ? AND Stock >= ?";
+    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setInt(1, quantityToSubtract);
+        ps.setInt(2, variantID);
+        ps.setInt(3, quantityToSubtract); // tránh âm số lượng
+        int rowsAffected = ps.executeUpdate();
+        return rowsAffected > 0;
+    } catch (SQLException e) {
+        System.out.println("Error decreasing quantity: " + e.getMessage());
+        return false;
+    }
+}
+
+    public Variants getVariantByProductIDAndColor(int pID, String color) {
+        String sql = "SELECT * FROM Variants Where ProductID = ? And Color = ?";
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, pID);
+            ps.setString(2, color);
+            
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                int variantId = rs.getInt("VariantID");
+                int productID = rs.getInt("ProductID");
+                String colorV = rs.getString("Color");
+                String storageV = rs.getString("Storage");
+                double price = rs.getDouble("Price");
+                double discountPrice = rs.getDouble("DiscountPrice");
+                int stock = rs.getInt("Stock");
+                String description = rs.getString("Description");
+                String img = rs.getString("ImageURL");
+                return new Variants(variantId, productID, colorV, storageV, price, discountPrice, stock, description, img);
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+
 
 }

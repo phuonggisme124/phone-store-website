@@ -68,9 +68,9 @@ public class CartServlet extends HttpServlet {
         CartDAO cDAO = new CartDAO();
 
         int userID = Integer.parseInt(request.getParameter("userID"));
-        Carts cart = new Carts(userID, cDAO.getItemIntoCartByUserID(userID));
+        List<Carts> carts = cDAO.getItemIntoCartByUserID(userID);
 
-        request.setAttribute("cart", cart);
+        request.setAttribute("carts", carts);
         // Retrieve the newest products from the database
         int cID = 1;
         // Retrieve all categories from the database
@@ -81,7 +81,7 @@ public class CartServlet extends HttpServlet {
         request.setAttribute("listCategory", listCategory);
 
         // Forward the request to the homepage.jsp view
-        request.getRequestDispatcher("display_cart.jsp").forward(request, response);
+        request.getRequestDispatcher("customer/display_cart.jsp").forward(request, response);
     }
 
     /**

@@ -3,6 +3,7 @@
     position: relative;
     height: 100vh;
     overflow: hidden;
+    z-index: 0; /* 🔹 Đảm bảo video nằm dưới header */
 }
 #billboard video {
     width: 100%;
@@ -41,24 +42,20 @@
     color: #000;
 }
 
-/*  Header trong suốt, chỉ hiện nền trắng khi hover */
+/* ===== HEADER TRONG SUỐT BAN ĐẦU ===== */
+
 header.site-header {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     z-index: 10;
-    background: rgba(255, 255, 255, 0) !important; /* hoàn toàn trong suốt mặc định */
-    transition: background 0.4s ease, backdrop-filter 0.4s ease;
+    background: rgba(255, 255, 255, 0) !important; /* Mặc định hoàn toàn trong suốt */
+    backdrop-filter: blur(0px); /* Tắt blur khi trong suốt */
+    transition: background 0.4s ease, backdrop-filter 0.4s ease, box-shadow 0.4s ease;
 }
 
-/* Khi hover chuột vào header -> hiện khung trắng mờ */
-header.site-header:hover {
-    background: rgba(255, 255, 255, 0.85) !important;
-    backdrop-filter: blur(10px);
-}
 
-/* Mặc định chữ trắng vì nằm trên video */
 .navbar .nav-link,
 .navbar-brand,
 .user-items a,
@@ -67,29 +64,61 @@ header.site-header:hover {
     transition: color 0.3s;
 }
 
-/* Khi hover header -> đổi chữ sang đen */
-header.site-header:hover .navbar .nav-link,
-header.site-header:hover .navbar-brand,
-header.site-header:hover .user-items a,
-header.site-header:hover .user-items li {
+/* KHI HOVER (LÚC CHƯA CUỘN) -> Nền trắng mờ, chữ đen */
+header.site-header:not(.header-scrolled):hover {
+    background: rgba(255, 255, 255, 0.85) !important;
+    backdrop-filter: blur(10px);
+}
+
+header.site-header:not(.header-scrolled):hover .navbar .nav-link,
+header.site-header:not(.header-scrolled):hover .navbar-brand,
+header.site-header:not(.header-scrolled):hover .user-items a,
+header.site-header:not(.header-scrolled):hover .user-items li {
     color: black !important;
+}
+
+/* ===== TRẠNG THÁI KHI CUỘN (JS SẼ THÊM CLASS NÀY) ===== */
+header.site-header.header-scrolled {
+    background: rgba(255, 255, 255, 1) !important; /* 🔹 Nền trắng đục */
+    backdrop-filter: blur(10px); /* Có thể giữ hiệu ứng mờ */
+    /* Thêm bóng mờ cho đẹp khi cuộn */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Chữ đổi sang ĐEN khi cuộn */
+header.site-header.header-scrolled .navbar .nav-link,
+header.site-header.header-scrolled .navbar-brand,
+header.site-header.header-scrolled .user-items a,
+header.site-header.header-scrolled .user-items li {
+    color: black !important; /* 🔹 Chữ đen */
+}
+
+/* ===== ẨN KHI CUỘN XUỐNG / HIỆN KHI CUỘN LÊN (Giữ nguyên) ===== */
+header.site-header.hide {
+    transform: translateY(-100%);
+}
+
+header.site-header.show {
+    transform: translateY(0);
 }
 /*hieu ứng sản phẩm */
 .product-card {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
+
 .product-card:hover {
-  transform: translateY(-10px) scale(1.05);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    transform: translateY(-10px) scale(1.05);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 .product-card img {
-  transition: transform 0.3s ease;
+    transition: transform 0.3s ease;
 }
 
 .product-card:hover img {
-  transform: scale(1.08);
+    transform: scale(1.08);
 }
+
 
 /*
 Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license

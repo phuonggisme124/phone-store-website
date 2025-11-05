@@ -86,10 +86,10 @@ public class RegisterServlet extends HttpServlet {
         // --- Registration logic and result handling ---
         
         UsersDAO dao = new UsersDAO();
-        Users u = null;
+        boolean isRegsitered = false;
         try {
             // The register() method is assumed to return a Users object if successful
-            u = dao.register(name, email, numberPhone, address, password);
+             isRegsitered = dao.register(name, email, numberPhone, address, password, 1);
         } catch (Exception e) {
             // Common causes: duplicate email or database error
             System.out.println("Registration error: " + e.getMessage());
@@ -98,29 +98,9 @@ public class RegisterServlet extends HttpServlet {
             return;
         }
 
-        if (u != null) { 
-            // Registration successful
-
-            // =========================================================
-            // A. STORE USER DATA IN SESSION (AUTO LOGIN) 🚀
-            // =========================================================
-            HttpSession session = request.getSession(); // Create or get existing session
+        if (isRegsitered) { 
             
-            // Store the full user object (recommended approach)
-            session.setAttribute("user", u);
-            
-            // Optionally store important user info
-            session.setAttribute("email", u.getEmail());
-            // Example: session.setAttribute("id_user", u.getId());
-
-            // Set default role = 1 if null
-            String roleValue = (u.getRole() != null) ? u.getRole().toString() : "1";
-            session.setAttribute("role", roleValue);
-
-            // Old cookie-based logic removed
-
-            // Redirect to homepage after successful registration
-            response.sendRedirect("homepage.jsp");
+            response.sendRedirect("login.jsp");
 
         } else {
             // Registration failed (null returned from DAO)

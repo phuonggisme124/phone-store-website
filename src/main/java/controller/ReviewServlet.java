@@ -18,6 +18,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
 import java.io.File;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -28,12 +29,13 @@ import model.Variants;
 
 /**
  * Servlet xử lý review (thêm / xóa / upload ảnh)
+ *
  * @author Dâu
  */
 @WebServlet(name = "ReviewServlet", urlPatterns = {"/review"})
 @MultipartConfig(
         fileSizeThreshold = 1024 * 1024, // 1MB
-        maxFileSize = 10 * 1024 * 1024,  // 10MB mỗi file
+        maxFileSize = 10 * 1024 * 1024, // 10MB mỗi file
         maxRequestSize = 50 * 1024 * 1024 // 50MB tổng request
 )
 public class ReviewServlet extends HttpServlet {
@@ -58,16 +60,33 @@ public class ReviewServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        try {
-            int variantID = Integer.parseInt(request.getParameter("variantID"));
-            ReviewDAO dao = new ReviewDAO();
-            List<Review> review = dao.getReviewsByVariantID(variantID);
-            request.setAttribute("review", review);
-            request.getRequestDispatcher("productdetail.jsp").forward(request, response);
-        } catch (Exception e) {
-            e.printStackTrace();
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid Variant ID");
+        ReviewDAO rdao = new ReviewDAO();
+        String action = request.getParameter("action");
+
+        if (action == null) {
+            action = "null";
         }
+
+        if (action.equals(null)) {
+            try {
+                int variantID = Integer.parseInt(request.getParameter("variantID"));
+                ReviewDAO dao = new ReviewDAO();
+                List<Review> review = dao.getReviewsByVariantID(variantID);
+                request.setAttribute("review", review);
+                request.getRequestDispatcher("productdetail.jsp").forward(request, response);
+            } catch (Exception e) {
+                e.printStackTrace();
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid Variant ID");
+            }
+        }else if (action.equals("reviewDetail")) {
+            int rID = Integer.parseInt(request.getParameter("rID"));
+
+            Review review = rdao.getReviewByID(rID);
+
+            request.setAttribute("review", review);
+            request.getRequestDispatcher("admin_managereview_detail.jsp").forward(request, response);
+        }
+
     }
 
     // ===== POST: thêm hoặc xóa review =====
@@ -85,7 +104,9 @@ public class ReviewServlet extends HttpServlet {
         }
 
         String action = request.getParameter("action");
-        if (action == null) action = "review";
+        if (action == null) {
+            action = "review";
+        }
 
         ReviewDAO rdao = new ReviewDAO();
         VariantsDAO vdao = new VariantsDAO();
@@ -95,49 +116,63 @@ public class ReviewServlet extends HttpServlet {
             int vID = Integer.parseInt(request.getParameter("vID"));
             int rating = Integer.parseInt(request.getParameter("rating"));
             String comment = request.getParameter("comment");
-            
+
             // Tạo review trong DB
             rdao.createReview(user.getUserId(), vID, rating, comment);
-            
+
             // Lấy ID của review mới nhất
             int currentReviewID = rdao.getCurrentReviewID();
-            
+
             // === Upload ảnh review ===
-            String filePath = request.getServletContext().getRealPath("");
+            String filePath = request.getServletContext().getRealPath("images_review");
             String basePath = filePath.substring(0, filePath.indexOf("\\target"));
             String uploadDir = basePath + File.separator + "src" + File.separator + "main" + File.separator + "webapp" + File.separator + "images_review";
-            
+
             File uploadFolder = new File(uploadDir);
-            if (!uploadFolder.exists()) uploadFolder.mkdirs();
-            
+            if (!uploadFolder.exists()) {
+                uploadFolder.mkdirs();
+            }
+
             String img = "";
             for (Part part : request.getParts()) {
                 if ("photos".equals(part.getName()) && part.getSize() > 0) {
                     String fileName = currentReviewID + "_" + Paths.get(part.getSubmittedFileName()).getFileName().toString();
                     img += fileName + "#";
-                    part.write(uploadDir + File.separator + fileName);
+                    String srcFile = uploadDir + File.separator + fileName;
+                    part.write(srcFile);
+
+                    File srcFileImages = new File(srcFile);
+                    File targetFile = new File(filePath + File.separator + fileName);
+                    Files.copy(srcFileImages.toPath(), targetFile.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
                 }
             }
-            
+
             if (!img.isEmpty()) {
                 img = img.substring(0, img.length() - 1);
                 rdao.updateImageReview(currentReviewID, img);
             }
-            
+
             // Redirect về product detail
             Variants variant = vdao.getVariantByID(vID);
             int productID = variant.getProductID();
             response.sendRedirect("product?action=viewDetail&pID=" + productID);
-            
+
         } else if ("deleteReview".equals(action)) {
             // === Xóa review ===
             int rID = Integer.parseInt(request.getParameter("rID"));
             int vID = Integer.parseInt(request.getParameter("vID"));
-            
+
             rdao.deleteReview(rID);
             Variants variant = vdao.getVariantByID(vID);
             int productID = variant.getProductID();
             response.sendRedirect("product?action=viewDetail&pID=" + productID);
+        }else if (action.equals("replyReview")) {
+            int rID = Integer.parseInt(request.getParameter("rID"));
+            String reply = request.getParameter("reply");
+
+            rdao.updateReview(rID, reply);
+            response.sendRedirect("admin?action=manageReview");
+
         }
     }
 }

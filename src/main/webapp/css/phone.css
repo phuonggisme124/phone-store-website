@@ -1,3 +1,4 @@
+/* ===== Kiểu Card Sản Phẩm (Giữ nguyên) ===== */
 .product-card {
     transition: all 0.3s ease;
     background: #fff;
@@ -12,3 +13,4 @@
     font-size: 0.75rem;
     padding: 0.4em 0.6em;
 }
+

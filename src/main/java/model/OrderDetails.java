@@ -21,15 +21,9 @@ public class OrderDetails {
     private double downPayment;     // Down payment made at the beginning
     private int interestRate;       // Interest rate applied to the installment
     private Variants variant;
-    private int instalmentPeriod;
+   
 
-    public int getInstalmentPeriod() {
-        return instalmentPeriod;
-    }
-
-    public void setInstalmentPeriod(int instalmentPeriod) {
-        this.instalmentPeriod = instalmentPeriod;
-    }
+    
 
     public OrderDetails() {
     }

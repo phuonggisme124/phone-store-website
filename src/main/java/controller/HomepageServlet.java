@@ -10,6 +10,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import model.Category;
 import model.Products;
@@ -23,6 +25,14 @@ public class HomepageServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        
+        // ====== KHAI BÁO DAO ======
+        ProductDAO pdao = new ProductDAO();
+        VariantsDAO vdao = new VariantsDAO();
+        PromotionsDAO pmtdao = new PromotionsDAO();
+        
+        pmtdao.updateAllStatus();
+        
 
         // ====== KIỂM TRA ROLE ======
 //        HttpSession session = request.getSession();
@@ -33,10 +43,8 @@ public class HomepageServlet extends HttpServlet {
             action = "viewhomepage"; // Mặc định
         }
 
-        // ====== KHAI BÁO DAO ======
-        ProductDAO pdao = new ProductDAO();
-        VariantsDAO vdao = new VariantsDAO();
-        PromotionsDAO pmtdao = new PromotionsDAO();
+        
+        
 
         try {
             if ("viewhomepage".equals(action)) {
@@ -53,7 +61,7 @@ public class HomepageServlet extends HttpServlet {
                 request.setAttribute("listVariant", variantsList); // của thịnh
                 request.setAttribute("promotionsList", promotionsList); //của thịnh
 
-                request.getRequestDispatcher("homepage.jsp").forward(request, response);
+                request.getRequestDispatcher("public/homepage.jsp").forward(request, response);
 
             }else if ("viewpromotion".equals(action)) {
                 // ====== HIỂN THỊ TRANG CHỦ ======
@@ -69,7 +77,7 @@ public class HomepageServlet extends HttpServlet {
                 request.setAttribute("listVariant", variantsList); // của thịnh
                 request.setAttribute("promotionsList", promotionsList); //của thịnh
 
-                request.getRequestDispatcher("customer_view_promotion.jsp").forward(request, response);
+                request.getRequestDispatcher("public/customer_view_promotion.jsp").forward(request, response);
 
             } else {
                 // ====== ACTION KHÔNG HỢP LỆ → QUAY VỀ TRANG CHỦ ======

@@ -421,18 +421,18 @@ h3.cart-title {
 /** Search Popup
 --------------------------------------------------------------*/
 .search-popup {
-    background-color: #fff;
+    background: rgba(255, 255, 255, 0.2); /* Nền trong suốt */
+    backdrop-filter: blur(10px);          /* Làm mờ phần phía sau */
+    -webkit-backdrop-filter: blur(10px);  /* Hỗ trợ Safari */
     position: fixed;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    opacity: 0;
-    visibility: hidden;
+    opacity: 1;
+    visibility: visible;
     z-index: 9999;
-    -webkit-transition: opacity 0.3s 0s, visibility 0s 0.3s;
-    -moz-transition: opacity 0.3s 0s, visibility 0s 0.3s;
-    transition: opacity 0.3s 0s, visibility 0s 0.3s;
+    transition: all 0.3s ease;
 }
 .search-popup.is-visible {
     opacity: 1;

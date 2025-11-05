@@ -9,7 +9,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import model.CartItems;
 import model.Carts;
 import model.Products;
 import model.Variants;
@@ -21,20 +20,18 @@ import utils.DBContext;
  */
 public class CartDAO extends DBContext {
 
-    public List<CartItems> getItemIntoCartByUserID(int userID) {
-        String sql = "SELECT ci.CartID, ci.VariantID, ci.Quantity,\n"
-                + "               v.ProductID, v.Color, v.Storage, v.DiscountPrice, v.Price,  \n"
-                + "               v.Stock, v.ImageURL\n"
-                + "        FROM CartItems ci\n"
-                + "        JOIN Variants v ON ci.VariantID = v.VariantID\n"
-                + "        WHERE ci.CartID = ?";
+    public List<Carts> getItemIntoCartByUserID(int userID) {
+        String sql = "SELECT c.UserID, c.VariantID, c.Quantity,v.ProductID, v.Color, v.Storage, v.DiscountPrice, v.Price, v.Stock, v.ImageURL\n"
+                + "FROM Carts c JOIN Variants v \n"
+                + "ON c.VariantID = v.VariantID\n"
+                + "WHERE c.UserID = ?";
 
-        List<CartItems> cItems = new ArrayList<>();
+        Carts cart;
+        List<Carts> carts = new ArrayList<>();
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, userID);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    int cartID = rs.getInt("CartID");
                     int quantity = rs.getInt("Quantity");
                     int variantID = rs.getInt("VariantID");
                     int productID = rs.getInt("ProductID");
@@ -46,16 +43,17 @@ public class CartDAO extends DBContext {
                     String imgURL = rs.getString("ImageURL");
 
                     Variants variant = new Variants(variantID, productID, color, storage, price, disPrice, stock, imgURL);
-                    CartItems cartItems = new CartItems(cartID, quantity, variant);
+                    cart = new Carts(userID, variant, quantity);
+                    cart.setCartID(userID);
+                    carts.add(cart);
 
-                    cItems.add(cartItems);
                 }
             }
         } catch (SQLException e) {
             System.err.println("Error fetching cart items for user " + userID + ": " + e.getMessage());
             e.printStackTrace();
         }
-        return cItems;
+        return carts;
     }
 
     /**
@@ -67,7 +65,7 @@ public class CartDAO extends DBContext {
      */
     public void addNewProductToCart(int userID, int variantID, int quantity) {
         // SQL command to insert a new item into the CartItems table
-        String sql = "INSERT INTO CartItems (CartID, VariantID, Quantity) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO Carts (UserID, VariantID, Quantity) VALUES (?, ?, ?)";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             // Bind parameters to the SQL statement
@@ -91,8 +89,8 @@ public class CartDAO extends DBContext {
     }
 
     public void removeItemFromCart(int cartID, int variantID) {
-        String sql = "DELETE FROM CartItems \n"
-                + "WHERE CartItems.CartID = ? AND CartItems.VariantID= ?";
+        String sql = "DELETE FROM Carts \n"
+                + "WHERE Carts.UserID = ? AND Carts.VariantID= ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             // Bind parameters to the SQL statement
             stmt.setInt(1, cartID);
@@ -107,7 +105,7 @@ public class CartDAO extends DBContext {
     }
 
     public boolean isAddedInCart(int userID, int variantID) {
-        String sql = "SELECT * FROM CartItems WHERE CartItems.CartID = ? AND CartItems.VariantID = ?";
+        String sql = "SELECT * FROM Carts WHERE Carts.UserID = ? AND Carts.VariantID = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             // Bind parameters to the SQL statement
             stmt.setInt(1, userID);    // In this design, CartID = userID
@@ -128,7 +126,7 @@ public class CartDAO extends DBContext {
     }
 
     public void updateQuantityExistedItemInCart(int cartID, int variantID, int quantity) {
-        String sql = "UPDATE CartItems SET Quantity = ? WHERE CartID = ? AND VariantID = ?";
+        String sql = "UPDATE Carts SET Quantity = ? WHERE UserID = ? AND VariantID = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, quantity + 1);
             stmt.setInt(2, cartID);
@@ -140,7 +138,7 @@ public class CartDAO extends DBContext {
     }
 
     public void updateQuantityByChange(int cartID, int variantID, int change) {
-        String sql = "UPDATE CartItems SET quantity = quantity + ? WHERE cartID = ? AND variantID = ?";
+        String sql = "UPDATE Carts SET Quantity = Quantity + ? WHERE UserID = ? AND VariantID = ?";
         // thực thi PreparedStatement với change, cartID, variantID
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, change);
@@ -153,7 +151,7 @@ public class CartDAO extends DBContext {
     }
 
     public void removeCartItem(int userID, int variantID) {
-        String sql = "DELETE FROM CartItems WHERE CartID = ? AND VariantID = ?";
+        String sql = "DELETE FROM Carts WHERE UserID = ? AND VariantID = ?";
         // thực thi PreparedStatement với change, cartID, variantID
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, userID);
@@ -165,7 +163,7 @@ public class CartDAO extends DBContext {
     }
 
     public void ensureCartExists(int userID) {
-        String check = "SELECT CartID FROM Carts WHERE UserID = ?";
+        String check = "SELECT UserID FROM Carts WHERE UserID = ?";
         try (PreparedStatement stmt = conn.prepareStatement(check)) {
             stmt.setInt(1, userID);
             ResultSet rs = stmt.executeQuery();
@@ -182,14 +180,28 @@ public class CartDAO extends DBContext {
     }
 
     public static void main(String[] args) {
-        CartDAO dao = new CartDAO();
+        CartDAO dao = new CartDAO(); // hoặc tên class thật chứa phương thức của bạn
+        int userID = 1; // thay bằng ID thực trong DB
 
-        int userID = 1;        // ID user có giỏ hàng (CartID = userID)
-        int variantID = 101;   // ID sản phẩm biến thể trong bảng Variants
-        int quantity = 2;      // Số lượng muốn thêm
+        List<Carts> carts = dao.getItemIntoCartByUserID(userID);
 
-        dao.ensureCartExists(userID);
-        dao.addNewProductToCart(userID, variantID, quantity);
+        if (carts.isEmpty()) {
+            System.out.println("Cart is empty for user ID: " + userID);
+        } else {
+            for (Carts cart : carts) {
+                System.out.println("User ID: " + cart.getUserID());
+                System.out.println("Variant ID: " + cart.getVariant().getVariantID());
+                System.out.println("Product ID: " + cart.getVariant().getProductID());
+                System.out.println("Color: " + cart.getVariant().getColor());
+                System.out.println("Storage: " + cart.getVariant().getStorage());
+                System.out.println("Price: " + cart.getVariant().getPrice());
+                System.out.println("Discount Price: " + cart.getVariant().getDiscountPrice());
+                System.out.println("Stock: " + cart.getVariant().getStock());
+                System.out.println("Image URL: " + cart.getVariant().getImageUrl());
+                System.out.println("Quantity: " + cart.getQuantity());
+                System.out.println("---------------------------");
+            }
+        }
     }
 
 }

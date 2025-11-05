@@ -293,3 +293,84 @@ body {
     margin-top: 8px;
     display: none;
 }
+
+/*
+=====================================
+ CSS CHO BẢNG THÔNG SỐ (GIỐNG HÌNH)
+=====================================
+*/
+
+.spec-table {
+    font-family: 'Poppins', sans-serif; /* Dùng font của bạn */
+    margin-top: 25px; /* Khoảng cách với mấy ảnh nhỏ ở trên */
+    border: 1px solid #e3e8f0; /* Viền xám từ theme của bạn */
+    border-radius: 12px; /* Bo góc 12px */
+    overflow: hidden; /* Rất quan trọng để bo góc hoạt động */
+}
+
+.spec-row {
+    display: flex;
+    padding: 16px 18px; /* Đệm cho mỗi dòng (làm dòng cao hơn) */
+    background-color: #ffffff; /* Nền trắng */
+    border-bottom: 1px solid #e3e8f0; /* Viền ngăn cách */
+}
+
+/* Tạo hiệu ứng sọc vằn (dòng lẻ có nền xám) */
+.spec-table .spec-row:nth-child(odd) {
+    background-color: #f9fafc; /* Màu nền xám-xanh siêu nhạt (giống hình) */
+}
+
+.spec-table .spec-row:last-child {
+    border-bottom: none; /* Bỏ viền cho dòng cuối cùng */
+}
+
+.spec-label {
+    flex-basis: 200px; /* Tăng độ rộng cột 'Tên thông số' */
+    flex-shrink: 0; /* Không cho cột bị co lại */
+    font-weight: 500; /* Độ đậm vừa phải */
+    color: #5a6a85; /* Màu chữ xám (giống hình) */
+    padding-right: 15px; /* Khoảng cách giữa 2 cột */
+}
+
+.spec-value {
+    flex-grow: 1; /* Cho 'Giá trị' lấp đầy phần còn lại */
+    font-weight: 500;
+    color: #333; /* Màu chữ chính (đen nhạt) */
+}
+
+/*
+=====================================
+ CSS CHO TIÊU ĐỀ BẢNG (h2)
+=====================================
+*/
+
+.spec-table h2 {
+    font-family: 'Poppins', sans-serif; /* Dùng font của bạn */
+    font-size: 20px;                   /* Cỡ chữ to, rõ ràng */
+    font-weight: 600;                  /* In đậm */
+    color: #333;                       /* Màu chữ tối */
+    margin: 0;                         /* Bỏ margin mặc định của h2 */
+    padding: 18px 20px;                /* Thêm đệm cho thoáng đãng */
+    
+    /* Tạo nền xám nhạt (giống các dòng lẻ) */
+    background-color: #f9fafc; 
+    
+    /* Thêm viền dưới để ngăn cách với nội dung */
+    border-bottom: 1px solid #e3e8f0;  
+}
+/*
+=====================================
+ CSS CHO tên sản phẩm (h2)
+=====================================
+*/
+
+.product-title {
+    font-family: 'Poppins', sans-serif; /* Dùng font của bạn */
+    font-size: 100px;                   /* Kích thước lớn */
+    font-weight: 700;                  /* Rất đậm */
+    color: #333;                       /* Màu chữ đậm */
+    margin: 0 0 20px 0;                /* Khoảng cách với nội dung bên dưới */
+    padding-bottom: 15px;              /* Khoảng cách giữa chữ và đường kẻ */
+    border-bottom: 2px solid #e3e8f0;  /* Đường kẻ mờ (dùng màu từ theme) */
+    line-height: 1.3;                  /* Giãn dòng cho thoáng */
+}

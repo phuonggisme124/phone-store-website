@@ -37,7 +37,7 @@ public class ProfileServlet extends HttpServlet {
             request.setAttribute("user", session.getAttribute("user"));
         }
 
-        RequestDispatcher rd = (RequestDispatcher) request.getRequestDispatcher("profile.jsp");
+        RequestDispatcher rd = (RequestDispatcher) request.getRequestDispatcher("customer/profile.jsp");
         rd.forward(request, response);
     }
 }

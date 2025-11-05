@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import model.InterestRate;
 import model.Products;
+import model.Specification;
 import model.Variants;
 
 /**
@@ -48,7 +49,7 @@ public class ProductDAO extends DBContext {
                         ? createdAtTimestamp.toLocalDateTime()
                         : null;
                 List<Variants> variants = vdao.getAllVariantByProductID(id);
-                Products p =  new Products(id, cateID, supplierID, name, brand, warrantyPeriod, createdAt);
+                Products p = new Products(id, cateID, supplierID, name, brand, warrantyPeriod, createdAt);
                 p.setVariants(variants);
                 list.add(p);
             }
@@ -160,9 +161,10 @@ public class ProductDAO extends DBContext {
     /**
      * Update product information by product ID.
      */
-    public void updateProduct(int pID, int supplierID, String pName, String brand, int warrantyPeriod) {
+    public void updateProduct(int pID, int categoryID, int supplierID, String pName, String brand, int warrantyPeriod) {
         String sql = "UPDATE Products\n"
-                + "SET SupplierID = ?,\n"
+                + "SET CategoryID = ?,\n"
+                + "    SupplierID = ?,\n"
                 + "    Name = ?,\n"
                 + "    Brand = ?,\n"
                 + "	WarrantyPeriod = ?\n"
@@ -170,11 +172,12 @@ public class ProductDAO extends DBContext {
 
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setInt(1, supplierID);
-            ps.setString(2, pName);
-            ps.setString(3, brand);
-            ps.setInt(4, warrantyPeriod);
-            ps.setInt(5, pID);
+            ps.setInt(1, categoryID);
+            ps.setInt(2, supplierID);
+            ps.setString(3, pName);
+            ps.setString(4, brand);
+            ps.setInt(5, warrantyPeriod);
+            ps.setInt(6, pID);
             ps.executeUpdate();
 
         } catch (Exception e) {
@@ -434,9 +437,6 @@ public class ProductDAO extends DBContext {
                 int id = rs.getInt("InterestRateID");
                 int instalmentPeriod = rs.getInt("InstalmentPeriod");
                 int percent = rs.getInt("Percent");
-                
-
-                
 
                 list.add(new InterestRate(id, percent, instalmentPeriod));
             }
@@ -448,6 +448,90 @@ public class ProductDAO extends DBContext {
         return list;
     }
 
+    public Specification getSpecificationByProductID(int productID) {
+        String sql = "Select * from Specifications WHERE ProductID = ? ";
+
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, productID);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                int spectificationID = rs.getInt("SpecificationID");
+                int pID = rs.getInt("ProductID");
+                String os = rs.getString("OS");
+                String cpu = rs.getString("CPU");
+                String gpu = rs.getString("GPU");
+                String ram = rs.getString("RAM");
+                int batteryCapacity = rs.getInt("BatteryCapacity");
+                String touchscreen = rs.getString("Touchscreen");
+                return (new Specification(spectificationID, pID, os, cpu, gpu, ram, batteryCapacity, touchscreen));
+            }
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        return null;
+    }
+
+    public boolean isProductByName(String pName) {
+        String sql = "SELECT * FROM Products WHERE Name = ?";
+
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, pName);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return true;
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        return false;
+    }
+
+    public void updateSpecification(int specID, String os, String cpu, String gpu, String ram, int batteryCapacity, String touchscreen) {
+        String sql = "UPDATE Specifications\n"
+                + "SET OS = ?,\n"
+                + "    CPU = ?,\n"
+                + "    GPU = ?,\n"
+                + "    RAM = ?,\n"
+                + "	BatteryCapacity = ?,\n"
+                + "	Touchscreen = ?\n"
+                + "WHERE SpecificationID = ?;";
+
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, os);
+            ps.setString(2, cpu);
+            ps.setString(3, gpu);
+            ps.setString(4, ram);
+            ps.setInt(5, batteryCapacity);
+            ps.setString(6, touchscreen);
+            ps.setInt(7, specID);
+
+            ps.executeUpdate();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void deleteSpecificationByProductID(int pID) {
+        String sql = "DELETE FROM Specifications\n"
+                + "WHERE ProductID = ?;";
+
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, pID);
+            ps.executeUpdate();
+            ps.close();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
    
-    
+
 }

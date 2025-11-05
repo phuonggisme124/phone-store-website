@@ -19,10 +19,33 @@ public class Carts {
     private int cartID;          // Unique ID of the cart (from SQL database)
     private int userID;          // ID of the user who owns this cart
     private Date createdAt;      // Date when the cart was created
-    private List<CartItems> listCartItems;  // List of items in the cart
+    private Variants variant;
+    private int quantity;
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public Carts(int cartID, Variants variant, int quantity) {
+        this.cartID = cartID;
+        this.variant = variant;
+        this.quantity = quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
 
     // Default constructor
     public Carts() {
+    }
+
+    public Variants getVariant() {
+        return variant;
+    }
+
+    public void setVariant(Variants variant) {
+        this.variant = variant;
     }
 
     // Full constructor with creation date
@@ -33,18 +56,11 @@ public class Carts {
     }
 
     // Constructor initializing an empty list of items
-    public Carts(int cartID, List<CartItems> listCartItems) {
+    public Carts(int cartID,Variants variant) {
         this.cartID = cartID;
-        this.listCartItems = listCartItems;
+        this.variant = variant;
     }
 
-    public List<CartItems> getListCartItems() {
-        return listCartItems;
-    }
-
-    public void setListCartItems(List<CartItems> listCartItems) {
-        this.listCartItems = listCartItems;
-    }
 
 
 

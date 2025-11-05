@@ -81,8 +81,7 @@
 
     <body>
         <header>
-            <h3>MINISTORE</h3>
-        </header>
+            <a href="homepage" style="color: black"><h1>MINISTORE</h1></a>
 
         <div class="auth-wrapper">
             <div class="auth-buttons">

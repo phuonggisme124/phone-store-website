@@ -21,6 +21,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
 import java.io.File;
 import java.nio.file.Paths;
@@ -106,20 +107,23 @@ public class AdminServlet extends HttpServlet {
             action = "dashboard";
         }
 
-        if (action.equals("editAccount")) {
+        if (action.equals("manageUser")) {
+
+            List<Users> listUsers = udao.getAllUsers();
+            request.setAttribute("listUsers", listUsers);
+
+
+            request.getRequestDispatcher("admin/dashboard_admin_manageuser.jsp").forward(request, response);
+            
+        }else if (action.equals("editAccount")) {
 
             int id = Integer.parseInt(request.getParameter("id"));
             Users user = udao.getUserByID(id);
             request.setAttribute("user", user);
 
-            request.getRequestDispatcher("admin_manageuser_edit.jsp").forward(request, response);
-        } else if (action.equals("manageUser")) {
-            List<Users> listUsers = udao.getAllUsers();
-            request.setAttribute("listUsers", listUsers);
-
-            request.getRequestDispatcher("dashboard_admin_manageuser.jsp").forward(request, response);
+            request.getRequestDispatcher("admin/admin_manageuser_edit.jsp").forward(request, response);
         } else if (action.equals("createAccount")) {
-            request.getRequestDispatcher("admin_manageuser_create.jsp").forward(request, response);
+            request.getRequestDispatcher("admin/admin_manageuser_create.jsp").forward(request, response);
         } else if (action.equals("manageProduct")) {
             List<Products> listProducts = pdao.getAllProduct();
             List<Category> listCategory = ctdao.getAllCategories();
@@ -128,6 +132,9 @@ public class AdminServlet extends HttpServlet {
             for (Products product : listProducts) {
                 List<Variants> listVariant = vdao.getAllVariantByProductID(product.getProductID());
                 if (listVariant == null || listVariant.isEmpty()) {
+
+                    pdao.deleteSpecificationByProductID(product.getProductID());
+                    pmtdao.deletePromotionByProductID(product.getProductID());
                     pdao.deleteProductByProductID(product.getProductID());
                 }
             }
@@ -135,12 +142,13 @@ public class AdminServlet extends HttpServlet {
             request.setAttribute("currentListProduct", currentListProduct);
             request.setAttribute("listCategory", listCategory);
             request.setAttribute("listSupplier", listSupplier);
-            request.getRequestDispatcher("dashboard_admin_manageproduct.jsp").forward(request, response);
+
+            request.getRequestDispatcher("admin/dashboard_admin_manageproduct.jsp").forward(request, response);
         } else if (action.equals("productDetail")) {
 
             int id = Integer.parseInt(request.getParameter("id"));
             List<Variants> listVariants = vdao.getAllVariantByProductID(id);
-            List<Products> listProducts = pdao.getAllProduct()  ;
+            List<Products> listProducts = pdao.getAllProduct();
             //Promotions promotion = pmtdao.getPromotionByProductID(id);
 
             request.setAttribute("productID", id);
@@ -148,7 +156,7 @@ public class AdminServlet extends HttpServlet {
             request.setAttribute("listProducts", listProducts);
             request.setAttribute("listVariants", listVariants);
 
-            request.getRequestDispatcher("admin_manageproduct_detail.jsp").forward(request, response);
+            request.getRequestDispatcher("admin/admin_manageproduct_detail.jsp").forward(request, response);
         } else if (action.equals("editProduct")) {
             int vid = Integer.parseInt(request.getParameter("vid"));
             int pid = Integer.parseInt(request.getParameter("pid"));
@@ -160,47 +168,51 @@ public class AdminServlet extends HttpServlet {
             request.setAttribute("product", product);
             request.setAttribute("listSupplier", listSupplier);
 
-            request.getRequestDispatcher("admin_manageproduct_edit.jsp").forward(request, response);
+            request.getRequestDispatcher("admin/admin_manageproduct_edit.jsp").forward(request, response);
         } else if (action.equals("createProduct")) {
             List<Suppliers> listSupplier = sldao.getAllSupplier();
             List<Category> listCategories = ctdao.getAllCategories();
             request.setAttribute("listSupplier", listSupplier);
             request.setAttribute("listCategories", listCategories);
-            request.getRequestDispatcher("admin_manageproduct_create.jsp").forward(request, response);
+            request.getRequestDispatcher("admin/admin_manageproduct_create.jsp").forward(request, response);
         } else if (action.equals("createVariant")) {
             int pid = Integer.parseInt(request.getParameter("pid"));
             Products product = pdao.getProductByID(pid);
 
             request.setAttribute("product", product);
             request.setAttribute("productID", pid);
-            request.getRequestDispatcher("admin_manageproduct_createvariant.jsp").forward(request, response);
+            request.getRequestDispatcher("admin/admin_manageproduct_createvariant.jsp").forward(request, response);
         } else if (action.equals("deleteProduct")) {
             int pid = Integer.parseInt(request.getParameter("pid"));
             vdao.deleteVariantByProductID(pid);
             pdao.deleteProductByProductID(pid);
-            response.sendRedirect("admin?action=manageProduct");
+            response.sendRedirect("admin/admin?action=manageProduct");
+
         } else if (action.equals("manageSupplier")) {
             List<Suppliers> listSupplier = sldao.getAllSupplier();
             request.setAttribute("listSupplier", listSupplier);
 
-            request.getRequestDispatcher("dashboard_admin_managesupplier.jsp").forward(request, response);
+
+            request.getRequestDispatcher("admin/dashboard_admin_managesupplier.jsp").forward(request, response);
         } else if (action.equals("editSupplier")) {
             int supplierID = Integer.parseInt(request.getParameter("id"));
 
             Suppliers supplier = sldao.getSupplierByID(supplierID);
             request.setAttribute("supplier", supplier);
-            request.getRequestDispatcher("admin_managesupplier_edit.jsp").forward(request, response);
+            request.getRequestDispatcher("admin/admin_managesupplier_edit.jsp").forward(request, response);
         } else if (action.equals("createSupplier")) {
 
-            request.getRequestDispatcher("admin_managesupplier_create.jsp").forward(request, response);
+            request.getRequestDispatcher("admin/admin_managesupplier_create.jsp").forward(request, response);
+
         } else if (action.equals("managePromotion")) {
+            pmtdao.updateAllStatus();
             List<Products> listProducts = pdao.getAllProduct();
             List<Promotions> listPromotions = pmtdao.getAllPromotion();
 
             request.setAttribute("listProducts", listProducts);
             request.setAttribute("listPromotions", listPromotions);
 
-            request.getRequestDispatcher("dashboard_admin_managepromotion.jsp").forward(request, response);
+            request.getRequestDispatcher("admin/dashboard_admin_managepromotion.jsp").forward(request, response);
         } else if (action.equals("editPromotion")) {
             int pmtID = Integer.parseInt(request.getParameter("pmtID"));
             int pID = Integer.parseInt(request.getParameter("pID"));
@@ -210,14 +222,14 @@ public class AdminServlet extends HttpServlet {
             request.setAttribute("promotion", promotion);
             request.setAttribute("product", product);
 
-            request.getRequestDispatcher("admin_managepromotion_edit.jsp").forward(request, response);
+            request.getRequestDispatcher("admin/admin_managepromotion_edit.jsp").forward(request, response);
         } else if (action.equals("createPromotion")) {
             List<Products> listProducts = pdao.getAllProduct();
             request.setAttribute("listProducts", listProducts);
-            request.getRequestDispatcher("admin_managepromotion_create.jsp").forward(request, response);
-        
-        }
-        else if (action.equals("manageOrder")) {
+            request.getRequestDispatcher("admin/admin_managepromotion_create.jsp").forward(request, response);
+
+
+        } else if (action.equals("manageOrder")) {
             List<Order> listOrder = odao.getAllOrder();
             List<String> listPhone = odao.getAllPhone();
             List<Sale> listSales = udao.getAllSales();
@@ -225,7 +237,8 @@ public class AdminServlet extends HttpServlet {
             request.setAttribute("listPhone", listPhone);
 
             request.setAttribute("listSales", listSales);
-            request.getRequestDispatcher("dashboard_admin_manageorder.jsp").forward(request, response);
+
+            request.getRequestDispatcher("admin/dashboard_admin_manageorder.jsp").forward(request, response);
         } else if (action.equals("orderDetail")) {
             int oid = Integer.parseInt(request.getParameter("id"));
             byte isIntalment = Byte.parseByte(request.getParameter("isInstalment"));
@@ -237,19 +250,20 @@ public class AdminServlet extends HttpServlet {
             request.setAttribute("listInterestRate", listInterestRate);
             request.setAttribute("listPayments", listPayments);
             request.setAttribute("isIntalment", isIntalment);
-            request.getRequestDispatcher("admin_manageorder_detail.jsp").forward(request, response);
+            request.getRequestDispatcher("admin/admin_manageorder_detail.jsp").forward(request, response);
         } else if (action.equals("manageReview")) {
-            List<Review> listReview = rdao.getAllReview();           
+            List<Review> listReview = rdao.getAllReview();
             request.setAttribute("listReview", listReview);
-            request.getRequestDispatcher("dashboard_admin_managereview.jsp").forward(request, response);
+            request.getRequestDispatcher("admin/dashboard_admin_managereview.jsp").forward(request, response);
         } else if (action.equals("reviewDetail")) {
             int rID = Integer.parseInt(request.getParameter("rID"));
 
             Review review = rdao.getReviewByID(rID);
 
             request.setAttribute("review", review);
-            request.getRequestDispatcher("admin_managereview_detail.jsp").forward(request, response);
+            request.getRequestDispatcher("admin/admin_managereview_detail.jsp").forward(request, response);
         } else if (action.equals("showInstalment")) {
+
             List<Order> listOrder = odao.getAllOrder();
             List<String> listPhone = odao.getAllPhoneInstalment();
             List<Sale> listSales = udao.getAllSales();
@@ -257,7 +271,7 @@ public class AdminServlet extends HttpServlet {
             request.setAttribute("listPhone", listPhone);
 
             request.setAttribute("listSales", listSales);
-            request.getRequestDispatcher("admin_manageorder_instalment.jsp").forward(request, response);
+            request.getRequestDispatcher("admin/admin_manageorder_instalment.jsp").forward(request, response);
         } else if (action.equals("searchInstalment")) {
             String phone = request.getParameter("phone");
             String status = request.getParameter("status");
@@ -283,7 +297,7 @@ public class AdminServlet extends HttpServlet {
             request.setAttribute("phone", phone);
             request.setAttribute("status", status);
             request.setAttribute("listSales", listSales);
-            request.getRequestDispatcher("admin_manageorder_instalment.jsp").forward(request, response);
+            request.getRequestDispatcher("admin/admin_manageorder_instalment.jsp").forward(request, response);
         } else if (action.equals("filterInstalment")) {
 
             String phone = request.getParameter("phone");
@@ -299,7 +313,7 @@ public class AdminServlet extends HttpServlet {
                     List<Order> listInstalment = odao.getAllOrderInstalment();
                     listOrder = odao.getAllCompletedInstalment(listInstalment);
                 }
-            }else{
+            } else {
                 if (status.equals("Pending")) {
                     List<Order> listInstalment = odao.getAllOrderInstalment();
                     listOrder = odao.getAllPendingInstalmentAndPhone(listInstalment, phone);
@@ -310,7 +324,7 @@ public class AdminServlet extends HttpServlet {
             }
 
             List<Sale> listSales = udao.getAllSales();
-            
+
             request.setAttribute("listOrder", listOrder);
             request.setAttribute("listPhone", listPhone);
 
@@ -318,7 +332,7 @@ public class AdminServlet extends HttpServlet {
             request.setAttribute("phone", phone);
             request.setAttribute("status", status);
             request.setAttribute("listSales", listSales);
-            request.getRequestDispatcher("admin_manageorder_instalment.jsp").forward(request, response);
+            request.getRequestDispatcher("admin/admin_manageorder_instalment.jsp").forward(request, response);
         } else if (action.equals("searchOrder")) {
             String phone = request.getParameter("phone");
             String status = request.getParameter("status");
@@ -336,7 +350,7 @@ public class AdminServlet extends HttpServlet {
             request.setAttribute("status", status);
             request.setAttribute("listPhone", listPhone);
             request.setAttribute("listSales", listSales);
-            request.getRequestDispatcher("dashboard_admin_manageorder.jsp").forward(request, response);
+            request.getRequestDispatcher("admin/dashboard_admin_manageorder.jsp").forward(request, response);
         } else if (action.equals("filterOrder")) {
             String phone = request.getParameter("phone");
             String status = request.getParameter("status");
@@ -348,6 +362,8 @@ public class AdminServlet extends HttpServlet {
                 listOrder = odao.getAllOrder();
             } else if (status.equals("Filter") || status.equals("All")) {
                 listOrder = odao.getAllOrderByPhone(phone);
+            } else if (!(status.equals("Filter") || status.equals("All"))) {
+                listOrder = odao.getAllOrderByStatus(status);
             } else {
                 listOrder = odao.getAllOrderByPhoneAndStatus(phone, status);
             }
@@ -356,61 +372,65 @@ public class AdminServlet extends HttpServlet {
             request.setAttribute("listOrder", listOrder);
             request.setAttribute("listPhone", listPhone);
             request.setAttribute("listSales", listSales);
-            request.getRequestDispatcher("dashboard_admin_manageorder.jsp").forward(request, response);
-        }else if(action.equals("searchReview")){
+            request.getRequestDispatcher("admin/dashboard_admin_manageorder.jsp").forward(request, response);
+        } else if (action.equals("searchReview")) {
             int productID = Integer.parseInt(request.getParameter("productID"));
             String storage = request.getParameter("storage");
             int rating = Integer.parseInt(request.getParameter("rating"));
-            
+
             List<Review> listReview;
-            if(rating == 0){
+            if (rating == 0) {
+                List<Variants> listVariant = vdao.getAllVariantByStorage(productID, storage);
+                listReview = rdao.getAllReviewByListVariant(listVariant);
+            } else {
+                List<Variants> listVariant = vdao.getAllVariantByStorage(productID, storage);
+                listReview = rdao.getAllReviewByListVariantAndRating(listVariant, rating);
+            }
+
+            request.setAttribute("listReview", listReview);
+            request.setAttribute("productID", productID);
+            request.setAttribute("storage", storage);
+            request.setAttribute("rating", rating);
+            request.getRequestDispatcher("admin/dashboard_admin_managereview.jsp").forward(request, response);
+
+        } else if (action.equals("filterReview")) {
+            int productID = Integer.parseInt(request.getParameter("productID"));
+            String storage = request.getParameter("storage");
+            int rating = Integer.parseInt(request.getParameter("rating"));
+            List<Review> listReview;
+            if ((productID == 0) && (storage == null || storage.isEmpty()) && rating != 0) {
+                listReview = rdao.getAllReviewByRating(rating);
+            } else if ((productID != 0) && (storage != null) && rating != 0) {
+                List<Variants> listVariant = vdao.getAllVariantByStorage(productID, storage);
+                listReview = rdao.getAllReviewByListVariantAndRating(listVariant, rating);
+            } else if((productID != 0) && (storage != null) && rating == 0){
                 List<Variants> listVariant = vdao.getAllVariantByStorage(productID, storage);
                 listReview = rdao.getAllReviewByListVariant(listVariant);
             }else{
-                List<Variants> listVariant = vdao.getAllVariantByStorage(productID, storage);
-                listReview = rdao.getAllReviewByListVariantAndRating(listVariant, rating);
+                listReview = rdao.getAllReview();
             }
-            
+
             request.setAttribute("listReview", listReview);
             request.setAttribute("productID", productID);
             request.setAttribute("storage", storage);
             request.setAttribute("rating", rating);
-            request.getRequestDispatcher("dashboard_admin_managereview.jsp").forward(request, response);
-            
-        }else if(action.equals("filterReview")){
-            int productID = Integer.parseInt(request.getParameter("productID"));
-            String storage = request.getParameter("storage");
-            int rating = Integer.parseInt(request.getParameter("rating"));
-            List<Review> listReview;
-            if((productID == 0) && (storage == null || storage.isEmpty())){
-                listReview = rdao.getAllReviewByRating(rating);
-            }else{
-                List<Variants> listVariant = vdao.getAllVariantByStorage(productID, storage);
-                listReview = rdao.getAllReviewByListVariantAndRating(listVariant, rating);
-            }
-            
-            request.setAttribute("listReview", listReview);
-            request.setAttribute("productID", productID);
-            request.setAttribute("storage", storage);
-            request.setAttribute("rating", rating);
-            request.getRequestDispatcher("dashboard_admin_managereview.jsp").forward(request, response);
-        }else if (action.equals("manageCategory")){
+            request.getRequestDispatcher("admin/dashboard_admin_managereview.jsp").forward(request, response);
+        } else if (action.equals("manageCategory")) {
             List<Category> listCategory = ctdao.getAllCategories();
-            
+
             request.setAttribute("listCategory", listCategory);
-            request.getRequestDispatcher("dashboard_admin_managecategory.jsp").forward(request, response);
-            
-        }else if(action.equals("editCategory")){
+            request.getRequestDispatcher("admin/dashboard_admin_managecategory.jsp").forward(request, response);
+
+        } else if (action.equals("editCategory")) {
             int cateID = Integer.parseInt(request.getParameter("id"));
-            
+
             Category catergory = ctdao.getCategoryByCategoryID(cateID);
             request.setAttribute("catergory", catergory);
-            request.getRequestDispatcher("admin_managecategory_edit.jsp").forward(request, response);
-        }else if(action.equals("createCategory")){
-            request.getRequestDispatcher("admin_managecategory_create.jsp").forward(request, response);
-        }
-        else {
-            request.getRequestDispatcher("dashboard_admin.jsp").forward(request, response);
+            request.getRequestDispatcher("admin/admin_managecategory_edit.jsp").forward(request, response);
+        } else if (action.equals("createCategory")) {
+            request.getRequestDispatcher("admin/admin_managecategory_create.jsp").forward(request, response);
+        } else {
+            request.getRequestDispatcher("admin/dashboard_admin.jsp").forward(request, response);
         }
 
     }
@@ -434,202 +454,34 @@ public class AdminServlet extends HttpServlet {
         VariantsDAO vdao = new VariantsDAO();
         PromotionsDAO pmtdao = new PromotionsDAO();
         ReviewDAO rdao = new ReviewDAO();
-        if (action.equals("update")) {
-            int userId = Integer.parseInt(request.getParameter("userId"));
-            String name = request.getParameter("name");
-            String email = request.getParameter("email");
-            String phone = request.getParameter("phone");
-            String address = request.getParameter("address");
-            int role = Integer.parseInt(request.getParameter("role"));
-            String status = request.getParameter("status");
-
-            udao.updateUser(userId, name, email, phone, address, role, status);
-
-            response.sendRedirect("admin?action=manageUser");
-
-        } else if (action.equals("createAccount")) {
-            String name = request.getParameter("name");
-            String email = request.getParameter("email");
-            String password = request.getParameter("password");
-            String phone = request.getParameter("phone");
-            String address = request.getParameter("address");
-            int role = Integer.parseInt(request.getParameter("role"));
-
-            udao.register(name, email, phone, address, password, role);
-            response.sendRedirect("admin?action=manageUser");
-        } else if (action.equals("delete")) {
-            int userId = Integer.parseInt(request.getParameter("userId"));
-            udao.deleteUser(userId);
-
-            response.sendRedirect("admin?action=manageUser");
-        } else if (action.equals("updateProduct")) {
-
-            int vID = Integer.parseInt(request.getParameter("vID"));
-            int pID = Integer.parseInt(request.getParameter("pID"));
-            String pName = request.getParameter("pName");
-            String brand = request.getParameter("brand");
-            String color = request.getParameter("color");
-            String storage = request.getParameter("storage");
-            double price = Double.parseDouble(request.getParameter("price"));
-            int warrantyPeriod = Integer.parseInt(request.getParameter("warrantyPeriod"));
-            int stock = Integer.parseInt(request.getParameter("stock"));
-            int supplierID = Integer.parseInt(request.getParameter("supplierID"));
-            String description = request.getParameter("description");
-            String img = request.getParameter("img");
-
-            vdao.updateVariant(vID, color, storage, price, stock, description, img);
-            pdao.updateProduct(pID, supplierID, pName, brand, warrantyPeriod);
-            vdao.updateDiscountPrice();
-            response.sendRedirect("admin?action=manageProduct");
+        if (action.equals("updateProduct")) {
 
         } else if (action.equals("createProduct")) {
-            String pName = request.getParameter("pName");
-            int categoryID = Integer.parseInt(request.getParameter("category"));
-            String brand = request.getParameter("brand");
-            int warrantyPeriod = Integer.parseInt(request.getParameter("warrantyPeriod"));
-            int supplierID = Integer.parseInt(request.getParameter("supplierID"));
-            String os = request.getParameter("os");
-            String cpu = request.getParameter("cpu");
-            String gpu = request.getParameter("gpu");
-            String ram = request.getParameter("ram");
-            int batteryCapacity = Integer.parseInt(request.getParameter("batteryCapacity"));
-            String touchscreen = request.getParameter("touchscreen");
 
-            pdao.createProduct(categoryID, supplierID, pName, brand, warrantyPeriod);
-
-            int currentProductID = pdao.getCurrentProductID();
-            pdao.createSpecification(currentProductID, os, cpu, gpu, ram, batteryCapacity, touchscreen);
-            List<Variants> listVariants = vdao.getAllVariantByProductID(currentProductID);
-            if (listVariants == null || listVariants.isEmpty()) {
-                response.sendRedirect("admin?action=createVariant&pid=" + currentProductID);
-                return;
-            }
-
-            response.sendRedirect("admin?action=manageProduct");
         } else if (action.equals("createVariant")) {
-            int pID = Integer.parseInt(request.getParameter("pID"));
-            String pName = request.getParameter("pName");
-            String color = request.getParameter("color");
-            String storage = request.getParameter("storage");
-            double price = Double.parseDouble(request.getParameter("price"));
-            int stock = Integer.parseInt(request.getParameter("stock"));
-            String description = request.getParameter("description");
 
-            vdao.createVariant(pID, color, storage, price, stock, description);
-
-            
-            String filePath = request.getServletContext().getRealPath("");
-            String basePath = filePath.substring(0, filePath.indexOf("\\target"));
-            String uploadDir = basePath + File.separator + "src" + File.separator + "main" + File.separator + "webapp" + File.separator + "images";
-
-            File uploadFolder = new File(uploadDir);
-            if (!uploadFolder.exists()) {
-                uploadFolder.mkdirs();
-            }
-
-            int currentVariantID = vdao.getCurrentVariantID();
-            String img = "";
-            for (Part part : request.getParts()) {
-                if ("photos".equals(part.getName()) && part.getSize() > 0) {
-                    String fileName = currentVariantID + "_" + Paths.get(part.getSubmittedFileName()).getFileName().toString();
-                    img += fileName + "#";
-                    part.write(uploadDir + File.separator + fileName);
-                }
-            }
-
-            if (!img.isEmpty()) {
-                img = img.substring(0, img.length() - 1);
-                vdao.updateImageVariant(currentVariantID, img);
-            }
-
-            vdao.updateDiscountPrice();
-            response.sendRedirect("admin?action=productDetail&id=" + pID);
-        } else if (action.equals("deleteVariant")) {
-            int vID = Integer.parseInt(request.getParameter("vID"));
-            int pID = Integer.parseInt(request.getParameter("pID"));
-            vdao.deleteVariantByID(vID);
-
-            response.sendRedirect("admin?action=productDetail&id=" + pID);
-        } else if (action.equals("updateSupplier")) {
-            int sID = Integer.parseInt(request.getParameter("sID"));
-            String name = request.getParameter("name");
-            String phone = request.getParameter("phone");
-            String email = request.getParameter("email");
-            String address = request.getParameter("address");
-
-            sldao.updateSupplier(sID, name, phone, email, address);
-
-            response.sendRedirect("admin?action=manageSupplier");
         } else if (action.equals("createSupplier")) {
-            String name = request.getParameter("name");
-            String phone = request.getParameter("phone");
-            String email = request.getParameter("email");
-            String address = request.getParameter("address");
 
-            sldao.createSupplier(name, phone, email, address);
-            response.sendRedirect("admin?action=manageSupplier");
-        } else if (action.equals("deleteSupplier")) {
-            int sID = Integer.parseInt(request.getParameter("sID"));
-
-            sldao.deleteSupplier(sID);
-            response.sendRedirect("admin?action=manageSupplier");
-        } else if (action.equals("updatePromotion")) {
-            int pmtID = Integer.parseInt(request.getParameter("pmtID"));
-            int pID = Integer.parseInt(request.getParameter("pID"));
-            int discountPercent = Integer.parseInt(request.getParameter("discountPercent"));
-            LocalDateTime startDate = LocalDateTime.parse(request.getParameter("startDate"));
-            LocalDateTime endDate = LocalDateTime.parse(request.getParameter("endDate"));
-            String status = request.getParameter("status");
-
-            pmtdao.updatePromotion(pmtID, pID, discountPercent, startDate, endDate, status);
-
-            vdao.updateDiscountPrice();
-
-            response.sendRedirect("admin?action=managePromotion");
-        } else if (action.equals("createPromotion")) {
-            int pID = Integer.parseInt(request.getParameter("pID"));
-            int discountPercent = Integer.parseInt(request.getParameter("discountPercent"));
-            LocalDateTime startDate = LocalDate.parse(request.getParameter("startDate")).atStartOfDay();
-            LocalDateTime endDate = LocalDate.parse(request.getParameter("endDate")).atStartOfDay();
-            String status = "active";
-
-            pmtdao.createPromotion(pID, discountPercent, startDate, endDate, status);
-            vdao.updateDiscountPrice();
-            response.sendRedirect("admin?action=managePromotion");
-        }else if(action.equals("deletePromotion")){
-            int pmtID = Integer.parseInt(request.getParameter("pmtID"));
-            
-            pmtdao.deletePromotion(pmtID);
-            response.sendRedirect("admin?action=managePromotion");
-        }else if(action.equals("updateCategory")){
+        } else if (action.equals("updateCategory")) {
             int cateID = Integer.parseInt(request.getParameter("cateID"));
             String name = request.getParameter("name");
             String description = request.getParameter("description");
-            
-          
+
             ctdao.editCategory(cateID, name, description);
             response.sendRedirect("admin?action=manageCategory");
-                 
-        }else if(action.equals("deleteCategory")){
+
+        } else if (action.equals("deleteCategory")) {
             int cateID = Integer.parseInt(request.getParameter("cateID"));
-            System.out.println("delete cateID: "+ cateID);
+            System.out.println("delete cateID: " + cateID);
             ctdao.removeCategory(cateID);
             response.sendRedirect("admin?action=manageCategory");
-        }else if(action.equals("createCategory")){
+        } else if (action.equals("createCategory")) {
             String name = request.getParameter("name");
             String description = request.getParameter("description");
-            
+
             ctdao.createCategory(name, description);
             response.sendRedirect("admin?action=manageCategory");
-        }
-        else if (action.equals("replyReview")) {
-            int rID = Integer.parseInt(request.getParameter("rID"));
-            String reply = request.getParameter("reply");
-
-            rdao.updateReview(rID, reply);
-            response.sendRedirect("admin?action=manageReview");
-
-        }
+        } 
     }
 
     /**

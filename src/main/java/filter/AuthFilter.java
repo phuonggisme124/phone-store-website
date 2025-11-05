@@ -19,32 +19,31 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import model.Users;
 
 /**
  *
  * @author Nguyễn Quốc Thịnh - CE191376 - 20/10/2025
  *
  */
-
 // guest    0
 // customer 1
 // staff    2
 // shipper  3
 // admin    4
-
-@WebFilter(filterName = "AuthFilter", urlPatterns = {})
+@WebFilter(filterName = "AuthFilter", urlPatterns = {"/*"})
 public class AuthFilter implements Filter {
-    
+
     private static final boolean debug = true;
 
     // The filter configuration object we are associated with.  If
     // this value is null, this filter instance is not currently
     // configured.
     private FilterConfig filterConfig = null;
-    
+
     public AuthFilter() {
     }
-    
+
     private void doBeforeProcessing(ServletRequest request,
             ServletResponse response)
             throws IOException, ServletException {
@@ -73,7 +72,7 @@ public class AuthFilter implements Filter {
 	}
          */
     }
-    
+
     private void doAfterProcessing(ServletRequest request,
             ServletResponse response)
             throws IOException, ServletException {
@@ -114,20 +113,81 @@ public class AuthFilter implements Filter {
             throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
-/////session
-//HttpSession session = req.getSession(false);
-//if (session == null || session.getAttribute("username") == null) {
-//    res.sendRedirect("login.jsp");
-//    return;
-//}
+        HttpSession session = req.getSession(false);
+        String uri = req.getRequestURI();
+        String context = req.getContextPath();
 
-        
+        Users u = null;
+        int role = 0; // guest mặc định
+
+        if (session != null) {
+            u = (Users) session.getAttribute("user");
+            if (u != null) {
+                role = u.getRole();
+            }
+        }
+
+        if (uri.startsWith(context + "/login")
+                || uri.startsWith(context + "/register")
+                || uri.startsWith(context + "/public")
+                || uri.contains("/layout/") // bỏ qua layout
+                || uri.contains("/includes/") // bỏ qua include
+                || uri.contains("/components/") // bỏ qua component
+                || uri.endsWith("header.jsp") // bỏ qua header
+                || uri.endsWith("footer.jsp") // bỏ qua footer
+                || uri.endsWith("sidebar.jsp") // bỏ qua sidebar
+                || uri.endsWith(".css")
+                || uri.endsWith(".js")
+                || uri.endsWith(".png")
+                || uri.endsWith(".jpg")
+                || uri.endsWith(".webm")) {
+            chain.doFilter(request, response);
+            return;
+        }
+        if (uri.startsWith(context + "/login")
+                || uri.startsWith(context + "/public")
+                || uri.endsWith(".css") || uri.endsWith(".js")
+                || uri.endsWith(".png") || uri.endsWith(".jpg") || uri.endsWith(".webm")) {
+            chain.doFilter(request, response);
+            return;
+        }
+
+        // Chặn thư mục /admin/
+        if (uri.startsWith(context + "/admin")) {
+            // Role admin = 4
+            if (role != 4) {
+                res.sendRedirect(context + "/accessDenied.jsp");
+                return;
+            }
+        }
+
+        if (uri.startsWith(context + "/customer")) {
+            if (role != 1) {
+                res.sendRedirect(context + "/accessDenied.jsp");
+                return;
+            }
+        }
+
+        if (uri.startsWith(context + "/staff")) {
+            if (role != 2) {
+                res.sendRedirect(context + "/accessDenied.jsp");
+                return;
+            }
+        }
+
+        if (uri.startsWith(context + "/shipper")) {
+            if (role != 3) {
+                res.sendRedirect(context + "/accessDenied.jsp");
+                return;
+            }
+        }
+
         if (debug) {
             log("AuthFilter:doFilter()");
         }
-        
+
         doBeforeProcessing(request, response);
-        
+
         Throwable problem = null;
         try {
             chain.doFilter(request, response);
@@ -138,7 +198,7 @@ public class AuthFilter implements Filter {
             problem = t;
             t.printStackTrace();
         }
-        
+
         doAfterProcessing(request, response);
 
         // If there was a problem, we want to rethrow it if it is
@@ -179,7 +239,7 @@ public class AuthFilter implements Filter {
     /**
      * Init method for this filter
      */
-public void init(FilterConfig filterConfig) {
+    public void init(FilterConfig filterConfig) {
         this.filterConfig = filterConfig;
         if (filterConfig != null) {
             if (debug) {
@@ -201,10 +261,10 @@ public void init(FilterConfig filterConfig) {
         sb.append(")");
         return (sb.toString());
     }
-    
+
     private void sendProcessingError(Throwable t, ServletResponse response) {
         String stackTrace = getStackTrace(t);
-        
+
         if (stackTrace != null && !stackTrace.equals("")) {
             try {
                 response.setContentType("text/html");
@@ -233,7 +293,7 @@ public void init(FilterConfig filterConfig) {
             }
         }
     }
-    
+
     public static String getStackTrace(Throwable t) {
         String stackTrace = null;
         try {
@@ -247,9 +307,9 @@ public void init(FilterConfig filterConfig) {
         }
         return stackTrace;
     }
-    
+
     public void log(String msg) {
         filterConfig.getServletContext().log(msg);
     }
-    
+
 }

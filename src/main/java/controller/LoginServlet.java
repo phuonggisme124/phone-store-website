@@ -41,7 +41,7 @@ public class LoginServlet extends HttpServlet {
         }
 
         // Redirect the user back to the login page after logout
-        response.sendRedirect("login.jsp");
+        request.getRequestDispatcher("login.jsp").forward(request, response);
     }
 
     /**
@@ -87,7 +87,7 @@ public class LoginServlet extends HttpServlet {
             switch (roleValue) {
                 case "4":
                     // Role 4: Admin → Redirect to admin dashboard
-                    response.sendRedirect("dashboard_admin.jsp");
+                    response.sendRedirect("admin/dashboard_admin.jsp");
                     break;
                 case "3":
                     // Role 3: Possibly manager → Redirect to order page

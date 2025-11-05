@@ -92,6 +92,7 @@ public class OrderDAO extends DBContext {
     /**
      * Get all orders for a specific staff member, including buyer and optional
      * shipper info.
+     *
      * @param staffID The ID of the staff member.
      * @return List of Order objects with buyer and shipper details
      */
@@ -144,6 +145,7 @@ public class OrderDAO extends DBContext {
 
     /**
      * Get list of orders assigned to a specific staff member.
+     *
      * @param staffId ID of the staff member
      * @return List of Order objects
      */
@@ -172,6 +174,7 @@ public class OrderDAO extends DBContext {
 
     /**
      * Get list of orders by status for a specific staff member.
+     *
      * @param staffID ID of the staff member
      * @param status The status to filter by
      * @return List of Order objects
@@ -369,6 +372,7 @@ public class OrderDAO extends DBContext {
 
     /**
      * Get all orders for a customer phone number.
+     *
      * @param phone Customer phone number (supports partial match).
      * @return List of Order objects.
      */
@@ -419,6 +423,7 @@ public class OrderDAO extends DBContext {
 
     /**
      * Get orders for a customer phone number filtered by status.
+     *
      * @param phone Customer phone number (supports partial match).
      * @param status The status to filter by.
      * @return List of Order objects.
@@ -475,7 +480,7 @@ public class OrderDAO extends DBContext {
                 + "o.TotalAmount, o.IsInstalment, o.ReceiverName, o.ReceiverPhone FROM [Orders] o WHERE o.UserID = ? ");
 
         if (status.equalsIgnoreCase("All")) {
-            sql.append("AND o.Status IN ('In Transit', 'Delivered', 'Cancelled')");
+            sql.append("AND o.Status IN ('In Transit', 'Delivered', 'Cancelled', 'Pending')");
         } else {
             sql.append("AND o.Status = ?");
         }
@@ -508,8 +513,7 @@ public class OrderDAO extends DBContext {
     public List<Order> getAllOrder() {
         List<Order> list = new ArrayList<>();
         String sql = "Select * from Orders";
-        try (PreparedStatement ps = conn.prepareStatement(sql);
-                ResultSet rs = ps.executeQuery()) {
+        try (PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 list.add(new Order(
                         rs.getInt("OrderID"), rs.getInt("UserID"), rs.getString("PaymentMethod"),
@@ -524,7 +528,6 @@ public class OrderDAO extends DBContext {
     }
 
     // --- START OF MERGED CODE ---
-
     public List<Order> getAllPendingInstalment(List<Order> listInstalment) {
         PaymentsDAO pmdao = new PaymentsDAO();
         List<Order> list = new ArrayList<>();
@@ -566,8 +569,7 @@ public class OrderDAO extends DBContext {
     public List<String> getAllPhone() {
         String sql = "SELECT DISTINCT ReceiverPhone FROM Orders WHERE ReceiverPhone IS NOT NULL;";
         List<String> list = new ArrayList<>();
-        try (PreparedStatement ps = conn.prepareStatement(sql);
-                ResultSet rs = ps.executeQuery()) {
+        try (PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 list.add(rs.getString("ReceiverPhone"));
             }
@@ -706,12 +708,11 @@ public class OrderDAO extends DBContext {
         }
         return null;
     }
-    
+
     public List<String> getAllPhoneInstalment() {
         String sql = "SELECT DISTINCT ReceiverPhone FROM Orders WHERE ReceiverPhone IS NOT NULL AND isInstalment = 1;";
         List<String> list = new ArrayList<>();
-        try (PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        try (PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 list.add(rs.getString("ReceiverPhone"));
             }
@@ -743,8 +744,7 @@ public class OrderDAO extends DBContext {
     public List<Order> getAllOrderInstalment() {
         String sql = "Select * from Orders Where IsInstalment = 1";
         List<Order> list = new ArrayList<>();
-        try (PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        try (PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 list.add(new Order(
                         rs.getInt("OrderID"), rs.getInt("UserID"), rs.getString("PaymentMethod"),
@@ -800,37 +800,26 @@ public class OrderDAO extends DBContext {
         return list;
     }
 
-    // --- END OF MERGED CODE ---
+    public List<Order> getInstalmentOrdersByUserId(int userId) {
+        List<Order> orders = new ArrayList<>();
+        String sql = "SELECT o.OrderID, o.OrderDate FROM Orders o WHERE o.IsInstalment = 1 AND o.UserID = ?";
 
-    public static void main(String[] args) {
-        OrderDAO dao = new OrderDAO();
-        List<Order> list = dao.getAllOrderForStaff(1);
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
 
-        if (list.isEmpty()) {
-            System.out.println("No orders found for staff ID 1 or unassigned orders in the database!");
-        } else {
-            System.out.println("===== ORDER LIST (FOR STAFF ID 1) =====");
-            for (Order o : list) {
-                System.out.println("Order ID: " + o.getOrderID());
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
 
-                if (o.getBuyer() != null) {
-                    System.out.println("Buyer: " + o.getBuyer().getFullName() + " | Phone: " + o.getBuyer().getPhone());
-                } else {
-                    System.out.println("Buyer: (null)");
-                }
-
-                if (o.getShippers() != null) {
-                    System.out.println("Shipper: " + o.getShippers().getFullName() + " | Phone: " + o.getShippers().getPhone());
-                } else {
-                    System.out.println("Shipper: (not assigned)");
-                }
-
-                System.out.println("Address: " + o.getShippingAddress());
-                System.out.println("Total Amount: " + o.getTotalAmount());
-                System.out.println("Order Date: " + o.getOrderDate());
-                System.out.println("Status: " + o.getStatus());
-                System.out.println("--------------------------------------------");
+            while (rs.next()) {
+                Order order = new Order();
+                order.setOrderID(rs.getInt("OrderID"));
+                order.setOrderDate(rs.getTimestamp("orderDate").toLocalDateTime());
+                orders.add(order);
             }
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        return orders;
     }
+
 }

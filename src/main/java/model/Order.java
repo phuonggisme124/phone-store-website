@@ -24,7 +24,24 @@ public class Order {
     private Users buyer;
     private Users shippers;
     private String buyerName;
+
+    public byte getIsInstalment() {
+        return isInstalment;
+    }
+
+    public void setIsInstalment(byte isInstalment) {
+        this.isInstalment = isInstalment;
+    }
+
+    public int getInterestRateID() {
+        return interestRateID;
+    }
+
+    public void setInterestRateID(int interestRateID) {
+        this.interestRateID = interestRateID;
+    }
     private String buyerPhone;
+    private int interestRateID;
 
     // Constructor 1: Basic order info
     public Order(int orderID, Users buyer, String shippingAddress, double totalAmount, String status, LocalDateTime orderDate) {
@@ -95,6 +112,9 @@ public class Order {
         this.isInstalment = isInstalment;
         this.orderDate = orderDate;
         this.buyer= buyer;
+    }
+
+    public Order() {
     }
 
     

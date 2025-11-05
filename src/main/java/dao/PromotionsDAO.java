@@ -6,6 +6,7 @@ package dao;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -253,5 +254,111 @@ public class PromotionsDAO extends DBContext {
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    public void deletePromotionByProductID(int pID) {
+        String sql = "DELETE FROM Promotions\n"
+                + "WHERE ProductID = ?;";
+
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, pID);
+            ps.executeUpdate();
+            ps.close();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void updateStatus(int promotionID, String status) {
+        String sql = "UPDATE Promotions\n"
+                + "SET Status = ?\n"
+                + "WHERE PromotionID = ?;";
+
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, status);
+            ps.setInt(2, promotionID);
+            ps.executeUpdate();
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public List<Promotions> getListPromotionByProductID(int pID) {
+        String sql = "SELECT * FROM Promotions where ProductID = ?";
+        List<Promotions> list = new ArrayList<>();
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, pID);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                int pmtID = rs.getInt("PromotionID");
+                int discountPercent = rs.getInt("DiscountPercent");
+
+                // Convert timestamps
+                Timestamp startDateTimestamp = rs.getTimestamp("StartDate");
+                LocalDateTime startDate = (startDateTimestamp != null)
+                        ? startDateTimestamp.toLocalDateTime()
+                        : null;
+
+                Timestamp endDateTimestamp = rs.getTimestamp("EndDate");
+                LocalDateTime endDate = (endDateTimestamp != null)
+                        ? endDateTimestamp.toLocalDateTime()
+                        : null;
+
+                String status = rs.getString("Status");
+                int pid = rs.getInt("ProductID");
+
+                // Return promotion object
+                list.add(new Promotions(pmtID, discountPercent, startDate, endDate, status, pid));
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return list;
+    }
+
+    public void updateAllStatus() {
+        LocalDateTime today = LocalDate.now().atStartOfDay();
+        PromotionsDAO pmtdao = new PromotionsDAO();
+        VariantsDAO vdao = new VariantsDAO();
+        List<Promotions> listPromotion = pmtdao.getAllPromotion();
+        for (Promotions pmt : listPromotion) {
+
+            if (pmt.getStatus().equalsIgnoreCase("pending")) {
+
+                LocalDateTime startDate = pmt.getStartDate();
+                if (!startDate.isAfter(today)) {
+
+                    int promotionID = pmt.getPromotionID();
+                    String status = "active";
+                    List<Promotions> listPromotionByProduct = pmtdao.getListPromotionByProductID(pmt.getProductID());
+                    for (Promotions p : listPromotionByProduct) {
+                        //kiểm tra promotionID khác có active không
+                        if (p.getStatus().equalsIgnoreCase("active") && p.getPromotionID() != pmt.getPromotionID()) {
+                            String updateStatus = "expired";
+                            pmtdao.updateStatus(p.getPromotionID(), updateStatus);
+                        }
+                    }
+                    pmtdao.updateStatus(promotionID, status);
+                }
+            } else if (pmt.getStatus().equalsIgnoreCase("active")) {
+                LocalDateTime endDate = pmt.getEndDate();
+                LocalDateTime startDate = pmt.getStartDate();
+                if (startDate.isAfter(today)) {
+                    int promotionID = pmt.getPromotionID();
+                    String status = "pending";
+                    pmtdao.updateStatus(promotionID, status);
+                } else if (endDate.isBefore(today)) {
+                    int promotionID = pmt.getPromotionID();
+                    String status = "expired";
+                    pmtdao.updateStatus(promotionID, status);
+                }
+            }
+        }
+        vdao.updateDiscountPrice();
     }
 }
