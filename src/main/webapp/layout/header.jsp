@@ -22,7 +22,6 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
-
         <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script> 
         <script src="js/bootstrap.min.js"></script>
         <script src="js/modernizr.js"></script>

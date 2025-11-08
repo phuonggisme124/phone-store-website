@@ -1,4 +1,4 @@
-<%@page import="model.InterestRate"%>
+<%--<%@page import="model.InterestRate"%>--%>
 <%@page import="java.util.List"%>
 <%@page import="dao.ProductDAO"%>
 <%@page import="java.text.NumberFormat"%>
@@ -14,10 +14,17 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Payment</title>
         <script src="https://cdn.tailwindcss.com"></script>
+        <script src="assets/js/bootstrap.min.js"></script>
+        <script src="${pageContext.request.contextPath}/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="css/home.css?v=<%=System.currentTimeMillis()%>">
+        <link rel="stylesheet" type="text/css" href="css/payment.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+
+
         <style>
             body {
                 font-family: 'Inter', sans-serif;
@@ -405,166 +412,166 @@
                     const currentMethod = paymentMethodInput.value;
                     if (currentMethod) {
                         const currentSelection = document.querySelector(`.payment-option[data-value^="${currentMethod.split('_')[0]}"]`);
-                                        if (currentSelection) {
-                                            currentSelection.classList.add('selected');
-                                        }
-                                    }
-                                    openModal(paymentMethodModal);
-                                });
+                        if (currentSelection) {
+                            currentSelection.classList.add('selected');
+                        }
+                    }
+                    openModal(paymentMethodModal);
+                });
 
-                                backToPaymentModalBtn.addEventListener('click', () => {
-                                    closeModal(installmentModal);
-                                    openModal(paymentMethodModal);
-                                });
+                backToPaymentModalBtn.addEventListener('click', () => {
+                    closeModal(installmentModal);
+                    openModal(paymentMethodModal);
+                });
 
-                                backToPaymentModalBtnFromTransfer.addEventListener('click', () => {
-                                    closeModal(transferModal);
-                                    openModal(paymentMethodModal);
-                                });
+                backToPaymentModalBtnFromTransfer.addEventListener('click', () => {
+                    closeModal(transferModal);
+                    openModal(paymentMethodModal);
+                });
 
-                                openInstallmentModalBtn.addEventListener('click', (e) => {
-                                    document.querySelectorAll('.payment-option').forEach(el => el.classList.remove('selected'));
-                                    e.currentTarget.classList.add('selected');
-                                    closeModal(paymentMethodModal);
-                                    openModal(installmentModal);
-                                });
+                openInstallmentModalBtn.addEventListener('click', (e) => {
+                    document.querySelectorAll('.payment-option').forEach(el => el.classList.remove('selected'));
+                    e.currentTarget.classList.add('selected');
+                    closeModal(paymentMethodModal);
+                    openModal(installmentModal);
+                });
 
-                                // --- SỬA ĐỔI LOGIC KHI MỞ MODAL CHUYỂN KHOẢN ---
-                                openTransferModalBtn.addEventListener('click', (e) => {
-                                    document.querySelectorAll('.payment-option').forEach(el => el.classList.remove('selected'));
-                                    e.currentTarget.classList.add('selected');
-                                    const qrCodeImage = document.getElementById('qrCodeImage');
-
-
-                                    const totalAmount = 2000;
+                // --- SỬA ĐỔI LOGIC KHI MỞ MODAL CHUYỂN KHOẢN ---
+                openTransferModalBtn.addEventListener('click', (e) => {
+                    document.querySelectorAll('.payment-option').forEach(el => el.classList.remove('selected'));
+                    e.currentTarget.classList.add('selected');
+                    const qrCodeImage = document.getElementById('qrCodeImage');
 
 
-                                    const orderId = 'DH' + Math.floor(Date.now() / 1000);
-                                    const transferDescription = 'TT ' + orderId; // Nội dung chuyển khoản gốc
-                                    document.getElementById('transferContent').innerText = transferDescription;
+                    const totalAmount = 2000;
 
-                                    const bankId = "970422";
-                                    const accountNumber = "343339799999";
-                                    const accountName = "PHAM HOANG PHUONG";
 
-                                    const encodedDescription = encodeURIComponent(transferDescription);
-                                    const encodedAccountName = encodeURIComponent(accountName);
-                                    const cacheBuster = `&t=${Date.now()}`;
-                                                const vietQrApiUrl = `https://img.vietqr.io/image/${bankId}-${accountNumber}-compact.png?amount=${totalAmount}&addInfo=${encodedDescription}&accountName=${encodedAccountName}${cacheBuster}`;
+                    const orderId = 'DH' + Math.floor(Date.now() / 1000);
+                    const transferDescription = 'TT ' + orderId; // Nội dung chuyển khoản gốc
+                    document.getElementById('transferContent').innerText = transferDescription;
 
-                                                            qrCodeImage.src = vietQrApiUrl;
-                                                            closeModal(paymentMethodModal);
-                                                            openModal(transferModal);
+                    const bankId = "970422";
+                    const accountNumber = "343339799999";
+                    const accountName = "PHAM HOANG PHUONG";
 
-                                                            // Dừng bất kỳ vòng lặp kiểm tra cũ nào đang chạy
-                                                            if (paymentCheckInterval) {
-                                                                clearInterval(paymentCheckInterval);
-                                                            }
+                    const encodedDescription = encodeURIComponent(transferDescription);
+                    const encodedAccountName = encodeURIComponent(accountName);
+                    const cacheBuster = `&t=${Date.now()}`;
+                    const vietQrApiUrl = `https://img.vietqr.io/image/${bankId}-${accountNumber}-compact.png?amount=${totalAmount}&addInfo=${encodedDescription}&accountName=${encodedAccountName}${cacheBuster}`;
 
-                                                            // Set time out = 5s khoảng thời gian mà người mở điện thoại lên và quét QR, và kiểm tra giao dịch mỗi 3s
-                                                            setTimeout(() => {
-                                                                paymentCheckInterval = setInterval(() => {
-                                                                    checkPaid(transferDescription);
-                                                                }, 3000);
-                                                            }, 5000);
-                                                        });
+                    qrCodeImage.src = vietQrApiUrl;
+                    closeModal(paymentMethodModal);
+                    openModal(transferModal);
 
-                                                        // --- HÀM checkPaid ĐƯỢC CẬP NHẬT HOÀN TOÀN ---
-                                                        async function checkPaid(description) {
-                                                            try {
-                                                                const response = await fetch("https://script.google.com/macros/s/AKfycbz2ZSvZF7bJkTqXnOUXbdqUQMmuc7w27wAjB4efbKSSA1q6yqGj6uxek5nP0W4VgK6xgw/exec");
-                                                                const data = await response.json();
-                                                                const lastPaid = data.data[data.data.length - 1];
-                                                                const lastDescription = lastPaid["Mô tả"];
+                    // Dừng bất kỳ vòng lặp kiểm tra cũ nào đang chạy
+                    if (paymentCheckInterval) {
+                        clearInterval(paymentCheckInterval);
+                    }
 
-                                                                // So sánh nội dung chuyển khoản
-                                                                if (lastDescription.includes(description)) {
-                                                                    console.log("Payment successful! Submitting form...");
-                                                                    alert("Payment successful!");
+                    // Set time out = 5s khoảng thời gian mà người mở điện thoại lên và quét QR, và kiểm tra giao dịch mỗi 3s
+                    setTimeout(() => {
+                        paymentCheckInterval = setInterval(() => {
+                            checkPaid(transferDescription);
+                        }, 3000);
+                    }, 5000);
+                });
 
-                                                                    // 1. Dừng vòng lặp
-                                                                    clearInterval(paymentCheckInterval);
+                // --- HÀM checkPaid ĐƯỢC CẬP NHẬT HOÀN TOÀN ---
+                async function checkPaid(description) {
+                    try {
+                        const response = await fetch("https://script.google.com/macros/s/AKfycbz2ZSvZF7bJkTqXnOUXbdqUQMmuc7w27wAjB4efbKSSA1q6yqGj6uxek5nP0W4VgK6xgw/exec");
+                        const data = await response.json();
+                        const lastPaid = data.data[data.data.length - 1];
+                        const lastDescription = lastPaid["Mô tả"];
 
-                                                                    // 2. Cập nhật các giá trị trong form
-                                                                    paymentMethodInput.value = 'TRANSFER';
-                                                                    installmentTermInput.value = ''; // Xóa thông tin trả góp nếu có
+                        // So sánh nội dung chuyển khoản
+                        if (lastDescription.includes(description)) {
+                            console.log("Payment successful! Submitting form...");
+                            alert("Payment successful!");
 
-                                                                    // 3. Tự động nộp form
-                                                                    paymentForm.submit();
-                                                                } else {
-                                                                    console.log("Checking payment... Not yet paid.");
-                                                                }
-                                                            } catch (error) {
-                                                                console.error("Error checking payment:", error);
-                                                            }
-                                                        }
+                            // 1. Dừng vòng lặp
+                            clearInterval(paymentCheckInterval);
 
-                                                        // --- CÁC HÀM XÁC NHẬN KHÁC GIỮ NGUYÊN ---
-                                                        document.querySelectorAll('.payment-option').forEach(option => {
-                                                            if (option.id !== 'openInstallmentModalBtn' && option.id !== 'openTransferModalBtn') {
-                                                                option.addEventListener('click', () => {
-                                                                    document.querySelectorAll('.payment-option').forEach(el => el.classList.remove('selected'));
-                                                                    option.classList.add('selected');
-                                                                });
-                                                            }
-                                                        });
+                            // 2. Cập nhật các giá trị trong form
+                            paymentMethodInput.value = 'TRANSFER';
+                            installmentTermInput.value = ''; // Xóa thông tin trả góp nếu có
 
-                                                        confirmPaymentBtn.addEventListener('click', () => {
-                                                            const selectedOption = document.querySelector('.payment-option.selected');
-                                                            if (selectedOption && selectedOption.dataset.value === 'COD') {
-                                                                updateSelectedPaymentDisplay(selectedOption.dataset.text, selectedOption.dataset.faIconClass);
-                                                                paymentMethodInput.value = selectedOption.dataset.value;
-                                                                installmentTermInput.value = '';
-                                                                closeModal(paymentMethodModal);
-                                                            } else if (selectedOption) {
-                                                                alert('Please click on the selected method to continue.');
-                                                            } else {
-                                                                alert('Please select a payment method.');
-                                                            }
-                                                        });
+                            // 3. Tự động nộp form
+                            paymentForm.submit();
+                        } else {
+                            console.log("Checking payment... Not yet paid.");
+                        }
+                    } catch (error) {
+                        console.error("Error checking payment:", error);
+                    }
+                }
 
-                                                        confirmInstallmentBtn.addEventListener('click', () => {
-                                                            if (selectedInstallmentTerm) {
-                                                                const text = `Installment ${selectedInstallmentTerm} months`;
-                                                                                const iconClass = document.getElementById('openInstallmentModalBtn').dataset.faIconClass;
-                                                                                const value = `INSTALLMENT_${selectedInstallmentTerm}M`;
-                                                                                                updateSelectedPaymentDisplay(text, iconClass);
-                                                                                                paymentMethodInput.value = value;
-                                                                                                installmentTermInput.value = selectedInstallmentTerm;
-                                                                                                closeModal(installmentModal);
-                                                                                            } else {
-                                                                                                alert('Please select an installment term.');
-                                                                                            }
-                                                                                        });
+                // --- CÁC HÀM XÁC NHẬN KHÁC GIỮ NGUYÊN ---
+                document.querySelectorAll('.payment-option').forEach(option => {
+                    if (option.id !== 'openInstallmentModalBtn' && option.id !== 'openTransferModalBtn') {
+                        option.addEventListener('click', () => {
+                            document.querySelectorAll('.payment-option').forEach(el => el.classList.remove('selected'));
+                            option.classList.add('selected');
+                        });
+                    }
+                });
 
-                                                                                        // Nút này giờ đóng vai trò là phương án thủ công nếu người dùng không muốn chờ
-                                                                                        confirmTransferBtn.addEventListener('click', () => {
-                                                                                            const selectedOption = document.querySelector('.payment-option[data-value="TRANSFER"]');
-                                                                                            updateSelectedPaymentDisplay(selectedOption.dataset.text, selectedOption.dataset.faIconClass);
-                                                                                            paymentMethodInput.value = selectedOption.dataset.value;
-                                                                                            installmentTermInput.value = '';
-                                                                                            closeModal(transferModal); // Chỉ đóng modal, không submit form
-                                                                                        });
+                confirmPaymentBtn.addEventListener('click', () => {
+                    const selectedOption = document.querySelector('.payment-option.selected');
+                    if (selectedOption && selectedOption.dataset.value === 'COD') {
+                        updateSelectedPaymentDisplay(selectedOption.dataset.text, selectedOption.dataset.faIconClass);
+                        paymentMethodInput.value = selectedOption.dataset.value;
+                        installmentTermInput.value = '';
+                        closeModal(paymentMethodModal);
+                    } else if (selectedOption) {
+                        alert('Please click on the selected method to continue.');
+                    } else {
+                        alert('Please select a payment method.');
+                    }
+                });
 
-                                                                                        document.querySelectorAll('.term-column').forEach(column => {
-                                                                                            column.addEventListener('click', () => {
-                                                                                                document.querySelectorAll('.term-column').forEach(col => col.classList.remove('selected'));
-                                                                                                column.classList.add('selected');
-                                                                                                selectedInstallmentTerm = column.dataset.term;
-                                                                                                confirmInstallmentBtn.disabled = false;
-                                                                                            });
-                                                                                        });
+                confirmInstallmentBtn.addEventListener('click', () => {
+                    if (selectedInstallmentTerm) {
+                        const text = `Installment ${selectedInstallmentTerm} months`;
+                        const iconClass = document.getElementById('openInstallmentModalBtn').dataset.faIconClass;
+                        const value = `INSTALLMENT_${selectedInstallmentTerm}M`;
+                        updateSelectedPaymentDisplay(text, iconClass);
+                        paymentMethodInput.value = value;
+                        installmentTermInput.value = selectedInstallmentTerm;
+                        closeModal(installmentModal);
+                    } else {
+                        alert('Please select an installment term.');
+                    }
+                });
 
-                                                                                        copyContentBtn.addEventListener('click', () => {
-                                                                                            const content = document.getElementById('transferContent').innerText;
-                                                                                            navigator.clipboard.writeText(content).then(() => {
-                                                                                                alert('Copied content: ' + content);
-                                                                                            }).catch(err => {
-                                                                                                console.error('Could not copy text: ', err);
-                                                                                                alert('Failed to copy!');
-                                                                                            });
-                                                                                        });
-                                                                                    });
+                // Nút này giờ đóng vai trò là phương án thủ công nếu người dùng không muốn chờ
+                confirmTransferBtn.addEventListener('click', () => {
+                    const selectedOption = document.querySelector('.payment-option[data-value="TRANSFER"]');
+                    updateSelectedPaymentDisplay(selectedOption.dataset.text, selectedOption.dataset.faIconClass);
+                    paymentMethodInput.value = selectedOption.dataset.value;
+                    installmentTermInput.value = '';
+                    closeModal(transferModal); // Chỉ đóng modal, không submit form
+                });
+
+                document.querySelectorAll('.term-column').forEach(column => {
+                    column.addEventListener('click', () => {
+                        document.querySelectorAll('.term-column').forEach(col => col.classList.remove('selected'));
+                        column.classList.add('selected');
+                        selectedInstallmentTerm = column.dataset.term;
+                        confirmInstallmentBtn.disabled = false;
+                    });
+                });
+
+                copyContentBtn.addEventListener('click', () => {
+                    const content = document.getElementById('transferContent').innerText;
+                    navigator.clipboard.writeText(content).then(() => {
+                        alert('Copied content: ' + content);
+                    }).catch(err => {
+                        console.error('Could not copy text: ', err);
+                        alert('Failed to copy!');
+                    });
+                });
+            });
         </script>
     </body>
 </html>

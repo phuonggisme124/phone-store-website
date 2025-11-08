@@ -7,7 +7,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
     Author     : duynu
 */
 .review-container {
-    max-width: 900px; /* Chiều rộng tối đa */
+    /*max-width: 900px;*/
     margin: 20px auto; /* Căn giữa */
     padding: 20px;
     border: 1px solid #ddd;

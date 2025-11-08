@@ -1,224 +1,235 @@
 
-body {
-    background-color: #f8f9fc;
-    font-family: 'Poppins', sans-serif;
-}
-
-/* ===== Review Container ===== */
+/* ================================
+   REVIEW DETAIL SECTION
+================================ */
 .review-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
     background: #fff;
-    border-radius: 16px;
-    padding: 30px 40px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    margin: 40px;
-    gap: 40px;
-    width: 90%;
-    height: auto;
-    max-width: auto;
+    margin-top: 60px;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
 }
 
-/* ===== Left Side ===== */
-.review-left {
-    text-align: center;
-    width: 45%;
-}
-
-/* Ẩn radio */
-input[type="radio"] {
-    display: none;
-}
-
-/* Main Image Container */
-.main-image {
-    width: 280px;
-    height: 280px;
-    margin: 0 auto;
-    position: relative;
-    border-radius: 12px;
-    border: 2px solid #eee;
-    overflow: hidden;
-    transition: all 0.3s ease;
-}
-
-.main-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    position: absolute;
-    top: 0;
-    left: 0;
-    opacity: 0;
-    transition: opacity 0.5s ease;
-}
-
-/* Khi chọn thumbnail sẽ hiện đúng ảnh */
-#img1:checked ~ .main-image .img1 {
-    opacity: 1;
-}
-#img2:checked ~ .main-image .img2 {
-    opacity: 1;
-}
-#img3:checked ~ .main-image .img3 {
-    opacity: 1;
-}
-
-.product-name {
-    margin-top: 15px;
-    font-size: 22px;
-    font-weight: 600;
-}
-
-/* ===== Thumbnails ===== */
-.thumbnail-list {
-    margin-top: 12px;
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-}
-
-.thumbnail-list label {
-    cursor: pointer;
-    border-radius: 8px;
-    overflow: hidden;
-    transition: transform 0.3s, border 0.3s;
-    border: 2px solid transparent;
-}
-
-.thumbnail-list img {
-    width: 60px;
-    height: 60px;
-    object-fit: cover;
-    display: block;
-    border-radius: 6px;
-}
-
-/* Hover + active thumbnail effect */
-.thumbnail-list label:hover {
-    transform: scale(1.05);
-    border-color: #aaa;
-}
-
-#img1:checked ~ .thumbnail-list label[for="img1"],
-#img2:checked ~ .thumbnail-list label[for="img2"],
-#img3:checked ~ .thumbnail-list label[for="img3"] {
-    border-color: #007bff;
-    transform: scale(1.1);
-}
-
-/* ===== Right Side ===== */
-.review-right {
-    width: 50%;
-    background-color: #f8f9fa;
-    padding: 25px 30px;
-    border-radius: 12px;
-}
-
-.review-right h2 {
+.review-container h2 {
+    margin-bottom: 20px;
     font-size: 24px;
-    font-weight: 600;
+    font-weight: 700;
+}
+
+/* === Overall rating === */
+.overall-rating {
+    text-align: center;
     margin-bottom: 20px;
 }
-
-.review-info p {
-    margin-bottom: 10px;
-    font-size: 16px;
+.score-display {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+}
+.star-icon {
+    font-size: 30px;
+    color: #ffc107;
+}
+.main-score {
+    font-size: 32px;
+    font-weight: bold;
+}
+.stats {
+    color: #777;
+    font-size: 14px;
 }
 
-.comment, .reply {
-    background-color: #fff;
-    height: auto;
-    padding: 10px 15px;
+/* === Rating breakdown === */
+.rating-breakdown {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto 40px;
+}
+.star-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+.progress-bar-wrap {
+    background: #eee;
+    width: 60%;
+    height: 10px;
+    border-radius: 5px;
+    overflow: hidden;
+}
+.progress-bar {
+    background: #007bff;
+    height: 10px;
+}
+.percentage {
+    width: 40px;
+    text-align: right;
+}
+
+/* === Write Review Button === */
+.write-review-button {
+    background: #007bff;
+    color: #fff;
+    border: none;
+    padding: 12px 24px;
     border-radius: 8px;
-    border: 1px solid #ddd;
+    cursor: pointer;
+    font-weight: 600;
+    display: block;
+    margin: 20px auto;
+}
+.write-review-button:hover {
+    background: #0056b3;
 }
 
-.update-btn {
-    display: inline-block;
-    margin-top: 20px;
-    text-decoration: none;
-    color: #007bff;
-    font-weight: 500;
+/* === Modal === */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 10;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+}
+.modal-content {
+    background: #fff;
+    margin: 80px auto;
+    padding: 30px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 600px;
+    position: relative;
+}
+.close-button {
+    position: absolute;
+    right: 15px;
+    top: 10px;
+    font-size: 24px;
+    cursor: pointer;
 }
 
-.update-btn:hover {
-    text-decoration: underline;
+/* === Review Form === */
+.review-form-container textarea {
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 10px;
+    margin: 15px 0;
+}
+.submit-button {
+    background: #007bff;
+    border: none;
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.submit-button:hover {
+    background: #0056b3;
 }
 
-/* ===== Responsive ===== */
+/* === User reviews === */
+.user-review {
+    border-top: 1px solid #eee;
+    padding: 20px 0;
+}
+.reviewer-info .name {
+    font-weight: 600;
+}
+.star-rating {
+    color: #ffc107;
+}
+.review-content {
+    margin: 10px 0;
+}
+.review-images-gallery {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+.review-thumbnail {
+    width: 100px;
+    height: 100px;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+/* === Reply === */
+.replies-section {
+    background: #f9f9f9;
+    border-radius: 10px;
+    padding: 15px;
+    margin-top: 10px;
+}
+.seller-tag {
+    background: #007bff;
+    color: #fff;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+}
+
+/* === Responsive === */
 @media (max-width: 900px) {
     .review-container {
-        flex-direction: column;
-        align-items: center;
+        padding: 20px;
     }
-
-    .review-left, .review-right {
-        width: 100%;
-    }
-
-    .main-image {
-        width: 240px;
-        height: 240px;
+    .review-thumbnail {
+        width: 80px;
+        height: 80px;
     }
 }
 
-/* ==== Admin Reply Input ==== */
-.reply-input {
-    min-height: 60px;
-    max-height: 200px;
-    width: 100%;
-    background-color: #fff;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 10px 14px;
-    font-size: 15px;
-    line-height: 1.5;
-    overflow-y: auto;
-    resize: vertical;
-    outline: none;
-    transition: all 0.2s ease;
+/* ========== REVIEW ERROR POPUP ========== */
+.review-error-box {
+    position: fixed;
+    top: 10px; /* nằm ngay đầu trang */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #fff3f3;
+    color: #d8000c;
+    border: 2px solid #d8000c;
+    border-radius: 12px;
+    padding: 15px 40px;
+    font-weight: bold;
+    font-size: 18px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.25);
+    text-align: center;
+    z-index: 9999;
+    opacity: 1;
+    transition: opacity 1s ease, transform 1s ease; /* dùng transition cho mượt */
 }
 
-/* Hiệu ứng focus */
-.reply-input:focus {
-    border-color: #007bff;
-    box-shadow: 0 0 4px rgba(0, 123, 255, 0.3);
+/* Hiệu ứng fade-in khi hiển thị */
+@keyframes fade-in {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -3   0%);
+    }
+    100% {
+        opacity: 1;
+        transform: translate(-50%,0);
+    }
 }
 
-/* Placeholder giả lập cho contenteditable */
-.reply-input:empty:before {
-    content: attr(data-placeholder);
-    color: #aaa;
-    font-style: italic;
+/* Hiệu ứng fade-out khi biến mất */
+.fade-out {
+    animation: fade-out 0.6s ease forwards;
 }
 
-.reply-box {
-  background-color: #ffffff;
-  height: auto;
-  border-radius: 10px;
-  padding: 8px;
-  margin-top: 8px;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+@keyframes fade-out {
+    0% {
+        opacity: 1;
+        transform: translate(-50%,0);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -20%);
+    }
 }
 
-.reply-box:focus-within {
-  border-color: #007bff;
-  box-shadow: 0 0 6px rgba(0, 123, 255, 0.2);
-}
-
-.send-btn {
-  margin-top: 12px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 8px 16px;
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
-
-.send-btn:hover {
-  background-color: #0056b3;
-}

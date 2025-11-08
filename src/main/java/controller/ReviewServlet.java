@@ -1,14 +1,14 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package controller;
 
-import dao.ProductDAO;
+import dao.OrderDAO;
 import dao.ReviewDAO;
 import dao.VariantsDAO;
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
@@ -17,12 +17,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.sql.SQLException;
-import java.time.LocalDateTime;
-import java.util.List;
 import model.Review;
 import model.Users;
 import model.Variants;
@@ -40,26 +34,11 @@ import model.Variants;
 )
 public class ReviewServlet extends HttpServlet {
 
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet ReviewServlet</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet ReviewServlet at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
-    }
-
     // ===== GET: load review theo variantID =====
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
         ReviewDAO rdao = new ReviewDAO();
         String action = request.getParameter("action");
 
@@ -67,26 +46,22 @@ public class ReviewServlet extends HttpServlet {
             action = "null";
         }
 
-        if (action.equals(null)) {
-            try {
+        try {
+            if ("reviewDetail".equals(action)) {
+                int rID = Integer.parseInt(request.getParameter("rID"));
+                Review review = rdao.getReviewByID(rID);
+                request.setAttribute("review", review);
+                request.getRequestDispatcher("admin_managereview_detail.jsp").forward(request, response);
+            } else {
                 int variantID = Integer.parseInt(request.getParameter("variantID"));
-                ReviewDAO dao = new ReviewDAO();
-                List<Review> review = dao.getReviewsByVariantID(variantID);
+                List<Review> review = rdao.getReviewsByVariantID(variantID);
                 request.setAttribute("review", review);
                 request.getRequestDispatcher("productdetail.jsp").forward(request, response);
-            } catch (Exception e) {
-                e.printStackTrace();
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid Variant ID");
             }
-        }else if (action.equals("reviewDetail")) {
-            int rID = Integer.parseInt(request.getParameter("rID"));
-
-            Review review = rdao.getReviewByID(rID);
-
-            request.setAttribute("review", review);
-            request.getRequestDispatcher("admin_managereview_detail.jsp").forward(request, response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid Variant ID");
         }
-
     }
 
     // ===== POST: thêm hoặc xóa review =====
@@ -110,17 +85,30 @@ public class ReviewServlet extends HttpServlet {
 
         ReviewDAO rdao = new ReviewDAO();
         VariantsDAO vdao = new VariantsDAO();
+        OrderDAO odao = new OrderDAO();
 
         if ("review".equals(action)) {
-            // === Tạo review mới ===
+            // === Thêm review mới ===
             int vID = Integer.parseInt(request.getParameter("vID"));
             int rating = Integer.parseInt(request.getParameter("rating"));
             String comment = request.getParameter("comment");
+            int uID = user.getUserId();
+
+            // === Kiểm tra xem người dùng đã mua sản phẩm chưa ===
+            boolean hasPurchased = odao.checkUserPurchase(uID, vID);
+            Variants variant = vdao.getVariantByID(vID);
+            int productID = variant.getProductID();
+
+            if (!hasPurchased) {
+                session.setAttribute("reviewError", "Bạn phải mua sản phẩm này để được đánh giá.");
+                response.sendRedirect("product?action=viewDetail&pID=" + productID);
+                return;
+            }
 
             // Tạo review trong DB
-            rdao.createReview(user.getUserId(), vID, rating, comment);
+            rdao.createReview(uID, vID, rating, comment);
 
-            // Lấy ID của review mới nhất
+            // Lấy ID review mới nhất
             int currentReviewID = rdao.getCurrentReviewID();
 
             // === Upload ảnh review ===
@@ -141,6 +129,7 @@ public class ReviewServlet extends HttpServlet {
                     String srcFile = uploadDir + File.separator + fileName;
                     part.write(srcFile);
 
+                    // Copy đến thư mục thực thi (target)
                     File srcFileImages = new File(srcFile);
                     File targetFile = new File(filePath + File.separator + fileName);
                     Files.copy(srcFileImages.toPath(), targetFile.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
@@ -152,27 +141,25 @@ public class ReviewServlet extends HttpServlet {
                 rdao.updateImageReview(currentReviewID, img);
             }
 
-            // Redirect về product detail
-            Variants variant = vdao.getVariantByID(vID);
-            int productID = variant.getProductID();
             response.sendRedirect("product?action=viewDetail&pID=" + productID);
 
         } else if ("deleteReview".equals(action)) {
             // === Xóa review ===
             int rID = Integer.parseInt(request.getParameter("rID"));
             int vID = Integer.parseInt(request.getParameter("vID"));
-
             rdao.deleteReview(rID);
+
             Variants variant = vdao.getVariantByID(vID);
             int productID = variant.getProductID();
             response.sendRedirect("product?action=viewDetail&pID=" + productID);
-        }else if (action.equals("replyReview")) {
+
+        } else if ("replyReview".equals(action)) {
+            // === Admin trả lời review ===
             int rID = Integer.parseInt(request.getParameter("rID"));
             String reply = request.getParameter("reply");
 
             rdao.updateReview(rID, reply);
             response.sendRedirect("admin?action=manageReview");
-
         }
     }
 }

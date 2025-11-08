@@ -12,6 +12,7 @@
 <%@page import="java.util.Map" %>
 <%@page import="java.util.HashMap" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<link rel="stylesheet" href="css/home.css">
 
 
 
@@ -199,8 +200,13 @@
                 categoryName = "Watch";
             } else if ("3".equals(currentCategoryId)) {
                 categoryName = "Tablet";
+<<<<<<< Updated upstream:src/main/webapp/public/view_product_by_category.jsp
             } else if ("5".equals(currentCategoryId)) {
                 categoryName = "Phone Case";
+=======
+            } else if ("2".equals(currentCategoryId)) {
+                categoryName = "Smartwatch";
+>>>>>>> Stashed changes:src/main/webapp/view_product_by_category.jsp
             }
         %>
 
@@ -292,8 +298,12 @@
                     'all': 'All Products',
                     '1': 'Phone',
                     '3': 'Tablet',
+<<<<<<< Updated upstream:src/main/webapp/public/view_product_by_category.jsp
                     '2': 'Smartwatch',
                     '5': 'Phone Case'
+=======
+                    '2': 'Smartwatch'
+>>>>>>> Stashed changes:src/main/webapp/view_product_by_category.jsp
                 };
 
                 // Cập nhật badge
@@ -550,7 +560,7 @@
                     String message = "No products to display.";
                     // Nếu đang lọc KM và danh sách rỗng, đổi thông báo
                     if (isPromotionFilterActive) {
-                        message = "🔥 Unfortunately, no products are featured in our HOT PROMOTION right now.";
+                        message = "Unfortunately, no products are featured in our HOT PROMOTION right now.";
                     }
                 %>
                 <div class="col-span-full text-center py-10 bg-white rounded-xl shadow-lg">
