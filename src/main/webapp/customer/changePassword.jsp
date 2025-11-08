@@ -8,7 +8,7 @@
 <%@page import="java.util.List"%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="model.Users" %>
-<%@ include file="layout/header.jsp" %>
+<%@ include file="/layout/header.jsp" %>
 <%    if (user == null) {
         response.sendRedirect("login.jsp");
         return;

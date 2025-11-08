@@ -171,7 +171,7 @@ public class OrderServlet extends HttpServlet {
             request.setAttribute("listInterestRate", listInterestRate);
             request.setAttribute("listPayments", listPayments);
             request.setAttribute("isIntalment", isIntalment);
-            request.getRequestDispatcher("admin_manageorder_detail.jsp").forward(request, response);
+            request.getRequestDispatcher("admin/admin_manageorder_detail.jsp").forward(request, response);
         }
         
     }

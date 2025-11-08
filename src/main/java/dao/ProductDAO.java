@@ -59,7 +59,7 @@ public class ProductDAO extends DBContext {
         }
 
         return list;
-    }
+    }   
 
     /**
      * Retrieve the 5 newest products, ordered by creation date (descending).

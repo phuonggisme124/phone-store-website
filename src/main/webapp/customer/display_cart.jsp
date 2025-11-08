@@ -1,4 +1,4 @@
-<%@page import="model.CartItems"%>
+
 <%@page import="model.Carts"%>
 <%@page import="model.Category"%>
 <%@page import="dao.ProductDAO"%>
@@ -8,7 +8,7 @@
 <%@ page import="java.text.NumberFormat" %>
 <%@ page import="java.util.Locale" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ include file="layout/header.jsp" %>
+<%@ include file="/layout/header.jsp" %>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -61,7 +61,7 @@
         <%
             List<Carts> carts = (List<Carts>) request.getAttribute("carts");
 
-        <%            Carts cart = (Carts) request.getAttribute("cart");
+       Carts cart = (Carts) request.getAttribute("carts");
 
             NumberFormat vnFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
             double initialTotalPrice = 0; // Chỉ dùng để hiển thị ban đầu, JS sẽ cập nhật

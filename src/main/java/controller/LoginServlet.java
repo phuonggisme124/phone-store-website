@@ -87,7 +87,7 @@ public class LoginServlet extends HttpServlet {
             switch (roleValue) {
                 case "4":
                     // Role 4: Admin → Redirect to admin dashboard
-                    response.sendRedirect("admin/dashboard_admin.jsp");
+                    response.sendRedirect("admin");
                     break;
                 case "3":
                     // Role 3: Possibly manager → Redirect to order page

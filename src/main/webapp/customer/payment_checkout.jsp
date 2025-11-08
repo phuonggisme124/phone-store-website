@@ -1,4 +1,5 @@
 <%--<%@page import="model.InterestRate"%>--%>
+<%@page import="model.InterestRate"%>
 <%@page import="java.util.List"%>
 <%@page import="dao.ProductDAO"%>
 <%@page import="java.text.NumberFormat"%>
@@ -6,7 +7,7 @@
 <%@page import="model.Carts"%>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page isELIgnored="true" %>
-<%@ include file="layout/header.jsp" %>
+<%@ include file="/layout/header.jsp" %>
 <!DOCTYPE html>
 <html lang="en">
     <head>

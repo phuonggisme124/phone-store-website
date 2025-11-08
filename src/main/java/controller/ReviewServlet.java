@@ -49,18 +49,22 @@ public class ReviewServlet extends HttpServlet {
         try {
             if ("reviewDetail".equals(action)) {
                 int rID = Integer.parseInt(request.getParameter("rID"));
+
                 Review review = rdao.getReviewByID(rID);
+
                 request.setAttribute("review", review);
-                request.getRequestDispatcher("admin_managereview_detail.jsp").forward(request, response);
+                request.getRequestDispatcher("admin/admin_managereview_detail.jsp").forward(request, response);
             } else {
                 int variantID = Integer.parseInt(request.getParameter("variantID"));
                 List<Review> review = rdao.getReviewsByVariantID(variantID);
                 request.setAttribute("review", review);
                 request.getRequestDispatcher("productdetail.jsp").forward(request, response);
             }
+
         } catch (Exception e) {
             e.printStackTrace();
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid Variant ID");
+
         }
     }
 
