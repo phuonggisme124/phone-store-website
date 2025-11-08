@@ -147,6 +147,7 @@ public class AdminServlet extends HttpServlet {
             request.setAttribute("listSupplier", listSupplier);
 
             request.getRequestDispatcher("admin/dashboard_admin_manageproduct.jsp").forward(request, response);
+
         } else if (action.equals("productDetail")) {
 
             int id = Integer.parseInt(request.getParameter("id"));

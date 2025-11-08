@@ -4,6 +4,7 @@
  */
 package controller;
 
+import dao.CartDAO;
 import dao.UsersDAO;
 import jakarta.servlet.RequestDispatcher;
 import java.io.IOException;
@@ -14,6 +15,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.util.List;
+import model.Carts;
 import model.Users;
 
 /**
@@ -100,6 +103,9 @@ public class LoginServlet extends HttpServlet {
                 case "1":
                 default:
                     // Role 1 or unknown → Redirect to homepage
+                    CartDAO cDAO = new CartDAO();
+                    List<Carts> carts = cDAO.getItemIntoCartByUserID(u.getUserId());
+                    session.setAttribute("cart", carts);
                     response.sendRedirect("homepage");
                     break;
             }

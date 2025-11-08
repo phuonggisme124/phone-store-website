@@ -23,7 +23,7 @@
     <body>
         <div class="d-flex" id="wrapper">
             <!-- Sidebar -->
-            <%@ include file="sidebar.jsp" %>
+            <%@ include file="../sidebar.jsp" %>
 
 
             <!-- Page Content -->
