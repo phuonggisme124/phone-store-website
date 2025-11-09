@@ -7,6 +7,7 @@ D:\swp\group2\phone-store-website\src\main\java\model\Categories.java
 D:\swp\group2\phone-store-website\src\main\java\controller\PaymentServlet.java
 D:\swp\group2\phone-store-website\src\main\java\dao\PromotionsDAO.java
 D:\swp\group2\phone-store-website\src\main\java\model\Sale.java
+D:\swp\group2\phone-store-website\src\main\java\dao\ProfitDAO.java
 D:\swp\group2\phone-store-website\src\main\java\controller\ProductServlet.java
 D:\swp\group2\phone-store-website\src\main\java\dao\ReviewDAO.java
 D:\swp\group2\phone-store-website\src\main\java\controller\LogoutServlet.java
@@ -17,6 +18,7 @@ D:\swp\group2\phone-store-website\src\main\java\model\Users.java
 D:\swp\group2\phone-store-website\src\main\java\model\Products.java
 D:\swp\group2\phone-store-website\src\main\java\model\SupportTickets.java
 D:\swp\group2\phone-store-website\src\main\java\model\Specification.java
+D:\swp\group2\phone-store-website\src\main\java\model\Profit.java
 D:\swp\group2\phone-store-website\src\main\java\controller\ReviewServlet.java
 D:\swp\group2\phone-store-website\src\main\java\dao\ProductDAO.java
 D:\swp\group2\phone-store-website\src\main\java\controller\HomepageServlet.java
@@ -30,12 +32,10 @@ D:\swp\group2\phone-store-website\src\main\java\controller\RegisterServlet.java
 D:\swp\group2\phone-store-website\src\main\java\model\Suppliers.java
 D:\swp\group2\phone-store-website\src\main\java\model\OrderDetails.java
 D:\swp\group2\phone-store-website\src\main\java\dao\VariantsDAO.java
-D:\swp\group2\phone-store-website\src\main\java\controller\ProfileServlet.java
 D:\swp\group2\phone-store-website\src\main\java\controller\SupplierServlet.java
 D:\swp\group2\phone-store-website\src\main\java\dao\UsersDAO.java
 D:\swp\group2\phone-store-website\src\main\java\model\Carts.java
 D:\swp\group2\phone-store-website\src\main\java\controller\StaffServlet.java
-D:\swp\group2\phone-store-website\src\main\java\controller\test.java
 D:\swp\group2\phone-store-website\src\main\java\controller\AdminServlet.java
 D:\swp\group2\phone-store-website\src\main\java\dao\CartDAO.java
 D:\swp\group2\phone-store-website\src\main\java\dao\InterestRateDAO.java

@@ -191,7 +191,7 @@ public class StaffServlet extends HttpServlet {
             Review review = rdao.getReviewByID(rID);
 
             request.setAttribute("review", review);
-            request.getRequestDispatcher("staff_managereview_detail.jsp").forward(request, response);
+            request.getRequestDispatcher("staff/staff_managereview_detail.jsp").forward(request, response);
         }
     }
 

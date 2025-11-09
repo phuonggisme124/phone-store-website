@@ -67,7 +67,7 @@
 
         <div class="d-flex" id="wrapper">
             <!-- Sidebar -->
-            <%@ include file="sidebar.jsp" %>
+            <%@ include file="/sidebar.jsp" %>
 
             <!-- Page Content -->
             <div class="page-content flex-grow-1">

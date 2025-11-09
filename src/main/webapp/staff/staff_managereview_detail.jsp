@@ -131,7 +131,7 @@
                                                 <textarea name="reply" class="reply-input" placeholder="Your reply..."><%= (review.getReply() != null) ? review.getReply() : ""%></textarea>
                                             </div>
 
-                                            <input type="hidden" name="rID" value="<%= review.getReviewID()%>">
+                                            <input type="hidden" name="reviewID" value="<%= review.getReviewID()%>">
 
                                             <button type="submit" class="send-btn">Send Reply</button>
                                         </form>                 

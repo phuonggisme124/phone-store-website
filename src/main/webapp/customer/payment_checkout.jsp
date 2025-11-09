@@ -1,4 +1,5 @@
 <%--<%@page import="model.InterestRate"%>--%>
+<%@page import="model.InterestRate"%>
 <%@page import="java.util.List"%>
 <%@page import="dao.ProductDAO"%>
 <%@page import="java.text.NumberFormat"%>
@@ -6,7 +7,7 @@
 <%@page import="model.Carts"%>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page isELIgnored="true" %>
-<%@ include file="layout/header.jsp" %>
+<%@ include file="/layout/header.jsp" %>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -90,7 +91,7 @@
                         </div>
                     </div>
 
-                    <%                        List<Carts> carts = (List<Carts>) session.getAttribute("cartCheckout");
+                    <%  List<Carts> cartsCheckout = (List<Carts>) session.getAttribute("cartCheckout");
                         ProductDAO pDAO = new ProductDAO();
                         String receiverName = (String) request.getAttribute("receiverName");
                         String receiverPhone = (String) request.getAttribute("receiverPhone");
@@ -99,7 +100,7 @@
                         double totalPriceAfterDiscount = 0;
                         int totalQuantity = 0;
                         if (carts != null) {
-                            for (Carts c : carts) {
+                            for (Carts c : cartsCheckout) {
                                 totalPriceBeforeDiscount += c.getVariant().getPrice() * c.getQuantity();
                                 totalPriceAfterDiscount += c.getVariant().getDiscountPrice() * c.getQuantity();
                                 totalQuantity += c.getQuantity();

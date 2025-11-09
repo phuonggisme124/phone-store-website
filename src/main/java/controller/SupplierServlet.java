@@ -70,13 +70,13 @@ public class SupplierServlet extends HttpServlet {
             response.sendRedirect("admin");
         } else if (action.equals("createSupplier")) {
 
-            request.getRequestDispatcher("admin_managesupplier_create.jsp").forward(request, response);
+            request.getRequestDispatcher("admin/admin_managesupplier_create.jsp").forward(request, response);
         }else if (action.equals("editSupplier")) {
             int supplierID = Integer.parseInt(request.getParameter("id"));
 
             Suppliers supplier = sldao.getSupplierByID(supplierID);
             request.setAttribute("supplier", supplier);
-            request.getRequestDispatcher("admin_managesupplier_edit.jsp").forward(request, response);
+            request.getRequestDispatcher("admin/admin_managesupplier_edit.jsp").forward(request, response);
         }
     }
 

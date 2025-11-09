@@ -285,6 +285,7 @@ public class VariantsDAO extends DBContext {
      */
     public void updateDiscountPrice() {
         VariantsDAO vdao = new VariantsDAO();
+        ProfitDAO pfdao = new ProfitDAO();
         PromotionsDAO pmtdao = new PromotionsDAO();
 
         double discountPrice;
@@ -301,6 +302,7 @@ public class VariantsDAO extends DBContext {
                     percent = pmt.getDiscountPercent() / 100.0;
                     discountPrice = price - (price * percent);
                     discountPrice(v.getVariantID(), discountPrice);
+                    
                     hasPromotion = true;
                     break;
                 }
@@ -756,6 +758,35 @@ public class VariantsDAO extends DBContext {
             System.out.println(e.getMessage());
         }
         return null;
+    }
+
+    public List<Variants> getVariantByProductID(int pID) {
+        String sql = "SELECT * FROM Variants Where ProductID = ?";
+        List<Variants> list = new ArrayList<>();
+        try {
+            
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, pID);
+           
+            
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                int variantId = rs.getInt("VariantID");
+                int productID = rs.getInt("ProductID");
+                String colorV = rs.getString("Color");
+                String storageV = rs.getString("Storage");
+                double price = rs.getDouble("Price");
+                double discountPrice = rs.getDouble("DiscountPrice");
+                int stock = rs.getInt("Stock");
+                String description = rs.getString("Description");
+                String img = rs.getString("ImageURL");
+                list.add(new Variants(variantId, productID, colorV, storageV, price, discountPrice, stock, description, img));
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return list;
     }
 
 

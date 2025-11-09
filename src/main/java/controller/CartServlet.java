@@ -6,6 +6,7 @@ package controller;
 
 import dao.CartDAO;
 import dao.ProductDAO;
+import jakarta.jms.Session;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -13,10 +14,10 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.util.List;
 import model.Carts;
 import model.Category;
-
 
 /**
  * CartServlet handles HTTP requests related to the shopping cart feature.
@@ -66,19 +67,11 @@ public class CartServlet extends HttpServlet {
             throws ServletException, IOException {
         ProductDAO dao = new ProductDAO();
         CartDAO cDAO = new CartDAO();
-
+        HttpSession session = request.getSession();
         int userID = Integer.parseInt(request.getParameter("userID"));
         List<Carts> carts = cDAO.getItemIntoCartByUserID(userID);
 
-        request.setAttribute("carts", carts);
-        // Retrieve the newest products from the database
-        int cID = 1;
-        // Retrieve all categories from the database
-        List<Category> listCategory = dao.getAllCategory();
-        request.setAttribute("categoryID", cID);
-
-        // Store data in request attributes for access in JSP
-        request.setAttribute("listCategory", listCategory);
+        session.setAttribute("cart", carts);
 
         // Forward the request to the homepage.jsp view
         request.getRequestDispatcher("customer/display_cart.jsp").forward(request, response);
@@ -97,6 +90,7 @@ public class CartServlet extends HttpServlet {
             throws ServletException, IOException {
         String action = request.getParameter("action");
         CartDAO cDAO = new CartDAO();
+        HttpSession session = request.getSession();
         if (action == null) {
             int userID = Integer.parseInt(request.getParameter("userID"));
             int variantID = Integer.parseInt(request.getParameter("variantID"));
@@ -104,33 +98,40 @@ public class CartServlet extends HttpServlet {
             if (!cDAO.isAddedInCart(userID, variantID)) {
                 cDAO.ensureCartExists(userID);
                 cDAO.addNewProductToCart(userID, variantID, quantity);
+                List<Carts> carts = cDAO.getItemIntoCartByUserID(userID);
+                session.setAttribute("cart", carts);
+                session.setAttribute("res", "Item added to cart successfully");
+            }
+            else {
+                session.setAttribute("res", "Item added to cart successfully");
             }
             response.sendRedirect(request.getHeader("referer"));
         } else if (action.equals("delete")) {
             int cartID = Integer.parseInt(request.getParameter("cartID"));
             int variantID = Integer.parseInt(request.getParameter("variantID"));
             cDAO.removeItemFromCart(cartID, variantID);
+            session.setAttribute("res", "Item deleted from cart successfully");
             response.sendRedirect("cart?userID=" + cartID);
+
         } else if (action.equals("updateQuantity")) {
             int userID = Integer.parseInt(request.getParameter("userID"));
             int cartID = userID;
             int variantID = Integer.parseInt(request.getParameter("variantID"));
             int quantityChange = Integer.parseInt(request.getParameter("quantityChange"));
             cDAO.updateQuantityByChange(cartID, variantID, quantityChange);
+            session.setAttribute("res", "Item quantity updated successfully");
             response.sendRedirect("cart?userID=" + cartID);
         }
     }
 
-        /**
-         * Returns a short description of the servlet.
-         *
-         * @return a String containing servlet description
-         */
-        @Override
-        public String getServletInfo
-        
-            () {
+    /**
+     * Returns a short description of the servlet.
+     *
+     * @return a String containing servlet description
+     */
+    @Override
+    public String getServletInfo() {
         return "Short description";
-        }// </editor-fold>   
+    }// </editor-fold>   
 
-    }
+}

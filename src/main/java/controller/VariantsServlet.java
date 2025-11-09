@@ -5,6 +5,7 @@
 package controller;
 
 import dao.ProductDAO;
+import dao.ProfitDAO;
 import dao.SupplierDAO;
 import dao.VariantsDAO;
 import java.io.IOException;
@@ -100,7 +101,7 @@ public class VariantsServlet extends HttpServlet {
 
             request.setAttribute("product", product);
             request.setAttribute("pID", pID);
-            request.getRequestDispatcher("admin_manageproduct_createvariant.jsp").forward(request, response);
+            request.getRequestDispatcher("admin/admin_manageproduct_createvariant.jsp").forward(request, response);
         } else if (action.equals("editVariant")) {
             int vid = Integer.parseInt(request.getParameter("vid"));
             int pID = Integer.parseInt(request.getParameter("pID"));
@@ -112,7 +113,7 @@ public class VariantsServlet extends HttpServlet {
             request.setAttribute("product", product);
             request.setAttribute("listSupplier", listSupplier);
 
-            request.getRequestDispatcher("admin_manageproduct_editvariant.jsp").forward(request, response);
+            request.getRequestDispatcher("admin/admin_manageproduct_editvariant.jsp").forward(request, response);
         }
 
     }
@@ -133,6 +134,7 @@ public class VariantsServlet extends HttpServlet {
         HttpSession session = request.getSession();
         ProductDAO pdao = new ProductDAO();
         VariantsDAO vdao = new VariantsDAO();
+        ProfitDAO pfdao = new ProfitDAO();
         String action = request.getParameter("action");
         if (action == null) {
             action = "homepage";
@@ -156,6 +158,7 @@ public class VariantsServlet extends HttpServlet {
             String color = request.getParameter("color");
             String storage = request.getParameter("storage");
             double price = Double.parseDouble(request.getParameter("price"));
+            double cost = Double.parseDouble(request.getParameter("cost"));
             int stock = Integer.parseInt(request.getParameter("stock"));
             String description = request.getParameter("description");
             Variants variant;
@@ -171,7 +174,8 @@ public class VariantsServlet extends HttpServlet {
 
             } else {
                 vdao.createVariant(pID, color, storage, price, stock, description);
-
+                
+                
                 String filePath = request.getServletContext().getRealPath("images");
                 System.out.println("duong dan: " + filePath);
                 String basePath = filePath.substring(0, filePath.indexOf("\\target"));
@@ -205,7 +209,10 @@ public class VariantsServlet extends HttpServlet {
                     img = img.substring(0, img.length() - 1);
                     vdao.updateImageVariant(currentVariantID, img);
                 }
-
+               
+                
+                Variants v = vdao.getVariantByID(currentVariantID);
+                pfdao.createProfit(currentVariantID, v.getDiscountPrice(), cost, stock);
                 vdao.updateDiscountPrice();
                 response.sendRedirect("product?action=productDetail&pID=" + pID);
             }
@@ -215,17 +222,14 @@ public class VariantsServlet extends HttpServlet {
             int vID = Integer.parseInt(request.getParameter("vID"));
             int pID = Integer.parseInt(request.getParameter("pID"));
             int ctID = Integer.parseInt(request.getParameter("ctID"));
-            String pName = request.getParameter("pName");
-            //String brand = request.getParameter("brand");
+            String pName = request.getParameter("pName");           
             String color = request.getParameter("color");
             String storage = request.getParameter("storage");
-            double price = Double.parseDouble(request.getParameter("price"));
-            //int warrantyPeriod = Integer.parseInt(request.getParameter("warrantyPeriod"));
-            int stock = Integer.parseInt(request.getParameter("stock"));
-            //int supplierID = Integer.parseInt(request.getParameter("supplierID"));
+            double price = Double.parseDouble(request.getParameter("price"));           
+            int stock = Integer.parseInt(request.getParameter("stock"));  
+            int oldStock = Integer.parseInt(request.getParameter("oldStock"));
             String description = request.getParameter("description");
             Variants variant = vdao.getVariantByID(vID);
-
             Variants updateVariant;
             boolean isUpdate = false;
             if (ctID == 1 || ctID == 3) {
@@ -316,6 +320,12 @@ public class VariantsServlet extends HttpServlet {
                 vdao.updateVariant(vID, color, storage, price, stock, description);
 
                 vdao.updateDiscountPrice();
+                
+                pfdao.updateSellPriceByVariantID(vID);
+                if(oldStock < stock){
+                    int quantity = stock - oldStock;
+                    pfdao.updateQuantityOfProfit(vID, quantity);
+                }
                 response.sendRedirect("product?action=productDetail&pID=" + pID);
             } else {
                 session.setAttribute("existVariant", pName + " " + (storage == null ? "" : storage) + " " + color + " already exists");
@@ -325,6 +335,7 @@ public class VariantsServlet extends HttpServlet {
         } else if (action.equals("deleteVariant")) {
             int vID = Integer.parseInt(request.getParameter("vID"));
             int pID = Integer.parseInt(request.getParameter("pID"));
+            pfdao.deleteProfitByVariantID(vID);
             vdao.deleteVariantByID(vID);
 
             response.sendRedirect("product?action=productDetail&pID=" + pID);
