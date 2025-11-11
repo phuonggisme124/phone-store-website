@@ -9,12 +9,14 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
 */
 
 body {
-  background-color: #fdfdfd;
   font-family: 'Poppins', sans-serif;
+  background-color: #fdfdfd;
   color: #333;
   margin: 0;
-  padding: 20px;
+  padding: 0;
+  overflow-y: auto !important;
 }
+
 
 .payment-container {
   max-width: 600px;
@@ -139,12 +141,6 @@ h1, h2, h3, p {
     margin: 0;
 }
 
-/* General Body Styles */
-body {
-    font-family: 'Inter', sans-serif;
-    background-color: #f3f4f6; /* bg-gray-100 */
-    padding: 0;
-}
 
 /* Main container for the payment form */
 .payment-container {
@@ -426,6 +422,10 @@ body {
     .payment-main {
         padding: 1.5rem;
     }
+}
+html, body {
+  height: auto;
+  overflow-y: auto !important;
 }
 
 

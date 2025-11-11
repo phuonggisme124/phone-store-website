@@ -191,7 +191,7 @@ public class StaffServlet extends HttpServlet {
             Review review = rdao.getReviewByID(rID);
 
             request.setAttribute("review", review);
-            request.getRequestDispatcher("staff_managereview_detail.jsp").forward(request, response);
+            request.getRequestDispatcher("staff/staff_managereview_detail.jsp").forward(request, response);
         }
     }
 
@@ -205,20 +205,44 @@ public class StaffServlet extends HttpServlet {
             try {
                 int reviewID = Integer.parseInt(request.getParameter("reviewID"));
                 String reply = request.getParameter("reply");
+                
+                // Kiểm tra xem có phải là update hay reply mới
+                Review existingReview = reviewDAO.getReviewByID(reviewID);
+                boolean isUpdate = (existingReview != null && existingReview.getReply() != null && !existingReview.getReply().isEmpty());
+                
                 reviewDAO.replyToReview(reviewID, reply);
-                response.sendRedirect("staff?action=manageReview");
+                
+                // Redirect với success parameter tương ứng
+                if (isUpdate) {
+                    response.sendRedirect("staff?action=manageReview&success=update");
+                } else {
+                    response.sendRedirect("staff?action=manageReview&success=reply");
+                }
             } catch (Exception e) {
                 e.printStackTrace();
                 response.sendRedirect("error.jsp");
             }
         } else if (action.equals("replyReview")) {
-            int rID = Integer.parseInt(request.getParameter("rID"));
+            try {
+                int rID = Integer.parseInt(request.getParameter("rID"));
+                String reply = request.getParameter("reply");
 
-            String reply = request.getParameter("reply");
+                // Kiểm tra xem có phải là update hay reply mới
+                Review existingReview = reviewDAO.getReviewByID(rID);
+                boolean isUpdate = (existingReview != null && existingReview.getReply() != null && !existingReview.getReply().isEmpty());
 
-            reviewDAO.updateReview(rID, reply);
-            response.sendRedirect("staff?action=manageReview");
-
+                reviewDAO.updateReview(rID, reply);
+                
+                // Redirect với success parameter tương ứng
+                if (isUpdate) {
+                    response.sendRedirect("staff?action=manageReview&success=update");
+                } else {
+                    response.sendRedirect("staff?action=manageReview&success=reply");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                response.sendRedirect("error.jsp");
+            }
         }
     }
 

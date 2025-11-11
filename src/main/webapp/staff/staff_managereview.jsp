@@ -14,6 +14,43 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
         <link rel="stylesheet" href="css/dashboard_staff.css">
         <link href="css/dashboard_table.css" rel="stylesheet">
+        <style>
+            /* Toast notification style */
+            .toast-notification {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 9999;
+                min-width: 300px;
+                animation: slideInRight 0.3s ease-out;
+            }
+            
+            @keyframes slideInRight {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            
+            .toast-notification.hiding {
+                animation: slideOutRight 0.3s ease-in;
+            }
+            
+            @keyframes slideOutRight {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+            }
+        </style>
     </head>
     <body>
         <%
@@ -23,6 +60,9 @@
             // Lấy giá trị filter/search hiện tại từ request
             String currentRating = request.getParameter("ratingFilter") != null ? request.getParameter("ratingFilter") : "All";
             String currentProductName = request.getParameter("productName") != null ? request.getParameter("productName") : "";
+            
+            // Kiểm tra có thông báo success không
+            String successMessage = request.getParameter("success");
             
             // Tạo danh sách tên sản phẩm để autocomplete
             ProductDAO pdao = new ProductDAO();
@@ -40,6 +80,25 @@
         <script>
             const allProductNames = <%= new Gson().toJson(allProductNames) %>;
         </script>
+
+        <!-- Toast Notification -->
+        <% if (successMessage != null && !successMessage.isEmpty()) { %>
+        <div class="toast-notification">
+            <div class="alert alert-success alert-dismissible fade show shadow-lg" role="alert" id="successToast">
+                <i class="bi bi-check-circle-fill me-2"></i>
+                <strong>
+                    <% if (successMessage.equals("reply")) { %>
+                        Review reply updated successfully!
+                    <% } else if (successMessage.equals("update")) { %>
+                        Review updated successfully!
+                    <% } else { %>
+                        Operation completed successfully!
+                    <% } %>
+                </strong>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+        <% } %>
 
         <div class="d-flex" id="wrapper">
             <!-- Sidebar -->
@@ -226,7 +285,33 @@
             var replyModal = null;
             window.onload = function () {
                 replyModal = new bootstrap.Modal(document.getElementById('replyModal'));
+                
+                // Tự động ẩn thông báo sau 3 giây
+                var successToast = document.getElementById('successToast');
+                if (successToast) {
+                    setTimeout(function() {
+                        // Thêm class hiding để chạy animation
+                        var toastContainer = successToast.closest('.toast-notification');
+                        if (toastContainer) {
+                            toastContainer.classList.add('hiding');
+                        }
+                        
+                        // Đợi animation hoàn thành rồi mới xóa element
+                        setTimeout(function() {
+                            var alert = bootstrap.Alert.getOrCreateInstance(successToast);
+                            alert.close();
+                            
+                            // Xóa parameter 'success' khỏi URL
+                            if (window.history.replaceState) {
+                                var url = new URL(window.location);
+                                url.searchParams.delete('success');
+                                window.history.replaceState({}, '', url);
+                            }
+                        }, 300);
+                    }, 3000);
+                }
             };
+            
             function openReplyModal(reviewID, currentReply) {
                 document.getElementById('modalReviewID').value = reviewID;
                 document.getElementById('replyText').value = currentReply;

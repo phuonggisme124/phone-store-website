@@ -1,17 +1,15 @@
-
-<%--
+<%-- 
     Document   : payment
     Created on : Oct 15, 2025, 3:01:17 PM
     Author     : ADMIN
 --%>
 
-
-
 <%@page import="model.Carts"%>
 <%@page import="dao.ProductDAO"%>
 <%@page import="model.Variants"%>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ include file="layout/header.jsp" %>
+<%@ include file="/layout/header.jsp" %>
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -29,7 +27,7 @@
                 background-color: #f4f7fc;
             }
             .confirm-btn {
-                background: #72AEC8; /* MÀU MỚI */
+                background: #72AEC8;
                 color: #fff;
                 font-weight: 600;
                 border: none;
@@ -41,10 +39,8 @@
                 transition: background 0.2s;
             }
             .confirm-btn:hover {
-                background: #619db5; /* MÀU MỚI - Tối hơn cho hiệu ứng hover */
+                background: #619db5;
             }
-
-            /* Custom utility classes cho màu mới */
             .text-theme {
                 color: #72AEC8;
             }
@@ -53,9 +49,7 @@
             }
             .bg-theme-light {
                 background-color: #eaf4f7;
-            } /* MÀU MỚI - Nền nhạt hơn */
-
-            /* Tùy chỉnh hiệu ứng focus cho input */
+            }
             input:focus, select:focus, textarea:focus {
                 border-color: #72AEC8;
                 box-shadow: 0 0 0 2px rgba(114, 174, 200, 0.4);
@@ -87,12 +81,12 @@
                     </div>
 
                     <%  
-                        List<Carts> carts = (List<Carts>) session.getAttribute("cartCheckout");
+                        List<Carts> cartsCheckout = (List<Carts>) session.getAttribute("cartCheckout");
                         ProductDAO pDAO = new ProductDAO();
                         double totalPrice = 0;
                     %>
 
-                    <% for (Carts c : carts) {%>
+                    <% for (Carts c : cartsCheckout) { %>
                     <div class="bg-white rounded-lg mb-6">
                         <div class="flex items-center space-x-4">
                             <img src="images/<%=c.getVariant().getImageUrl()%>" class="w-20 h-20 object-cover rounded-md border">
@@ -109,7 +103,7 @@
                                 <% totalPrice += c.getVariant().getDiscountPrice() * c.getQuantity(); %>
                         </div>
                     </div>
-                    <% }%>
+                    <% } %>
 
                     <div class="space-y-4">
                         <h3 class="font-bold text-lg text-gray-700">CUSTOMER INFORMATION</h3>
@@ -168,24 +162,23 @@
             </div>
         </section>
 
-
         <script>
             const citySelect = document.getElementById("city");
-            fetch("https://provinces.open-api.vn/api/p/")
-                    .then(res => res.json())
-                    .then(provinces => {
-                        citySelect.innerHTML = '<option value="">-- Select province/city --</option>';
-                        provinces.forEach(p => {
-                            const opt = document.createElement("option");
-                            opt.value = p.name;
-                            opt.textContent = p.name;
-                            citySelect.appendChild(opt);
-                        });
-                    })
-                    .catch(error => {
-                        console.error("Error loading province/city list:", error);
-                        citySelect.innerHTML = '<option value="">Error loading data</option>';
+            fetch("http://provinces.open-api.vn/api/p/")
+                .then(res => res.json())
+                .then(provinces => {
+                    citySelect.innerHTML = '<option value="">-- Select province/city --</option>';
+                    provinces.forEach(p => {
+                        const opt = document.createElement("option");
+                        opt.value = p.name;
+                        opt.textContent = p.name;
+                        citySelect.appendChild(opt);
                     });
+                })
+                .catch(error => {
+                    console.error("Error loading province/city list:", error);
+                    citySelect.innerHTML = '<option value="">Error loading data</option>';
+                });
         </script>
     </body>
 </html>

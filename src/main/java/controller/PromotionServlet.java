@@ -5,6 +5,7 @@
 package controller;
 
 import dao.ProductDAO;
+import dao.ProfitDAO;
 import dao.PromotionsDAO;
 import dao.VariantsDAO;
 import java.io.IOException;
@@ -22,6 +23,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import model.Products;
 import model.Promotions;
+import model.Variants;
 
 /**
  *
@@ -84,13 +86,13 @@ public class PromotionServlet extends HttpServlet {
             request.setAttribute("listProducts", listProducts);
             request.getRequestDispatcher("admin/admin_managepromotion_create.jsp").forward(request, response);
 
-        }else if (action.equals("editPromotion")) {
+        } else if (action.equals("editPromotion")) {
             int pmtID = Integer.parseInt(request.getParameter("pmtID"));
             int pID = Integer.parseInt(request.getParameter("pID"));
             Promotions promotion = pmtdao.getPromotionByID(pmtID);
             Products product = pdao.getProductByID(pID);
             List<Products> listProduct = pdao.getAllProduct();
-            
+
             request.setAttribute("listProduct", listProduct);
             request.setAttribute("promotion", promotion);
             request.setAttribute("product", product);
@@ -113,7 +115,7 @@ public class PromotionServlet extends HttpServlet {
         DateTimeFormatter formatDate = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
         LocalDateTime today = LocalDate.now().atStartOfDay();
-
+        ProfitDAO pfdao = new ProfitDAO();
         ProductDAO pdao = new ProductDAO();
         PromotionsDAO pmtdao = new PromotionsDAO();
         VariantsDAO vdao = new VariantsDAO();
@@ -128,7 +130,7 @@ public class PromotionServlet extends HttpServlet {
             response.sendRedirect("admin");
         } else if (action.equals("createPromotion")) {
             int pID = Integer.parseInt(request.getParameter("pID"));
-            
+
             int discountPercent = Integer.parseInt(request.getParameter("discountPercent"));
             String startDateStr = request.getParameter("startDate");
             String endDateStr = request.getParameter("endDate");
@@ -142,9 +144,9 @@ public class PromotionServlet extends HttpServlet {
             }
 
             List<Promotions> listPromotion = pmtdao.getListPromotionByProductID(pID);
-            if(listPromotion != null && status.equals("active")){
-                for(Promotions pmt : listPromotion){
-                    if(pmt.getStatus().equalsIgnoreCase("active")){
+            if (listPromotion != null && status.equals("active")) {
+                for (Promotions pmt : listPromotion) {
+                    if (pmt.getStatus().equalsIgnoreCase("active")) {
                         String updateStatus = "expired";
                         pmtdao.updateStatus(pmt.getPromotionID(), updateStatus);
                     }
@@ -152,6 +154,11 @@ public class PromotionServlet extends HttpServlet {
             }
             pmtdao.createPromotion(pID, discountPercent, startDate, endDate, status);
             vdao.updateDiscountPrice();
+            List<Variants> listVariant = vdao.getVariantByProductID(pID);
+            for (Variants v : listVariant) {
+                pfdao.updateSellPriceByVariantID(v.getVariantID());
+            }
+
             response.sendRedirect("admin?action=managePromotion");
         } else if (action.equals("updatePromotion")) {
             int pmtID = Integer.parseInt(request.getParameter("pmtID"));
@@ -166,13 +173,20 @@ public class PromotionServlet extends HttpServlet {
             pmtdao.updatePromotion(pmtID, pID, discountPercent, startDate, endDate, status);
             pmtdao.updateAllStatus();
             vdao.updateDiscountPrice();
-
+            List<Variants> listVariant = vdao.getVariantByProductID(pID);
+            for (Variants v : listVariant) {
+                pfdao.updateSellPriceByVariantID(v.getVariantID());
+            }
             response.sendRedirect("admin?action=managePromotion");
         } else if (action.equals("deletePromotion")) {
             int pmtID = Integer.parseInt(request.getParameter("pmtID"));
-
+            Promotions promotion = pmtdao.getPromotionByID(pmtID);
             pmtdao.deletePromotion(pmtID);
             vdao.updateDiscountPrice();
+            List<Variants> listVariant = vdao.getVariantByProductID(promotion.getProductID());
+            for (Variants v : listVariant) {
+                pfdao.updateSellPriceByVariantID(v.getVariantID());
+            }
             response.sendRedirect("admin?action=managePromotion");
         }
     }

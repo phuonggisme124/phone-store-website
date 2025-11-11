@@ -6,6 +6,7 @@ package controller;
 
 import dao.CategoryDAO;
 import dao.ProductDAO;
+import dao.ProfitDAO;
 import dao.PromotionsDAO;
 import dao.ReviewDAO;
 import dao.SupplierDAO;
@@ -71,6 +72,7 @@ public class ProductServlet extends HttpServlet {
         SupplierDAO sldao = new SupplierDAO();
         CategoryDAO ctdao = new CategoryDAO();
         PromotionsDAO pmtdao = new PromotionsDAO();
+        ProfitDAO pfdao = new ProfitDAO();
 
         // === Case 1: View product details ===
         if ("viewDetail".equals(action)) {
@@ -207,19 +209,18 @@ public class ProductServlet extends HttpServlet {
                 Logger.getLogger(ProductServlet.class.getName()).log(Level.SEVERE, null, ex);
             }
 
-
             request.setAttribute("productList1", productList1_search);
-    request.setAttribute("variantsList", variantsList_search);
-    // ============================================
-    
-    // Set attributes for category page
-    request.setAttribute("listVariant", listVariant);
-    request.setAttribute("categoryID", cID);
-    request.setAttribute("listProduct", listProduct);
-    request.setAttribute("listReview", listReview);
-    
-    // Forward to category JSP
-    request.getRequestDispatcher("public/view_product_by_category.jsp").forward(request, response);
+            request.setAttribute("variantsList", variantsList_search);
+            // ============================================
+
+            // Set attributes for category page
+            request.setAttribute("listVariant", listVariant);
+            request.setAttribute("categoryID", cID);
+            request.setAttribute("listProduct", listProduct);
+            request.setAttribute("listReview", listReview);
+
+            // Forward to category JSP
+            request.getRequestDispatcher("public/view_product_by_category.jsp").forward(request, response);
         } else if (action.equals("productDetail")) {
 
             int pID = Integer.parseInt(request.getParameter("pID"));
@@ -236,7 +237,7 @@ public class ProductServlet extends HttpServlet {
                 request.setAttribute("listProducts", listProducts);
                 request.setAttribute("listVariants", listVariants);
 
-                request.getRequestDispatcher("admin_manageproduct_detail.jsp").forward(request, response);
+                request.getRequestDispatcher("admin/admin_manageproduct_detail.jsp").forward(request, response);
             }
 
         } else if (action.equals("updateProduct")) {
@@ -251,9 +252,14 @@ public class ProductServlet extends HttpServlet {
             request.setAttribute("listCategories", listCategories);
             request.setAttribute("product", product);
             request.setAttribute("specification", specification);
-            request.getRequestDispatcher("admin_manageproduct_editproduct.jsp").forward(request, response);
+            request.getRequestDispatcher("admin/admin_manageproduct_editproduct.jsp").forward(request, response);
         } else if (action.equals("deleteProduct")) {
             int pID = Integer.parseInt(request.getParameter("pID"));
+            
+            List<Variants> listVariant = vdao.getVariantByProductID(pID);
+            for(Variants v : listVariant){
+                pfdao.deleteProfitByVariantID(v.getVariantID());
+            }
             vdao.deleteVariantByProductID(pID);
 
             pdao.deleteSpecificationByProductID(pID);
@@ -265,10 +271,9 @@ public class ProductServlet extends HttpServlet {
             List<Category> listCategories = ctdao.getAllCategories();
             request.setAttribute("listSupplier", listSupplier);
             request.setAttribute("listCategories", listCategories);
-            request.getRequestDispatcher("admin_manageproduct_create.jsp").forward(request, response);
+            request.getRequestDispatcher("admin/admin_manageproduct_create.jsp").forward(request, response);
         }
     }
-
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -306,7 +311,6 @@ public class ProductServlet extends HttpServlet {
 
             request.getRequestDispatcher("public/homepage.jsp").forward(request, response);
 
-           
         } else if (action.equals("createProduct")) {
             String pName = request.getParameter("pName");
             int categoryID = Integer.parseInt(request.getParameter("category"));
@@ -353,16 +357,7 @@ public class ProductServlet extends HttpServlet {
             String ram = request.getParameter("ram");
             int batteryCapacity = Integer.parseInt(request.getParameter("batteryCapacity"));
             String touchscreen = request.getParameter("touchscreen");
-            
-            System.out.println("Cate: " + categoryID);
-            System.out.println("pID: " + pID);
-            System.out.println("specID: " + specID);
-            System.out.println("os: " + os);
-            System.out.println("cpu: " + cpu);
-            System.out.println("gpu: " + gpu);
-            System.out.println("ram: " + ram);
-            System.out.println("bc: " + batteryCapacity);
-            System.out.println("t: " + touchscreen);
+
 
             pdao.updateProduct(pID, categoryID, supplierID, pName, brand, warrantyPeriod);
             pdao.updateSpecification(specID, os, cpu, gpu, ram, batteryCapacity, touchscreen);

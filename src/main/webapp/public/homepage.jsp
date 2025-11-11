@@ -1,4 +1,3 @@
-
 <%@page import="dao.ProductDAO"%>
 <%@page import="java.text.NumberFormat"%>
 <%@page import="java.util.Locale"%>
@@ -454,7 +453,9 @@
                         <div class="swiper-slide">
                             <div class="product-card text-center position-relative">
                                 <div class="image-holder">
-                                    <img src="images/<%= p.getVariants().get(0).getImageUrl()%>" alt="<%= p.getName()%>" class="img-fluid rounded-3">
+                                    <a href="product?action=viewDetail&pID=<%= p.getProductID()%>">
+                                        <img src="images/<%= p.getVariants().get(0).getImageUrl()%>" alt="<%= p.getName()%>" class="img-fluid rounded-3">
+                                    </a>
                                 </div>
                                 <div class="card-detail pt-3">
                                     <h3 class="card-title text-uppercase">
@@ -502,8 +503,10 @@
                         <div class="swiper-slide">
                             <div class="product-card text-center position-relative">
                                 <div class="image-holder">
+                                    <a href="product?action=viewDetail&pID=<%= p.getProductID()%>">
                                     <img src="images/<%= p.getVariants().get(0).getImageUrl()%>" alt="<%= p.getName()%>" class="img-fluid rounded-3">
-                                </div>
+                                    </a>
+                                    </div>
                                 <div class="card-detail pt-3">
                                     <h3 class="card-title text-uppercase">
                                         <a href="product?action=viewDetail&pID=<%= p.getProductID()%>">
@@ -549,8 +552,10 @@
                         <div class="swiper-slide">
                             <div class="product-card text-center position-relative">
                                 <div class="image-holder">
+                                    <a href="product?action=viewDetail&pID=<%= p.getProductID()%>">
                                     <img src="images/<%= p.getVariants().get(0).getImageUrl()%>" alt="<%= p.getName()%>" class="img-fluid rounded-3">
-                                </div>
+                                    </a>
+                                    </div>
                                 <div class="card-detail pt-3">
                                     <h3 class="card-title text-uppercase">
                                         <a href="product?action=viewDetail&pID=<%= p.getProductID()%>">
@@ -639,7 +644,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
-  
+
 
 </body>
 </html>

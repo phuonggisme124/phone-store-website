@@ -14,6 +14,14 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="css/dashboard_staff.css">
     <link href="css/dashboard_table.css" rel="stylesheet">
+    <style>
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+    </style>
 </head>
 <body>
 <%
@@ -23,6 +31,7 @@
     List<String> allPhones = (List<String>) request.getAttribute("allPhones");
     String currentPhone = request.getParameter("phone") != null ? request.getParameter("phone") : "";
     String currentStatus = request.getParameter("status") != null ? request.getParameter("status") : "";
+    String assignSuccess = request.getParameter("assignSuccess");
     NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(new Locale("en", "US"));
     currencyFormatter.setMaximumFractionDigits(0);
 %>
@@ -30,6 +39,19 @@
 <script>
     const allPhones = <%= new Gson().toJson(allPhones) %>;
 </script>
+
+<!-- Toast Notification -->
+<div class="toast-container">
+    <div id="successToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                <i class="bi bi-check-circle-fill me-2"></i>
+                assign shipper successfully!
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
 
 <div class="d-flex" id="wrapper">
     <nav class="sidebar bg-white shadow-sm border-end">
@@ -198,6 +220,26 @@
 
     window.onload = function () {
         myModal = new bootstrap.Modal(document.getElementById('shipperModal'));
+        
+        // Kiểm tra flag từ sessionStorage
+        console.log('Checking sessionStorage:', sessionStorage.getItem('showAssignSuccess'));
+        if (sessionStorage.getItem('showAssignSuccess') === 'true') {
+            console.log('Showing toast...');
+            sessionStorage.removeItem('showAssignSuccess');
+            
+            setTimeout(function() {
+                var toastEl = document.getElementById('successToast');
+                console.log('Toast element:', toastEl);
+                if (toastEl) {
+                    var toast = new bootstrap.Toast(toastEl, {
+                        autohide: true,
+                        delay: 3000
+                    });
+                    toast.show();
+                    console.log('Toast shown!');
+                }
+            }, 100);
+        }
     };
 
     function openModal(orderID) {
@@ -211,6 +253,8 @@
             alert("Missing information!");
             return;
         }
+        // Lưu flag vào sessionStorage
+        sessionStorage.setItem('showAssignSuccess', 'true');
         window.location.href = "staff?action=assignShipper&orderID=" + currentOrderID + "&shipperID=" + shipperID;
     }
 

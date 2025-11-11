@@ -2,549 +2,365 @@
 <%@page import="dao.UsersDAO"%>
 <%@page import="model.Review"%>
 <%@page import="dao.ReviewDAO"%>
-<%@page import="model.Category"%>
 <%@page import="dao.ProductDAO"%>
 <%@page import="model.Variants"%>
 <%@page import="model.Products"%>
 <%@page import="java.util.List"%>
-
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="/layout/header.jsp" %>
 
 <title>Product Detail</title>
 <link rel="stylesheet" href="css/product_detail.css">
+<link rel="stylesheet" href="css/review_detail.css">
 <link rel="stylesheet" href="css/gallery.css">
-<link rel="stylesheet" href="css/select_product.css">
-<link rel="stylesheet" href="css/customer_review.css">
-<script src="js/modernizr.js"></script>
+<link rel="stylesheet" href="css/customer_review.css?v=1.0.1">
+
 <%    ProductDAO pdao = new ProductDAO();
     ReviewDAO rdao = new ReviewDAO();
-    UsersDAO udao = new UsersDAO();
     int productID = (int) request.getAttribute("productID");
     int categoryID = (int) request.getAttribute("categoryID");
     double rating = (Double) request.getAttribute("rating");
     Variants variants = (Variants) request.getAttribute("variants");
+    Specification specification = (Specification) request.getAttribute("specification");
+    List<Variants> listVariants = (List<Variants>) request.getAttribute("listVariants");
+    List<String> listStorage = (List<String>) request.getAttribute("listStorage");
+    List<Review> listReview = (List<Review>) request.getAttribute("listReview");
+    List<Variants> listVariantRating = (List<Variants>) request.getAttribute("listVariantRating");
     int stock = variants.getStock();
     int currentVariantID = variants.getVariantID();
 
-    Specification specification = (Specification) request.getAttribute("specification");
-
-    //Get product from category page
-    String vIDFromProductByCategoryStr = (String) request.getAttribute("vID");
-    if (vIDFromProductByCategoryStr != null) {
-        currentVariantID = Integer.parseInt(vIDFromProductByCategoryStr);
-    }
-
-    List<Variants> listVariants = (List<Variants>) request.getAttribute("listVariants");
-    List<Variants> listVariantRating = (List<Variants>) request.getAttribute("listVariantRating");
-    List<Review> listReview = (List<Review>) request.getAttribute("listReview");
-    List<String> listStorage = (List<String>) request.getAttribute("listStorage");
     int userID = 0;
     if (isLoggedIn) {
         userID = user.getUserId();
-        displayName = (user.getFullName() != null && !user.getFullName().trim().isEmpty()) ? user.getFullName() : user.getEmail();
+        displayName = (user.getFullName() != null && !user.getFullName().trim().isEmpty())
+                ? user.getFullName() : user.getEmail();
     }
 %>
 
-<section id="billboard" class="bg-light-blue overflow-hidden padding-large" style="margin-top:-1px;">
-    <div class="container">
-        <h1 class="product-title"><%= pdao.getNameByID(variants.getProductID())%></h1>
-    </div>
-    <div class="product-container">
-        <div class="product-left">
-            <div class="gallery">
-                <%for (int i = 0; i < variants.getImageList().length; i++) {%>
-                <input type="radio" name="gallery" id="img<%= i + 1%>" <%=(i + 1 == 1) ? "checked" : ""%>>
-                <% } %>
+<body>
+    <section class="bg-light-blue padding-large " style="margin-top:-1px;">
+        <div class="container ">
+            <h1 class="product-title"><%= pdao.getNameByID(variants.getProductID())%></h1>
 
-                <div class="main-image">
-                    <%for (int i = 0; i < variants.getImageList().length; i++) {%>
-                    <img src="images/<%=variants.getImageList()[i]%>" alt="img<%=i + 1%>">
-                    <% }%> 
-                </div>
+            <div class="product-container">
+                <!-- LEFT -->
+                <div class="product-left">
+                    <div class="gallery">
+                        <div class="main-image">
+                            <img id="displayedImage" src="images/<%= variants.getImageList()[0]%>" alt="main image">
+                        </div>
 
-                <div class="thumbnails">
-                    <%for (int i = 0; i < variants.getImageList().length; i++) {%>
-                    <label for="img<%=i + 1%>"><img src="images/<%=variants.getImageList()[i]%>" alt="thumb<%=i + 1%>"></label>
-                        <% }%> 
-
-                </div>
-
-            </div>
-            <div class="spec-table">
-                <div class="spec-row">
-                    <span class="spec-label">DESCRIPTIONS</span>
-                    <span class="spec-value"><%=variants.getDescription()%></span>
-                </div> 
-            </div  >
-
-            <div class="spec-table">
-                <div class="spec-row">
-                    <span class="spec-label">DESCRIPTIONS</span>
-                    <span class="spec-value"><%=variants.getDescription()%></span>
-                </div> 
-            </div>
-
-            <div class="spec-section">
-                <h2>Specifications</h2>
-
-                <div class="spec-table">
-                    <div class="spec-row">
-                        <span class="spec-label">OS</span>
-                        <span class="spec-value"><%=specification.getOs()%></span>
+                        <div class="thumbnails">
+                            <%
+                                String[] imgs = variants.getImageList();
+                                for (int i = 0; i < imgs.length; i++) {
+                                    String img = imgs[i];
+                            %>
+                            <img src="images/<%= img%>" 
+                                 class="thumbnail <% if (i == 0) {
+                                         out.print("active");
+                                     } %>" 
+                                 onclick="changeImage(this)">
+                            <% }%>
+                        </div>
                     </div>
-                    <div class="spec-row">
-                        <span class="spec-label">CPU</span>
-                        <span class="spec-value"><%=specification.getCpu()%></span>
-                    </div>
-                    <div class="spec-row">
-                        <span class="spec-label">GPU</span>
-                        <span class="spec-value"><%=specification.getGpu()%></span>
-                    </div>
-                    <div class="spec-row">
-                        <span class="spec-label">RAM</span>
-                        <span class="spec-value"><%=specification.getRam()%></span>
-                    </div>
-                    <div class="spec-row">
-                        <span class="spec-label">ROM</span>
-                        <span class="spec-value"><%=variants.getStorage()%></span>
-                    </div>
-                    <div class="spec-row">
-                        <span class="spec-label">Battery Capacity</span>
-                        <span class="spec-value"><%=specification.getBatteryCapacity()%> mAh</span>
-                    </div>
-                    <div class="spec-row">
-                        <span class="spec-label">Touchscreen</span>
-                        <span class="spec-value"><%=specification.getTouchscreen()%></span>
+
+
+                    <div class="spec-table1">
+                        <div class="spec-row">
+                            <span class="spec-label">DESCRIPTION</span>
+                            <span class="spec-value"><%= variants.getDescription()%></span>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <div class="product-right">
-            <div class="price-box">
-                <p>Price</p>
-                <h2 id="price"><%= String.format("%,.0f", variants.getDiscountPrice())%> VND</h2>
-            </div>
+                <!-- RIGHT -->
+                <div class="product-right">
+                    <div class="price-box">
+                        <p>Price</p>
+                        <h2 id="price"><%= String.format("%,.0f", variants.getDiscountPrice())%> VND</h2>
+                    </div>
 
-            <% if (!variants.getStorage().equals("N/A")) { %>
-            <div class="option-box">
-                <p>Version</p>
-                <div class="option-list">
-                    <% int i = 0;
-                        for (String v : listStorage) {
-                            String storageId = "storage_" + i;%>
-                    <input type="radio" id="<%= storageId%>" name="storage" <%= (variants.getStorage().equals(v)) ? "checked" : ""%> >
-                    <a href="product?action=selectStorage&pID=<%= variants.getProductID()%>&color=<%= variants.getColor()%>&storage=<%= v%>&cID=<%= categoryID%>" class="option-label"><%= v%></a>
-                    <% i++;
-                        } %>
-                </div>
-            </div>
-            <% } %>
+                    <% if (!variants.getStorage().equals("N/A")) { %>
+                    <div class="option-box">
+                        <p>Version</p>
+                        <div class="option-list">
+                            <% for (String v : listStorage) {%>
+                            <a href="product?action=selectStorage&pID=<%= variants.getProductID()%>&color=<%= variants.getColor()%>&storage=<%= v%>&cID=<%= categoryID%>"
+                               class="option-label <%= (variants.getStorage().equals(v)) ? "selected" : ""%>">
+                                <%= v%>
+                            </a>
+                            <% } %>
+                        </div>
+                    </div>
+                    <% } %>
 
-            <div class="option-box">
-                <p>Color</p>
-                <div class="color-list">
-                    <% int j = 0;
-                        for (Variants v : listVariants) {
-                            if (variants.getStorage().equals(v.getStorage())) {
-                                String colorId = "color_" + j;
-                                if (variants.getColor().equals(v.getColor())) {
-                                    currentVariantID = v.getVariantID();
+                    <div class="option-box">
+                        <p>Color</p>
+                        <div class="color-list">
+                            <% for (Variants v : listVariants) {
+                                    if (variants.getStorage().equals(v.getStorage())) {%>
+                            <a href="product?action=selectStorage&pID=<%= variants.getProductID()%>&color=<%= v.getColor()%>&storage=<%= variants.getStorage()%>&cID=<%= categoryID%>&vID=<%= v.getVariantID()%>"
+                               class="color-label"
+                               style="background-color:<%= v.getColor()%>;">
+                            </a>
+                            <% }
                                 }%>
-                    <input type="radio" id="<%= colorId%>" name="color" value="<%= v.getColor()%>"<%= (variants.getColor().equals(v.getColor())) ? "checked" : ""%> >
-                    <a href="product?action=selectStorage&pID=<%= variants.getProductID()%>&color=<%= v.getColor()%>&storage=<%= variants.getStorage()%>&cID=<%= categoryID%>&vID=<%= v.getVariantID()%>" class="color-label" style="background-color:<%= v.getColor()%>;"></a>
-                    <% }
-                            j++;
-                        }%>
-                </div>
-            </div>
-
-            <div class="option-box">
-                <p>Quantity</p>
-                <div class="quantity-selector" data-stock="<%= stock%>">
-                    <button type="button" class="quantity-btn minus-btn" aria-label="Decrease quantity">-</button>
-                    <input type="text" id="quantity-display" class="quantity-input" value="1" readonly>
-                    <button type="button" class="quantity-btn plus-btn" aria-label="Increase quantity">+</button>
-                </div>
-                <div id="stock-error" class="stock-error">
-                    Sorry, you can only buy a maximum of <%= stock%> products.
-                </div>
-            </div>
-
-            <div class="action-buttons">
-                <% if (isLoggedIn) {%>
-                <form action="payment" method="get" style="display: inline-block;">
-                    <input type="hidden" name="variantID" value="<%= currentVariantID%>">
-                    <input type="hidden" name="quantity" class="hiddenQuantityInput" value="1">
-                    <input type="hidden" name="action" value="buyNowFromProductDetail">
-                    <button type="submit" class="buy-now">BUY NOW</button>
-                </form>
-                <form action="${pageContext.request.contextPath}/cart" method="post" style="display: inline-block;">
-                    <input type="hidden" name="userID" value="<%= userID%>">
-                    <input type="hidden" name="variantID" value="<%= currentVariantID%>">
-                    <input type="hidden" name="quantity" class="hiddenQuantityInput" value="1">
-                    <button type="submit" class="add-cart">Add to cart</button>
-                </form>
-                <% } else { %>
-                <a href="login.jsp" class="buy-now">BUY NOW</a>
-                <p class="text-danger fw-bold mt-2">B?n c?n <a href="login.jsp">??ng nh?p</a> ?? thÍm v‡o gi? h‡ng.</p>
-                <% }%>
-            </div>
-        </div>
-    </div>
-</section>
-
-<section id="billboard" class="bg-light-blue overflow-hidden padding-large" style="margin-top:-1px;">
-    <div class="review-container">
-        <h2><%= pdao.getNameByID(variants.getProductID())%> <%= variants.getStorage().equals("N/A") ? "" : variants.getStorage()%></h2>
-        <div class="overall-rating">
-            <div class="score-display">
-                <span class="star-icon">&#9733;</span>
-                <span class="main-score"><%= String.format("%.1f", rating)%></span>
-                <span class="max-score">/5</span>
-            </div>
-            <p class="stats"><%= rdao.getTotalReview(listVariantRating, listReview)%> Review</p>
-        </div>
-
-        <div class="rating-breakdown">
-            <% for (int k = 5; k > 0; k--) {
-                    double percentRating = rdao.getPercentRating(listVariantRating, listReview, k);%>
-            <div class="star-row">
-                <span class="star-level"><%= k%>&#9733;</span>
-                <div class="progress-bar-wrap">
-                    <div class="progress-bar" style="width: <%= percentRating%>%"></div>
-                </div>
-                <span class="percentage"><%= String.format("%.0f", percentRating)%>&#37;</span>
-            </div>
-            <% } %>
-        </div>
-        <%
-            String[] images = variants.getImageList();
-        %>
-        <% if (isLoggedIn) {%>
-        <!-- Modal -->
-        <button id="openReviewModal" class="write-review-button" type="button">Write Review</button>
-        <div id="reviewModal" class="modal">
-            <div class="modal-content">
-                <span class="close-button">&times;</span>
-                <form class="review-form-container" action="review" method="POST" enctype="multipart/form-data">
-                    <div class="product-header">
-                        <input type="hidden" name="vID" value="<%= currentVariantID%>">
-                        <img src="images/<%= images[0]%>" alt="<%= pdao.getNameByID(productID)%> <%= variants.getStorage()%>" class="product-image">
-                        <h2 class="product-title"><%= pdao.getNameByID(productID)%> <%= variants.getStorage().equals("N/A") ? "" : variants.getStorage()%></h2>
+                        </div>
                     </div>
 
-                    <div id="star-rating-js" class="star-rating-selection">
-                        <% String[] ratingTexts = {"Very bad", "Bad", "Okay", "Good", "Excellent"};
-                            for (int k = 1; k <= 5; k++) {%>
-                        <label class="star-option" data-rating-value="<%= k%>">
-                            <input type="radio" name="rating" value="<%= k%>" required>
-                            <span class="star-icon">&#9733;</span>
-                            <span class="rating-text"><%= ratingTexts[k - 1]%></span>
-                        </label>
+                    <div class="option-box">
+                        <p>Quantity</p>
+                        <div class="quantity-selector" data-stock="<%= stock%>">
+                            <button type="button" class="quantity-btn minus-btn">-</button>
+                            <input type="text" id="quantity-display" class="quantity-input" value="1" readonly>
+                            <button type="button" class="quantity-btn plus-btn">+</button>
+                        </div>
+                        <div id="stock-error" class="stock-error">Sorry, you can only buy a maximum of <%= stock%> products.</div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <% if (isLoggedIn) {%>
+                        <form action="payment" method="get">
+                            <input type="hidden" name="variantID" value="<%= currentVariantID%>">
+                            <input type="hidden" name="quantity" class="hiddenQuantityInput" value="1">
+                            <input type="hidden" name="action" value="buyNowFromProductDetail">
+                            <button type="submit" class="buy-now">BUY NOW</button>
+                        </form>
+
+                        <form action="${pageContext.request.contextPath}/cart" method="post">
+                            <input type="hidden" name="userID" value="<%= userID%>">
+                            <input type="hidden" name="variantID" value="<%= currentVariantID%>">
+                            <input type="hidden" name="quantity" class="hiddenQuantityInput" value="1">
+                            <button type="submit" class="add-cart">Add to cart</button>
+                        </form>
+                        <% } else { %>
+                        <a href="login.jsp" class="buy-now">BUY NOW</a>
+                        <p class="text-danger fw-bold mt-2">
+                           <a href="login.jsp">ƒëƒÉng nh·∫≠p</a> ƒë·ªÉ th√™m v√†o gi·ªè h√†ng.
+                        </p>
                         <% }%>
                     </div>
-
-                    <textarea name="comment" class="comment-textarea" placeholder="Please share your thoughts..." rows="5" required></textarea>
-
-                    <div class="options-row">
-                        <span class="photo-upload">
-                            <input type="file" name="photos" id="photo-upload-input" accept="image/*" multiple style="display: none;">
-                            <label for="photo-upload-input" class="photo-upload-label">
-                                <span class="camera-icon">&#128247;</span>
-                                Send photos (up to 3 photos)
-                            </label>
-                        </span>
-                    </div>
-
-                    <div id="image-preview-container" class="image-preview-container"></div>
-
-                    <div class="info-input-row">
-                        <input type="hidden" name="uID" value="<%= userID%>" >
-                    </div>
-
-                    <div class="policy-and-submit">
-                        <button type="submit" class="submit-button">Submit Review</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-        <% } %>
-
-        <% for (Variants v : listVariantRating) {
-                for (Review r : listReview) {
-                    if (v.getVariantID() == r.getVariantID()) {%>
-        <div class="user-review">
-            <div class="reviewer-info"><span class="name"><%= udao.getUserByID(r.getUserID()).getFullName()%></span></div>
-            <div class="review-header">
-                <span class="star-rating">
-                    <% for (int k = 1; k <= r.getRating(); k++) { %>&#9733;<% }%>
-                </span>
-                <span class="recommend"></span>
-            </div>
-            <p class="review-content"><%= r.getComment()%></p>
-            <% if (isLoggedIn && userID == r.getUserID()) {%>
-            <form action="review?action=deleteReview" method="post">
-                <input type="hidden" name="pID" value="<%= productID%>">
-                <input type="hidden" name="cID" value="<%= categoryID%>">
-                <input type="hidden" name="vID" value="<%= variants.getVariantID()%>">
-                <button type="submit" name="rID" value="<%= r.getReviewID()%>" class="delete-review-btn" onclick="return confirm('B?n cÛ ch?c ch?n mu?n xÛa b‡i ?·nh gi· n‡y khÙng?');">
-                    <span class="delete-icon"><i class="fa-solid fa-trash"></i></span>Delete
-                </button>
-            </form>
-            <% } %>
-            <% List<String> listImage = rdao.getImages(r.getImage());
-                if (listImage != null && !listImage.isEmpty()) { %>
-            <div class="review-images-gallery">
-                <% for (String image : listImage) {%>
-                <img src="images_review/<%= image%>" alt="<%= image%>" class="review-thumbnail">
-                <% } %>
-            </div>
-            <% } %>
-            <% if (r.getReply() != null && !r.getReply().trim().isEmpty()) {%>
-            <div class="replies-section">
-                <div class="nested-comment">
-                    <div class="reviewer-info">
-                        <span class="name"></span>
-                        <span class="tag seller-tag">MiniStore</span>
-                        <span class="tag reply-date"></span>
-                    </div>
-                    <p class="reply-content"><%= r.getReply()%></p>
                 </div>
             </div>
-            <% } %>
+            <div class="product-info " >      
+                <div class="spec-section">
+                    <h2>Specifications</h2> 
+                </div> 
+                <div class="spec-table"> 
+                    <div class="spec-row"> 
+                        <span class="spec-label">OS</span>
+                        <span class="spec-value"><%=specification.getOs()%></span>
+                    </div> 
+                    <div class="spec-row"> <span class="spec-label">CPU</span>
+                        <span class="spec-value"><%=specification.getCpu()%></span> </div> 
+                    <div class="spec-row"> 
+                        <span class="spec-label">GPU</span> 
+                        <span class="spec-value"><%=specification.getGpu()%></span> 
+                    </div> <div class="spec-row"> <span class="spec-label">RAM</span>
+                        <span class="spec-value"><%=specification.getRam()%></span> </div>
+                    <div class="spec-row"> <span class="spec-label">ROM</span> 
+                        <span class="spec-value"><%=variants.getStorage()%></span> 
+                    </div> 
+                    <div class="spec-row"> 
+                        <span class="spec-label">Battery Capacity</span> 
+                        <span class="spec-value"><%=specification.getBatteryCapacity()%> mAh</span> 
+                    </div> 
+                    <div class="spec-row"> 
+                        <span class="spec-label">Touchscreen</span> <span class="spec-value"><%=specification.getTouchscreen()%></span> 
+                    </div> 
+                </div> 
+            </div> 
+            <!-- Review Section -->
+            <div class="review-container ">
+                <div class="overall-rating">
+                    <div class="score-display">
+                        <span class="star-icon">&#9733;</span>
+                        <span class="main-score"><%= String.format("%.1f", rating)%></span>
+                        <span class="max-score">/5</span>
+                    </div>
+                    <p class="stats"><%= rdao.getTotalReview(listVariantRating, listReview)%> Review</p>
+                </div>
+
+                <div class="rating-breakdown">
+                    <% for (int k = 5; k > 0; k--) {
+                        double percentRating = rdao.getPercentRating(listVariantRating, listReview, k);%>
+                    <div class="star-row">
+                        <span class="star-level"><%= k%>&#9733;</span>
+                        <div class="progress-bar-wrap">
+                            <div class="progress-bar" style="width: <%= percentRating%>%"></div>
+                        </div>
+                        <span class="percentage"><%= String.format("%.0f", percentRating)%>&#37;</span>
+                    </div>
+                    <% } %>
+                </div>
+                <%
+                    String[] images = variants.getImageList();
+                %>
+                <% if (isLoggedIn) {%>
+                Modal 
+                <button id="openReviewModal" class="write-review-button" type="button">Write Review</button>
+                <div id="reviewModal" class="modal">
+                    <div class="modal-content">
+                        <span class="close-button">&times;</span>
+                        <form class="review-form-container" action="review" method="POST" enctype="multipart/form-data">
+                            <div class="product-header">
+                                <input type="hidden" name="vID" value="<%= currentVariantID%>">
+                                <img src="images/<%= images[0]%>" alt="<%= pdao.getNameByID(productID)%> <%= variants.getStorage()%>" class="product-image">
+                                <h2 class="product-title"><%= pdao.getNameByID(productID)%> <%= variants.getStorage().equals("N/A") ? "" : variants.getStorage()%></h2>
+                            </div>
+
+                            <div id="star-rating-js" class="star-rating-selection">
+                                <% String[] ratingTexts = {"Very bad", "Bad", "Okay", "Good", "Excellent"};
+                                for (int k = 1; k <= 5; k++) {%>
+                                <label class="star-option" data-rating-value="<%= k%>">
+                                    <input type="radio" name="rating" value="<%= k%>" required>
+                                    <span class="star-icon">&#9733;</span>
+                                    <span class="rating-text"><%= ratingTexts[k - 1]%></span>
+                                </label>
+                                <% }%>
+                            </div>
+
+                            <textarea name="comment" class="comment-textarea" placeholder="Please share your thoughts..." rows="5" required></textarea>
+
+                            <div class="options-row">
+                                <span class="photo-upload">
+                                    <input type="file" name="photos" id="photo-upload-input" accept="image/*" multiple style="display: none;">
+                                    <label for="photo-upload-input" class="photo-upload-label">
+                                        <span class="camera-icon">&#128247;</span>
+                                        Send photos (up to 3 photos)
+                                    </label>
+                                </span>
+                            </div>
+
+                            <div id="image-preview-container" class="image-preview-container"></div>
+
+                            <div class="info-input-row">
+                                <input type="hidden" name="uID" value="<%= userID%>" >
+                            </div>
+
+                            <div class="policy-and-submit">
+                                <button type="submit" class="submit-button">Submit Review</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <% }%>
+
+                <div class="review-list ">
+                    <% if (listReview.isEmpty()) { %>
+                    <p>No reviews yet for this product.</p>
+                    <% } else { %>
+                    <% for (Review r : listReview) {
+                            String[] reviewImages = rdao.getImages(r.getImage()) != null ? rdao.getImages(r.getImage()).toArray(new String[0]) : new String[0];
+                    %>
+                    <div class="review-item">
+                        <p><strong><%= r.getUserName() != null ? r.getUserName() : "Anonymous"%></strong> 
+                            <%
+
+                                for (int i = 0; i < rating; i++) {
+                            %>
+                            &#9733;
+                            <%
+                                }
+                            %>
+                        </p>
+                        <p><%= r.getComment()%></p>
+
+                        <% if (reviewImages.length > 0) { %>
+                        <div class="review-images">
+                            <% for (String img : reviewImages) {%>
+                            <img src="images_review/<%= img%>" alt="review image" style="width:100px; margin:5px;">
+                            <% } %>
+                        </div>
+                        <% } %>
+
+                        <% if (r.getReply() != null && !r.getReply().isEmpty()) {%>
+                        <div class="review-reply">
+                            <strong>Reply:</strong> <%= r.getReply()%>
+                        </div>
+                        <% } %>
+
+                        <hr/>
+                    </div>
+                    <% } %>
+                    <% }%>
+                </div>
+            </div>
         </div>
-        <% }
-                }
-            }%>
-    </div>
-</section>
 
 
-<footer id="footer" class="overflow-hidden">
-    <div class="container">
-        <p class="text-center mt-3">© 2025 MiniStore</p>
-    </div>
-</footer>
+    </section>
 
-<script src="js/jquery-1.11.0.min.js"></script>
-<script src="js/bootstrap.bundle.min.js"></script>
-<script src="js/script.js"></script>
-<script>
-                    // Script cho Modal Review
-                    const modal = document.getElementById("reviewModal");
-                    const openModalBtn = document.getElementById("openReviewModal");
-                    const closeBtn = document.getElementsByClassName("close-button")[0];
-                    if (openModalBtn) {
-                    openModalBtn.onclick = function () {
-                    modal.style.display = "block";
-                    }
-                    }
+    <footer id="footer" class="overflow-hidden">
+        <div class="container">
+            <p class="text-center mt-3">¬© 2025 MiniStore</p>
+        </div>
+    </footer>
 
-                    if (closeBtn)
-                    {
-                    closeBtn.onclick = function () {
-                    modal.style.display = "none";
-                    }
-                    }
+    <script src="js/jquery-1.11.0.min.js"></script>
+    <script src="js/bootstrap.bundle.min.js"></script>
 
+    <script>
+                                     const modal = document.getElementById("reviewModal");
+                                     const openModalBtn = document.getElementById("openReviewModal");
+                                     const closeBtn = document.getElementsByClassName("close-button")[0];
+                                     if (openModalBtn && modal) {
+                                         openModalBtn.onclick = () => modal.style.display = "block";
+                                     }
+                                     if (closeBtn) {
+                                         closeBtn.onclick = () => modal.style.display = "none";
+                                     }
+                                     window.onclick = (e) => {
+                                         if (e.target === modal)
+                                             modal.style.display = "none";
+                                     };
 
-                    window.onclick = function (event) {
-                    if (event.target == modal) {
-                    modal.style.display = "none";
-                    }
-                    }
+                                     // Quantity selector
+                                     const minusBtn = document.querySelector('.minus-btn');
+                                     const plusBtn = document.querySelector('.plus-btn');
+                                     const quantityInput = document.getElementById('quantity-display');
+                                     const stockError = document.getElementById('stock-error');
+                                     const stock = parseInt(document.querySelector('.quantity-selector').dataset.stock);
+                                     const hiddenInputs = document.querySelectorAll('.hiddenQuantityInput');
 
+                                     if (minusBtn && plusBtn && quantityInput) {
+                                         minusBtn.addEventListener('click', () => {
+                                             let val = parseInt(quantityInput.value);
+                                             if (val > 1) {
+                                                 val--;
+                                                 quantityInput.value = val;
+                                                 hiddenInputs.forEach(i => i.value = val);
+                                                 stockError.style.display = "none";
+                                             }
+                                         });
+                                         plusBtn.addEventListener('click', () => {
+                                             let val = parseInt(quantityInput.value);
+                                             if (val < stock) {
+                                                 val++;
+                                                 quantityInput.value = val;
+                                                 hiddenInputs.forEach(i => i.value = val);
+                                                 stockError.style.display = "none";
+                                             } else {
+                                                 stockError.style.display = "block";
+                                             }
+                                         });
+                                     }
+                                     function changeImage(thumb) {
+                                         const mainImg = document.getElementById('displayedImage');
+                                         const allThumbs = document.querySelectorAll('.thumbnail');
 
-                    // Script cho Preview ·∫£nh
-                    var fileInput = document.getElementById('photo-upload-input');
-                    var previewContainer = document.getElementById('image-preview-container');
-                    const MAX_IMAGES = 3;
-                    if (fileInput)
-                    {
-                    fileInput.addEventListener('change', function () {
-                    previewContainer.innerHTML = '';
-                    const files = Array.from(fileInput.files).slice(0, MAX_IMAGES);
-                    files.forEach(file => {
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                    const img = document.createElement('img');
-                    img.src = e.target.result;
-                    img.className = 'preview-thumb';
-                    previewContainer.appendChild(img);
-                    }
-                    reader.readAsDataURL(file);
-                    });
-                    });
-                    }
+                                         // ƒë·ªïi ·∫£nh ch√≠nh
+                                         mainImg.src = thumb.src;
 
+                                         // x√≥a active ·ªü t·∫•t c·∫£ thumbnail
+                                         allThumbs.forEach(t => t.classList.remove('active'));
 
-                    // Script ch·ªçn s·ªë l∆∞·ª£ng
-                    const minusBtn = document.querySelector('.minus-btn');
-                    const plusBtn = document.querySelector('.plus-btn');
-                    const quantityInput = document.querySelector('#quantity-display');
-                    const stockError = document.getElementById('stock-error');
-                    const stock = parseInt(document.querySelector('.quantity-selector').dataset.stock);
-                    const hiddenInputs = document.querySelectorAll('.hiddenQuantityInput');
-                    if (minusBtn && plusBtn && quantityInput)
-                    {
-                    minusBtn.addEventListener('click', function () {
-                    let value = parseInt(quantityInput.value);
-                    if (value > 1) {
-                    value--;
-                    quantityInput.value = value;
-                    hiddenInputs.forEach(i => i.value = value);
-                    stockError.style.display = "none";
-                    }
-                    });
-                    plusBtn.addEventListener('click', function () {
-                    let value = parseInt(quantityInput.value);
-                    if (value < stock) {
-                    value++;
-                    quantityInput.value = value;
-                    hiddenInputs.forEach(i => i.value = value);
-                    stockError.style.display = "none";
-                    } else {
-                    stockError.style.display = "block";
-                    }
-                    });
-                    }
-
-</script>
-<script>
-    };
-    }
-
-    if (closeBtn) {
-    closeBtn.onclick = function () {
-    modal.style.display = "none";
-    };
-    }
-
-    window.onclick = function (event) {
-    if (event.target == modal) {
-    modal.style.display = "none";
-    }
-    }
-
-    // Script cho Preview ?nh (?„ s?a l?i)
-    var fileInput = document.getElementById('photo-upload-input');
-    var previewContainer = document.getElementById('image-preview-container');
-    const MAX_IMAGES = 3;
-    if (fileInput) {
-    fileInput.addEventListener('change', function () {
-    previewContainer.innerHTML = ''; // XÛa preview c?
-
-    const allFiles = Array.from(fileInput.files);
-    let filesToProcess = allFiles;
-// 1. Ki?m tra s? l??ng ?nh
-    if (allFiles.length > MAX_IMAGES) {
-// 1.1 ThÙng b·o cho ng??i d˘ng
-    alert('ban chi duoc chon toi da ' + MAX_IMAGES + ' anh.');
-// 1.2 C?t m?ng ?? ch? l?y 3 file ??u tiÍn
-    filesToProcess = allFiles.slice(0, MAX_IMAGES);
-// 1.3 (R?t quan tr?ng) C?p nh?t l?i fileInput ?? nÛ ch? ch?a 3 file
-// C·i n‡y ?? ??m b?o form submit ?i c?ng ch? cÛ 3 file
-    const dataTransfer = new DataTransfer();
-    filesToProcess.forEach(file => {
-    dataTransfer.items.add(file);
-    });
-    fileInput.files = dataTransfer.files;
-    }
-
-// 2. Hi?n th? 3 ?nh (ho?c Ìt h?n) ra preview
-    filesToProcess.forEach(file => {
-    const reader = new FileReader();
-    reader.onload = function (e) {
-    const img = document.createElement('img');
-    img.src = e.target.result;
-// D‚u th?y file CSS c?a ??i ca d˘ng class 'review-thumbnail'
-// D˘ng class n‡y ?nh s? ??p v‡ ??ng b? h?n l‡ 'preview-thumb' ?
-    img.className = 'review-thumbnail'; // S?a class cho ??p
-
-    previewContainer.appendChild(img);
-    }
-    reader.readAsDataURL(file);
-    });
-    });
-    }
-
-    // Script ch?n s? l??ng
-    const minusBtn = document.querySelector('.minus-btn');
-    const plusBtn = document.querySelector('.plus-btn');
-    const quantityInput = document.querySelector('#quantity-display');
-    const stockError = document.getElementById('stock-error');
-    const stock = parseInt(document.querySelector('.quantity-selector').dataset.stock);
-    const hiddenInputs = document.querySelectorAll('.hiddenQuantityInput');
-    if (minusBtn && plusBtn && quantityInput) {
-    minusBtn.addEventListener('click', function () {
-    let value = parseInt(quantityInput.value);
-    if (value > 1) {
-    value--;
-    quantityInput.value = value;
-    hiddenInputs.forEach(i => i.value = value);
-    stockError.style.display = "none";
-    }
-    });
-    plusBtn.addEventListener('click', function () {
-    let value = parseInt(quantityInput.value);
-    if (value < stock) {
-    value++;
-    quantityInput.value = value;
-    hiddenInputs.forEach(i => i.value = value);
-    stockError.style.display = "none";
-    } else {
-    stockError.style.display = "block";
-    }
-    });
-    }
-</script>
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-    const starContainer = document.getElementById('star-rating-js');
-    if (starContainer) {
-    const starOptions = starContainer.querySelectorAll('.star-option');
-    const radioInputs = starContainer.querySelectorAll('input[type="radio"]');
-    // H‡m ?? c?p nh?t class 'selected' cho c·c sao
-    function updateSelectedStars(selectedValue) {
-    starOptions.forEach(option => {
-    const ratingValue = option.dataset.ratingValue;
-    if (ratingValue <= selectedValue) {
-    option.classList.add('selected');
-    } else {
-    option.classList.remove('selected');
-    }
-    });
-    }
-
-    // 1. X? l˝ khi CLICK v‡o m?t sao
-    starOptions.forEach(option => {
-    option.addEventListener('click', function () {
-    const selectedValue = this.dataset.ratingValue;
-    // C?p nh?t radio input (?? form submit)
-    this.querySelector('input[type="radio"]').checked = true;
-    // C?p nh?t giao di?n (thÍm class 'selected')
-    updateSelectedStars(selectedValue);
-    });
-    });
-    // 2. X? l˝ khi R?I CHU?T kh?i khu v?c ch?n sao
-    starContainer.addEventListener('mouseleave', function () {
-    // Ki?m tra xem ?„ cÛ sao n‡o ???c "checked" (?„ ch?n) ch?a
-    let checkedValue = 0;
-    radioInputs.forEach(radio => {
-    if (radio.checked) {
-    checkedValue = radio.value;
-    }
-    });
-    // Ph?c h?i l?i tr?ng th·i "selected" theo sao ?„ "checked"
-    // (Vi?c n‡y ?? h?y hi?u ?ng hover v‡ ch? gi? l?i sao ?„ ch?n)
-    updateSelectedStars(checkedValue);
-    });
-    }
-    });
-</script>
+                                         // th√™m active cho thumbnail hi·ªán t·∫°i
+                                         thumb.classList.add('active');
+                                     }
+    </script>
 
 </body>
 </html>
-

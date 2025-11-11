@@ -822,4 +822,33 @@ public class OrderDAO extends DBContext {
         return orders;
     }
 
+    public boolean checkUserPurchase(int userID, int variantID) {
+        // Câu SQL này giả định bạn có bảng Orders và OrderDetails
+        // Nó đếm số lần user NÀY đã mua variant NÀY
+        // và đơn hàng đó đã ở trạng thái 'Completed' (hoặc 'Delivered', v.v.)
+        String sql = "SELECT COUNT(*) FROM Orders o "
+                + "JOIN OrderDetails od ON o.OrderID = od.OrderID "
+                + "WHERE o.UserID = ? AND od.VariantID = ? AND o.Status = 'Delivered'";
+
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, userID);
+            ps.setInt(2, variantID);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                // Nếu số đếm > 0, nghĩa là họ đã mua
+                return rs.getInt(1) > 0;
+            }
+
+            rs.close();
+            ps.close();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        // Mặc định là false nếu có lỗi hoặc không tìm thấy
+        return false;
+    }
+
 }

@@ -1,3 +1,4 @@
+<%@page import="model.Carts"%>
 <%@page import="java.util.HashMap"%>
 <%@page import="java.util.Map"%>
 <%@page import="model.Variants"%>
@@ -7,126 +8,125 @@
 <%@page import="java.util.List"%>
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Ministore</title>
-        <link rel="icon" type="image/x-icon" href="images/favicon.jpg">
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="format-detection" content="telephone=no">
-        <link rel="icon" type="image/png" href="images/favicon.png">
-        <link rel="stylesheet" href="css/bootstrap.min.css">
-        <link rel="stylesheet" href="css/style.css">
-        <link rel="stylesheet" href="css/home.css">
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<head>
+    <title>Ministore</title>
+    <link rel="icon" type="image/x-icon" href="images/favicon.jpg">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="icon" type="image/png" href="images/favicon.png">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/home.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script> 
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/modernizr.js"></script>
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+    <script src="js/plugins.js"></script>
+    <script src="js/script.js"></script> 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-        <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script> 
-        <script src="js/bootstrap.min.js"></script>
-        <script src="js/modernizr.js"></script>
-        <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
-        <script src="js/plugins.js"></script>
-        <script src="js/script.js"></script> 
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        #headerSearchContainer {
+            position: relative;
+            flex-grow: 1;
+            max-width: 300px;
+            margin: 0 20px;
+        }
 
-        <style>
-            #headerSearchContainer {
-                position: relative;
-                flex-grow: 1;
+        #headerSearchInput {
+            width: 100%;
+            padding: 10px 45px 10px 20px;
+            border: 1px solid #ddd;
+            border-radius: 50px;
+            font-size: 14px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            outline: none;
+        }
 
+        #headerSearchInput:focus {
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            border-color: #667eea;
+        }
 
-                max-width: 300px;
+        .header-search-icon-btn {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #667eea;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
 
-                margin: 0 20px;
-            }
+        .header-search-icon-btn:hover {
+            background: #764ba2;
+        }
 
-            #headerSearchInput {
-                width: 100%;
-                padding: 10px 45px 10px 20px;
-                border: 1px solid #ddd;
-                border-radius: 50px;
-                font-size: 14px;
-                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-                outline: none;
-            }
+        .header-search-icon-btn svg {
+            width: 16px;
+            height: 16px;
+            fill: white;
+        }
 
-            #headerSearchInput:focus {
-                box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-                border-color: #667eea;
-            }
+        #headerSearchResults {
+            position: absolute;
+            top: calc(100% + 5px);
+            left: 0;
+            width: 100%;
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            z-index: 2000;
+            max-height: 400px;
+            overflow-y: auto;
+            display: none;
+        }
 
-            .header-search-icon-btn {
-                position: absolute;
-                right: 5px;
-                top: 50%;
-                transform: translateY(-50%);
-                background: #667eea;
-                border: none;
-                border-radius: 50%;
-                width: 32px;
-                height: 32px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                cursor: pointer;
-                transition: all 0.3s;
-            }
+        #headerSearchResults.show {
+            display: block;
+        }
+        .suggestion-item {
+            padding: 12px 15px;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            border-bottom: 1px solid #f0f0f0;
+            transition: all 0.2s;
+        }
+        .suggestion-item:hover {
+            background-color: #f8f9fa;
+            transform: translateX(5px);
+        }
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+        .suggestion-item img {
+            border-radius: 8px;
+            margin-right: 12px;
+        }
+        .no-results {
+            padding: 20px;
+            text-align: center;
+            color: #999;
+        }
+    </style>
+</head>
 
-            .header-search-icon-btn:hover {
-                background: #764ba2;
-            }
-
-            .header-search-icon-btn svg {
-                width: 16px;
-                height: 16px;
-                fill: white;
-            }
-
-            #headerSearchResults {
-                position: absolute;
-                top: calc(100% + 5px);
-                left: 0;
-                width: 100%;
-                background-color: #fff;
-                border-radius: 15px;
-                box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-                z-index: 2000;
-                max-height: 400px;
-                overflow-y: auto;
-                display: none;
-            }
-
-            #headerSearchResults.show {
-                display: block;
-            }
-            .suggestion-item {
-                padding: 12px 15px;
-                cursor: pointer;
-                display: none;
-                align-items: center;
-                border-bottom: 1px solid #f0f0f0;
-                transition: all 0.2s;
-            }
-            .suggestion-item:hover {
-                background-color: #f8f9fa;
-                transform: translateX(5px);
-            }
-            .suggestion-item:last-child {
-                border-bottom: none;
-            }
-            .suggestion-item img {
-                border-radius: 8px;
-                margin-right: 12px;
-            }
-            .no-results {
-                padding: 20px;
-                text-align: center;
-                color: #999;
-            }
-        </style>
-    </head>
 
     <body data-bs-spy="scroll" data-bs-target="#navbar" data-bs-root-margin="0px 0px -40%" data-bs-smooth-scroll="true" tabindex="0">
 
@@ -298,7 +298,7 @@
                                         model.Users user = (model.Users) session.getAttribute("user");
                                         boolean isLoggedIn = (user != null);
                                         String displayName = "";
-
+                                        List<Carts> carts = (List<Carts>) session.getAttribute("cart");
                                         if (isLoggedIn) {
                                             if (user.getFullName() != null && !user.getFullName().trim().isEmpty()) {
                                                 displayName = user.getFullName();
@@ -307,9 +307,15 @@
                                             }
                                     %>
                                     <li class="pe-3">
-                                        <a href="cart?userID=<%= user.getUserId()%>"> 
-                                            <svg class="cart"><use xlink:href="#cart"></use></svg>
-                                        </a>
+                                        <form action="cart" method="get" class="d-inline-block position-relative">
+                                            <input type="hidden" name="userID" value="<%=user.getUserId()%>">
+                                            <button type="submit" class="position-relative border-0 bg-transparent p-0">
+                                                <i class="bi bi-cart text-dark fs-4"></i>
+                                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"><%=carts.size()%></span>
+                                            </button>
+                                        </form>
+
+
                                     </li>
                                     <li class="pe-3">
                                         <a href="logout" class="nav-link p-0 text-dark text-uppercase fw-bold">Logout</a> 

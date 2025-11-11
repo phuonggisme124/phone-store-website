@@ -1,368 +1,458 @@
-/*
-    Description: Product Detail Page Styles using the Dashboard's primary theme.
-    Primary Color: #3366ff
-*/
-
+/* ================================
+    PRODUCT DETAIL PAGE
+================================ */
 body {
+    background-color: #f5f9fc;
     font-family: 'Poppins', sans-serif;
-    background: #f4f7fc; /* Sử dụng màu nền xám-xanh của dashboard */
+    color: #333;
+    width: 100%;
+}
+
+/* === Product container === */
+.product-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    gap: 40px;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-top: 40px;
+    padding-bottom: 40px;
+}
+
+.product-left {
+    /* flex: 1;*/
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    background-color: white;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 8px 25px rgba(51, 102, 255, 0.1);
+    max-width: 60%;
+}
+.spec-table1 {
+    width: 100%;
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 10px 20px; /* giảm padding */
+    margin-top: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.spec-table1 .spec-row {
+    display: block; /* KHÔNG cần flex */
     margin: 0;
     padding: 0;
 }
 
-.product-container {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    gap: 40px;
-    padding: 60px;
-    flex-wrap: wrap;
+.spec-table1 .spec-label {
+    display: block;
+    font-weight: 600 !important;
+    font-size: 16px !important;
+    color: #3366ff !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    line-height: 1 !important;
+    margin: 0 !important;
+    padding: 0 !important;
 }
 
-/* LEFT SIDE */
-.product-left {
-    flex: 1 1 50%;
-    background-color: white;
-    border-radius: 20px;
-    padding: 20px;
-    /* Đổi màu đổ bóng sang màu xanh chủ đạo */
-    box-shadow: 0 8px 25px rgba(51, 102, 255, 0.15);
+.spec-table1 .spec-value {
+    display: block;
+    color: #333 !important;
+    font-size: 15px !important;
+    line-height: 1.5 !important;
+    text-align: justify !important;
+    white-space: pre-line !important;
+    margin: 0 !important;
+    padding: 0 !important;
 }
 
-.main-image {
-    text-align: center;
-}
 
-.image-slide {
-    font-size: 100px;
-    background: rgba(244, 247, 252, 0.7); /* Nền nhạt hơn */
-    border-radius: 20px;
-    padding: 50px;
-    margin-bottom: 20px;
-    transition: all 0.6s ease;
-}
-
-.fade-in {
-    animation: fadeIn 1s ease-in-out;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: scale(0.95);
+/* Responsive - nhỏ gọn cho mobile */
+@media (max-width: 768px) {
+    .spec-table1 {
+        padding: 15px 18px;
+        margin-top: 20px;
     }
-    to {
-        opacity: 1;
-        transform: scale(1);
+
+    .spec-table1 .spec-label {
+        font-size: 14px;
+    }
+
+    .spec-table1 .spec-value {
+        font-size: 14px;
     }
 }
 
-.feature-box h3 {
-    color: #333;
-    font-weight: 600;
-}
 
-.feature-box ul {
-    color: #333;
-    list-style: none;
-    padding-left: 0;
-}
-
-/* Thumbnails */
-.thumbnail-row {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    margin: 15px 0;
-}
-
-.thumb {
-    width: 50px;
-    height: 50px;
-    background: rgba(244, 247, 252, 0.9);
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: transform 0.2s ease;
-}
-
-.thumb:hover {
-    transform: scale(1.1);
-}
-
-.thumb.active {
-    /* Đổi màu viền sang màu xanh chủ đạo */
-    border: 2px solid #3366ff;
-}
-
-.arrow {
-    background: white;
-    border: none;
-    border-radius: 10px;
-    padding: 6px 10px;
-    cursor: pointer;
-}
-
-/* Tabs */
-.tab-section {
+.product-right {
+    flex: 1;
+    background: #fff;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    justify-content: flex-start;
+    max-width: 40%;
 }
 
-.tab {
-    background: #f4f7fc; /* Màu nền tab giống màu body */
-    border: none;
-    padding: 12px;
-    border-radius: 12px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: 0.3s;
-    color: #5a6a85; /* Màu chữ xám xanh của dashboard */
-}
 
-.tab.active, .tab:hover {
-    /* Đổi màu nền sang màu xanh chủ đạo */
-    background: #3366ff;
-    color: white;
-}
-
-/* RIGHT SIDE */
-.product-right {
-    flex: 1 1 35%;
-    background: white;
-    border-radius: 20px;
-    padding: 30px;
-    /* Đổi màu đổ bóng sang màu xanh chủ đạo */
-    box-shadow: 0 8px 25px rgba(51, 102, 255, 0.15);
-}
-
+/* === Price === */
 .price-box {
-    /* Tạo màu nền xanh nhạt từ màu chủ đạo */
-    background: #e6efff;
-    border-radius: 15px;
+    background: #eaf3ff;
     padding: 20px;
+    border-radius: 12px;
     text-align: right;
+    margin-bottom: 25px;
 }
-
+.price-box p {
+    color: #777;
+    font-size: 14px;
+}
 .price-box h2 {
-    margin: 0;
-    color: #333;
-    font-size: 28px;
+    color: #1e1e1e;
+    font-weight: 700;
+    font-size: 24px;
 }
 
+/* === Option boxes (Version, Color) === */
+.option-box {
+    margin-bottom: 25px;
+}
 .option-box p {
     font-weight: 600;
-    margin-top: 25px;
+    margin-bottom: 10px;
 }
-
 .option-list, .color-list {
     display: flex;
     gap: 10px;
-    margin-top: 8px;
+    flex-wrap: wrap;
 }
-
-.option {
-    border: 2px solid #e3e8f0; /* Viền xám xanh của dashboard */
-    border-radius: 10px;
+.option-label {
+    display: inline-block;
     padding: 10px 20px;
-    cursor: pointer;
-    transition: 0.3s;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    text-decoration: none;
+    color: #333;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+.option-label:hover,
+input[type="radio"]:checked + .option-label {
+    border-color: #007bff;
+    background-color: #eaf3ff;
+    box-shadow: 0 0 6px rgba(0, 123, 255, 0.3);
 }
 
-.option.selected {
-    /* Đổi màu viền và nền sang màu xanh chủ đạo */
-    border-color: #3366ff;
-    background: #e6efff;
-}
-
-.color {
+/* === Color Selector === */
+.color-label {
     width: 35px;
     height: 35px;
-    border-radius: 10px;
-    border: 2px solid #e3e8f0; /* Viền xám xanh */
+    border-radius: 50%;
+    border: 2px solid #ccc;
+    display: inline-block;
     cursor: pointer;
-    transition: 0.3s;
+    transition: all 0.2s ease;
+}
+.color-label:hover,
+input[type="radio"]:checked + .color-label {
+    border-color: #007bff;
+    transform: scale(1.1);
 }
 
-.color.selected {
-    /* Đổi màu viền sang màu xanh chủ đạo */
-    border: 2px solid #3366ff;
-}
-
-.action-buttons {
-    display: flex;
-    gap: 10px;
-    margin-top: 25px;
-}
-
-.buy-now {
-    flex: 1;
-    /* Đổi màu nền sang màu xanh chủ đạo */
-    background: #3366ff;
-    border: none;
-    color: white;
-    font-weight: 600;
-    border-radius: 12px;
-    padding: 15px;
-    cursor: pointer;
-    transition: background 0.3s ease;
-}
-
-.buy-now:hover {
-    /* Tạo màu xanh đậm hơn cho hiệu ứng hover */
-    background: #2552cc;
-}
-
-.add-cart {
-    flex: 1;
-    background: white;
-    /* Đổi màu viền và chữ sang màu xanh chủ đạo */
-    border: 2px solid #3366ff;
-    color: #3366ff;
-    font-weight: 600;
-    border-radius: 12px;
-    padding: 15px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.add-cart:hover {
-    /* Đổi màu nền sang màu xanh chủ đạo */
-    background: #3366ff;
-    color: white;
-}
-/* Giao diện cho ô chọn số lượng (Quantity) */
+/* === Quantity selector === */
 .quantity-selector {
     display: flex;
     align-items: center;
-    border: 2px solid #e3e8f0;
-    border-radius: 12px;
-    width: fit-content;
+    gap: 10px;
 }
 .quantity-btn {
-    background-color: transparent;
+    background: #eee;
     border: none;
+    width: 32px;
+    height: 32px;
+    font-size: 18px;
+    border-radius: 6px;
     cursor: pointer;
-    font-size: 1.5rem;
-    font-weight: 500;
-    width: 40px;
-    height: 40px;
-    color: #72AEC8;
-    transition: background-color 0.2s ease;
-}
-.quantity-btn:hover {
-    background-color: #e1f3fa;
-}
-.quantity-btn.minus-btn {
-    border-right: 2px solid #e3e8f0;
-    border-top-left-radius: 10px;
-    border-bottom-left-radius: 10px;
-}
-.quantity-btn.plus-btn {
-    border-left: 2px solid #e3e8f0;
-    border-top-right-radius: 10px;
-    border-bottom-right-radius: 10px;
-}
-.quantity-btn:disabled {
-    color: #ccc;
-    cursor: not-allowed;
-    background-color: #f8f9fa;
 }
 .quantity-input {
-    border: none;
+    width: 40px;
     text-align: center;
-    font-weight: 600;
-    font-size: 1.1rem;
-    width: 60px;
-    -moz-appearance: textfield;
-    appearance: textfield;
-}
-.quantity-input::-webkit-outer-spin-button,
-.quantity-input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
+    border: none;
+    background: #fafafa;
 }
 .stock-error {
-    color: #dc3545;
-    font-weight: 500;
-    font-size: 0.9rem;
-    margin-top: 8px;
+    color: red;
+    font-size: 13px;
     display: none;
 }
 
-/*
-=====================================
- CSS CHO BẢNG THÔNG SỐ (GIỐNG HÌNH)
-=====================================
-*/
+/* =========================================
+    NÚT BẤM (BUY NOW / ADD TO CART) - ĐÃ SỬA LỖI
+========================================= */
 
-.spec-table {
-    font-family: 'Poppins', sans-serif; /* Dùng font của bạn */
-    margin-top: 25px; /* Khoảng cách với mấy ảnh nhỏ ở trên */
-    border: 1px solid #e3e8f0; /* Viền xám từ theme của bạn */
-    border-radius: 12px; /* Bo góc 12px */
-    overflow: hidden; /* Rất quan trọng để bo góc hoạt động */
+.action-buttons {
+    margin-top: 30px;
+    display: flex; /* <-- DÒNG NÀY BẮT BUỘC ĐỂ 2 NÚT NẰM NGANG */
+    gap: 15px;
+    /* Khoảng cách giữa 2 nút */
 }
 
+/* * ĐÂY LÀ PHẦN SỬA LỖI KHI ĐĂNG NHẬP
+ * Nó bắt 2 thẻ <form> phải co giãn
+*/
+.action-buttons form {
+    flex: 1;
+
+    display: flex;
+}
+
+.buy-now,
+.add-cart {
+    flex: 1;
+
+    text-align: center;
+    border: none;
+    padding: 16px 0; /* Nút cao hơn */
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: white;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.buy-now {
+    background: #3366ff; /* Màu xanh chủ đạo */
+}
+
+.add-cart {
+    background: #5a6a85; /* Màu xám xanh dashboard */
+}
+
+.buy-now:hover {
+    background: #2552cc; /* Xanh đậm hơn khi hover */
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(51, 102, 255, 0.2);
+}
+
+.add-cart:hover {
+    background: #44546b; /* Xám xanh đậm hơn khi hover */
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+}
+/* === Product Info (description + specs) === */
+.product-info {
+    margin-top: 60px;
+    background: #fff;
+    /* Bỏ padding ngoài để bảng chiếm toàn bộ */
+    padding: 0;
+    border-radius: 20px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+    /* Thêm overflow để bo góc hoạt động */
+    overflow: hidden;
+
+}
+
+/* Style cho các .spec-table */
+.spec-table {
+    margin-bottom: 0;
+    /* Thêm viền dưới để ngăn cách các bảng (nếu có) */
+    border-bottom: 1px solid #eee;
+}
+/* Bỏ viền cho bảng cuối cùng */
+.product-info .spec-table:last-child {
+    border-bottom: none;
+}
+
+/* Style cho tiêu đề "Specifications" (nếu có) */
+.spec-table h2 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+    padding: 18px 20px;
+    background-color: #f9fafc; /* Nền xám nhạt cho tiêu đề */
+}
+
+/* Style cho mỗi hàng thông số */
 .spec-row {
     display: flex;
-    padding: 16px 18px; /* Đệm cho mỗi dòng (làm dòng cao hơn) */
-    background-color: #ffffff; /* Nền trắng */
-    border-bottom: 1px solid #e3e8f0; /* Viền ngăn cách */
+    /* Bỏ justify-content: space-between; */
+    /* Thêm padding cho đẹp (16px trên/dưới, 20px trái/phải) */
+    padding: 16px 20px;
+    /* Bỏ viền ở đây, viền đã nằm trên .spec-table */
+    /* border-bottom: 1px solid #eee; */
 }
 
-/* Tạo hiệu ứng sọc vằn (dòng lẻ có nền xám) */
+/* Thêm sọc vằn cho các hàng lẻ */
 .spec-table .spec-row:nth-child(odd) {
-    background-color: #f9fafc; /* Màu nền xám-xanh siêu nhạt (giống hình) */
+    background-color: #f9fafc; /* Màu xám siêu nhạt */
 }
 
-.spec-table .spec-row:last-child {
-    border-bottom: none; /* Bỏ viền cho dòng cuối cùng */
-}
-
+/* Cột TÊN thông số (OS, CPU...) */
 .spec-label {
-    flex-basis: 200px; /* Tăng độ rộng cột 'Tên thông số' */
-    flex-shrink: 0; /* Không cho cột bị co lại */
-    font-weight: 500; /* Độ đậm vừa phải */
-    color: #5a6a85; /* Màu chữ xám (giống hình) */
-    padding-right: 15px; /* Khoảng cách giữa 2 cột */
+    font-weight: 500; /* Giảm độ đậm 1 chút cho giống ảnh */
+    color: #555;
+    /* Gán chiều rộng cố định */
+    flex-basis: 200px;
+    flex-shrink: 0; /* Không cho cột này bị co lại */
+    padding-right: 15px; /* Khoảng cách với cột giá trị */
 }
 
+/* Cột GIÁ TRỊ thông số (iOS 18, Apple A18...) */
 .spec-value {
-    flex-grow: 1; /* Cho 'Giá trị' lấp đầy phần còn lại */
-    font-weight: 500;
-    color: #333; /* Màu chữ chính (đen nhạt) */
+    color: #333;
+    flex-grow: 1; /* Tự động lấp đầy phần còn lại */
+    word-break: break-word; /* Tự xuống hàng nếu giá trị quá dài */
 }
 
-/*
-=====================================
- CSS CHO TIÊU ĐỀ BẢNG (h2)
-=====================================
-*/
+/* === Responsive === */
+@media (max-width: 900px) {
+    .product-container {
+        flex-direction: column;
+        align-items: center;
+    }
+    .product-right {
+        width: 100%;
 
-.spec-table h2 {
-    font-family: 'Poppins', sans-serif; /* Dùng font của bạn */
-    font-size: 20px;                   /* Cỡ chữ to, rõ ràng */
-    font-weight: 600;                  /* In đậm */
-    color: #333;                       /* Màu chữ tối */
-    margin: 0;                         /* Bỏ margin mặc định của h2 */
-    padding: 18px 20px;                /* Thêm đệm cho thoáng đãng */
-    
-    /* Tạo nền xám nhạt (giống các dòng lẻ) */
-    background-color: #f9fafc; 
-    
-    /* Thêm viền dưới để ngăn cách với nội dung */
-    border-bottom: 1px solid #e3e8f0;  
+    }
+    .main-image img {
+        max-width: 300px;
+
+    }
+
+    /* Responsive cho bảng thông số */
+    .spec-label {
+        flex-basis: 120px; /* Giảm độ rộng cột label trên di động */
+    }
 }
-/*
-=====================================
- CSS CHO tên sản phẩm (h2)
-=====================================
+
+/* =========================================
+    GHI ĐÈ LAYOUT (ĐỂ RỘNG 90%) - ĐÃ SỬA
+========================================= */
+
+
+#billboard .container,
+/* Áp dụng cho khối 2 cột (Ảnh và Tùy chọn) */
+.product-container,
+/* Áp dụng cho khối "Specifications" */
+.review-container,
+.product-info {
+    width: 100%;
+    max-width: 1600px;
+    margin-left: auto;
+    margin-right: auto;
+    box-sizing: border-box; /* thêm dòng này cho chắc */
+}
+
+.product-info {
+    background: #fff;
+    border-radius: 20px;
+    padding: 30px;
+    margin-top: 60px;
+    margin-bottom: 40px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* * Cập nhật lại .review-container
 */
+.review-container {
+
+    background: #fff;
+    border-radius: 20px;
+    padding: 30px; /* thêm padding cho bằng với product-info */
+    margin-top: 40px;
+    margin-bottom: 60px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05); /* cho đều bóng đổ */
+    box-sizing: border-box;
+
+}
+
+
+/* =========================================
+    CSS MỚI CHO REVIEW (THÊM VÀO CUỐI FILE)
+========================================= */
+
+/* 1. Thêm padding cho box .product-info
+     (vì nó là box cha chứa cả specs và review) */
+.product-info {
+    padding: 30px;
+    box-sizing: border-box;
+    margin-bottom: 40px; /* Thêm khoảng cách với footer */
+}
+
+/* 2. Style cho khối review bên trong */
+/*.review-container {
+
+    margin: 60px auto 0 auto;  <--- SỬA DÒNG NÀY ĐỂ CĂN GIỮA VÀ CÓ KHOẢNG CÁCH TRÊN 
+}*/
+
+/* 3. Căn giữa phần 5.0/5 */
+.overall-rating {
+    text-align: center;
+    margin-bottom: 20px;
+}
+.score-display .star-icon {
+    font-size: 2.5rem; /* 40px */
+    color: #ffc107;
+    vertical-align: middle;
+}
+.score-display .main-score {
+    font-size: 3.5rem; /* 56px */
+    font-weight: 700;
+    color: #222;
+    vertical-align: middle;
+}
+.score-display .max-score {
+    font-size: 1.5rem; /* 24px */
+    color: #777;
+    vertical-align: middle;
+}
+.overall-rating .stats {
+    font-size: 1rem;
+    color: #555;
+    margin-top: 5px;
+}
+
+/* 4. Căn giữa các thanh % */
+.rating-breakdown {
+    max-width: 600px; /* Giới hạn độ rộng của thanh */
+    margin: 0 auto 30px auto; /* Tự động căn giữa */
+}
+
+/* 5. Style cho danh sách review bên dưới */
+.review-list {
+    border-top: 1px solid #eee; /* Đường kẻ mờ như trong hình */
+    padding-top: 30px;
+    margin-top: 30px;
+}
+
+.review-item hr {
+    /* Ẩn thẻ <hr> vì .review-list đã có border-top rồi */
+    display: none;
+}
+
+.review-item {
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+}
+.review-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.review-images img {
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
 
 .product-title {
     font-family: 'Poppins', sans-serif; /* Dùng font của bạn */
@@ -374,3 +464,46 @@ body {
     border-bottom: 2px solid #e3e8f0;  /* Đường kẻ mờ (dùng màu từ theme) */
     line-height: 1.3;                  /* Giãn dòng cho thoáng */
 }
+
+/* === SUCCESS ALERT (KHÔNG GÂY ẢNH HƯỞNG BODY CHÍNH) === */
+.alert-success {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+    border-radius: 10px;
+    padding: 15px 25px;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    animation: fadeIn 0.5s ease, fadeOut 0.5s ease 3s forwards;
+    z-index: 9999; /* nổi lên trên cùng */
+}
+
+.alert-success i {
+    font-size: 20px;
+    color: #28a745;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+}
+
