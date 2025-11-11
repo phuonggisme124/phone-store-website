@@ -1,7 +1,7 @@
 /*  Full-screen video background */
 #billboard {
     position: relative;
-    height: 100vh;
+
 /*    overflow: hidden;*/
     z-index: 0; /* 🔹 Đảm bảo video nằm dưới header */
 }

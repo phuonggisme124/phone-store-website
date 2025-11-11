@@ -104,10 +104,7 @@
                     </div>
                 </nav>
 
-                <!-- Search bar -->
-                <div class="container-fluid p-4">
-                    <input type="text" class="form-control w-25" placeholder="🔍 Search">
-                </div>
+
                 <div class="container-fluid p-4 ps-3">
                     <a class="btn btn-primary px-4 py-2 rounded-pill shadow-sm" href="admin?action=showInstalment">
                         <i class="bi bi-box-seam me-2"></i> Instalment
@@ -203,7 +200,7 @@
         <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
         <!-- Custom JS -->
-        <script src="js/dashboard.js"></script>
+
 
 
         <script>
@@ -267,6 +264,13 @@
             document.getElementById("menu-toggle").addEventListener("click", function () {
                 document.getElementById("wrapper").classList.toggle("toggled");
             });
+            document.getElementById("menu-toggle").addEventListener("click", function () {
+    console.log("Button clicked!");
+    const wrapper = document.getElementById("wrapper");
+    console.log("Wrapper found:", wrapper);
+    wrapper.classList.toggle("toggled");
+    console.log("Classes:", wrapper.classList);
+});
         </script>
 
     </body>

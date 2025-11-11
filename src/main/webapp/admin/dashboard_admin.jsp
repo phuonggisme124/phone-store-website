@@ -23,7 +23,7 @@
     <body>
         <div class="d-flex" id="wrapper">
             <!-- Sidebar -->
-            <%@ include file="../sidebar.jsp" %>
+            <%@ include file="sidebar.jsp" %>
 
 
             <!-- Page Content -->
@@ -70,9 +70,6 @@
                 <nav class="navbar navbar-light bg-white shadow-sm">
                     <div class="container-fluid">
                         <button class="btn btn-outline-primary" id="menu-toggle"><i class="bi bi-list"></i></button>
-                        <form class="d-none d-md-flex ms-3">
-                            <input class="form-control" type="search" placeholder="Ctrl + K" readonly>
-                        </form>
                         <div class="d-flex align-items-center ms-auto">
                             <div class="position-relative me-3">
                                 <a href="${pageContext.request.contextPath}/logout">logout</a>
