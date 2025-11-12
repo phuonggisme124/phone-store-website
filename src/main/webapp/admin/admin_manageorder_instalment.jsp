@@ -40,21 +40,7 @@
         %>
         <div class="d-flex" id="wrapper">
             <!-- Sidebar -->
-            <nav class="sidebar bg-white shadow-sm border-end">
-                <div class="sidebar-header p-3">
-                    <h4 class="fw-bold text-primary">Mantis</h4>
-                </div>
-                <ul class="list-unstyled ps-3">
-                    <li><a href="admin" ><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
-                    <li><a href="admin?action=manageProduct"><i class="bi bi-box me-2"></i>Products</a></li>
-                    <li><a href="admin?action=manageSupplier"><i class="bi bi-truck me-2"></i>Suppliers</a></li>
-                    <li><a href="admin?action=managePromotion"><i class="bi bi-tag me-2"></i></i>Promotions</a></li>
-                    <li><a href="admin?action=manageOrder" class="active"><i class="bi bi-bag me-2"></i>Orders</a></li>
-                    <li><a href="admin?action=manageReview"><i class="bi bi-bag me-2"></i>Reviews</a></li>
-                    <li><a href="admin?action=manageUser"><i class="bi bi-people me-2"></i>Users</a></li>
-                    <li><a href="#"><i class="bi bi-gear me-2"></i>Settings</a></li>
-                </ul>
-            </nav>
+            <%@ include file="sidebar.jsp" %>
 
             <!-- Page Content -->
             <div class="page-content flex-grow-1">
@@ -67,7 +53,7 @@
                         <div class="d-flex align-items-center ms-auto">
 
                             <!-- Search Phone -->
-                            <form action="admin" method="get" class="d-flex position-relative me-3" id="searchForm" autocomplete="off">
+                            <form action="review" method="get" class="d-flex position-relative me-3" id="searchForm" autocomplete="off">
                                 <input type="hidden" name="action" value="searchInstalment">
                                 <input type="hidden" name="status" value="<%= status%>">
                                 <div class="position-relative" style="width: 300px;">
@@ -86,7 +72,7 @@
 
 
                             <!-- Filter Status -->
-                            <form action="admin" method="get" class="dropdown me-3">
+                            <form action="review" method="get" class="dropdown me-3">
                                 <input type="hidden" name="action" value="filterInstalment">
                                 <!-- Giữ lại phone nếu đang search -->
                                 <input type="hidden" name="phone" value="<%= phone%>">

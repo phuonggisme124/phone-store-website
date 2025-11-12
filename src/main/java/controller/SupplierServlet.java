@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.util.List;
 import model.Suppliers;
 
 /**
@@ -78,6 +79,11 @@ public class SupplierServlet extends HttpServlet {
             Suppliers supplier = sldao.getSupplierByID(supplierID);
             request.setAttribute("supplier", supplier);
             request.getRequestDispatcher("admin/admin_managesupplier_edit.jsp").forward(request, response);
+        }else if(action.equals("manageSupplier")){
+            List<Suppliers> listSupplier = sldao.getAllSupplier();
+            request.setAttribute("listSupplier", listSupplier);
+
+            request.getRequestDispatcher("admin/dashboard_admin_managesupplier.jsp").forward(request, response);
         }
     }
 
@@ -112,7 +118,7 @@ public class SupplierServlet extends HttpServlet {
             sldao.createSupplier(name, phone, email, address);
             session.setAttribute("successCreateSupplier", name + " create successfully!");
             
-            response.sendRedirect("admin?action=manageSupplier");
+            response.sendRedirect("supplier?action=manageSupplier");
         }else if (action.equals("updateSupplier")) {
             int sID = Integer.parseInt(request.getParameter("sID"));
             String name = request.getParameter("name");
@@ -122,13 +128,13 @@ public class SupplierServlet extends HttpServlet {
 
             sldao.updateSupplier(sID, name, phone, email, address);
             session.setAttribute("successUpdateSupplier", name + " update successfully!");
-            response.sendRedirect("admin?action=manageSupplier");
+            response.sendRedirect("supplier?action=manageSupplier");
         }else if (action.equals("deleteSupplier")) {
             int sID = Integer.parseInt(request.getParameter("sID"));
             Suppliers supplier = sldao.getSupplierByID(sID);
             sldao.deleteSupplier(sID);
             session.setAttribute("successDeleteSupplier", supplier.getName() + " delete successfully!");
-            response.sendRedirect("admin?action=manageSupplier");
+            response.sendRedirect("supplier?action=manageSupplier");
         }
         
     }

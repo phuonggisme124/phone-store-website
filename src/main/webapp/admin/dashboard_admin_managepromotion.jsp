@@ -133,6 +133,51 @@
 
 
                 <!-- Promotions Table -->
+                <%
+                    String successCreatePromotion = (String) session.getAttribute("successCreatePromotion");
+                    String successUpdatePromotion = (String) session.getAttribute("successUpdatePromotion");
+                    String successDeletePromotion = (String) session.getAttribute("successDeletePromotion");
+                    if (successCreatePromotion != null) {
+                %>
+                <div class="alert alert-success alert-dismissible fade show w-50 mx-auto mt-3" role="alert">
+                    <i class="bi bi-check-circle-fill me-2"></i><%= successCreatePromotion%>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+
+                <%
+                        session.removeAttribute("successCreatePromotion");
+                    }
+                %>
+                
+                
+                <%
+                    
+                    
+                    if (successUpdatePromotion != null) {
+                %>
+                <div class="alert alert-success alert-dismissible fade show w-50 mx-auto mt-3" role="alert">
+                    <i class="bi bi-check-circle-fill me-2"></i><%= successUpdatePromotion%>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+
+                <%
+                        session.removeAttribute("successUpdatePromotion");
+                    }
+                %>
+                <%
+                    
+                    
+                    if (successDeletePromotion != null) {
+                %>
+                <div class="alert alert-success alert-dismissible fade show w-50 mx-auto mt-3" role="alert">
+                    <i class="bi bi-check-circle-fill me-2"></i><%= successDeletePromotion%>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+
+                <%
+                        session.removeAttribute("successDeletePromotion");
+                    }
+                %>
                 <div class="card shadow-sm border-0 p-4 m-3">
                     <div class="card-body p-0">
                         <div class="container-fluid p-4 ps-3">

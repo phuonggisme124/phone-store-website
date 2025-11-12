@@ -17,45 +17,19 @@ import dao.VariantsDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import jakarta.servlet.http.Part;
-import java.io.File;
-import java.nio.file.Paths;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
 import java.util.List;
 import model.Category;
-import model.InterestRate;
-import model.Order;
-import model.OrderDetails;
-import model.Payments;
-import model.Products;
-import model.Promotions;
-import model.Review;
-import model.Sale;
-import model.Suppliers;
-import model.Users;
-import model.Variants;
 
 /**
  *
  * @author duynu
  */
-@WebServlet(name = "AdminServlet", urlPatterns = {"/admin"})
-@MultipartConfig(
-        fileSizeThreshold = 1024 * 1024 * 1, // 1MB
-        maxFileSize = 1024 * 1024 * 10, // 10MB
-        maxRequestSize = 1024 * 1024 * 15 // 15MB
-)
-public class AdminServlet extends HttpServlet {
+@WebServlet(name = "CategoryServlet", urlPatterns = {"/category"})
+public class CategoryServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -74,10 +48,10 @@ public class AdminServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet AdminServlet</title>");
+            out.println("<title>Servlet CategoryServlet</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet AdminServlet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet CategoryServlet at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -95,6 +69,7 @@ public class AdminServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
         String action = request.getParameter("action");
         UsersDAO udao = new UsersDAO();
         ProductDAO pdao = new ProductDAO();
@@ -106,56 +81,25 @@ public class AdminServlet extends HttpServlet {
         PaymentsDAO paydao = new PaymentsDAO();
         PromotionsDAO pmtdao = new PromotionsDAO();
         ProfitDAO pfdao = new ProfitDAO();
-
         if (action == null) {
             action = "dashboard";
         }
 
-         if (action.equals("manageProduct")) {
-            
+        if (action.equals("manageCategory")) {
+            List<Category> listCategory = ctdao.getAllCategories();
 
-        }  else if(action.equals("dashboard")){
-            String monthSelectStr = request.getParameter("monthSelect");
-            String yearSelectStr = request.getParameter("yearSelect");
-            int yearSelect = Calendar.getInstance().get(Calendar.YEAR);
-            int monthSelect = Calendar.getInstance().get(Calendar.MONTH);
-            
-            if(yearSelectStr != null){
-                yearSelect = Integer.parseInt(yearSelectStr);
-            }
-            
-            if(monthSelectStr != null){
-                monthSelect = Integer.parseInt(monthSelectStr);
-            }
-            List<Users> listUser = udao.getAllUsers();
-            List<Double> monthlyIncome = pfdao.getAllIncomeOfYear(yearSelect);
-            List<Integer> monthlyOrder = pfdao.getAllOrderOfYear(yearSelect);
-            System.out.println("tháng đang truy vấn: " + monthSelect);
-            System.out.println("tháng gui về: " + monthSelectStr);
-            int importOfMonth = pfdao.getImportByMonthAndYear(monthSelect, yearSelect);
-            int soldOfMonth = pfdao.getSoldByMonthAndYear(monthSelect, yearSelect);
-            double revenueTargetOfMonth = pfdao.getRevenueTargetByMonthAndYear(monthSelect, yearSelect);
-            double revenueOfMonth = pfdao.getRevenueByMonthAndYear(monthSelect, yearSelect);
-            double costOfMonth = pfdao.getCostByMonthAndYear(monthSelect, yearSelect);
-            double incomeTargetOfMonth = revenueTargetOfMonth - costOfMonth;
-            double incomeOfMonth = revenueOfMonth - costOfMonth;
-            
-            request.setAttribute("yearSelect", yearSelect);
-            request.setAttribute("monthSelect", monthSelect);
-            request.setAttribute("incomeOfMonth", incomeOfMonth);
-            request.setAttribute("incomeTargetOfMonth", incomeTargetOfMonth);
-            request.setAttribute("revenueTargetOfMonth", revenueTargetOfMonth);
-            request.setAttribute("revenueOfMonth", revenueOfMonth);
-            request.setAttribute("costOfMonth", costOfMonth);
-            request.setAttribute("importOfMonth", importOfMonth);
-            request.setAttribute("soldOfMonth", soldOfMonth);
-            request.setAttribute("monthlyIncome", monthlyIncome);
-            request.setAttribute("monthlyOrder", monthlyOrder);
-            request.setAttribute("listUser", listUser);
-            
-            request.getRequestDispatcher("admin/dashboard_admin.jsp").forward(request, response);
+            request.setAttribute("listCategory", listCategory);
+            request.getRequestDispatcher("admin/dashboard_admin_managecategory.jsp").forward(request, response);
+
+        } else if (action.equals("editCategory")) {
+            int cateID = Integer.parseInt(request.getParameter("id"));
+
+            Category catergory = ctdao.getCategoryByCategoryID(cateID);
+            request.setAttribute("catergory", catergory);
+            request.getRequestDispatcher("admin/admin_managecategory_edit.jsp").forward(request, response);
+        } else if (action.equals("createCategory")) {
+            request.getRequestDispatcher("admin/admin_managecategory_create.jsp").forward(request, response);
         }
-
     }
 
     /**
@@ -177,7 +121,28 @@ public class AdminServlet extends HttpServlet {
         VariantsDAO vdao = new VariantsDAO();
         PromotionsDAO pmtdao = new PromotionsDAO();
         ReviewDAO rdao = new ReviewDAO();
-         
+        
+        if (action.equals("updateCategory")) {
+            int cateID = Integer.parseInt(request.getParameter("cateID"));
+            String name = request.getParameter("name");
+            String description = request.getParameter("description");
+
+            ctdao.editCategory(cateID, name, description);
+            response.sendRedirect("category?action=manageCategory");
+
+        } else if (action.equals("deleteCategory")) {
+            int cateID = Integer.parseInt(request.getParameter("cateID"));
+            System.out.println("delete cateID: " + cateID);
+            ctdao.removeCategory(cateID);
+            response.sendRedirect("category?action=manageCategory");
+        } else if (action.equals("createCategory")) {
+            String name = request.getParameter("name");
+            String description = request.getParameter("description");
+
+            ctdao.createCategory(name, description);
+            response.sendRedirect("category?action=manageCategory");
+        }
+
     }
 
     /**

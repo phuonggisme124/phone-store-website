@@ -71,7 +71,7 @@
                     <div class="card-body p-0">
                         <h4 class="fw-bold ps-3 mb-4">Manage Category</h4>
                         
-                        <form action="admin" method="post" class="w-50 mx-auto bg-light p-4 rounded shadow">
+                        <form action="category" method="post" class="w-50 mx-auto bg-light p-4 rounded shadow">
                             <div class="mb-3">
                                 <input type="hidden" class="form-control" name="cateID" value="" readonly>
                             </div>

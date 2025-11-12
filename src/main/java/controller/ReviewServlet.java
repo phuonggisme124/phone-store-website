@@ -3,6 +3,7 @@ package controller;
 import dao.OrderDAO;
 import dao.ProductDAO;
 import dao.ReviewDAO;
+import dao.UsersDAO;
 import dao.VariantsDAO;
 import java.io.File;
 import java.io.IOException;
@@ -18,8 +19,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
+import model.Order;
 import model.Products;
 import model.Review;
+import model.Sale;
 import model.Users;
 import model.Variants;
 
@@ -42,6 +45,9 @@ public class ReviewServlet extends HttpServlet {
             throws ServletException, IOException {
 
         ReviewDAO rdao = new ReviewDAO();
+        OrderDAO dao = new OrderDAO();
+        UsersDAO udao = new UsersDAO();
+        VariantsDAO vdao = new VariantsDAO();
         String action = request.getParameter("action");
 
         if (action == null) {
@@ -56,6 +62,123 @@ public class ReviewServlet extends HttpServlet {
 
                 request.setAttribute("review", review);
                 request.getRequestDispatcher("admin/admin_managereview_detail.jsp").forward(request, response);
+            } else if (action.equals("manageReview")) {
+                List<Review> listReview = rdao.getAllReview();
+                request.setAttribute("listReview", listReview);
+                request.getRequestDispatcher("admin/dashboard_admin_managereview.jsp").forward(request, response);
+            } else if (action.equals("showInstalment")) {
+
+                List<Order> listOrder = dao.getAllOrder();
+                List<String> listPhone = dao.getAllPhoneInstalment();
+                List<Sale> listSales = udao.getAllSales();
+                request.setAttribute("listOrder", listOrder);
+                request.setAttribute("listPhone", listPhone);
+
+                request.setAttribute("listSales", listSales);
+                request.getRequestDispatcher("admin/admin_manageorder_instalment.jsp").forward(request, response);
+            } else if (action.equals("searchInstalment")) {
+                String phone = request.getParameter("phone");
+                String status = request.getParameter("status");
+                List<String> listPhone = dao.getAllPhoneInstalment();
+                List<Order> listOrder;
+
+                if (status.equals("Filter") || status.equals("All")) {
+                    listOrder = dao.getAllOrderInstalmentByPhone(phone);
+                } else if (status.equals("Pending")) {
+                    List<Order> listInstalment = dao.getAllOrderInstalment();
+                    listOrder = dao.getAllPendingInstalment(listInstalment);
+                } else {
+                    List<Order> listInstalment = dao.getAllOrderInstalment();
+                    listOrder = dao.getAllCompletedInstalment(listInstalment);
+                }
+
+                List<Sale> listSales = udao.getAllSales();
+
+                request.setAttribute("listOrder", listOrder);
+                request.setAttribute("listPhone", listPhone);
+
+                request.setAttribute("action", action);
+                request.setAttribute("phone", phone);
+                request.setAttribute("status", status);
+                request.setAttribute("listSales", listSales);
+                request.getRequestDispatcher("admin/admin_manageorder_instalment.jsp").forward(request, response);
+            } else if (action.equals("filterInstalment")) {
+
+                String phone = request.getParameter("phone");
+                String status = request.getParameter("status");
+                List<String> listPhone = dao.getAllPhoneInstalment();
+                List<Order> listOrder;
+
+                if (phone == null || phone.isEmpty()) {
+                    if (status.equals("Pending")) {
+                        List<Order> listInstalment = dao.getAllOrderInstalment();
+                        listOrder = dao.getAllPendingInstalment(listInstalment);
+                    } else {
+                        List<Order> listInstalment = dao.getAllOrderInstalment();
+                        listOrder = dao.getAllCompletedInstalment(listInstalment);
+                    }
+                } else {
+                    if (status.equals("Pending")) {
+                        List<Order> listInstalment = dao.getAllOrderInstalment();
+                        listOrder = dao.getAllPendingInstalmentAndPhone(listInstalment, phone);
+                    } else {
+                        List<Order> listInstalment = dao.getAllOrderInstalment();
+                        listOrder = dao.getAllCompletedInstalmentAndPhone(listInstalment, phone);
+                    }
+                }
+
+                List<Sale> listSales = udao.getAllSales();
+
+                request.setAttribute("listOrder", listOrder);
+                request.setAttribute("listPhone", listPhone);
+
+                request.setAttribute("action", action);
+                request.setAttribute("phone", phone);
+                request.setAttribute("status", status);
+                request.setAttribute("listSales", listSales);
+                request.getRequestDispatcher("admin/admin_manageorder_instalment.jsp").forward(request, response);
+            } else if (action.equals("searchReview")) {
+                int productID = Integer.parseInt(request.getParameter("productID"));
+                String storage = request.getParameter("storage");
+                int rating = Integer.parseInt(request.getParameter("rating"));
+
+                List<Review> listReview;
+                if (rating == 0) {
+                    List<Variants> listVariant = vdao.getAllVariantByStorage(productID, storage);
+                    listReview = rdao.getAllReviewByListVariant(listVariant);
+                } else {
+                    List<Variants> listVariant = vdao.getAllVariantByStorage(productID, storage);
+                    listReview = rdao.getAllReviewByListVariantAndRating(listVariant, rating);
+                }
+
+                request.setAttribute("listReview", listReview);
+                request.setAttribute("productID", productID);
+                request.setAttribute("storage", storage);
+                request.setAttribute("rating", rating);
+                request.getRequestDispatcher("admin/dashboard_admin_managereview.jsp").forward(request, response);
+
+            } else if (action.equals("filterReview")) {
+                int productID = Integer.parseInt(request.getParameter("productID"));
+                String storage = request.getParameter("storage");
+                int rating = Integer.parseInt(request.getParameter("rating"));
+                List<Review> listReview;
+                if ((productID == 0) && (storage == null || storage.isEmpty()) && rating != 0) {
+                    listReview = rdao.getAllReviewByRating(rating);
+                } else if ((productID != 0) && (storage != null) && rating != 0) {
+                    List<Variants> listVariant = vdao.getAllVariantByStorage(productID, storage);
+                    listReview = rdao.getAllReviewByListVariantAndRating(listVariant, rating);
+                } else if ((productID != 0) && (storage != null) && rating == 0) {
+                    List<Variants> listVariant = vdao.getAllVariantByStorage(productID, storage);
+                    listReview = rdao.getAllReviewByListVariant(listVariant);
+                } else {
+                    listReview = rdao.getAllReview();
+                }
+
+                request.setAttribute("listReview", listReview);
+                request.setAttribute("productID", productID);
+                request.setAttribute("storage", storage);
+                request.setAttribute("rating", rating);
+                request.getRequestDispatcher("admin/dashboard_admin_managereview.jsp").forward(request, response);
             } else {
                 int variantID = Integer.parseInt(request.getParameter("variantID"));
                 List<Review> review = rdao.getReviewsByVariantID(variantID);
@@ -104,13 +227,13 @@ public class ReviewServlet extends HttpServlet {
             // === Kiểm tra xem người dùng đã mua sản phẩm chưa ===
             Variants variant = vdao.getVariantByID(vID);
             boolean hasPurchased = odao.checkUserPurchase(uID, variant.getProductID(), variant.getStorage());
-            
+
             int productID = variant.getProductID();
             Products product = pdao.getProductByID(productID);
-            
+
             if (!hasPurchased) {
                 session.setAttribute("reviewError", "Bạn phải mua sản phẩm này để được đánh giá.");
-                response.sendRedirect("product?action=selectStorage&pID=" + productID+"&cID="+ product.getCategoryID()+"&storage="+variant.getStorage()+"&color="+variant.getColor());
+                response.sendRedirect("product?action=selectStorage&pID=" + productID + "&cID=" + product.getCategoryID() + "&storage=" + variant.getStorage() + "&color=" + variant.getColor());
                 return;
             }
 
@@ -150,7 +273,7 @@ public class ReviewServlet extends HttpServlet {
                 rdao.updateImageReview(currentReviewID, img);
             }
 
-            response.sendRedirect("product?action=selectStorage&pID=" + productID+"&cID="+ product.getCategoryID()+"&storage="+variant.getStorage()+"&color="+variant.getColor());
+            response.sendRedirect("product?action=selectStorage&pID=" + productID + "&cID=" + product.getCategoryID() + "&storage=" + variant.getStorage() + "&color=" + variant.getColor());
 
         } else if ("deleteReview".equals(action)) {
             // === Xóa review ===
@@ -168,7 +291,7 @@ public class ReviewServlet extends HttpServlet {
             String reply = request.getParameter("reply");
 
             rdao.updateReview(rID, reply);
-            response.sendRedirect("admin?action=manageReview");
+            response.sendRedirect("review?action=manageReview");
         }
     }
 }

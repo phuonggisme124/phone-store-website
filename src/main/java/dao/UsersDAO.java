@@ -356,7 +356,7 @@ public class UsersDAO extends DBContext {
 
     public boolean getUserByEmail(String email) {
         String sql = "SELECT * FROM Users WHERE Email =?";
-        
+
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, email);
@@ -375,7 +375,7 @@ public class UsersDAO extends DBContext {
                 LocalDateTime createdAt = (createdAtTimestamp != null) ? createdAtTimestamp.toLocalDateTime() : null;
 
                 Users u = new Users(id, fullName, e, phone, pass, role, address, createdAt, status);
-                if(u != null){
+                if (u != null) {
                     return true;
                 }
             }
@@ -383,5 +383,139 @@ public class UsersDAO extends DBContext {
             System.out.println(e.getMessage());
         }
         return false;
+    }
+
+    public int getMaxUserID() {
+        String sql = "  SELECT MAX(UserID) AS MaxUserID\n"
+                + "FROM [PhoneStore].[dbo].[Users];";
+
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                int userID = rs.getInt("MaxUserID");
+                return userID;
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        return -1;
+    }
+
+    public void createRole(int newUserID, int role) {
+
+        if (role == 2) {
+            String sql = "INSERT INTO Staffs (StaffID) "
+                    + "VALUES (?)";
+            
+            try{
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ps.setInt(1, newUserID);
+                ps.executeUpdate();
+            }catch(Exception e){
+                System.out.println(e.getMessage());
+            }
+        }else if(role == 3){
+            String sql = "INSERT INTO Shippers (ShipperID) "
+                    + "VALUES (?)";
+            
+            try{
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ps.setInt(1, newUserID);
+                ps.executeUpdate();
+            }catch(Exception e){
+                System.out.println(e.getMessage());
+            }
+        }else if(role == 1){
+            String sql = "INSERT INTO Customers (CustomerID) "
+                    + "VALUES (?)";
+            
+            try{
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ps.setInt(1, newUserID);
+                ps.executeUpdate();
+            }catch(Exception e){
+                System.out.println(e.getMessage());
+            }
+        }
+    }
+
+    public void updateUserByRole(int userId, int role, int oldRole) {
+        
+        if (role == 2) {
+            String sql = "INSERT INTO Staffs (StaffID) "
+                    + "VALUES (?)";
+            
+            try{
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ps.setInt(1, userId);
+                ps.executeUpdate();
+                
+            }catch(Exception e){
+                System.out.println(e.getMessage());
+            }
+        }else if(role == 3){
+            String sql = "INSERT INTO Shippers (ShipperID) "
+                    + "VALUES (?)";
+            
+            try{
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ps.setInt(1, userId);
+                ps.executeUpdate();
+            }catch(Exception e){
+                System.out.println(e.getMessage());
+            }
+        }else if(role == 1){
+            String sql = "INSERT INTO Customers (CustomerID) "
+                    + "VALUES (?)";
+            
+            try{
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ps.setInt(1, userId);
+                ps.executeUpdate();
+            }catch(Exception e){
+                System.out.println(e.getMessage());
+            }
+        }
+        deleteByRole(userId, oldRole);
+    }
+
+    public void deleteByRole(int userId, int oldRole) {
+        
+         if (oldRole == 2) {
+            String sql = "Delete From Staffs\n"
+                    + "Where StaffID = ?";
+            
+            try{
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ps.setInt(1, userId);
+                ps.executeUpdate();
+            }catch(Exception e){
+                System.out.println(e.getMessage());
+            }
+        }else if(oldRole == 3){
+            String sql = "Delete From Shippers\n"
+                    + "Where StaffID = ?";
+            
+            try{
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ps.setInt(1, userId);
+                ps.executeUpdate();
+            }catch(Exception e){
+                System.out.println(e.getMessage());
+            }
+        }else if(oldRole == 1){
+            String sql = "Delete From Customers\n"
+                    + "Where CustomerID = ?";
+            
+            try{
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ps.setInt(1, userId);
+                ps.executeUpdate();
+            }catch(Exception e){
+                System.out.println(e.getMessage());
+            }
+        }
     }
 }

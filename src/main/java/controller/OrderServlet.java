@@ -18,11 +18,16 @@ import model.Users;
 import dao.CategoryDAO;
 import dao.PaymentsDAO;
 import dao.ProductDAO;
+import dao.ReviewDAO;
+import dao.SupplierDAO;
+import dao.UsersDAO;
+import dao.VariantsDAO;
 import java.util.List;
 import model.Category;
 import model.InterestRate;
 import model.OrderDetails;
 import model.Payments;
+import model.Sale;
 
 /**
  * Servlet responsible for handling order-related operations.
@@ -58,9 +63,11 @@ public class OrderServlet extends HttpServlet {
             throws ServletException, IOException {
 
         String action = request.getParameter("action");
-        PaymentsDAO paydao = new PaymentsDAO();
+        UsersDAO udao = new UsersDAO();
         ProductDAO pdao = new ProductDAO();
+        
         OrderDAO dao = new OrderDAO();
+        PaymentsDAO paydao = new PaymentsDAO();
         if(action == null){
             action = "null";
         }
@@ -172,7 +179,68 @@ public class OrderServlet extends HttpServlet {
             request.setAttribute("listPayments", listPayments);
             request.setAttribute("isIntalment", isIntalment);
             request.getRequestDispatcher("admin/admin_manageorder_detail.jsp").forward(request, response);
-        }
+        }else if(action.equals("manageOrder")){
+            List<Order> listOrder = dao.getAllOrder();
+            List<String> listPhone = dao.getAllPhone();
+            List<Sale> listSales = udao.getAllSales();
+            request.setAttribute("listOrder", listOrder);
+            request.setAttribute("listPhone", listPhone);
+
+            request.setAttribute("listSales", listSales);
+
+            request.getRequestDispatcher("admin/dashboard_admin_manageorder.jsp").forward(request, response);
+            
+        }else if (action.equals("showInstalment")) {
+
+            List<Order> listOrder = dao.getAllOrder();
+            List<String> listPhone = dao.getAllPhoneInstalment();
+            List<Sale> listSales = udao.getAllSales();
+            request.setAttribute("listOrder", listOrder);
+            request.setAttribute("listPhone", listPhone);
+
+            request.setAttribute("listSales", listSales);
+            request.getRequestDispatcher("admin/admin_manageorder_instalment.jsp").forward(request, response);
+        } else if (action.equals("searchOrder")) {
+            String phone = request.getParameter("phone");
+            String status = request.getParameter("status");
+            List<String> listPhone = dao.getAllPhone();
+            List<Order> listOrder;
+            List<Sale> listSales = udao.getAllSales();
+            if (status.equals("Filter") || status.equals("All")) {
+                listOrder = dao.getAllOrderByPhone(phone);
+            } else {
+                listOrder = dao.getAllOrderByPhoneAndStatus(phone, status);
+            }
+
+            request.setAttribute("listOrder", listOrder);
+            request.setAttribute("phone", phone);
+            request.setAttribute("status", status);
+            request.setAttribute("listPhone", listPhone);
+            request.setAttribute("listSales", listSales);
+            request.getRequestDispatcher("admin/dashboard_admin_manageorder.jsp").forward(request, response);
+        } else if (action.equals("filterOrder")) {
+            String phone = request.getParameter("phone");
+            String status = request.getParameter("status");
+            List<String> listPhone = dao.getAllPhone();
+            List<Order> listOrder;
+            List<Sale> listSales = udao.getAllSales();
+
+            if ((phone == null || phone.isEmpty()) && (status.equals("Filter") || status.equals("All"))) {
+                listOrder = dao.getAllOrder();
+            } else if (status.equals("Filter") || status.equals("All")) {
+                listOrder = dao.getAllOrderByPhone(phone);
+            } else if (!(status.equals("Filter") || status.equals("All"))) {
+                listOrder = dao.getAllOrderByStatus(status);
+            } else {
+                listOrder = dao.getAllOrderByPhoneAndStatus(phone, status);
+            }
+            request.setAttribute("phone", phone);
+            request.setAttribute("status", status);
+            request.setAttribute("listOrder", listOrder);
+            request.setAttribute("listPhone", listPhone);
+            request.setAttribute("listSales", listSales);
+            request.getRequestDispatcher("admin/dashboard_admin_manageorder.jsp").forward(request, response);
+        } 
         
     }
 

@@ -91,7 +91,7 @@
 
                 <!-- Create Category Button -->
                 <div class="container-fluid p-4 ps-3">
-                    <a class="btn btn-primary px-4 py-2 rounded-pill shadow-sm" href="admin?action=createCategory">
+                    <a class="btn btn-primary px-4 py-2 rounded-pill shadow-sm" href="category?action=createCategory">
                         <i class="bi bi-box-seam me-2"></i> Create Category
                     </a>
                 </div>
@@ -118,7 +118,7 @@
                                                 continue;
                                             }
                                     %>
-                                    <tr onclick="window.location.href = 'admin?action=editCategory&id=<%= c.getCategoryId()%>'" style="cursor: pointer;">
+                                    <tr onclick="window.location.href = 'category?action=editCategory&id=<%= c.getCategoryId()%>'" style="cursor: pointer;">
                                         <td>#<%= c.getCategoryId()%></td>
                                         <td><%= c.getCategoryName() %></td>
                                         <td><%= c.getDescription() %></td>

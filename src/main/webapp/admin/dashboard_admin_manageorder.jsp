@@ -56,7 +56,7 @@
                         <div class="d-flex align-items-center ms-auto">
 
                             <!-- Search Phone -->
-                            <form action="admin" method="get" class="d-flex position-relative me-3" id="searchForm" autocomplete="off">
+                            <form action="order" method="get" class="d-flex position-relative me-3" id="searchForm" autocomplete="off">
                                 <input type="hidden" name="action" value="searchOrder">
                                 <input type="hidden" name="status" value="<%= status%>">
                                 <div class="position-relative" style="width: 300px;">
@@ -75,7 +75,7 @@
 
 
                             <!-- Filter Status -->
-                            <form action="admin" method="get" class="dropdown me-3">
+                            <form action="order" method="get" class="dropdown me-3">
                                 <input type="hidden" name="action" value="filterOrder">
                                 <!-- Giữ lại phone nếu đang search -->
                                 <input type="hidden" name="phone" value="<%= phone%>">
@@ -126,7 +126,7 @@
                             <h1 class="fw-bold ps-3 mb-4 fw-bold text-primary">Manage Orders</h1>
                         </div>
                         <div class="container-fluid p-4 ps-3">
-                            <a class="btn btn-primary px-4 py-2 rounded-pill shadow-sm" href="admin?action=showInstalment">
+                            <a class="btn btn-primary px-4 py-2 rounded-pill shadow-sm" href="review?action=showInstalment">
                                 <i class="bi bi-box-seam me-2"></i> Instalment
                             </a>
                         </div>

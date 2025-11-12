@@ -213,11 +213,6 @@
                         }
                     }
 
-
-
-
-
-
                     //check end date
                     if (currentStartDate.value !== startDate.value || currentEndDate.value !== endDate.value) {
                         if (endDate.value === "") {
@@ -286,6 +281,54 @@
                             block: "center"
                         });
                     }
+                });
+            </script>
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    const form = document.querySelector('form[action="promotion"]');
+                    const deleteBtn = form?.querySelector('button[name="action"][value="deletePromotion"]');
+
+                    if (!deleteBtn) {
+                        console.error("Delete button not found!");
+                        return;
+                    }
+
+                    deleteBtn.addEventListener('click', function (event) {
+                        event.preventDefault(); // Prevent default submit
+
+                        Swal.fire({
+                            title: 'Are you sure you want to delete this promotion?',
+                            text: 'This action cannot be undone.',
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#dc3545',
+                            cancelButtonColor: '#6c757d',
+                            confirmButtonText: 'Delete',
+                            cancelButtonText: 'Cancel',
+                            reverseButtons: true,
+                            background: '#fff',
+                            color: '#333',
+                            customClass: {
+                                popup: 'shadow-lg rounded-4 p-3',
+                                confirmButton: 'px-4 py-2 rounded-3',
+                                cancelButton: 'px-4 py-2 rounded-3'
+                            }
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // Ensure correct action is sent
+                                let actionInput = form.querySelector('input[name="action"]');
+                                if (!actionInput) {
+                                    actionInput = document.createElement('input');
+                                    actionInput.type = 'hidden';
+                                    actionInput.name = 'action';
+                                    form.appendChild(actionInput);
+                                }
+                                actionInput.value = 'deletePromotion';
+                                form.submit();
+                            }
+                        });
+                    });
                 });
             </script>
     </body>

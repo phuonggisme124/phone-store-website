@@ -106,16 +106,14 @@ public class ProductServlet extends HttpServlet {
             }
 
             List<Variants> listVariantRating = vdao.getAllVariantByStorage(variants.getProductID(), variants.getStorage());
-            
+
             Specification specification = pdao.getSpecificationByProductID(productID);
 
             // Lấy danh sách review theo VariantID
-            List<Review> listReview = rdao.getAllReviewByListVariant(listVariantRating);              
-            
-          
-            
+            List<Review> listReview = rdao.getAllReviewByListVariant(listVariantRating);
+
             double rating = rdao.getTotalRating(listVariantRating, listReview);
-            
+
             // Pass data to JSP
             request.setAttribute("categoryID", cID);
             if (vID != null) {
@@ -156,7 +154,7 @@ public class ProductServlet extends HttpServlet {
                 variants = vdao.getVariant(pID, storage, listVariantRating.get(0).getColor());
             }
 
-            List<Review> listReview = rdao.getAllReviewByListVariant(listVariantRating);     
+            List<Review> listReview = rdao.getAllReviewByListVariant(listVariantRating);
             double rating = rdao.getTotalRating(listVariantRating, listReview);
             Specification specification = pdao.getSpecificationByProductID(pID);
             // Send data to JSP
@@ -271,7 +269,26 @@ public class ProductServlet extends HttpServlet {
             request.setAttribute("listSupplier", listSupplier);
             request.setAttribute("listCategories", listCategories);
             request.getRequestDispatcher("admin/admin_manageproduct_create.jsp").forward(request, response);
-        }
+        } else if (action.equals("manageProduct")) {
+            List<Products> listProducts = pdao.getAllProduct();
+            List<Category> listCategory = ctdao.getAllCategories();
+            List<Suppliers> listSupplier = sldao.getAllSupplier();
+
+            for (Products product : listProducts) {
+                List<Variants> listVariant = vdao.getAllVariantByProductID(product.getProductID());
+                if (listVariant == null || listVariant.isEmpty()) {
+                    pdao.deleteSpecificationByProductID(product.getProductID());
+                    pmtdao.deletePromotionByProductID(product.getProductID());
+                    pdao.deleteProductByProductID(product.getProductID());
+                }
+            }
+            List<Products> currentListProduct = pdao.getAllProduct();
+            request.setAttribute("currentListProduct", currentListProduct);
+            request.setAttribute("listCategory", listCategory);
+            request.setAttribute("listSupplier", listSupplier);
+
+            request.getRequestDispatcher("admin/dashboard_admin_manageproduct.jsp").forward(request, response);
+        } 
     }
 
     @Override

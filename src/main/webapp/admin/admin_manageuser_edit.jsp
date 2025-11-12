@@ -53,7 +53,8 @@
                 </div>
 
 
-                <%                    Users user = (Users) request.getAttribute("user");
+                <%                    
+                    Users user = (Users) request.getAttribute("currentUser");
                 %>
                 <!-- Table -->
                 <form action="user" method="post" class="w-50 mx-auto bg-light p-4 rounded shadow">
@@ -94,6 +95,7 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Role</label>
+                        <input type="hidden" name="oldRole" value="<%= user.getRole() %>">
                         <select class="form-select" name="role" id="role">
                             <option value="1" <%= (user.getRole().equals(1) ? "selected" : "")%>>Customer</option>
                             <option value="2" <%= (user.getRole().equals(2) ? "selected" : "")%>>Staff</option>
@@ -104,7 +106,7 @@
                         <label class="form-label">Status</label>
                         <select class="form-select" name="status" id="status">
                             <option value="active" <%= (user.getStatus().equalsIgnoreCase("active") ? "selected" : "")%>>Active</option>
-                            <option value="banned" <%= (user.getStatus().equalsIgnoreCase("Locked") ? "selected" : "")%>>Locked</option>
+                            <option value="locked" <%= (user.getStatus().equalsIgnoreCase("locked") ? "selected" : "")%>>Locked</option>
 
                         </select>
                     </div>

@@ -174,7 +174,7 @@
                             </div>
                             <!-- Create Account Button -->
                             <div class="container-fluid p-4">
-                                <a class="btn btn-primary px-4 py-2 rounded-pill shadow-sm" href="admin?action=createAccount">
+                                <a class="btn btn-primary px-4 py-2 rounded-pill shadow-sm" href="user?action=createAccount">
                                     <i class="bi bi-person-plus"></i> Create Account
                                 </a>
                             </div>
@@ -244,7 +244,7 @@
                                                     statusBadge = "<span class='badge status-red '>Locked</span>";
                                                 }
                                         %>
-                                        <tr onclick="window.location.href = 'admin?action=editAccount&id=<%= u.getUserId()%>'" style="cursor: pointer;">
+                                        <tr onclick="window.location.href = 'user?action=edit&id=<%= u.getUserId()%>'" style="cursor: pointer;">
                                             <td>#<%= u.getUserId()%></td>
                                             <td><%= u.getFullName()%></td>
                                             <td><%= u.getEmail()%></td>

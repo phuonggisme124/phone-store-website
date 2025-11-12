@@ -46,6 +46,7 @@ public class UserServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         OrderDetailDAO orderDetailDAO = new OrderDetailDAO();
+        UsersDAO udao = new UsersDAO();
         String action = request.getParameter("action");
         if (action == null || action.isEmpty()) {
             action = "view";
@@ -63,8 +64,17 @@ public class UserServlet extends HttpServlet {
 
         switch (action) {
             case "edit":
-                request.setAttribute("user", user);
-                request.getRequestDispatcher("customer/editProfile.jsp").forward(request, response);
+                if (user.getRole() == 4) {
+                    int id = Integer.parseInt(request.getParameter("id"));
+                    Users currentUser = udao.getUserByID(id);
+                    request.setAttribute("currentUser", currentUser);
+
+                    request.getRequestDispatcher("admin/admin_manageuser_edit.jsp").forward(request, response);
+                } else {
+                    request.setAttribute("user", user);
+                    request.getRequestDispatcher("customer/editProfile.jsp").forward(request, response);
+                }
+
                 break;
 
             case "transaction":
@@ -114,6 +124,19 @@ public class UserServlet extends HttpServlet {
             case "changePassword":
                 response.sendRedirect("customer/changePassword.jsp");
                 break;
+            case "manageUser":
+                List<Users> listUsers = udao.getAllUsers();
+                request.setAttribute("listUsers", listUsers);
+
+                request.getRequestDispatcher("admin/dashboard_admin_manageuser.jsp").forward(request, response);
+                break;
+            case "createAccount":
+
+                if (user.getRole() == 4) {
+                    request.getRequestDispatcher("admin/admin_manageuser_create.jsp").forward(request, response);
+                }
+
+                break;
 
             default:
                 request.setAttribute("user", user);
@@ -149,25 +172,33 @@ public class UserServlet extends HttpServlet {
             String phone = request.getParameter("phone");
             String address = request.getParameter("address");
             int role = Integer.parseInt(request.getParameter("role"));
+            int oldRole = Integer.parseInt(request.getParameter("oldRole"));
             String status = request.getParameter("status");
 
             Users u = udao.getUserByID(userId);
             if (email.equalsIgnoreCase(u.getEmail())) {
                 udao.updateUser(userId, name, email, phone, address, role, status);
+                if (oldRole != role) {
+                    udao.updateUserByRole(userId, role, oldRole);
+                }
+
                 session.setAttribute("successUpdateUser", email + " update successfully!");
-                response.sendRedirect("admin?action=manageUser");
+                response.sendRedirect("user?action=manageUser");
 
             } else {
                 boolean isEmail = udao.getUserByEmail(email);
                 if (isEmail) {
                     session.setAttribute("exist", email + " already exists!");
 
-                    response.sendRedirect("admin?action=editAccount&id=" + userId);
+                    response.sendRedirect("user?action=edit&id=" + userId);
 
                 } else {
                     udao.updateUser(userId, name, email, phone, address, role, status);
+                    if (oldRole != role) {
+                        udao.updateUserByRole(userId, role, oldRole);
+                    }
                     session.setAttribute("successUpdateUser", email + " update successfully!");
-                    response.sendRedirect("admin?action=manageUser");
+                    response.sendRedirect("user?action=manageUser");
                 }
 
             }
@@ -184,20 +215,23 @@ public class UserServlet extends HttpServlet {
             if (!isRegistered) {
 
                 session.setAttribute("exist", email + " already exists!");
-                
-                response.sendRedirect("admin?action=createAccount");
+
+                response.sendRedirect("user?action=createAccount");
 
                 return;
             }
+            int newUserID = udao.getMaxUserID();
+            udao.createRole(newUserID, role);
             session.setAttribute("successCreateUser", email + " create successfully!");
-            response.sendRedirect("admin?action=manageUser");
+            response.sendRedirect("user?action=manageUser");
         } else if (action.equals("deleteUserAdmin")) {
             int userId = Integer.parseInt(request.getParameter("userId"));
             Users u = udao.getUserByID(userId);
+            udao.deleteByRole(userId, u.getRole());
             udao.deleteUser(userId);
-            
+
             session.setAttribute("successDeleteUser", u.getEmail() + " delete successfully!");
-            response.sendRedirect("admin?action=manageUser");
+            response.sendRedirect("user?action=manageUser");
 
         } else if (action.equals("paidInstalment")) {
             String paymentIDStr = request.getParameter("paymentID");
