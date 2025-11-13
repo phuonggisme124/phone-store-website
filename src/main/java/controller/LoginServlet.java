@@ -103,7 +103,7 @@ public class LoginServlet extends HttpServlet {
                         System.err.println("Error decoding redirect URL: " + e.getMessage());
                     }
                 }
-                return;
+               
             }
 
             // Get the user's role (default to "1" if null)
@@ -121,7 +121,8 @@ public class LoginServlet extends HttpServlet {
                     break;
                 case "2":
                     // Role 2: Staff → Redirect to staff page
-                    response.sendRedirect("staff");
+                   
+                    response.sendRedirect("product");
                     break;
                 case "1":
                 default:

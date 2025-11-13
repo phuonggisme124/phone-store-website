@@ -234,7 +234,7 @@ public class ProfitDAO extends DBContext {
             double revenue = getRevenueByMonthAndYear(i, yearSelect);
             double income = (revenue - cost) / 1000000;
             String formatted = df.format(income);
-            double finalIncome = Double.parseDouble(formatted);
+            double finalIncome = Double.parseDouble(formatted.replace(",", "."));
             System.out.println("Tháng " + i + " lợi nhận : " + income);
             list.add(finalIncome);
         }

@@ -1,8 +1,8 @@
+<%@page import="java.util.ArrayList"%>
 <%@page import="java.time.LocalDateTime"%>
 <%@page import="java.time.format.DateTimeFormatter"%>
 <%@page import="com.google.gson.Gson"%>
 <%@page import="dao.UsersDAO"%>
-<%@page import="model.Sale"%>
 <%@page import="model.Order"%>
 <%@page import="model.Suppliers"%>
 <%@page import="model.Category"%>
@@ -16,13 +16,10 @@
         <meta charset="UTF-8">
         <title>Admin Dashboard - Manage Order</title>
 
-        <!-- Bootstrap -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-        <!-- Icons -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
-        <!-- Custom CSS -->
         <link rel="stylesheet" href="css/dashboard_admin.css">
         <link rel="stylesheet" href="css/search.css">
         <link href="css/dashboard_table.css" rel="stylesheet">
@@ -40,14 +37,12 @@
                 status = "Filter";
             }
             List<String> listPhone = (List<String>) request.getAttribute("listPhone");
+            if (listPhone == null) listPhone = new ArrayList<>();
         %>
         <div class="d-flex" id="wrapper">
-            <!-- Sidebar -->
             <%@ include file="sidebar.jsp" %>
 
-            <!-- Page Content -->
             <div class="page-content flex-grow-1">
-                <!-- Navbar -->
                 <nav class="navbar navbar-light bg-white shadow-sm">
                     <div class="container-fluid">
                         <button class="btn btn-outline-primary" id="menu-toggle">
@@ -55,7 +50,6 @@
                         </button>
                         <div class="d-flex align-items-center ms-auto">
 
-                            <!-- Search Phone -->
                             <form action="order" method="get" class="d-flex position-relative me-3" id="searchForm" autocomplete="off">
                                 <input type="hidden" name="action" value="searchOrder">
                                 <input type="hidden" name="status" value="<%= status%>">
@@ -74,10 +68,8 @@
                             </form>
 
 
-                            <!-- Filter Status -->
                             <form action="order" method="get" class="dropdown me-3">
                                 <input type="hidden" name="action" value="filterOrder">
-                                <!-- Giữ lại phone nếu đang search -->
                                 <input type="hidden" name="phone" value="<%= phone%>">
 
                                 <button class="btn btn-outline-secondary fw-bold dropdown-toggle" 
@@ -101,7 +93,7 @@
                             <a href="logout" class="btn btn-outline-danger btn-sm">Logout</a>
                             <div class="d-flex align-items-center ms-3">
                                 <img src="https://i.pravatar.cc/40" class="rounded-circle me-2" width="35">
-                                <span><%= user != null ? user.getFullName() : "Staff"%></span>
+                                <span><%= user != null ? user.getFullName() : "Admin"%></span>
                             </div>
                         </div>
                     </div>
@@ -112,14 +104,19 @@
                 <%
                     UsersDAO udao = new UsersDAO();
                     List<Order> listOrder = (List<Order>) request.getAttribute("listOrder");
+                    
+                    // MỚI: Nhận danh sách Staff và Shipper
+                    List<Users> listStaff = (List<Users>) request.getAttribute("listStaff");
+                    List<Users> listShippers = (List<Users>) request.getAttribute("listShippers");
 
-                    List<Sale> listSales = (List<Sale>) request.getAttribute("listSales");
+                    // Kiểm tra null để tránh lỗi
+                    if(listStaff == null) listStaff = new ArrayList<>();
+                    if(listShippers == null) listShippers = new ArrayList<>();
                 %>
 
                 <%
                     if (listOrder != null && !listOrder.isEmpty()) {
                 %>
-                <!-- Table -->
                 <div class="card shadow-sm border-0 p-4 m-3">
                     <div class="card-body p-0">
                         <div class="container-fluid p-4 ps-3">
@@ -138,19 +135,16 @@
                                     <th>Receiver Phone</th>
                                     <th>Receiver Name</th>
                                     <th>Address</th>
-
                                     <th>Method</th>
                                     <th>Order Date</th>
                                     <th>Total Amount</th>
                                     <th>Staff</th>
                                     <th>Shipper</th>
                                     <th>Status</th>
-
                                 </tr>
                             </thead>
 
-
-
+                            <tbody>
                             <%
                                 for (Order o : listOrder) {
 
@@ -167,11 +161,35 @@
                                     } else {
                                         statusBadge = "<span class='badge status-red bg-success' style='font-size: 15px'>Cancelled</span>";
                                     }
+                                    
+                                    // --- LOGIC MỚI: TÌM TÊN STAFF VÀ SHIPPER ---
+                                    String staffName = "Not Assigned";
+                                    // Lưu ý: Class Order phải có method getStaffID()
+                                    int sID = o.getStaffID(); 
+                                    if (sID != 0) {
+                                        for (Users u : listStaff) {
+                                            if (u.getUserId() == sID) {
+                                                staffName = u.getFullName();
+                                                break;
+                                            }
+                                        }
+                                    }
 
+                                    String shipperName = "Not Assigned";
+                                    // Lưu ý: Class Order phải có method getShipperID()
+                                    int shipID = o.getShipperID();
+                                    if (shipID != 0) {
+                                        for (Users u : listShippers) {
+                                            if (u.getUserId() == shipID) {
+                                                shipperName = u.getFullName();
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    // -------------------------------------------
                             %>
 
-                            <tbody>
-                                <tr  onclick="window.location.href = 'order?action=orderDetail&id=<%= o.getOrderID()%>&isInstalment=<%= o.isIsInstallment()%>'">
+                                <tr  onclick="window.location.href = 'order?action=orderDetail&id=<%= o.getOrderID()%>&isInstalment=<%= o.getIsInstalment() %>'">
                                     <td>#<%= o.getOrderID()%></td>
                                     <td><%= udao.getUserByID(o.getUserID()).getFullName()%></td>
                                     <td><%= o.getBuyerPhone()%></td>
@@ -188,30 +206,15 @@
                                     %>
                                     <td><%= dateFormated%></td>
                                     <td><%= String.format("%,.0f", o.getTotalAmount())%></td>
-                                    <%
-                                        String staffName = "";
-                                        String shipperName = "";
-                                        for (Sale s : listSales) {
-                                            if (o.getOrderID() == s.getOrderID()) {
-                                                staffName = s.getStaff().getFullName();
-                                                shipperName = s.getShipper().getFullName();
-                                                break;
-                                            }
-                                        }
-                                    %>
-
-
-                                    <td><%=staffName%></td>   
+                                    
+                                    <td><%= staffName%></td>   
                                     <td><%= shipperName%></td>  
                                     <td><%= statusBadge%></td>
                                 </tr>                          
-                            </tbody>
-
                             <%
-
                                 }
                             %>
-
+                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -227,69 +230,61 @@
             </div>
 
         </div>
-        <!-- JS Libraries -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
-        <!-- Custom JS -->
-
-
-
         <script>
+            const phoneNumbers = <%= new Gson().toJson(listPhone)%>;
+            const searchInput = document.getElementById("searchPhone");
+            const suggestionBox = document.getElementById("suggestionBox");
 
-                                    const phoneNumbers = <%= new Gson().toJson(listPhone)%>;
-                                    const searchInput = document.getElementById("searchPhone");
-                                    const suggestionBox = document.getElementById("suggestionBox");
+            // Hàm hiển thị gợi ý
+            function fetchSuggestions(query) {
+                query = query.trim().toLowerCase();
+                suggestionBox.innerHTML = "";
 
-// Hàm hiển thị gợi ý
-                                    function fetchSuggestions(query) {
-                                        query = query.trim().toLowerCase();
-                                        suggestionBox.innerHTML = "";
+                if (!query) {
+                    suggestionBox.style.display = "none";
+                    return;
+                }
 
-                                        if (!query) {
-                                            suggestionBox.style.display = "none";
-                                            return;
-                                        }
+                const matches = phoneNumbers.filter(num => num.includes(query));
 
-                                        const matches = phoneNumbers.filter(num => num.includes(query));
+                if (matches.length === 0) {
+                    suggestionBox.style.display = "none";
+                    return;
+                }
 
-                                        if (matches.length === 0) {
-                                            suggestionBox.style.display = "none";
-                                            return;
-                                        }
+                matches.forEach(num => {
+                    const item = document.createElement("button");
+                    item.type = "button";
+                    item.className = "list-group-item list-group-item-action";
+                    item.innerHTML = highlightMatch(num, query);
 
-                                        matches.forEach(num => {
-                                            const item = document.createElement("button");
-                                            item.type = "button";
-                                            item.className = "list-group-item list-group-item-action";
-                                            item.innerHTML = highlightMatch(num, query);
+                    item.addEventListener("click", () => {
+                        searchInput.value = num;
+                        suggestionBox.style.display = "none";
+                        document.getElementById("searchForm").submit();
+                    });
 
-                                            item.addEventListener("click", () => {
-                                                searchInput.value = num;
-                                                suggestionBox.style.display = "none";
-                                                document.getElementById("searchForm").submit();
-                                            });
+                    suggestionBox.appendChild(item);
+                });
 
-                                            suggestionBox.appendChild(item);
-                                        });
+                suggestionBox.style.display = "block";
+            }
 
-                                        suggestionBox.style.display = "block";
-                                    }
+            // Tô đậm phần khớp
+            function highlightMatch(text, keyword) {
+                const regex = new RegExp(`(${keyword})`, "gi");
+                return text.replace(regex, `<strong>$1</strong>`);
+            }
 
-// Tô đậm phần khớp
-                                    function highlightMatch(text, keyword) {
-                                        const regex = new RegExp(`(${keyword})`, "gi");
-                                        return text.replace(regex, `<strong>$1</strong>`);
-                                    }
-
-// Ẩn box khi click ra ngoài
-                                    document.addEventListener("click", (e) => {
-                                        if (!e.target.closest("#searchForm")) {
-                                            suggestionBox.style.display = "none";
-
-                                        }
-                                    });
-
+            // Ẩn box khi click ra ngoài
+            document.addEventListener("click", (e) => {
+                if (!e.target.closest("#searchForm")) {
+                    suggestionBox.style.display = "none";
+                }
+            });
         </script>
 
         <script>

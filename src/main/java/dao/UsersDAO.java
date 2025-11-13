@@ -518,4 +518,29 @@ public class UsersDAO extends DBContext {
             }
         }
     }
+    
+ //của thịnh để check role staff và admin để mana order   
+    /**
+     * Retrieve all users who have a specific role.
+     *
+     * @param role The role ID (e.g., 2 for Staff, 3 for Shipper)
+     * @return List of Users objects matching the role
+     */
+    public List<Users> getUsersByRole(int role) {
+        List<Users> list = new ArrayList<>();
+        String sql = "SELECT * FROM Users WHERE Role = ?";
+        
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, role);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    // Tái sử dụng helper method đã có để tạo đối tượng Users
+                    list.add(mapResultSetToUser(rs)); 
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
 }

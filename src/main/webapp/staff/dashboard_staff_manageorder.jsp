@@ -28,7 +28,7 @@
 %>
 
 <script>
-    const allPhones = <%= new Gson().toJson(allPhones) %>;
+    const allPhones = <%= (allPhones != null) ? new Gson().toJson(allPhones) : "[]" %>;
 </script>
 
 <div class="d-flex" id="wrapper">
@@ -38,7 +38,7 @@
         </div>
         <ul class="list-unstyled ps-3">
             <li><a href="staff?action=manageProduct"><i class="bi bi-box me-2"></i>Products</a></li>
-            <li><a href="staff?action=manageOrder" class="fw-bold text-primary"><i class="bi bi-bag me-2"></i>Orders</a></li>
+            <li><a href="order?action=manageOrder" class="fw-bold text-primary"><i class="bi bi-bag me-2"></i>Orders</a></li>
             <li><a href="staff?action=manageReview"><i class="bi bi-chat-left-text me-2"></i>Reviews</a></li>
         </ul>
     </nav>
@@ -52,9 +52,8 @@
                 <div class="d-flex align-items-center ms-auto">
 
                     <!-- Search Phone -->
-                    <form action="staff" method="get" class="d-flex position-relative me-3" id="searchForm" autocomplete="off">
+                    <form action="order" method="get" class="d-flex position-relative me-3" id="searchForm" autocomplete="off">
                         <input type="hidden" name="action" value="manageOrder">
-                        <!-- Giữ lại status nếu đang filter -->
                         <input type="hidden" name="status" value="<%= currentStatus %>">
                         <input class="form-control me-2" type="text" id="searchPhone" name="phone"
                                placeholder="Search Phone…" value="<%= currentPhone %>"
@@ -67,13 +66,12 @@
                     </form>
 
                     <!-- Filter Status -->
-                    <form action="staff" method="get" class="dropdown me-3">
+                    <form action="order" method="get" class="dropdown me-3">
                         <input type="hidden" name="action" value="manageOrder">
-                        <!-- Giữ lại phone nếu đang search -->
                         <input type="hidden" name="phone" value="<%= currentPhone %>">
 
                         <button class="btn btn-outline-secondary fw-bold dropdown-toggle"
-                                 type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-funnel"></i> Filter
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="filterDropdown">
@@ -96,6 +94,33 @@
         </nav>
 
         <div class="container-fluid p-4">
+
+            <!-- in thông báo -->
+            <%
+                String message = (String) session.getAttribute("message");
+                if (message != null) {
+            %>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i>
+                <%= message %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <%
+                    session.removeAttribute("message");
+                }
+                String error = (String) session.getAttribute("error");
+                if (error != null) {
+            %>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                <%= error %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <%
+                    session.removeAttribute("error");
+                }
+            %>
+
             <div class="card shadow-sm border-0 p-4">
                 <div class="card-body p-0">
                     <h4 class="fw-bold ps-3 mb-4">Manage Orders</h4>
@@ -111,41 +136,88 @@
                                 <th>Total Amount</th>
                                 <th>Order Date</th>
                                 <th>Status</th>
-                                <th>Shipper</th>
+                                <th>Shipper / Action</th>
                             </tr>
                             </thead>
                             <tbody>
                             <% for (Order o : orders) {
                                 String status = o.getStatus();
                                 String badgeClass = "badge bg-secondary";
-                                if ("Pending".equalsIgnoreCase(status))
-                                    badgeClass = "badge bg-warning text-dark";
-                                else if ("In Transit".equalsIgnoreCase(status))
-                                    badgeClass = "badge bg-info text-dark";
-                                else if ("Delivered".equalsIgnoreCase(status))
-                                    badgeClass = "badge bg-success";
-                                else if ("Delay".equalsIgnoreCase(status))
-                                    badgeClass = "badge bg-secondary";
-                                else if ("Cancelled".equalsIgnoreCase(status))
-                                    badgeClass = "badge bg-danger";
+                                
+                                if (status != null) {
+                                    String statusLower = status.trim().toLowerCase();
+                                    switch(statusLower) {
+                                        case "pending":
+                                            badgeClass = "badge bg-warning text-dark";
+                                            break;
+                                        case "in transit":
+                                            badgeClass = "badge bg-info text-dark";
+                                            break;
+                                        case "delivered":
+                                            badgeClass = "badge bg-success";
+                                            break;
+                                        case "delay":
+                                            badgeClass = "badge bg-warning text-dark";
+                                            break;
+                                        case "cancelled":
+                                            badgeClass = "badge bg-danger";
+                                            break;
+                                    }
+                                }
                             %>
                             <tr>
                                 <td>#<%= o.getOrderID()%></td>
-                                <td><%= o.getBuyer().getFullName()%></td>
-                                <td><%= o.getBuyer().getPhone()%></td>
+                                <td>
+                                    <% if (o.getBuyer() != null) { %>
+                                        <%= o.getBuyer().getFullName() != null ? o.getBuyer().getFullName() : o.getReceiverName() %>
+                                    <% } else { %>
+                                        <%= o.getReceiverName() %>
+                                    <% } %>
+                                </td>
+                                <td>
+                                    <% if (o.getBuyer() != null && o.getBuyer().getPhone() != null) { %>
+                                        <%= o.getBuyer().getPhone() %>
+                                    <% } else { %>
+                                        <%= o.getReceiverPhone() %>
+                                    <% } %>
+                                </td>
                                 <td><%= o.getShippingAddress()%></td>
                                 <td><%= currencyFormatter.format(o.getTotalAmount())%></td>
                                 <td><%= o.getOrderDate()%></td>
                                 <td><span class="<%= badgeClass%> fs-6 px-3 py-2"><%= status%></span></td>
                                 <td>
-                                    <% if ("Pending".equalsIgnoreCase(status)) {%>
-                                    <button class="btn btn-sm btn-outline-primary" onclick="openModal(<%= o.getOrderID()%>)">
-                                        <i class="bi bi-truck"></i> Assign
-                                    </button>
-                                    <% } else if (o.getShippers() != null) { %>
-                                    <%= o.getShippers().getFullName()%> (<%= o.getShippers().getPhone()%>)
-                                    <% } else { %>
-                                    <span class="text-muted">N/A</span>
+                                    <%
+                                        // Logic hiển thị nút/shipper
+                                        boolean isPending = status != null && "pending".equalsIgnoreCase(status.trim());
+                                        boolean hasShipper = o.getShippers() != null;
+                                        boolean isCancelled = status != null && "cancelled".equalsIgnoreCase(status.trim());
+                                    %>
+                                    
+                                    <% if (isPending) { %>
+                                        <!-- pending cho 2 nút -->
+                                        <button class="btn btn-sm btn-outline-primary me-1" onclick="openAssignModal(<%= o.getOrderID()%>)">
+                                            <i class="bi bi-truck"></i> Assign
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger" onclick="openCancelModal(<%= o.getOrderID()%>)">
+                                            <i class="bi bi-x-circle"></i> Cancel
+                                        </button>
+                                        
+                                    <% } else if (isCancelled && !hasShipper) { %>
+                                        <!-- staff cancel NA  -->
+                                        <span class="text-muted">N/A</span>
+                                        
+                                    <% } else if (hasShipper) { %>
+                                        <!-- assign shipper tên shipper -->
+                                        <div class="d-flex align-items-center">
+                                            <i class="bi bi-person-badge text-primary me-2"></i>
+                                            <div>
+                                                <div class="fw-bold"><%= o.getShippers().getFullName()%></div>
+                                                <small class="text-muted"><%= o.getShippers().getPhone()%></small>
+                                            </div>
+                                        </div>
+                                        
+                                    <% } else { %>                                    
+                                        <span class="text-muted">N/A</span>
                                     <% } %>
                                 </td>
                             </tr>
@@ -162,21 +234,34 @@
             </div>
         </div>
 
-        <!-- Modal chọn Shipper -->
+        <!-- chọn shipper -->
         <div class="modal fade" id="shipperModal" tabindex="-1">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Choose a Shipper</h5>
+                        <h5 class="modal-title">
+                            <i class="bi bi-truck me-2"></i>Choose a Shipper
+                        </h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
+                        <form action="order" method="POST" id="assignShipperForm">
+                            <input type="hidden" name="action" value="assignShipper">
+                            <input type="hidden" name="orderID" id="modalOrderID">
+                            <input type="hidden" name="shipperID" id="modalShipperID">
+                        </form>
+                        
                         <ul class="list-group">
                             <% if (shippers != null && !shippers.isEmpty()) {
                                 for (Users s : shippers) { %>
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <%= s.getFullName()%> (<%= s.getPhone()%>)
-                                <button class="btn btn-sm btn-primary" onclick="assignShipper(<%= s.getUserId()%>)">Select</button>
+                                <div>
+                                    <div class="fw-bold"><%= s.getFullName()%></div>
+                                    <small class="text-muted"><%= s.getPhone()%></small>
+                                </div>
+                                <button class="btn btn-sm btn-primary" onclick="submitAssignForm(<%= s.getUserId()%>)">
+                                    Select
+                                </button>
                             </li>
                             <% }
                             } else { %>
@@ -187,39 +272,85 @@
                 </div>
             </div>
         </div>
+        
+        <!-- cancel -->
+        <div class="modal fade" id="cancelModal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header bg-danger text-white">
+                        <h5 class="modal-title">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>Confirm Cancel
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to cancel order <strong id="cancelOrderIDText">#</strong>?</p>
+                        <p class="text-muted small mb-0">
+                            <i class="bi bi-info-circle me-1"></i> Cannot undone.
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="bi bi-x-lg me-1"></i>No
+                        </button>
+                        <form action="order" method="POST" id="cancelOrderForm" class="d-inline">
+                            <input type="hidden" name="action" value="cancelOrder">
+                            <input type="hidden" name="orderID" id="cancelOrderID">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="bi bi-trash me-1"></i>Cancel Order
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
 
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
-    var currentOrderID = null;
-    var myModal = null;
+    var assignModal = null;
+    var cancelModal = null;
 
     window.onload = function () {
-        myModal = new bootstrap.Modal(document.getElementById('shipperModal'));
+        var shipperModalEl = document.getElementById('shipperModal');
+        var cancelModalEl = document.getElementById('cancelModal');
+        
+        if (shipperModalEl) {
+            assignModal = new bootstrap.Modal(shipperModalEl);
+        }
+        if (cancelModalEl) {
+            cancelModal = new bootstrap.Modal(cancelModalEl);
+        }
     };
 
-    function openModal(orderID) {
-        currentOrderID = orderID;
-        myModal.show();
+    function openAssignModal(orderID) {
+        document.getElementById("modalOrderID").value = orderID;
+        if (assignModal) assignModal.show();
+    }
+    
+    function openCancelModal(orderID) {
+        document.getElementById("cancelOrderID").value = orderID;
+        document.getElementById("cancelOrderIDText").innerText = "#" + orderID;
+        if (cancelModal) cancelModal.show();
     }
 
-    function assignShipper(shipperID) {
-        var staffID = '<%= (currentUser != null) ? currentUser.getUserId() : ""%>';
-        if (!currentOrderID || !shipperID || !staffID) {
-            alert("Missing information!");
-            return;
-        }
-        window.location.href = "staff?action=assignShipper&orderID=" + currentOrderID + "&shipperID=" + shipperID;
+    function submitAssignForm(shipperID) {
+        document.getElementById("modalShipperID").value = shipperID;
+        document.getElementById("assignShipperForm").submit();
     }
+</script>
 
-    // ------------------ Autocomplete ------------------
+<!-- Autocomplete Search -->
+<script>
     var debounceTimer;
     function showSuggestions(str) {
         clearTimeout(debounceTimer);
         debounceTimer = setTimeout(() => {
             var box = document.getElementById("suggestionBox");
+            if (!box) return;
             box.innerHTML = "";
             if (str.length < 1) return;
 
@@ -245,11 +376,25 @@
             }
         }, 200);
     }
-</script>
-<script>
-    document.getElementById("menu-toggle").addEventListener("click", function () {
-        document.getElementById("wrapper").classList.toggle("toggled");
+
+    // Close suggestion box when clicking outside
+    document.addEventListener('click', function(event) {
+        var box = document.getElementById("suggestionBox");
+        var searchInput = document.getElementById("searchPhone");
+        if (box && searchInput && !box.contains(event.target) && event.target !== searchInput) {
+            box.innerHTML = "";
+        }
     });
+</script>
+
+<!-- Sidebar Toggle -->
+<script>
+    var menuToggle = document.getElementById("menu-toggle");
+    if (menuToggle) {
+        menuToggle.addEventListener("click", function () {
+            document.getElementById("wrapper").classList.toggle("toggled");
+        });
+    }
 </script>
 
 </body>

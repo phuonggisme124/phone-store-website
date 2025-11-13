@@ -25,7 +25,7 @@
                ><i class="bi bi-truck me-2"></i>Suppliers</a></li>
         <li><a href="${pageContext.request.contextPath}/promotion?action=managePromotion" <%= (action.equals("managePromotion")) ? "class='active'" : ""%>
                ><i class="bi bi-tag me-2"></i></i>Promotions</a></li>
-        <li><a href="${pageContext.request.contextPath}/order?action=manageOrder" <%= (action.equals("manageOrder")) ? "class='active'" : ""%>
+        <li><a href="${pageContext.request.contextPath}/order?action=manageOrderAdmin" <%= (action.equals("manageOrderAdmin")) ? "class='active'" : ""%>
                ><i class="bi bi-bag me-2"></i>Orders</a></li>
         <li><a href="${pageContext.request.contextPath}/review?action=manageReview" <%= (action.equals("manageReview")) ? "class='active'" : ""%>
                ><i class="bi bi-chat me-2"></i>Reviews</a></li>
