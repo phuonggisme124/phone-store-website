@@ -278,7 +278,7 @@
                     %>
                     <!-- QUAN TRỌNG: Thêm data-variant-id để JavaScript có thể lọc -->
                     <div class="review-item" data-variant-id="<%= r.getVariantID()%>">
-                        <p><strong><%= r.getUserName() != null ? r.getUserName() : "Anonymous"%></strong> 
+                        <p><strong><%= r.getUser().getFullName() != null ? r.getUser().getFullName() : "Anonymous"%></strong> 
                             <%
                                 int sao = r.getRating();
                                 for (int i = 0; i < sao; i++) {

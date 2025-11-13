@@ -76,14 +76,13 @@
         <%@ include file="sidebar.jsp" %>
 
         <div class="content-area">
-            <a href="${pageContext.request.contextPath}/admin?action=manageProduct" class="back-link">
-                <span>&#8592;</span> Quay lại danh sách
-            </a>
+
 
             <h2 class="text-center mb-4 text-primary">Import Products</h2>
 
-            <form action="${pageContext.request.contextPath}/importproduct" method="post">
+               <form action="${pageContext.request.contextPath}/importproduct" method="post">
                 <% 
+                   
                     ProductDAO productDAO = new ProductDAO();
                     List<Products> products = productDAO.getAllProduct();
                 %>

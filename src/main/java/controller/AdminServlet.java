@@ -118,7 +118,7 @@ public class AdminServlet extends HttpServlet {
             String monthSelectStr = request.getParameter("monthSelect");
             String yearSelectStr = request.getParameter("yearSelect");
             int yearSelect = Calendar.getInstance().get(Calendar.YEAR);
-            int monthSelect = Calendar.getInstance().get(Calendar.MONTH);
+            int monthSelect = Calendar.getInstance().get(Calendar.MONTH) + 1;
 
             if (yearSelectStr != null) {
                 yearSelect = Integer.parseInt(yearSelectStr);

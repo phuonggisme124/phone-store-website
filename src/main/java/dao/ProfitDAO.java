@@ -226,7 +226,7 @@ public class ProfitDAO extends DBContext {
         if (yearSelect < currentYear) {
             currentMonth = 12;
         } else {
-            currentMonth = Calendar.getInstance().get(Calendar.MONTH);
+            currentMonth = Calendar.getInstance().get(Calendar.MONTH)+1;
         }
 
         for (int i = 1; i <= currentMonth; i++) {
@@ -300,7 +300,7 @@ public class ProfitDAO extends DBContext {
         if (yearSelect < currentYear) {
             currentMonth = 12;
         } else {
-            currentMonth = Calendar.getInstance().get(Calendar.MONTH);
+            currentMonth = Calendar.getInstance().get(Calendar.MONTH) + 1;
         }
 
         for (int i = 1; i <= currentMonth; i++) {

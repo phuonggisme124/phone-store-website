@@ -330,7 +330,7 @@ public class VariantsServlet extends HttpServlet {
 
                 vdao.updateDiscountPrice();
 
-                pfdao.updateSellPriceByVariantID(vID);
+
 
                 if (oldStock < stock && oldCost != cost) {
                     int quantity = stock - oldStock;
@@ -341,6 +341,7 @@ public class VariantsServlet extends HttpServlet {
                 } else if (oldCost != cost) {
                     pfdao.updateCost(vID, cost);
                 }
+                pfdao.updateSellPriceByVariantID(vID);
 
                 session.setAttribute("successUpdateProduct", pdao.getNameByID(variant.getProductID())
                         + (variant.getStorage() != null ? " " + variant.getStorage() : "")

@@ -50,7 +50,7 @@
                 double percentIncome = (incomeOfMonth / incomeTargetOfMonth) * 100;
 
                 int currentYear = Calendar.getInstance().get(Calendar.YEAR);
-                int currentMonth = Calendar.getInstance().get(Calendar.MONTH);
+                int currentMonth = Calendar.getInstance().get(Calendar.MONTH) +1;
                 int yearSelect = (int) request.getAttribute("yearSelect");
                 int monthSelect = (int) request.getAttribute("monthSelect");
                 List<Double> monthlyIncome = (List<Double>) request.getAttribute("monthlyIncome");
