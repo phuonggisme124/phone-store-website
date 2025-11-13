@@ -315,7 +315,7 @@
                             </div>
                             <div class="flex justify-between items-center">
                                 <span class="text-gray-500">Account Holder:</span>
-                                <span class="font-semibold text-gray-800">PHAM HOANG PHUONG</span>
+                                <span class="font-semibold text-gray-800">TRANG TIEN DAT</span>
                             </div>
                             <div class="flex justify-between items-center">
                                 <span class="text-gray-500">Content:</span>
@@ -452,8 +452,8 @@
                     document.getElementById('transferContent').innerText = transferDescription;
 
                     const bankId = "970422";
-                    const accountNumber = "343339799999";
-                    const accountName = "PHAM HOANG PHUONG";
+                    const accountNumber = "0968418098";
+                    const accountName = "TRANG TIEN DAT";
 
                     const encodedDescription = encodeURIComponent(transferDescription);
                     const encodedAccountName = encodeURIComponent(accountName);
@@ -480,7 +480,7 @@
                 // --- HÀM checkPaid ĐƯỢC CẬP NHẬT HOÀN TOÀN ---
                 async function checkPaid(description) {
                     try {
-                        const response = await fetch("https://script.google.com/macros/s/AKfycbz2ZSvZF7bJkTqXnOUXbdqUQMmuc7w27wAjB4efbKSSA1q6yqGj6uxek5nP0W4VgK6xgw/exec");
+                        const response = await fetch("https://script.google.com/macros/s/AKfycbwVGFzfs_VMzmWN9kXOcLW2o5HNR407tycQzyyq20NjEOn32MBZw6GSBFVi5uRtWtSwqw/exec");
                         const data = await response.json();
                         const lastPaid = data.data[data.data.length - 1];
                         const lastDescription = lastPaid["Mô tả"];

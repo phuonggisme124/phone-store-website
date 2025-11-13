@@ -38,6 +38,7 @@ public class PaymentServlet extends HttpServlet {
         if (action != null && action.equalsIgnoreCase("buyNowFromProductDetail")) {
             try {
                 // BƯỚC 1: KIỂM TRA ĐĂNG NHẬP
+                session.setAttribute("buyFrom", action);
                 model.Users user = (model.Users) session.getAttribute("user");
                 Integer userID = user.getUserId();
                 if (userID == null) {
@@ -74,6 +75,7 @@ public class PaymentServlet extends HttpServlet {
                 response.sendRedirect("homepage?error=invalid_parameter");
             }
         } else if (action.equalsIgnoreCase("buyNowFromCart")) {
+            session.setAttribute("buyFrom", action);
             List<Carts> carts = (List<Carts>) session.getAttribute("cart");
 
             String idsParam = request.getParameter("selectedIds");
@@ -204,8 +206,11 @@ public class PaymentServlet extends HttpServlet {
             }
             VariantsDAO vDAO = new VariantsDAO();
             CartDAO cartDAO = new CartDAO();
+            String buyFrom = (String) session.getAttribute("buyFrom");
             for (Carts c : carts) {
-                cartDAO.removeCartItem(userID, c.getVariant().getVariantID());
+                if (buyFrom != null && buyFrom.equalsIgnoreCase("buyNowFromCart")) {
+                    cartDAO.removeCartItem(userID, c.getVariant().getVariantID());
+                }
                 vDAO.decreaseQuantity(c.getVariant().getVariantID(), c.getQuantity());
             }
 

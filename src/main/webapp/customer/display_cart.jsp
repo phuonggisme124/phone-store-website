@@ -8,6 +8,7 @@
 <%@ page import="java.util.Locale" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/layout/header.jsp" %>
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -16,13 +17,9 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
-
         <link rel="stylesheet" href="${pageContext.request.contextPath}/css/bootstrap.min.css">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/cart.css?v=1.1">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/cart.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
@@ -46,31 +43,25 @@
                 opacity: 0.7;
             }
         </style>
-
     </head>
+
     <body>
 
         <section id="banner-top" class="position-relative overflow-hidden bg-light-blue"></section>
 
-<<<<<<< HEAD
-
-        <% 
-
-=======
-        <% 
->>>>>>> origin/main
+        <%
             NumberFormat vnFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
             double initialTotalPrice = 0;
             ProductDAO pDAO = new ProductDAO();
-            
         %>
 
-        <%
+        <% 
             String res = (String) session.getAttribute("res");
             if (res != null) {
                 session.removeAttribute("res");
             }
         %>
+
         <% if (res != null) { %>
         <div class="alert-success" id="successAlert">
             <i class="bi bi-check-circle-fill"></i>
@@ -88,6 +79,7 @@
                     <p><a href="homepage" class="btn btn-primary mt-3">Continue Shopping</a></p>
                 </div>
                 <% } else { %>
+                
                 <div class="cart-controls text-center mb-3">
                     <label class="select-all-label">
                         <input type="checkbox" id="selectAll" class="select-all-checkbox" checked> Select All
@@ -97,20 +89,36 @@
                 <%
                     boolean canProceedToCheckout = true;
                     for (Carts c : carts) {
+
                         boolean isOutOfStock = c.getQuantity() > c.getVariant().getStock();
-                        if (isOutOfStock) canProceedToCheckout = false;
+                        if (isOutOfStock) {
+                            canProceedToCheckout = false;
+                        }
+
                         if (!isOutOfStock) {
                             initialTotalPrice += c.getVariant().getDiscountPrice() * c.getQuantity();
                         }
                 %>
+
                 <div class="cart-item <%= isOutOfStock ? "out-of-stock" : "" %>"
                      data-id="<%= c.getVariant().getVariantID() %>"
                      data-price="<%= c.getVariant().getDiscountPrice() %>">
 
                     <input type="checkbox" class="item-checkbox" checked <%= isOutOfStock ? "disabled" : "" %>>
-                    <img src="images/<%= c.getVariant().getImageList()[0] %>" class="product-img" alt="Product">
+
+                    <img src="images/<%= c.getVariant().getImageList()[0] %>" class="product-img">
+
                     <div class="item-info">
-                        <p class="product-name"><%= pDAO.getNameByID(c.getVariant().getProductID()) + " - " + c.getVariant().getStorage() %></p>
+                        <p class="product-name">
+                            <a href="product?action=selectStorage&pID=<%= c.getVariant().getProductID() %>
+                                     &color=<%= c.getVariant().getColor() %>
+                                     &storage=<%= c.getVariant().getStorage() %>
+                                     &vID=<%= c.getVariant().getVariantID() %>">
+                                <%= pDAO.getNameByID(c.getVariant().getProductID()) %> 
+                                - <%= c.getVariant().getStorage() %>
+                            </a>
+                        </p>
+
                         <p class="product-price"><%= vnFormat.format(c.getVariant().getDiscountPrice()) %></p>
                         <p class="product-color"><%= c.getVariant().getColor() %></p>
 
@@ -142,23 +150,26 @@
                         </form>
                     </div>
 
-                    <form action="cart" method="post" class="delete-form">
+                    <form action="cart" class="delete-form" method="post">
                         <input type="hidden" name="action" value="delete">
                         <input type="hidden" name="cartID" value="<%= c.getCartID() %>">
                         <input type="hidden" name="variantID" value="<%= c.getVariant().getVariantID() %>">
                         <button type="submit" class="delete-btn"><i class="fa-solid fa-trash"></i></button>
                     </form>
                 </div>
+
                 <% } %>
 
                 <div class="cart-total">
                     <h3 id="totalAmount">Total: <%= vnFormat.format(initialTotalPrice) %></h3>
+
                     <form id="buyForm" action="payment" method="get" onsubmit="return collectSelectedItems()">
                         <input type="hidden" name="action" value="buyNowFromCart">
                         <input type="hidden" name="selectedIds" id="selectedIds">
                         <button type="submit" class="buy-btn" <%= !canProceedToCheckout ? "disabled" : "" %>>Buy</button>
                     </form>
                 </div>
+
                 <% } %>
             </section>
         </section>
@@ -170,47 +181,39 @@
 
         <script>
             document.addEventListener("DOMContentLoaded", function () {
+
                 const selectAllCheckbox = document.getElementById("selectAll");
                 const itemCheckboxes = document.querySelectorAll(".item-checkbox:not([disabled])");
                 const totalElement = document.getElementById("totalAmount");
 
                 function updateTotal() {
                     let total = 0;
+
                     document.querySelectorAll(".cart-item").forEach(item => {
                         const checkbox = item.querySelector(".item-checkbox");
                         if (checkbox && checkbox.checked && !checkbox.disabled) {
-                            const price = parseFloat(item.getAttribute("data-price"));
+                            const price = parseFloat(item.dataset.price);
                             const quantity = parseInt(item.querySelector(".item-quantity span").textContent);
                             total += price * quantity;
                         }
                     });
-                    const formattedTotal = new Intl.NumberFormat('vi-VN', {
-                        style: 'currency',
-                        currency: 'VND'
-                    }).format(total);
-                    if (totalElement) {
-                        totalElement.textContent = "Total: " + formattedTotal;
-                    }
+
+                    totalElement.textContent =
+                            "Total: " + new Intl.NumberFormat("vi-VN", {style: "currency", currency: "VND"}).format(total);
                 }
 
                 function updateSelectAllState() {
-                    if (selectAllCheckbox) {
-                        const allValidChecked = Array.from(itemCheckboxes).every(cb => cb.checked);
-                        selectAllCheckbox.checked = allValidChecked;
-                    }
+                    selectAllCheckbox.checked =
+                        Array.from(itemCheckboxes).every(cb => cb.checked);
                 }
 
-                if (selectAllCheckbox) {
-                    selectAllCheckbox.addEventListener("change", function () {
-                        itemCheckboxes.forEach(checkbox => {
-                            checkbox.checked = selectAllCheckbox.checked;
-                        });
-                        updateTotal();
-                    });
-                }
+                selectAllCheckbox.addEventListener("change", function () {
+                    itemCheckboxes.forEach(cb => cb.checked = selectAllCheckbox.checked);
+                    updateTotal();
+                });
 
-                itemCheckboxes.forEach(checkbox => {
-                    checkbox.addEventListener("change", function () {
+                itemCheckboxes.forEach(cb => {
+                    cb.addEventListener("change", function () {
                         updateSelectAllState();
                         updateTotal();
                     });
@@ -221,27 +224,29 @@
 
             function collectSelectedItems() {
                 let selected = [];
+
                 document.querySelectorAll(".cart-item").forEach(item => {
                     const checkbox = item.querySelector(".item-checkbox");
                     if (checkbox && checkbox.checked && !checkbox.disabled) {
-                        selected.push(item.getAttribute("data-id"));
+                        selected.push(item.dataset.id);
                     }
                 });
+
                 if (selected.length === 0) {
                     alert("Please select at least one valid product to buy!");
                     return false;
                 }
+
                 document.getElementById("selectedIds").value = selected.join(",");
                 return true;
             }
 
-            const alertBox = document.getElementById('successAlert');
+            const alertBox = document.getElementById("successAlert");
             if (alertBox) {
-                alertBox.style.display = 'block';
-                setTimeout(() => {
-                    alertBox.style.display = 'none';
-                }, 3000);
+                alertBox.style.display = "block";
+                setTimeout(() => alertBox.style.display = "none", 3000);
             }
         </script>
+
     </body>
 </html>

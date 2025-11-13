@@ -160,7 +160,7 @@ public class OrderServlet extends HttpServlet {
                 List<String> listPhone = dao.getAllPhone();
 
                 for (Order o : listOrder) {
-                    System.out.println("OrderID: " + o.getOrderID() + " StaffID: "+ o.getStaffID());
+                    System.out.println("OrderID: " + o.getOrderID() + " StaffID: " + o.getStaffID());
                 }
                 request.setAttribute("listOrder", listOrder);
                 request.setAttribute("listPhone", listPhone);

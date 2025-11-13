@@ -126,10 +126,10 @@
     .product-card .image-holder {
         position: relative;
         width: 100%;
-        /* ?ây là k? thu?t t?o t? l? 1:1 (hình vuông) */
+        /* ??y l? k? thu?t t?o t? l? 1:1 (h?nh vu?ng) */
         padding-top: 100%;
-        background-color: #f4f4f4; /* Thêm màu n?n nh?t cho ?? tr?ng */
-        border-radius: 8px; /* Bo góc cho ??p */
+        background-color: #f4f4f4; /* Th?m m?u n?n nh?t cho ?? tr?ng */
+        border-radius: 8px; /* Bo g?c cho ??p */
         overflow: hidden; /* ?n ph?n ?nh th?a */
     }
     /* CSS cho s?n ph?m 8*/
@@ -504,9 +504,9 @@
                             <div class="product-card text-center position-relative">
                                 <div class="image-holder">
                                     <a href="product?action=viewDetail&pID=<%= p.getProductID()%>">
-                                    <img src="images/<%= p.getVariants().get(0).getImageUrl()%>" alt="<%= p.getName()%>" class="img-fluid rounded-3">
+                                        <img src="images/<%= p.getVariants().get(0).getImageUrl()%>" alt="<%= p.getName()%>" class="img-fluid rounded-3">
                                     </a>
-                                    </div>
+                                </div>
                                 <div class="card-detail pt-3">
                                     <h3 class="card-title text-uppercase">
                                         <a href="product?action=viewDetail&pID=<%= p.getProductID()%>">
@@ -553,9 +553,9 @@
                             <div class="product-card text-center position-relative">
                                 <div class="image-holder">
                                     <a href="product?action=viewDetail&pID=<%= p.getProductID()%>">
-                                    <img src="images/<%= p.getVariants().get(0).getImageUrl()%>" alt="<%= p.getName()%>" class="img-fluid rounded-3">
+                                        <img src="images/<%= p.getVariants().get(0).getImageUrl()%>" alt="<%= p.getName()%>" class="img-fluid rounded-3">
                                     </a>
-                                    </div>
+                                </div>
                                 <div class="card-detail pt-3">
                                     <h3 class="card-title text-uppercase">
                                         <a href="product?action=viewDetail&pID=<%= p.getProductID()%>">
@@ -642,6 +642,23 @@
             </div>
         </div>
     </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+
+            // N?U Google redirect v? homepage v?i access_token trong URL:
+            if (window.location.hash.includes("access_token")) {
+                if (typeof getUserInfor === "function") {
+                    getUserInfor();
+                } else {
+                    console.error("google_login.js ch?a load ho?c getUserInfor undefined");
+                }
+            }
+
+        });
+    </script>
+
+    <script src="${pageContext.request.contextPath}/js/google_login.js?v=10"></script>
+
 
     <script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
 

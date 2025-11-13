@@ -28,7 +28,14 @@ public class OrderDAO extends DBContext {
 
     private Order mapResultSetToOrderWithUsers(ResultSet rs) throws SQLException {
 
+
         Order order = new Order();
+        // Buyer information
+        String name = rs.getString("ReceiverName");
+        String phone = rs.getString("ReceiverPhone");
+        String address = rs.getString("ShippingAddress");
+        Users buyer = new Users(name, phone);
+
 
         order.setOrderID(rs.getInt("OrderID"));
         order.setTotalAmount(rs.getDouble("TotalAmount"));
@@ -55,7 +62,7 @@ public class OrderDAO extends DBContext {
         order.setReceiverPhone(rs.getString("ReceiverPhone"));
 
         if (hasColumn(rs, "BuyerID") && rs.getObject("BuyerID") != null) {
-            Users buyer = new Users();
+            buyer = new Users();
             buyer.setUserId(rs.getInt("BuyerID"));
             buyer.setFullName(rs.getString("BuyerName"));
             buyer.setPhone(rs.getString("BuyerPhone"));
@@ -124,13 +131,18 @@ public class OrderDAO extends DBContext {
 
     public List<Order> getOrdersByShipperId(int shipperId) {
         List<Order> orders = new ArrayList<>();
-        String sql = "SELECT o.*, "
-                + "b.UserID AS BuyerID, b.FullName AS BuyerName, b.Phone AS BuyerPhone, "
-                + "s.UserID AS ShipperID_Alias, s.FullName AS ShipperName, s.Phone AS ShipperPhone "
-                + "FROM Orders o "
-                + "LEFT JOIN Users b ON o.UserID = b.UserID "
-                + "LEFT JOIN Users s ON o.ShipperID = s.UserID "
-                + "WHERE o.ShipperID = ?";
+        String sql = "SELECT \n"
+                + "    o.OrderID, \n"
+                + "    o.ReceiverName, \n"
+                + "    o.ReceiverPhone, \n"
+                + "    o.OrderDate, \n"
+                + "    o.ShippingAddress, \n"
+                + "    o.TotalAmount, \n"
+                + "    o.Status\n"
+                + "FROM Orders o\n"
+                + "JOIN Shippers s ON s.ShipperID = o.ShipperID\n"
+                + "JOIN Users u on s.ShipperID = u.UserID\n"
+                + "WHERE s.ShipperID = ? and u.Role = 3 and o.Status <> 'Pending'";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, shipperId);

@@ -54,21 +54,21 @@ public class NotificationServlet extends HttpServlet {
         }
     }
 
-    // POST để đánh dấu đã đọc
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        String idStr = request.getParameter("id");
-        if (idStr == null || idStr.isEmpty()) {
+        HttpSession session = request.getSession(false);
+        Users user = (Users) (session != null ? session.getAttribute("user") : null);
+
+        if (user == null) {
             response.getWriter().write("error");
             return;
         }
 
         try (Connection conn = new DBContext().conn) {
-            int id = Integer.parseInt(idStr);
             NotificationDAO dao = new NotificationDAO(conn);
-            dao.markAsRead(id);
+            dao.markAllAsRead(user.getUserId()); // đánh dấu tất cả chưa đọc thành đã đọc
             response.getWriter().write("success");
         } catch (Exception e) {
             e.printStackTrace();
@@ -76,3 +76,4 @@ public class NotificationServlet extends HttpServlet {
         }
     }
 }
+

@@ -137,7 +137,7 @@ public class ProductServlet extends HttpServlet {
 
         else if ("selectStorage".equals(action)) {
             int pID = Integer.parseInt(request.getParameter("pID"));
-            int cID = Integer.parseInt(request.getParameter("cID"));
+           
             String storage = request.getParameter("storage");
             String color = request.getParameter("color");
 
@@ -159,7 +159,7 @@ public class ProductServlet extends HttpServlet {
 
             request.setAttribute("productID", pID);
             request.setAttribute("rating", rating);
-            request.setAttribute("categoryID", cID);
+    
             request.setAttribute("variants", variants);
             request.setAttribute("listProducts", listProducts);
             request.setAttribute("listVariants", listVariants);

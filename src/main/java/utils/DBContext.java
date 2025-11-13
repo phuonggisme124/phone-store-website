@@ -12,20 +12,18 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * DBContext class is responsible for establishing a connection
- * to the SQL Server database "PhoneStore".
+ * DBContext class is responsible for establishing a connection to the SQL
+ * Server database "PhoneStore".
  *
  * @author Nguyen Quoc Thinh
  * @since 2025-06-05
  */
-
 public class DBContext {
 
     /**
-     * The Connection object represents the connection to the database.
-     * It is public so that other classes can access the connection directly.
+     * The Connection object represents the connection to the database. It is
+     * public so that other classes can access the connection directly.
      */
-
     public Connection conn = null;
 
     /**
@@ -38,14 +36,11 @@ public class DBContext {
             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
 
             // Connection URL to the database
-
             String dbURL = "jdbc:sqlserver://localhost:1433;"
                     + "databaseName=PhoneStore;"
                     + "user=sa;"
-                    + "password=123456;"
-
+                    + "password=6789;"
                     + "encrypt=true;trustServerCertificate=true;";
-
 
             // Establish the connection
             conn = DriverManager.getConnection(dbURL);
@@ -72,13 +67,9 @@ public class DBContext {
         }
     }
 
-
-
     /**
      * Main method to test the database connection.
      */
-
-
     public static void main(String[] args) {
         System.out.println("Checking database connection...");
         new DBContext();
