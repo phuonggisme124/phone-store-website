@@ -1,6 +1,7 @@
 package dao;
 
 import java.security.MessageDigest;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -356,7 +357,7 @@ public class UsersDAO extends DBContext {
 
     public boolean getUserByEmail(String email) {
         String sql = "SELECT * FROM Users WHERE Email =?";
-        
+
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, email);
@@ -375,7 +376,7 @@ public class UsersDAO extends DBContext {
                 LocalDateTime createdAt = (createdAtTimestamp != null) ? createdAtTimestamp.toLocalDateTime() : null;
 
                 Users u = new Users(id, fullName, e, phone, pass, role, address, createdAt, status);
-                if(u != null){
+                if (u != null) {
                     return true;
                 }
             }
@@ -384,4 +385,28 @@ public class UsersDAO extends DBContext {
         }
         return false;
     }
+
+    public Users getUserByEmailAndPhone(String email, String phone) {
+        String sql = "SELECT * FROM Users WHERE email = ? AND phone = ?";
+        try (Connection conn = new DBContext().conn; PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, email);
+            ps.setString(2, phone);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                Users user = new Users();
+                user.setUserId(rs.getInt("userId"));
+                user.setFullName(rs.getString("fullName"));
+                user.setEmail(rs.getString("email"));
+                user.setPhone(rs.getString("phone"));
+                user.setPassword(rs.getString("password"));
+                user.setRole(rs.getInt("role"));
+                user.setAddress(rs.getString("address"));
+                return user;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 }
