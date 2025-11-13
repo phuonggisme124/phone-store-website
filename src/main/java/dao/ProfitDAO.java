@@ -6,6 +6,7 @@ package dao;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
@@ -510,15 +511,14 @@ public class ProfitDAO extends DBContext {
             System.out.println("Tháng của profit có VariantID = " + vID + " là: " + monthProfit);
             System.out.println("Năm của profit có VariantID = " + vID + " là: " + yearProfit);
             if (monthProfit == monthValue && yearProfit == yearValue) {
-                
+
                 String sql = "UPDATE Profits\n"
-                       
                         + "SET CostPrice = ?\n"
                         + "Where ProfitID = ?;";
 
                 try {
                     PreparedStatement ps = conn.prepareStatement(sql);
-                    
+
                     ps.setDouble(1, cost);
                     ps.setInt(2, profitID);
                     ps.executeUpdate();
@@ -531,6 +531,42 @@ public class ProfitDAO extends DBContext {
             System.out.println("khong update duoc");
         }
 
+    }
+    
+     //importProuct
+    public void addProfit(Profit p) throws SQLException {
+        String sql = "INSERT INTO Profits (VariantID, Quantity, SellingPrice, CostPrice, CalculatedDate) VALUES (?, ?, ?, ?, ?)";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, p.getVariantID());
+            ps.setInt(2, p.getQuantity());
+            ps.setDouble(3, p.getSellingPrice());
+            ps.setDouble(4, p.getCostPrice());
+            ps.setTimestamp(5, Timestamp.valueOf(p.getCalculatedDate()));
+            ps.executeUpdate();
+        }
+    }
+
+    public List<Profit> getAllProfit() {
+        List<Profit> list = new ArrayList<>();
+        String sql = "SELECT * FROM Profits ORDER BY CalculatedDate DESC";
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Profit p = new Profit();
+                p.setProfitID(rs.getInt("ProfitID"));
+                p.setVariantID(rs.getInt("VariantID"));
+                p.setQuantity(rs.getInt("Quantity"));
+                p.setCostPrice(rs.getDouble("CostPrice"));
+                p.setSellingPrice(rs.getDouble("SellingPrice"));
+                // Chuyển đổi Date tùy kiểu dữ liệu của bạn (ở đây ví dụ dùng Timestamp)
+                p.setCalculatedDate(rs.getTimestamp("CalculatedDate").toLocalDateTime());
+                list.add(p);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
     }
 
 }

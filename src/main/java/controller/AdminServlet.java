@@ -38,6 +38,7 @@ import model.Order;
 import model.OrderDetails;
 import model.Payments;
 import model.Products;
+import model.Profit;
 import model.Promotions;
 import model.Review;
 import model.Sale;
@@ -111,20 +112,19 @@ public class AdminServlet extends HttpServlet {
             action = "dashboard";
         }
 
-         if (action.equals("manageProduct")) {
-            
+        if (action.equals("manageProduct")) {
 
-        }  else if(action.equals("dashboard")){
+        } else if (action.equals("dashboard")) {
             String monthSelectStr = request.getParameter("monthSelect");
             String yearSelectStr = request.getParameter("yearSelect");
             int yearSelect = Calendar.getInstance().get(Calendar.YEAR);
             int monthSelect = Calendar.getInstance().get(Calendar.MONTH);
-            
-            if(yearSelectStr != null){
+
+            if (yearSelectStr != null) {
                 yearSelect = Integer.parseInt(yearSelectStr);
             }
-            
-            if(monthSelectStr != null){
+
+            if (monthSelectStr != null) {
                 monthSelect = Integer.parseInt(monthSelectStr);
             }
             List<Users> listUser = udao.getAllUsers();
@@ -139,7 +139,7 @@ public class AdminServlet extends HttpServlet {
             double costOfMonth = pfdao.getCostByMonthAndYear(monthSelect, yearSelect);
             double incomeTargetOfMonth = revenueTargetOfMonth - costOfMonth;
             double incomeOfMonth = revenueOfMonth - costOfMonth;
-            
+
             request.setAttribute("yearSelect", yearSelect);
             request.setAttribute("monthSelect", monthSelect);
             request.setAttribute("incomeOfMonth", incomeOfMonth);
@@ -152,8 +152,26 @@ public class AdminServlet extends HttpServlet {
             request.setAttribute("monthlyIncome", monthlyIncome);
             request.setAttribute("monthlyOrder", monthlyOrder);
             request.setAttribute("listUser", listUser);
-            
+
             request.getRequestDispatcher("admin/dashboard_admin.jsp").forward(request, response);
+        } else if (action.equals("importproduct")) {
+            // ACTION 1: HIỂN THỊ DANH SÁCH LỊCH SỬ NHẬP KHO (Giống Manage Product)          
+            List<Profit> listImports = pfdao.getAllProfit();
+            request.setAttribute("listImports", listImports);
+            request.getRequestDispatcher("admin/import_history.jsp").forward(request, response);
+        } else if (action.equals("showImportForm")) {
+            List<Products> listProducts = pdao.getAllProduct();
+            request.setAttribute("listProducts", listProducts);
+            request.getRequestDispatcher("admin/importProduct.jsp").forward(request, response);
+        } // Thêm đoạn này vào doGet của AdminServlet
+        else if (action.equals("showCreateProduct")) {
+            List<Category> listCategory = ctdao.getAllCategories();
+            List<Suppliers> listSupplier = sldao.getAllSupplier();
+            // 2. Gửi dữ liệu sang JSP
+            request.setAttribute("listCategories", listCategory);
+            request.setAttribute("listSupplier", listSupplier);
+            // 3. Chuyển hướng đến trang tạo mới
+            request.getRequestDispatcher("admin/admin_manageproduct_create.jsp").forward(request, response);
         }
 
     }
@@ -177,7 +195,8 @@ public class AdminServlet extends HttpServlet {
         VariantsDAO vdao = new VariantsDAO();
         PromotionsDAO pmtdao = new PromotionsDAO();
         ReviewDAO rdao = new ReviewDAO();
-         
+        
+
     }
 
     /**

@@ -7,7 +7,6 @@
 <%@page import="model.Products"%>
 <%@page import="java.util.List"%>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
 <%@ include file="/layout/header.jsp" %>
 
 <title>Product Detail</title>
@@ -149,10 +148,15 @@
                             <input type="hidden" name="quantity" class="hiddenQuantityInput" value="1">
                             <button type="submit" class="add-cart">Add to cart</button>
                         </form>
-                        <% } else {%>
-                        <a href="login.jsp?redirect=public/productdetail.jsp&productID=<%= request.getParameter("productID")%>" class="buy-now">BUY NOW</a>
+                        <% } else {
+                            String redirectURL = "product?action=viewDetail&pID=" + variants.getProductID()
+                                    + "&color=" + variants.getColor()
+                                    + "&storage=" + variants.getStorage();
+                            String encodedURL = java.net.URLEncoder.encode(redirectURL, "UTF-8");
+                        %>
+                        <a href="login?redirect=<%= encodedURL%>" class="buy-now">BUY NOW</a>
                         <p class="text-danger fw-bold mt-2">
-                            <a href="login.jsp?redirect=public/productdetail.jsp&productID=<%= request.getParameter("productID")%>">đăng nhập</a> để thêm vào giỏ hàng.
+                            <a href="login?redirect=<%= encodedURL%>">đăng nhập</a> để thêm vào giỏ hàng.
                         </p>
                         <% }%>
                     </div>

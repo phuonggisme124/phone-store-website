@@ -349,7 +349,7 @@ public class ProductServlet extends HttpServlet {
             if (isNameProduct) {
                 session.setAttribute("existName", pName + " already exists!");
 
-                response.sendRedirect("admin?action=createProduct");
+                response.sendRedirect("product?action=createProduct");
 
             } else {
                 pdao.createProduct(categoryID, supplierID, pName, brand, warrantyPeriod);
