@@ -32,38 +32,13 @@
     <body>
         <section id="billboard" class="bg-light-blue overflow-hidden padding-large">
             <div class="profile-container">
-                <div class="profile-wrapper">
-                    <!-- Sidebar -->
-                    <aside class="profile-sidebar">
-                        <h3>Hello</h3>
-                        <a href="user?action=transaction" class="sidebar-link">
-                            <i class="fas fa-shopping-bag"></i>
-                            <span>My Orders</span>
-                        </a>
-                        <a href="user?action=payInstallment" class="sidebar-link">
-                            <i class="fas fa-receipt"></i>
-                            <span>Installment Paying</span>
-                        </a>
-                        <a href="user" class="sidebar-link">
-                            <i class="fas fa-user"></i>
-                            <span>Profile & Address</span>
-                        </a>
-                        <a href="user?action=changePassword" class="sidebar-link">
-                            <i class="fas fa-lock"></i>
-                            <span>Change Password</span>
-                        </a>
-                        <form action="logout" method="post">
-                            <button type="submit" class="logout-btn">
-                                <i class="fas fa-sign-out-alt"></i> Logout
-                            </button>
-                        </form>
-                    </aside>
 
+                    
                     <!-- Main Content -->
                     <main class="profile-content">
                         <div class="profile-header">
-                            <h1>Quên mật khẩu</h1>
-                            <p>Nhập email và số điện thoại để đặt lại mật khẩu.</p>
+                            <h1>Forget Password</h1>
+                            <p>Please input your phone number and email.</p>
                         </div>
 
                         <div class="row justify-content-center">
@@ -76,16 +51,16 @@
                                             <small id="errorEmailPhone" class="text-danger"></small>
                                         </div>
                                         <div class="mb-3">
-                                            <label>Số điện thoại:</label>
+                                            <label>Phone number:</label>
                                             <input type="text" name="phone" class="form-control" required>
                                         </div>
                                         <div class="mb-3">
-                                            <label>Mật khẩu mới:</label>
+                                            <label>New password:</label>
                                             <input type="password" id="newPassword" name="newPassword" class="form-control" required>
                                             <small id="errorNewPass" class="text-danger"></small>
                                         </div>
                                         <div class="mb-3">
-                                            <label>Xác nhận mật khẩu:</label>
+                                            <label>Confirm password:</label>
                                             <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" required>
                                             <small id="errorConfirmPass" class="text-danger"></small>
                                         </div>
@@ -97,7 +72,7 @@
                                         <div class="text-danger mb-3"><%= error %></div>
                                         <% } %>
 
-                                        <button type="submit" class="btn btn-primary w-100">Cập nhật mật khẩu</button>
+                                        <button type="submit" class="btn btn-primary w-100">Confirm</button>
                                     </form>
                                 </div>
                             </div>
@@ -105,7 +80,7 @@
                     </main>
 
                 </div>
-            </div>
+
         </section>
 
         <script>
