@@ -506,6 +506,7 @@ input[type="radio"]:checked + .color-label {
         transform: translateY(-10px);
     }
 }
+
 /* to màu dung lượng */
 .option-label {
     display: inline-block;
@@ -528,3 +529,4 @@ input[type="radio"]:checked + .color-label {
     color: white; /* chữ trắng */
     border-color: #007bff;
 }
+

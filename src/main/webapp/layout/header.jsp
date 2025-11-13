@@ -1,3 +1,7 @@
+<%@page import="model.Notification"%>
+<%@page import="dao.NotificationDAO"%>
+<%@page import="java.sql.Connection"%>
+<%@page import="utils.DBContext"%>
 <%@page import="model.Carts"%>
 <%@page import="java.util.HashMap"%>
 <%@page import="java.util.Map"%>
@@ -126,6 +130,7 @@
         }
     </style>
 </head>
+
 
 
     <body data-bs-spy="scroll" data-bs-target="#navbar" data-bs-root-margin="0px 0px -40%" data-bs-smooth-scroll="true" tabindex="0">
@@ -292,6 +297,7 @@
                                     </div>
                                 </div>
                             </li>
+
                             <div class="user-items ps-5">
                                 <ul class="d-flex justify-content-end list-unstyled align-items-center">
                                     <%
@@ -314,9 +320,45 @@
                                                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"><%=carts.size()%></span>
                                             </button>
                                         </form>
-
-
                                     </li>
+
+                                    <li class="pe-3 position-relative">
+                                        <button id="notification-bell" class="btn p-0 border-0 bg-transparent position-relative">
+                                            <i class="bi bi-bell fs-4"></i>
+                                        </button>
+
+                                        <div id="notification-dropdown" class="notification-dropdown shadow rounded">
+                                            <%
+                                                // K?t n?i DB tr?c ti?p
+                                                try (Connection conn = new DBContext().conn) {
+                                                    NotificationDAO dao = new NotificationDAO(conn);
+
+                                                    // Hardcode userID = 1 (ho?c l?y t? session n?u mu?n)
+                                                    List<Notification> notifications = dao.getNotificationsByUser(1);
+
+                                                    if(notifications != null && !notifications.isEmpty()) {
+                                                        for(Notification n : notifications) {
+                                            %>
+                                            <div class="notification-item" style="border:1px solid #ccc; border-radius:8px; padding:8px; margin-bottom:8px;">
+                                                <p style="margin:0;font-size:14px;"><%= n.getContent() %></p>
+                                                <small style="color:gray;"><%= n.getCreatedAt() %></small>
+                                            </div>
+                                            <%
+                                                        }
+                                                    } else {
+                                            %>
+                                            <div style="padding:10px;text-align:center;color:gray;">Không có thông báo</div>
+                                            <%
+                                                    }
+
+                                                } catch(Exception e) {
+                                                    out.println("<div style='padding:10px;color:red;'>L?i load thông báo</div>");
+                                                    e.printStackTrace();
+                                                }
+                                            %>
+                                        </div>
+                                    </li>
+
                                     <li class="pe-3">
                                         <a href="logout" class="nav-link p-0 text-dark text-uppercase fw-bold">Logout</a> 
                                     </li>
@@ -467,7 +509,5 @@
 
         })();
     </script>
-
-
 </body>
 </html>

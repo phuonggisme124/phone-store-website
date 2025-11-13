@@ -25,8 +25,10 @@
         <div class="d-flex" id="wrapper">
             <!-- Sidebar -->
             <%@ include file="sidebar.jsp" %>
+
             <%                Users currentUser = (Users) session.getAttribute("user");
             %>
+
             <!-- Page Content -->
             <div class="page-content flex-grow-1">
                 <!-- Navbar -->
@@ -47,8 +49,6 @@
 
                 <!-- Search bar -->
 
-
-
                 <%                    Variants variant = (Variants) request.getAttribute("variant");
                     Products product = (Products) request.getAttribute("product");
                     List<Suppliers> listSupplier = (List<Suppliers>) request.getAttribute("listSupplier");
@@ -61,6 +61,7 @@
                     <div class="container-fluid p-4 ps-3">
                         <h1 class="fw-bold ps-3 mb-4 fw-bold text-primary">Create Product</h1>
                     </div>
+
                     <div class="mb-3" >
                         <%
                             if (session.getAttribute("existName") != null) {
@@ -80,8 +81,10 @@
 
                     <div class="mb-3">
                         <label class="form-label">Name</label>
+
                         <input type="text" class="form-control" name="pName" id="pName" value="">
                         <p id="productNameError" class="text-danger mt-2" style="display:none;">Please enter product name!</p>
+
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Category</label>
@@ -106,8 +109,8 @@
                         <label class="form-label">Warranty Period</label>
                         <input type="text" class="form-control" name="warrantyPeriod" id="warrantyPeriod" value="">
                         <p id="warrantyPeriodError" class="text-danger mt-2" style="display:none;">Please enter warranty period!</p>
-                    </div>
 
+                    </div>
                     <div class="mb-3">
                         <label class="form-label">Supplier</label>
                         <select class="form-select" name="supplierID" id="supplierID">
@@ -151,6 +154,7 @@
                         <label class="form-label">Touchscreen</label>
                         <input type="text" class="form-control" name="touchscreen" id="touchscreen" value=""> 
                         <p id="touchscreenError" class="text-danger mt-2" style="display:none;">Please enter touchscreen!</p>
+
                     </div>
 
                     <div class="mb-3">
@@ -172,6 +176,7 @@
             <script src="js/create_product.js"></script>
             <script>
                 document.getElementById("productForm").addEventListener("submit", function (e) {
+
 
 
                     const category = document.getElementById("category");
@@ -338,8 +343,6 @@
                         }
                     }
 
-
-
                     // Nếu có lỗi thì chặn submit & cuộn tới ô lỗi đầu tiên
                     if (!isValid) {
                         e.preventDefault();
@@ -360,7 +363,6 @@
                 ];
 
                 const filteredGroups = techGroups.filter(id => id !== "group-cpu" && id !== "group-tech" && id !== "group-ram");
-
 
                 // Hàm ẩn tất cả nhóm
                 function hideAllGroups() {
@@ -390,6 +392,5 @@
                     }
                 });
             </script>
-
     </body>
 </html>

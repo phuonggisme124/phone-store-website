@@ -1,0 +1,39 @@
+[33m725fb76[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{0}: reset: moving to origin/main
+[33m8ea4107[m HEAD@{1}: reset: moving to HEAD
+[33m8ea4107[m HEAD@{2}: commit: Resolve merge conflicts
+[33m965d597[m HEAD@{3}: pull origin main --allow-unrelated-histories: updating HEAD
+[33m965d597[m HEAD@{4}: commit: Update: add forgotPassword and Notification
+[33mb8de8dc[m HEAD@{5}: rebase (abort): returning to refs/heads/main
+[33m725fb76[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{6}: pull --rebase origin main (start): checkout 725fb76fba2499c1d7f122a91b6dca03ef41cda1
+[33mb8de8dc[m HEAD@{7}: reset: moving to HEAD
+[33mb8de8dc[m HEAD@{8}: reset: moving to HEAD
+[33mb8de8dc[m HEAD@{9}: rebase (abort): returning to refs/heads/main
+[33m725fb76[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{10}: pull origin main --rebase (start): checkout 725fb76fba2499c1d7f122a91b6dca03ef41cda1
+[33mb8de8dc[m HEAD@{11}: rebase (abort): returning to refs/heads/main
+[33m0959e4a[m HEAD@{12}: pull --rebase --strategy-option=ours (pick): update register function
+[33m0cfd253[m HEAD@{13}: pull --rebase --strategy-option=ours (pick): update login.jsp
+[33m64b3199[m HEAD@{14}: pull --rebase --strategy-option=ours (pick): update login.jsp
+[33m34d2403[m HEAD@{15}: pull --rebase --strategy-option=ours (pick): update login
+[33m725fb76[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{16}: pull --rebase --strategy-option=ours (start): checkout 725fb76fba2499c1d7f122a91b6dca03ef41cda1
+[33mb8de8dc[m HEAD@{17}: reset: moving to HEAD
+[33mb8de8dc[m HEAD@{18}: reset: moving to HEAD
+[33mb8de8dc[m HEAD@{19}: commit: Work in progress
+[33m62784e8[m HEAD@{20}: pull origin main: Merge made by the 'ort' strategy.
+[33m18eef29[m HEAD@{21}: reset: moving to HEAD
+[33m18eef29[m HEAD@{22}: checkout: moving from main to main
+[33m18eef29[m HEAD@{23}: commit (merge): Merged latest changes from origin/main
+[33m5dd9fa9[m HEAD@{24}: reset: moving to HEAD
+[33m5dd9fa9[m HEAD@{25}: checkout: moving from main to main
+[33m5dd9fa9[m HEAD@{26}: reset: moving to HEAD
+[33m5dd9fa9[m HEAD@{27}: checkout: moving from main to main
+[33m5dd9fa9[m HEAD@{28}: commit: Update: Fixed editProfile
+[33mf766b37[m HEAD@{29}: commit: Update: added view order page
+[33m4a402a5[m HEAD@{30}: reset: moving to HEAD
+[33m4a402a5[m HEAD@{31}: reset: moving to HEAD
+[33m4a402a5[m HEAD@{32}: pull origin: Fast-forward
+[33mdb80a36[m HEAD@{33}: reset: moving to HEAD
+[33mdb80a36[m HEAD@{34}: commit: Update: added view order page
+[33m9a8f469[m HEAD@{35}: commit: Update: added changePassword
+[33m1564566[m HEAD@{36}: commit: Update: added changePassword
+[33ma71d5df[m HEAD@{37}: commit: Update: added profile.jsp and editProfile.jsp. Update/modify UserServlet, update/modify CategoryServlet
+[33mfdcb329[m HEAD@{38}: clone: from https://github.com/phuonggisme124/phone-store-website.git

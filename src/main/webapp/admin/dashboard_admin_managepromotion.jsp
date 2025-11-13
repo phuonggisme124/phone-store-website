@@ -1,5 +1,7 @@
+
 <%@page import="java.time.LocalDateTime"%>
 <%@page import="java.time.format.DateTimeFormatter"%>
+
 <%@page import="model.Promotions"%>
 <%@page import="model.Suppliers"%>
 <%@page import="model.Category"%>
@@ -25,6 +27,7 @@
         <link rel="stylesheet" href="css/dashboard_admin.css">
         <link href="css/dashboard_table.css" rel="stylesheet">
         <link href="css/dashboard_admin_managepromotion.css" rel="stylesheet">
+
     </head>
     <body>
         <%
@@ -60,6 +63,7 @@
 
         <script>
             const allProductNames = <%= new Gson().toJson(allProductNames)%>;
+
         </script>
 
         <div class="d-flex" id="wrapper">
@@ -83,6 +87,7 @@
                                 <input type="hidden" name="discountFilter" value="<%= currentDiscount%>">
                                 <input class="form-control me-2" type="text" id="searchProduct" name="productName"
                                        placeholder="Search Product…" value="<%= currentProductName%>"
+
                                        oninput="showSuggestions(this.value)">
                                 <button class="btn btn-outline-primary" type="submit">
                                     <i class="bi bi-search"></i>
@@ -95,7 +100,9 @@
                             <form action="admin" method="get" class="dropdown me-3">
                                 <input type="hidden" name="action" value="managePromotion">
                                 <!-- Giữ lại productName nếu đang search -->
+
                                 <input type="hidden" name="productName" value="<%= currentProductName%>">
+
 
                                 <button class="btn btn-outline-secondary fw-bold dropdown-toggle"
                                         type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
@@ -104,6 +111,7 @@
                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="filterDropdown">
                                     <li><button type="submit" name="discountFilter" value="All" class="dropdown-item">All Discounts</button></li>
                                     <li><button type="submit" name="discountFilter" value="0-20" class="dropdown-item">
+
                                             <i class="bi bi-tag"></i> 0% - 20%
                                         </button></li>
                                     <li><button type="submit" name="discountFilter" value="21-40" class="dropdown-item">
@@ -118,19 +126,20 @@
                                     <li><button type="submit" name="discountFilter" value="81-100" class="dropdown-item">
                                             <i class="bi bi-tag-fill"></i> 81% - 100%
                                         </button></li>
+
                                 </ul>
                             </form>
 
                             <a href="logout" class="btn btn-outline-danger btn-sm">Logout</a>
                             <div class="d-flex align-items-center ms-3">
                                 <img src="https://i.pravatar.cc/40" class="rounded-circle me-2" width="35">
+
                                 <span><%= currentUser.getFullName()%></span>
+
                             </div>
                         </div>
                     </div>
                 </nav>
-
-
 
                 <!-- Promotions Table -->
                 <%

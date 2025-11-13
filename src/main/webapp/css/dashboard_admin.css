@@ -120,6 +120,7 @@ body {
     flex: 1;          /* Card co giãn đều */
     min-width: 180px; /* Không quá nhỏ */
 }
+<<<<<<< HEAD
 
 /* ===== Dashboard Summary Cards (Top Info) ===== */
 .dashboard-summary .card {
@@ -348,3 +349,5 @@ h1.fw-bold {
         text-align: center;
     }
 }
+=======
+>>>>>>> origin/main

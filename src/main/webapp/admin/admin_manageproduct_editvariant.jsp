@@ -64,6 +64,7 @@
                     String[] existingImages = variant.getImageList();
                     Products product = (Products) request.getAttribute("product");
                     Profit profit = (Profit) request.getAttribute("profit");
+
                 %>
                 <!-- Table -->
                 <form action="variants" method="post" class="w-50 mx-auto bg-light p-4 rounded shadow" enctype="multipart/form-data">
@@ -73,6 +74,7 @@
                     <div class="mb-3">
                         <input type="hidden" class="form-control" name="ctID" value="<%= product.getCategoryID()%>" readonly>
                     </div>
+
 
                     <div class="mb-3">
                         <input type="hidden" class="form-control" name="pID" value="<%= product.getProductID()%>" readonly>
@@ -105,6 +107,7 @@
                     %>
                     <div class="mb-3">
                         <label class="form-label">Sell Price</label>
+
                         <input type="text" class="form-control" name="price" value="<%= String.format("%.0f", variant.getPrice())%>">
                     </div>
 
@@ -115,6 +118,7 @@
                     </div>
 
                     <div class="mb-3">
+
                         <label class="form-label">Stock</label>
                         <input type="text" class="form-control" name="stock" value="<%= variant.getStock()%>">
                     </div>
@@ -237,8 +241,6 @@
                     });
                 });
             </script>
-
-
 
     </body>
 </html>

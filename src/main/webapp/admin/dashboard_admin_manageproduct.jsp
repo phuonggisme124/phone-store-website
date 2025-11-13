@@ -1,5 +1,7 @@
+
 <%@page import="java.time.LocalDateTime"%>
 <%@page import="java.time.format.DateTimeFormatter"%>
+
 <%@page import="model.Suppliers"%>
 <%@page import="model.Category"%>
 <%@page import="model.Products"%>
@@ -25,7 +27,9 @@
         <!-- Custom CSS -->
         <link rel="stylesheet" href="css/dashboard_admin.css">
         <link href="css/dashboard_table.css" rel="stylesheet">
+
         <link href="css/dashboard_admin_manageproduct.css" rel="stylesheet">
+
     </head>
     <body>
         <%
@@ -70,7 +74,9 @@
 
         <div class="d-flex" id="wrapper">
             <!-- Sidebar -->
+
             <%@ include file="sidebar.jsp"%>
+
 
             <!-- Page Content -->
             <div class="page-content flex-grow-1">
@@ -124,6 +130,7 @@
                     </div>
                 </nav>
 
+
                 <!-- Products Table -->
                 <%
                    
@@ -151,6 +158,7 @@
                                 <i class="bi bi-box-seam me-2"></i> Create Product
                             </a>
                         </div>
+
                         <% if (currentListProduct != null && !currentListProduct.isEmpty()) { %>
                         <div class="table-responsive">
                             <table class="table table-hover align-middle mb-0">
@@ -167,7 +175,6 @@
                                 </thead>
                                 <tbody>
                                     <%
-
                                         for (Products p : currentListProduct) {
                                             // Lọc theo Product Name nếu có search
                                             if (!currentProductName.isEmpty() && !p.getName().toLowerCase().contains(currentProductName.toLowerCase())) {
@@ -211,6 +218,7 @@
                                             }
                                         %>
                                         <td><%= dateFormated%></td>
+
                                     </tr>
                                     <% } %>
                                 </tbody>
@@ -230,7 +238,6 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
         <!-- Custom JS -->
-
         <script>
                                         var currentOrderID = null;
                                         var myModal = null;
@@ -285,6 +292,7 @@
                                                 }
                                             }, 200);
                                         }
+
                                         // Ẩn suggestions khi click bên ngoài
                                         document.addEventListener('click', function (e) {
                                             var searchInput = document.getElementById('searchProduct');
@@ -293,12 +301,13 @@
                                                 suggestionBox.innerHTML = "";
                                             }
                                         });
+
         </script>
         <script>
             document.getElementById("menu-toggle").addEventListener("click", function () {
                 document.getElementById("wrapper").classList.toggle("toggled");
             });
         </script>
-        
+
     </body>
 </html>

@@ -19,16 +19,20 @@
 
         <!-- Custom CSS -->
         <link rel="stylesheet" href="css/dashboard_admin.css">
+
         <link href="css/dashboard_table.css" rel="stylesheet">
         <link href="css/dashboard_admin_manageproduct.css" rel="stylesheet">
+
     </head>
     <body>
         <div class="d-flex" id="wrapper">
             <!-- Sidebar -->
             <%@ include file="sidebar.jsp" %>
+
             <%
                 Users currentUser = (Users) session.getAttribute("user");
             %>
+
             <!-- Page Content -->
             <div class="page-content flex-grow-1">
                 <!-- Navbar -->
@@ -68,14 +72,13 @@
                             <div class="d-flex align-items-center">
                                 <img src="https://i.pravatar.cc/40" class="rounded-circle me-2" width="35">
                                 <span><%= currentUser.getFullName()%></span>
+
                             </div>
                         </div>
                     </div>
                 </nav>
 
-                <!-- Search bar -->
-                
-
+                <!-- Search bar -->               
 
                 <%                    int pID = (int) request.getAttribute("pID");
                     Products product = (Products) request.getAttribute("product");

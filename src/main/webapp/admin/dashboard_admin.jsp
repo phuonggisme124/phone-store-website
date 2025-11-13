@@ -51,6 +51,7 @@
 
                 int currentYear = Calendar.getInstance().get(Calendar.YEAR);
                 int currentMonth = Calendar.getInstance().get(Calendar.MONTH) +1;
+
                 int yearSelect = (int) request.getAttribute("yearSelect");
                 int monthSelect = (int) request.getAttribute("monthSelect");
                 List<Double> monthlyIncome = (List<Double>) request.getAttribute("monthlyIncome");
@@ -106,16 +107,20 @@
                             </div>
                         </div>
                         <div class="col-xl-3 col-md-6">
+
                             <div class="card month-stat-card income">
                                 <h6>Total Variant</h6>
                                 <h3 class="fw-bold text-danger"><%= totalVariant%></h3>
 
+
                             </div>
                         </div>
                         <div class="col-xl-3 col-md-6">
+
                             <div class="card month-stat-card cost">
                                 <h6>Total Supplier</h6>
                                 <h3 class="fw-bold text-primary"><%= totalSupplier%></h3>
+
 
                             </div>
                         </div>
@@ -175,25 +180,33 @@
                         <div class="col-xl-3 col-md-3">
                             <div class="card month-stat-card revenue">
                                 <h6>Total Revenue Target</h6>
+
                                 <h3 class="text-success"><%= String.format("%.2f", revenueTargetOfMonth / 1000000)%> m</h3>
+
                             </div>
                         </div>
                         <div class="col-xl-3 col-md-3">
                             <div class="card month-stat-card sold">
                                 <h6>Total Products Imported</h6>
+
                                 <h3 class="text-warning"><%= importOfMonth%></h3>
+
                             </div>
                         </div>
                         <div class="col-xl-3 col-md-5">
                             <div class="card month-stat-card income">
                                 <h6>Income Target</h6>
+
                                 <h3 class="text-danger"><%= String.format("%.2f", incomeTargetOfMonth / 1000000)%> m</h3>
+
                             </div>
                         </div>
                         <div class="col-xl-3 col-md-5">
                             <div class="card month-stat-card cost">
                                 <h6>Total Purchase Cost</h6>
+
                                 <h3 class="text-primary"><%= String.format("%.2f", costOfMonth / 1000000)%> m</h3>
+
                             </div>
                         </div>
                     </div>
@@ -206,7 +219,9 @@
                         <div class="col-xl-3 col-md-6">
                             <div class="card month-stat-card revenue">
                                 <h6>Total Revenue</h6>
+
                                 <h3 class="text-success"><%= String.format("%.2f", revenueOfMonth / 1000000)%> m</h3>
+
                                 <div class="progress">
                                     <div class="progress-bar bg-success" role="progressbar"
                                          style="width: <%= percentRevenue%>%;" 
@@ -218,7 +233,9 @@
                         <div class="col-xl-3 col-md-6">
                             <div class="card month-stat-card sold">
                                 <h6>Sold Products</h6>
+
                                 <h3 class="text-warning"><%= soldOfMonth%></h3>
+
                                 <div class="progress">
                                     <div class="progress-bar bg-warning" role="progressbar"
                                          style="width: <%= percentSold%>%;" 
@@ -231,6 +248,7 @@
                             <div class="card month-stat-card income">
                                 <h6>Income</h6>
                                 <h3 class="text-danger"><%= String.format("%.2f", incomeOfMonth / 1000000)%> m</h3>
+
                                 <div class="progress">
                                     <div class="progress-bar bg-danger" role="progressbar"
                                          style="width: <%= percentIncome%>%;" 

@@ -61,9 +61,10 @@
         </ul>
     </nav>
 
-   
+
+    <!-- Page Content -->
     <div class="page-content flex-grow-1">
-        
+        <!-- Navbar -->
         <nav class="navbar navbar-light bg-white shadow-sm">
             <div class="container-fluid">
                 <button class="btn btn-outline-primary" id="menu-toggle">
@@ -74,7 +75,8 @@
                     <!-- Search Product -->
                     <form action="staff" method="get" class="d-flex position-relative me-3" id="searchForm" autocomplete="off">
                         <input type="hidden" name="action" value="manageProduct">
-                        
+
+                        <!-- Giữ lại brandFilter nếu đang filter -->
                         <input type="hidden" name="brandFilter" value="<%= currentBrand %>">
                         <input class="form-control me-2" type="text" id="searchProduct" name="productName"
                                placeholder="Search Product…" value="<%= currentProductName %>"
@@ -89,7 +91,8 @@
                     <!-- Filter Brand -->
                     <form action="staff" method="get" class="dropdown me-3">
                         <input type="hidden" name="action" value="manageProduct">
-                        
+
+                        <!-- Giữ lại productName nếu đang search -->
                         <input type="hidden" name="productName" value="<%= currentProductName %>">
 
                         <button class="btn btn-outline-secondary fw-bold dropdown-toggle"
@@ -122,7 +125,8 @@
             </div>
         </nav>
 
-        
+
+        <!-- Products Table -->
         <div class="container-fluid p-4">
             <div class="card shadow-sm border-0 p-4">
                 <div class="card-body p-0">
@@ -143,7 +147,8 @@
                             </thead>
                             <tbody>
                                 <% for (Products p : listProducts) { 
-                                   
+
+                                    // Lọc theo Brand nếu không phải "All"
                                     if (!currentBrand.equals("All") && !p.getBrand().equals(currentBrand)) continue;
                                 %>
                                 <tr onclick="window.location.href='staff?action=productDetail&id=<%= p.getProductID()%>'" style="cursor: pointer;">
@@ -178,7 +183,8 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="js/dashboard.js"></script>
 <script>
-    
+
+    // ------------------ Autocomplete ------------------
     var debounceTimer;
     function showSuggestions(str) {
         clearTimeout(debounceTimer);
@@ -213,7 +219,8 @@
         }, 200);
     }
 
-    
+
+    // Ẩn suggestions khi click bên ngoài
     document.addEventListener('click', function(e) {
         var searchInput = document.getElementById('searchProduct');
         var suggestionBox = document.getElementById('suggestionBox');

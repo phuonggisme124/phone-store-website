@@ -1,5 +1,7 @@
+
 <%@page import="java.time.LocalDateTime"%>
 <%@page import="java.time.format.DateTimeFormatter"%>
+
 <%@page import="java.util.List"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="model.Users"%>
@@ -22,6 +24,7 @@
         <link rel="stylesheet" href="css/dashboard_admin.css">
         <link href="css/dashboard_table.css" rel="stylesheet">
         <link href="css/dashboard_admin_manageuser.css" rel="stylesheet">
+
     </head>
     <body>
         <%
@@ -54,6 +57,7 @@
 
         <script>
             const allUserNames = <%= new Gson().toJson(allUserNames)%>;
+
         </script>
 
         <div class="d-flex" id="wrapper">
@@ -77,6 +81,7 @@
                                 <input type="hidden" name="roleFilter" value="<%= currentRole%>">
                                 <input class="form-control me-2" type="text" id="searchUser" name="userName"
                                        placeholder="Search User…" value="<%= currentUserName%>"
+
                                        oninput="showSuggestions(this.value)">
                                 <button class="btn btn-outline-primary" type="submit">
                                     <i class="bi bi-search"></i>
@@ -90,6 +95,7 @@
                                 <input type="hidden" name="action" value="manageUser">
                                 <!-- Giữ lại userName nếu đang search -->
                                 <input type="hidden" name="userName" value="<%= currentUserName%>">
+
 
                                 <button class="btn btn-outline-secondary fw-bold dropdown-toggle"
                                         type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
@@ -113,13 +119,11 @@
                             <div class="d-flex align-items-center ms-3">
                                 <img src="https://i.pravatar.cc/40" class="rounded-circle me-2" width="35">
                                 <span><%= currentUser.getFullName()%></span>
+
                             </div>
                         </div>
                     </div>
                 </nav>
-
-
-
                 <!-- Users Table -->
                 <%
                     String successCreateUser = (String) session.getAttribute("successCreateUser");
@@ -201,6 +205,7 @@
                                                     continue;
                                                 }
 
+
                                                 // Lọc theo Role nếu không phải "All"
                                                 if (!currentRole.equals("All") && u.getRole() != Integer.parseInt(currentRole)) {
                                                     continue;
@@ -214,41 +219,52 @@
                                                 String role;
                                                 String roleIcon;
                                                 String roleColor;
+
                                                 switch (u.getRole()) {
                                                     case 1:
                                                         role = "Customer";
                                                         roleIcon = "bi-person";
-                                                        roleColor = "status-green";
+                                                       roleColor = "status-green";
+
                                                         break;
                                                     case 2:
                                                         role = "Staff";
                                                         roleIcon = "bi-person-badge";
+
                                                         roleColor = "status-blue";
+
                                                         break;
                                                     case 3:
                                                         role = "Shipper";
                                                         roleIcon = "bi-truck";
+
                                                         roleColor = "status-yellow";
+
                                                         break;
                                                     default:
                                                         role = "Unknown";
                                                         roleIcon = "bi-question-circle";
+
                                                         roleColor = "";
+
                                                 }
 
                                                 String statusBadge;
                                                 String status = u.getStatus();
                                                 if (status != null && status.equalsIgnoreCase("Active")) {
+
                                                     statusBadge = "<span class='badge status-green '>Active</span>";
                                                 } else {
                                                     statusBadge = "<span class='badge status-red '>Locked</span>";
                                                 }
                                         %>
                                         <tr onclick="window.location.href = 'user?action=edit&id=<%= u.getUserId()%>'" style="cursor: pointer;">
+
                                             <td>#<%= u.getUserId()%></td>
                                             <td><%= u.getFullName()%></td>
                                             <td><%= u.getEmail()%></td>
                                             <td><%= u.getPhone()%></td>
+
                                             <td class="<%= roleColor %>">
                                                 <i class="bi <%= roleIcon%> me-1 <%= roleColor %>"></i><%= role%>
                                             </td>
@@ -263,6 +279,7 @@
                                             %>
                                             <td><%= dateFormated%></td>
                                             <td><%= statusBadge%></td>
+
                                         </tr>
                                         <% } %>
                                     </tbody>
@@ -272,7 +289,9 @@
                             <div class="alert alert-info m-4" role="alert">
                                 <i class="bi bi-info-circle me-2"></i>No users available.
                             </div>
+
                             <% }%>
+
                         </div>
                     </div>
                 </div>
@@ -350,5 +369,6 @@
                 }
             }, 3000);
         </script>
+
     </body>
 </html>

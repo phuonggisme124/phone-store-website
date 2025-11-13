@@ -8,11 +8,13 @@
     <%
         String action = request.getParameter("action");
         if (action == null || action.isEmpty()) {
+
             action = "Dashboard";
         }
     %>
     <div class="sidebar-header p-3">
         <a style="font-size: 40px" class="logo-store">MiniStore</a>
+
     </div>
     <ul class="list-unstyled ps-3">
         <li><a href="admin" <%= (action.equals("Dashboard")) ? "class='active'" : ""%>
@@ -32,6 +34,7 @@
         <li><a href="${pageContext.request.contextPath}/user?action=manageUser" <%= (action.equals("manageUser")) ? "class='active'" : ""%>
                ><i class="bi bi-people me-2"></i>Users</a></li>
         <li><a href="${pageContext.request.contextPath}/category?action=manageCategory" <%= (action.equals("manageCategory")) ? "class='active'" : ""%>
+
                ><i class="bi bi-grid me-2"></i>Category</a></li>
         <li><a href="#"><i class="bi bi-gear me-2"></i>Settings</a></li>            
     </ul>

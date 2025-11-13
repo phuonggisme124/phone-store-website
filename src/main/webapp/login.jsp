@@ -102,6 +102,7 @@
                         %>
                         <input type="hidden" name="redirect" value="<%= redirectVal%>">
                         <% } %>
+
                         <div class="mb-3">
                             <label for="u_email" class="form-label">Email</label>
                             <input type="email" class="form-control" name="username" id="u_email" required placeholder="Enter Email">

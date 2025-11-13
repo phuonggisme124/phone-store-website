@@ -35,7 +35,6 @@
             }
 
             List<Suppliers> listSupplier = (List<Suppliers>) request.getAttribute("listSupplier");
-
             // Lấy giá trị search hiện tại từ request
             String currentSupplierName = request.getParameter("supplierName") != null ? request.getParameter("supplierName") : "";
 
@@ -52,6 +51,7 @@
 
         <script>
             const allSupplierNames = <%= new Gson().toJson(allSupplierNames)%>;
+
         </script>
 
         <div class="d-flex" id="wrapper">
@@ -59,7 +59,6 @@
             <%@ include file="sidebar.jsp" %>
 
             <!-- Page Content -->
-            
             <div class="page-content flex-grow-1">
                 <!-- Navbar -->
                 <nav class="navbar navbar-light bg-white shadow-sm">
@@ -73,6 +72,7 @@
                                 <input type="hidden" name="action" value="manageSupplier">
                                 <input class="form-control me-2" type="text" id="searchSupplier" name="supplierName"
                                        placeholder="Search Supplier" value="<%= currentSupplierName%>"
+
                                        oninput="showSuggestions(this.value)">
                                 <button class="btn btn-outline-primary" type="submit">
                                     <i class="bi bi-search"></i>
@@ -85,13 +85,11 @@
                             <div class="d-flex align-items-center">
                                 <img src="https://i.pravatar.cc/40" class="rounded-circle me-2" width="35">
                                 <span><%= currentUser.getFullName()%></span>
+
                             </div>
                         </div>
                     </div>
                 </nav>
-
-
-
                 <!-- Suppliers Table -->
                 <%
                     String successCreateSupplier = (String) session.getAttribute("successCreateSupplier");
@@ -148,7 +146,8 @@
                             <a class="btn btn-primary px-4 py-2 rounded-pill shadow-sm" href="supplier?action=createSupplier">
                                 <i class="bi bi-box-seam me-2"></i> Create Supplier
                             </a>
-                        </div>rs</h4>
+                        </div>
+
                         <% if (listSupplier != null && !listSupplier.isEmpty()) { %>
                         <div class="table-responsive">
                             <table class="table table-hover align-middle mb-0">
@@ -185,6 +184,7 @@
                             <i class="bi bi-info-circle me-2"></i>No suppliers available.
                         </div>
                         <% }%>
+
                     </div>
                 </div>
             </div>

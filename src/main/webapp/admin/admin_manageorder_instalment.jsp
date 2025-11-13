@@ -22,6 +22,7 @@
 
         <link rel="stylesheet" href="css/dashboard_admin.css">
         <link rel="stylesheet" href="css/search.css">
+
         <link href="css/dashboard_table.css" rel="stylesheet">
     </head>
     <body>
@@ -36,12 +37,14 @@
                 status = "Filter";
             }
             List<String> listPhone = (List<String>) request.getAttribute("listPhone");
+
             if (listPhone == null) listPhone = new ArrayList<>();
         %>
         <div class="d-flex" id="wrapper">
             <%@ include file="sidebar.jsp" %>
 
             <div class="page-content flex-grow-1">
+
                 <nav class="navbar navbar-light bg-white shadow-sm">
                     <div class="container-fluid">
                         <button class="btn btn-outline-primary" id="menu-toggle">
@@ -49,8 +52,10 @@
                         </button>
                         <div class="d-flex align-items-center ms-auto">
 
+
                             <form action="order" method="get" class="d-flex position-relative me-3" id="searchForm" autocomplete="off">
                                 <input type="hidden" name="action" value="searchInstalment"> <input type="hidden" name="status" value="<%= status%>">
+
                                 <div class="position-relative" style="width: 300px;">
                                     <input class="form-control" type="text" id="searchPhone" name="phone"
                                            placeholder="Search Phone Number..."
@@ -66,8 +71,10 @@
                             </form>
 
 
+
                             <form action="order" method="get" class="dropdown me-3">
                                 <input type="hidden" name="action" value="filterInstalment">
+
                                 <input type="hidden" name="phone" value="<%= phone%>">
 
                                 <button class="btn btn-outline-secondary fw-bold dropdown-toggle" 
@@ -88,11 +95,14 @@
                             <a href="logout" class="btn btn-outline-danger btn-sm">Logout</a>
                             <div class="d-flex align-items-center ms-3">
                                 <img src="https://i.pravatar.cc/40" class="rounded-circle me-2" width="35">
+
                                 <span><%= user != null ? user.getFullName() : "Admin"%></span>
+
                             </div>
                         </div>
                     </div>
                 </nav>
+
 
                 <%
                     UsersDAO udao = new UsersDAO();
@@ -105,16 +115,19 @@
                     
                     if(listStaff == null) listStaff = new ArrayList<>();
                     if(listShippers == null) listShippers = new ArrayList<>();
+
                 %>
 
                 <%
                     if (listInstalment != null && !listInstalment.isEmpty()) {
                 %>
+
                 <div class="card shadow-sm border-0 p-4 m-3">
                     <div class="card-body p-0">
                          <div class="container-fluid p-4 ps-3">
                             <h1 class="fw-bold ps-3 mb-4 fw-bold text-primary">Instalment Orders</h1>
                         </div>
+
                         <table class="table table-hover align-middle mb-0">
                             <thead class="table-light">
                                 <tr>
@@ -129,6 +142,7 @@
                                     <th>Staff</th>
                                     <th>Shipper</th>
                                     <th>Status</th>
+
                                 </tr>
                             </thead>
 
@@ -170,6 +184,7 @@
                             %>
                                 <tr  onclick="window.location.href = 'order?action=orderDetail&id=<%= o.getOrderID()%>&isInstalment=true'">
                                     <td>#<%= o.getOrderID()%></td>
+
                                     <td><%= udao.getUserByID(o.getUserID()).getFullName()%></td>
                                     <td><%= o.getBuyerPhone()%></td>
                                     <td><%= o.getBuyerName()%></td>
@@ -187,6 +202,7 @@
                                 }
                             %>
                             </tbody>
+
                         </table>
                     </div>
                 </div>
@@ -263,3 +279,4 @@
         </script>
     </body>
 </html>
+

@@ -543,4 +543,27 @@ public class UsersDAO extends DBContext {
         }
         return list;
     }
+
+    public Users getUserByEmailAndPhone(String email, String phone) {
+        String sql = "SELECT * FROM Users WHERE email = ? AND phone = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, email);
+            ps.setString(2, phone);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                Users user = new Users();
+                user.setUserId(rs.getInt("userId"));
+                user.setFullName(rs.getString("fullName"));
+                user.setEmail(rs.getString("email"));
+                user.setPhone(rs.getString("phone"));
+                user.setPassword(rs.getString("password"));
+                user.setRole(rs.getInt("role"));
+                user.setAddress(rs.getString("address"));
+                return user;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

@@ -28,7 +28,6 @@
                 <nav class="navbar navbar-light bg-white shadow-sm">
                     <div class="container-fluid">
                         <button class="btn btn-outline-primary" id="menu-toggle"><i class="bi bi-list"></i></button>
-
                         <div class="d-flex align-items-center ms-auto">
                             <div class="position-relative me-3">
                                 <a href="logout">logout</a>
@@ -49,9 +48,6 @@
                 <div class="container-fluid p-4">
                     <input type="text" class="form-control w-25" placeholder="🔍 Search">
                 </div>
-
-
-
                 <!-- Table -->
                 <form action="supplier?action=createSupplier" id="supplierForm" method="post" class="w-50 mx-auto bg-light p-4 rounded shadow">
 
@@ -80,9 +76,6 @@
                         <input type="text" class="form-control" name="address" id="address" value="">
                         <p id="addressError" class="text-danger mt-2" style="display:none;">Please enter address!</p>
                     </div>
-
-
-
                     <button type="submit" class="btn btn-primary w-100">Create</button>
                 </form>
             </div>

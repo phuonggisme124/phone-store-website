@@ -22,6 +22,7 @@
         <!-- Custom CSS -->
         <link rel="stylesheet" href="css/dashboard_admin.css">
         <link rel="stylesheet" href="css/dashboard_admin_managereview.css">
+
         <link href="css/dashboard_table.css" rel="stylesheet">
     </head>
     <body>
@@ -59,13 +60,16 @@
                     <input type="text" class="form-control w-25" placeholder="🔍 Search">
                 </div>
                 <%                    ProductDAO pdao = new ProductDAO();
+
                     ReviewDAO rdao = new ReviewDAO();
                     Review review = (Review) request.getAttribute("review");
                     List<String> listImage = rdao.getImages(review.getImage());
                 %>
                 <!-- Table -->
                 <div class="review-container">
+
                     <!-- Left: Product Info & Images -->
+
                     <%
                         if (listImage != null && !listImage.isEmpty()) {
                     %>
@@ -92,6 +96,7 @@
                                      onclick="changeImage(this)">
                                 <% } %>
                             </div>
+
                         </div>
                     </div>
                     <%
@@ -112,7 +117,6 @@
                             </p>
 
                             <p><strong>Review Date:</strong> <%= review.getReviewDate()%></p>
-
                             <p><strong>Comment:</strong></p>
                             <p class="comment"><%= review.getComment()%></p>
 
@@ -129,8 +133,6 @@
                         </div>
                     </div>
                 </div>
-
-
             </div>
 
 

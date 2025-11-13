@@ -37,6 +37,7 @@
                 status = "Filter";
             }
             List<String> listPhone = (List<String>) request.getAttribute("listPhone");
+
             if (listPhone == null)
                 listPhone = new ArrayList<>();
         %>
@@ -44,6 +45,7 @@
             <%@ include file="sidebar.jsp" %>
 
             <div class="page-content flex-grow-1">
+
                 <nav class="navbar navbar-light bg-white shadow-sm">
                     <div class="container-fluid">
                         <button class="btn btn-outline-primary" id="menu-toggle">
@@ -51,7 +53,9 @@
                         </button>
                         <div class="d-flex align-items-center ms-auto">
 
+
                             <form action="order" method="get" class="d-flex position-relative me-3" id="searchForm" autocomplete="off">
+
                                 <input type="hidden" name="action" value="searchOrder">
                                 <input type="hidden" name="status" value="<%= status%>">
                                 <div class="position-relative" style="width: 300px;">
@@ -71,6 +75,7 @@
 
                             <form action="order" method="get" class="dropdown me-3">
                                 <input type="hidden" name="action" value="filterOrder">
+
                                 <input type="hidden" name="phone" value="<%= phone%>">
 
                                 <button class="btn btn-outline-secondary fw-bold dropdown-toggle" 
@@ -94,11 +99,14 @@
                             <a href="logout" class="btn btn-outline-danger btn-sm">Logout</a>
                             <div class="d-flex align-items-center ms-3">
                                 <img src="https://i.pravatar.cc/40" class="rounded-circle me-2" width="35">
+
                                 <span><%= user != null ? user.getFullName() : "Admin"%></span>
+
                             </div>
                         </div>
                     </div>
                 </nav>
+
 
 
 
@@ -218,7 +226,9 @@
                                     const searchInput = document.getElementById("searchPhone");
                                     const suggestionBox = document.getElementById("suggestionBox");
 
+
                                     // Hàm hiển thị gợi ý
+
                                     function fetchSuggestions(query) {
                                         query = query.trim().toLowerCase();
                                         suggestionBox.innerHTML = "";
@@ -253,11 +263,14 @@
                                         suggestionBox.style.display = "block";
                                     }
 
+
                                     // Tô đậm phần khớp
+
                                     function highlightMatch(text, keyword) {
                                         const regex = new RegExp(`(${keyword})`, "gi");
                                         return text.replace(regex, `<strong>$1</strong>`);
                                     }
+
 
                                     // Ẩn box khi click ra ngoài
                                     document.addEventListener("click", (e) => {
@@ -265,13 +278,16 @@
                                             suggestionBox.style.display = "none";
                                         }
                                     });
+
         </script>
 
         <script>
             document.getElementById("menu-toggle").addEventListener("click", function () {
                 document.getElementById("wrapper").classList.toggle("toggled");
             });
+
         </script>
 
     </body>
 </html>
+

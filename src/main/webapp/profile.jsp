@@ -398,7 +398,6 @@
                                             </tr>
                                         </tbody>
                                     </table>
-
                                     <div class="mt-4 d-flex gap-3">
                                         <a href="user?action=edit" class="btn btn-primary">
                                             <i class="fas fa-edit"></i> Edit Profile

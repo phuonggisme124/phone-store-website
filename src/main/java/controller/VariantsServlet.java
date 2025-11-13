@@ -332,6 +332,7 @@ public class VariantsServlet extends HttpServlet {
 
 
 
+
                 if (oldStock < stock && oldCost != cost) {
                     int quantity = stock - oldStock;
                     pfdao.updateQuantityAndCost(vID, cost, quantity);

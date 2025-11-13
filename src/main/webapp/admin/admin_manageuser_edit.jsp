@@ -53,13 +53,17 @@
                 </div>
 
 
+
                 <%                    
                     Users user = (Users) request.getAttribute("currentUser");
+
                 %>
                 <!-- Table -->
                 <form action="user" method="post" class="w-50 mx-auto bg-light p-4 rounded shadow">
                     <div class="mb-3" >
+
                         <%
+
                             if (session.getAttribute("exist") != null) {
                                 String exist = (String) session.getAttribute("exist");
                                 out.println("<p class='error-message'>" + exist + "</p>");
@@ -107,7 +111,6 @@
                         <select class="form-select" name="status" id="status">
                             <option value="active" <%= (user.getStatus().equalsIgnoreCase("active") ? "selected" : "")%>>Active</option>
                             <option value="locked" <%= (user.getStatus().equalsIgnoreCase("locked") ? "selected" : "")%>>Locked</option>
-
                         </select>
                     </div>
                     <div class="d-flex gap-2">
@@ -173,6 +176,5 @@
                     });
                 });
             </script>
-
     </body>
 </html>

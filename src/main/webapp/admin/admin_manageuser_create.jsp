@@ -55,7 +55,6 @@
 
 
                 <!-- Table -->
-
                 <form action="user?action=createAccountAdmin" id="userForm" method="post" class="w-50 mx-auto bg-light p-4 rounded shadow">
                     <div class="mb-3" >
                         <%                            
