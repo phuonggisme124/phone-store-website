@@ -219,6 +219,7 @@ public class ProductServlet extends HttpServlet {
                 List<Products> listProducts = pdao.getAllProduct();
                 List<Variants> listVariants;
 
+
                 // check roel 2,4
                 if (currentUser.getRole() == 2) {
                     // staff
@@ -324,6 +325,7 @@ public class ProductServlet extends HttpServlet {
             pdao.deleteProductByProductID(pID);
 
             response.sendRedirect("product?action=manageProduct");
+
         } 
         
 
@@ -332,7 +334,6 @@ public class ProductServlet extends HttpServlet {
                 response.sendRedirect("product?action=manageProduct");
                 return;
             }
-
             List<Suppliers> listSupplier = sldao.getAllSupplier();
             List<Category> listCategories = ctdao.getAllCategories();
             request.setAttribute("listSupplier", listSupplier);
@@ -360,6 +361,7 @@ public class ProductServlet extends HttpServlet {
             request.setAttribute("currentListProduct", currentListProduct);
             request.setAttribute("listCategory", listCategory);
             request.setAttribute("listSupplier", listSupplier);
+
 
             // check role 2,4
             if (currentUser.getRole() == 2) {
@@ -395,6 +397,7 @@ public class ProductServlet extends HttpServlet {
                 request.getRequestDispatcher("admin/dashboard_admin_manageproduct.jsp").forward(request, response);
             }
         }
+
     }
 
     @Override

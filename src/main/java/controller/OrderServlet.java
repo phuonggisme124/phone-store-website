@@ -83,8 +83,8 @@ public class OrderServlet extends HttpServlet {
                 targetPage = "orders.jsp";
 
             } else if (userRole == 4) { // Admin (Thêm trường hợp này để Admin vào thẳng Dashboard Admin)
-                 response.sendRedirect("order?action=manageOrderAdmin");
-                 return;
+                response.sendRedirect("order?action=manageOrderAdmin");
+                return;
             } else {
                 response.sendRedirect("login.jsp");
                 return;
@@ -122,42 +122,53 @@ public class OrderServlet extends HttpServlet {
             request.setAttribute("listCategory", listCategory);
 
             request.getRequestDispatcher(targetPage).forward(request, response);
-        } 
-        
-        // --- STAFF MANAGE ORDER ---
+        } // --- STAFF MANAGE ORDER ---
         else if ("manageOrder".equals(action)) {
             HttpSession session = request.getSession();
             Users currentUser = (Users) session.getAttribute("user");
 
-            if (currentUser == null || currentUser.getRole() != 2) {
+            if (currentUser == null || (currentUser.getRole() != 2 && currentUser.getRole() != 4)) {
                 response.sendRedirect("login");
+
                 return;
             }
 
-            List<Users> shippers = udao.getAllShippers();
-            List<String> allPhones = udao.getAllBuyerPhones();
-            request.setAttribute("allPhones", allPhones);
+            if (currentUser.getRole() == 2) {
+                List<Users> shippers = udao.getAllShippers();
+                List<String> allPhones = udao.getAllBuyerPhones();
+                request.setAttribute("allPhones", allPhones);
 
-            String searchPhone = request.getParameter("phone");
-            String status = request.getParameter("status");
-            List<Order> listOrders;
+                String searchPhone = request.getParameter("phone");
+                String status = request.getParameter("status");
+                List<Order> listOrders;
 
-            if (searchPhone != null && !searchPhone.trim().isEmpty() && status != null && !status.equalsIgnoreCase("All")) {
-                listOrders = dao.getOrdersByPhoneAndStatus(searchPhone.trim(), status);
-            } else if (searchPhone != null && !searchPhone.trim().isEmpty()) {
-                listOrders = dao.getOrdersByPhone(searchPhone.trim());
-            } else if (status != null && !status.equalsIgnoreCase("All")) {
-                listOrders = dao.getOrdersByStatusForStaff(currentUser.getUserId(), status);
-            } else {
-                listOrders = dao.getAllOrderForStaff(currentUser.getUserId());
+                if (searchPhone != null && !searchPhone.trim().isEmpty() && status != null && !status.equalsIgnoreCase("All")) {
+                    listOrders = dao.getOrdersByPhoneAndStatus(searchPhone.trim(), status);
+                } else if (searchPhone != null && !searchPhone.trim().isEmpty()) {
+                    listOrders = dao.getOrdersByPhone(searchPhone.trim());
+                } else if (status != null && !status.equalsIgnoreCase("All")) {
+                    listOrders = dao.getOrdersByStatusForStaff(currentUser.getUserId(), status);
+                } else {
+                    listOrders = dao.getAllOrderForStaff(currentUser.getUserId());
+                }
+
+                request.setAttribute("listOrders", listOrders);
+                request.setAttribute("listShippers", shippers);
+                request.getRequestDispatcher("staff/dashboard_staff_manageorder.jsp").forward(request, response);
+            } else if (currentUser.getRole() == 4) {
+                List<Order> listOrder = dao.getAllOrder();
+                List<String> listPhone = dao.getAllPhone();
+
+                for (Order o : listOrder) {
+                    System.out.println("OrderID: " + o.getOrderID() + " StaffID: "+ o.getStaffID());
+                }
+                request.setAttribute("listOrder", listOrder);
+                request.setAttribute("listPhone", listPhone);
+
+                request.getRequestDispatcher("admin/dashboard_admin_manageorder.jsp").forward(request, response);
             }
 
-            request.setAttribute("listOrders", listOrders);
-            request.setAttribute("listShippers", shippers);
-            request.getRequestDispatcher("staff/dashboard_staff_manageorder.jsp").forward(request, response);
-        } 
-        
-        // --- AJAX SEARCH PHONE ---
+        } // --- AJAX SEARCH PHONE ---
         else if ("searchPhone".equals(action)) {
             String term = request.getParameter("term");
             List<String> phones = udao.getAllBuyerPhones();
@@ -169,9 +180,7 @@ public class OrderServlet extends HttpServlet {
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             response.getWriter().write(new Gson().toJson(phones));
-        } 
-        
-        // --- ADMIN ORDER DETAIL ---
+        } // --- ADMIN ORDER DETAIL ---
         else if (action.equals("orderDetail")) {
             int oid = Integer.parseInt(request.getParameter("id"));
             // Kiểm tra null để tránh lỗi nếu tham số không tồn tại
@@ -187,48 +196,25 @@ public class OrderServlet extends HttpServlet {
             request.setAttribute("listPayments", listPayments);
             request.setAttribute("isIntalment", isInstalment);
             request.getRequestDispatcher("admin/admin_manageorder_detail.jsp").forward(request, response);
-        } 
-        
-        // --- ADMIN MANAGE ORDER (ĐÃ SỬA: Thêm List Staff & Shipper) ---
-        else if (action.equals("manageOrderAdmin")) {
-            List<Order> listOrder = dao.getAllOrder();
-            List<String> listPhone = dao.getAllPhone();
+        } // --- INSTALMENT ---
+        else if (action.equals("showInstalment")) {
+            // Lấy danh sách đơn trả góp
+            List<Order> listOrder = dao.getAllOrderInstalment();
+            List<String> listPhone = dao.getAllPhoneInstalment();
 
-            // --- MỚI THÊM: Lấy danh sách Staff và Shipper để hiển thị tên ---
+            // --- MỚI THÊM: Lấy danh sách Staff và Shipper ---
             List<Users> listShippers = udao.getAllShippers();
-            // Lưu ý: Đảm bảo UsersDAO có hàm getUsersByRole(int roleID) hoặc hàm tương tự lấy list staff
-            // Role 2 là Staff
-            List<Users> listStaff = udao.getUsersByRole(2); 
+            List<Users> listStaff = udao.getUsersByRole(2); // Role 2 là Staff
 
             request.setAttribute("listOrder", listOrder);
             request.setAttribute("listPhone", listPhone);
+
+            // Gửi sang JSP
             request.setAttribute("listShippers", listShippers);
             request.setAttribute("listStaff", listStaff);
 
-            request.getRequestDispatcher("admin/dashboard_admin_manageorder.jsp").forward(request, response);
-        } 
-        
-        // --- INSTALMENT ---
-        else if (action.equals("showInstalment")) {
-    // Lấy danh sách đơn trả góp
-    List<Order> listOrder = dao.getAllOrderInstalment();
-    List<String> listPhone = dao.getAllPhoneInstalment();
-    
-    // --- MỚI THÊM: Lấy danh sách Staff và Shipper ---
-    List<Users> listShippers = udao.getAllShippers();
-    List<Users> listStaff = udao.getUsersByRole(2); // Role 2 là Staff
-
-    request.setAttribute("listOrder", listOrder);
-    request.setAttribute("listPhone", listPhone);
-    
-    // Gửi sang JSP
-    request.setAttribute("listShippers", listShippers);
-    request.setAttribute("listStaff", listStaff);
-    
-    request.getRequestDispatcher("admin/admin_manageorder_instalment.jsp").forward(request, response);
-} 
-        
-        // --- SEARCH ORDER (ADMIN) ---
+            request.getRequestDispatcher("admin/admin_manageorder_instalment.jsp").forward(request, response);
+        } // --- SEARCH ORDER (ADMIN) ---
         else if (action.equals("searchOrder")) {
             String phone = request.getParameter("phone");
             String status = request.getParameter("status");
@@ -252,9 +238,7 @@ public class OrderServlet extends HttpServlet {
             request.setAttribute("status", status);
             request.setAttribute("listPhone", listPhone);
             request.getRequestDispatcher("admin/dashboard_admin_manageorder.jsp").forward(request, response);
-        } 
-        
-        // --- FILTER ORDER (ADMIN) ---
+        } // --- FILTER ORDER (ADMIN) ---
         else if (action.equals("filterOrder")) {
             String phone = request.getParameter("phone");
             String status = request.getParameter("status");
@@ -329,17 +313,15 @@ public class OrderServlet extends HttpServlet {
                 System.err.println("lỗi shipper: " + e.getMessage());
                 session.setAttribute("error", "lỗi shipper");
             }
-            
+
             // Điều hướng dựa trên Role
-            if(currentUser.getRole() == 4) {
-                 response.sendRedirect("order?action=manageOrderAdmin");
+            if (currentUser.getRole() == 4) {
+                response.sendRedirect("order?action=manageOrderAdmin");
             } else {
-                 response.sendRedirect("order?action=manageOrder");
+                response.sendRedirect("order?action=manageOrder");
             }
             return;
-        } 
-        
-        else if ("cancelOrder".equals(action)) {
+        } else if ("cancelOrder".equals(action)) {
             if (session == null) {
                 response.sendRedirect("login");
                 return;
@@ -366,16 +348,14 @@ public class OrderServlet extends HttpServlet {
                 session.setAttribute("error", "lỗi cancel.");
             }
 
-             // Điều hướng dựa trên Role
-            if(currentUser.getRole() == 4) {
-                 response.sendRedirect("order?action=manageOrderAdmin");
+            // Điều hướng dựa trên Role
+            if (currentUser.getRole() == 4) {
+                response.sendRedirect("order?action=manageOrderAdmin");
             } else {
-                 response.sendRedirect("order?action=manageOrder");
+                response.sendRedirect("order?action=manageOrder");
             }
             return;
-        } 
-        
-        else if ("updateStatus".equals(action)) {
+        } else if ("updateStatus".equals(action)) {
             if (session == null) {
                 response.sendRedirect("login");
                 return;

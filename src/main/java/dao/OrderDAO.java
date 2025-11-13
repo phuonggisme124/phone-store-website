@@ -18,7 +18,7 @@ import utils.DBContext;
 /**
  *
  * @author thịnh
- * @note 
+ * @note
  */
 public class OrderDAO extends DBContext {
 
@@ -27,27 +27,27 @@ public class OrderDAO extends DBContext {
     }
 
     private Order mapResultSetToOrderWithUsers(ResultSet rs) throws SQLException {
-        
+
         Order order = new Order();
-        
+
         order.setOrderID(rs.getInt("OrderID"));
-        order.setTotalAmount(rs.getDouble("TotalAmount")); 
+        order.setTotalAmount(rs.getDouble("TotalAmount"));
         order.setUserID((Integer) rs.getObject("UserID"));
         order.setStaffID((Integer) rs.getObject("StaffID"));
         order.setShipperID((Integer) rs.getObject("ShipperID"));
-        
+
         Object isInstalmentObj = rs.getObject("IsInstalment");
         if (isInstalmentObj != null) {
             order.setIsInstalment((Boolean) isInstalmentObj);
         } else {
-            order.setIsInstalment(null); 
+            order.setIsInstalment(null);
         }
-        
+
         Timestamp ts = rs.getTimestamp("OrderDate");
         if (ts != null) {
             order.setOrderDate(ts.toLocalDateTime());
         }
-        
+
         order.setStatus(rs.getString("Status"));
         order.setPaymentMethod(rs.getString("PaymentMethod"));
         order.setShippingAddress(rs.getString("ShippingAddress"));
@@ -55,13 +55,13 @@ public class OrderDAO extends DBContext {
         order.setReceiverPhone(rs.getString("ReceiverPhone"));
 
         if (hasColumn(rs, "BuyerID") && rs.getObject("BuyerID") != null) {
-             Users buyer = new Users();
-             buyer.setUserId(rs.getInt("BuyerID"));
-             buyer.setFullName(rs.getString("BuyerName"));
-             buyer.setPhone(rs.getString("BuyerPhone"));
-             order.setBuyer(buyer);
+            Users buyer = new Users();
+            buyer.setUserId(rs.getInt("BuyerID"));
+            buyer.setFullName(rs.getString("BuyerName"));
+            buyer.setPhone(rs.getString("BuyerPhone"));
+            order.setBuyer(buyer);
         }
-       
+
         if (hasColumn(rs, "ShipperID_Alias") && rs.getObject("ShipperID_Alias") != null) {
             Users shipper = new Users();
             shipper.setUserId(rs.getInt("ShipperID_Alias"));
@@ -72,7 +72,7 @@ public class OrderDAO extends DBContext {
 
         return order;
     }
-    
+
     private boolean hasColumn(ResultSet rs, String columnName) throws SQLException {
         try {
             rs.findColumn(columnName);
@@ -82,23 +82,22 @@ public class OrderDAO extends DBContext {
         }
     }
 
-  
     public Order getOrderById(int orderId) {
         String sql = "SELECT o.*, u.FullName AS BuyerName "
                 + "FROM [Orders] o "
-                + "LEFT JOIN Users u ON o.UserID = u.UserID " 
+                + "LEFT JOIN Users u ON o.UserID = u.UserID "
                 + "WHERE o.OrderID = ?";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, orderId);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                
+
                 Order o = new Order();
                 o.setOrderID(rs.getInt("OrderID"));
                 o.setUserID((Integer) rs.getObject("UserID"));
                 o.setOrderDate(rs.getTimestamp("OrderDate") != null ? rs.getTimestamp("OrderDate").toLocalDateTime() : null);
-                o.setStatus(rs.getString("Status")); 
+                o.setStatus(rs.getString("Status"));
                 o.setPaymentMethod(rs.getString("PaymentMethod"));
                 o.setShippingAddress(rs.getString("ShippingAddress"));
                 o.setTotalAmount(rs.getDouble("TotalAmount"));
@@ -108,13 +107,13 @@ public class OrderDAO extends DBContext {
                 o.setStaffID((Integer) rs.getObject("StaffID"));
                 o.setShipperID((Integer) rs.getObject("ShipperID"));
 
-                if(o.getUserID() != null) {
+                if (o.getUserID() != null) {
                     Users buyer = new Users();
                     buyer.setUserId(o.getUserID());
                     buyer.setFullName(rs.getString("BuyerName"));
-                    o.setBuyer(buyer); 
+                    o.setBuyer(buyer);
                 }
-                
+
                 return o;
             }
         } catch (SQLException e) {
@@ -122,8 +121,6 @@ public class OrderDAO extends DBContext {
         }
         return null;
     }
-
- 
 
     public List<Order> getOrdersByShipperId(int shipperId) {
         List<Order> orders = new ArrayList<>();
@@ -133,7 +130,7 @@ public class OrderDAO extends DBContext {
                 + "FROM Orders o "
                 + "LEFT JOIN Users b ON o.UserID = b.UserID "
                 + "LEFT JOIN Users s ON o.ShipperID = s.UserID "
-                + "WHERE o.ShipperID = ?"; 
+                + "WHERE o.ShipperID = ?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, shipperId);
@@ -154,8 +151,8 @@ public class OrderDAO extends DBContext {
                 + "s.UserID AS ShipperID_Alias, s.FullName AS ShipperName, s.Phone AS ShipperPhone "
                 + "FROM Orders o "
                 + "LEFT JOIN Users b ON o.UserID = b.UserID "
-                + "LEFT JOIN Users s ON o.ShipperID = s.UserID " 
-                + "WHERE o.ShipperID = ? AND o.Status = ?"; 
+                + "LEFT JOIN Users s ON o.ShipperID = s.UserID "
+                + "WHERE o.ShipperID = ? AND o.Status = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, shipperId);
             stmt.setString(2, status);
@@ -176,8 +173,8 @@ public class OrderDAO extends DBContext {
                 + "s.UserID AS ShipperID_Alias, s.FullName AS ShipperName, s.Phone AS ShipperPhone "
                 + "FROM Orders o "
                 + "LEFT JOIN Users b ON o.UserID = b.UserID "
-                + "LEFT JOIN Users s ON o.ShipperID = s.UserID " 
-                + "WHERE o.ReceiverPhone LIKE ?"; 
+                + "LEFT JOIN Users s ON o.ShipperID = s.UserID "
+                + "WHERE o.ReceiverPhone LIKE ?";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, "%" + phone + "%");
@@ -192,14 +189,13 @@ public class OrderDAO extends DBContext {
         return list;
     }
 
-
     public List<Order> getOrdersByUserId(int userId) {
         List<Order> orders = new ArrayList<>();
         String sql = "SELECT o.*, "
                 + "b.UserID AS BuyerID, b.FullName AS BuyerName, b.Phone AS BuyerPhone, "
                 + "s.UserID AS ShipperID_Alias, s.FullName AS ShipperName, s.Phone AS ShipperPhone "
                 + "FROM Orders o "
-                + "LEFT JOIN Users b ON o.UserID = b.UserID " 
+                + "LEFT JOIN Users b ON o.UserID = b.UserID "
                 + "LEFT JOIN Users s ON o.ShipperID = s.UserID "
                 + "WHERE o.UserID = ? "
                 + "ORDER BY o.OrderDate DESC";
@@ -253,20 +249,20 @@ public class OrderDAO extends DBContext {
                 o.setTotalAmount(rs.getBigDecimal("TotalAmount").doubleValue());
                 o.setStatus(rs.getString("Status"));
                 o.setIsInstalment((Boolean) rs.getObject("IsInstalment"));
-                
+
                 Timestamp ts = rs.getTimestamp("OrderDate");
                 if (ts != null) {
                     o.setOrderDate(ts.toLocalDateTime());
                 }
-                
+
                 Users receiver = new Users();
                 receiver.setFullName(rs.getString("ReceiverName"));
                 receiver.setPhone(rs.getString("ReceiverPhone"));
-                o.setBuyer(receiver); 
-                
+                o.setBuyer(receiver);
+
                 orders.add(o);
             }
-        } catch (Exception e) { 
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return orders;
@@ -274,19 +270,19 @@ public class OrderDAO extends DBContext {
 
     public List<Order> getAllOrder() {
         List<Order> list = new ArrayList<>();
-        String sql = "Select * from Orders"; 
+        String sql = "Select * from Orders";
         try (PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 list.add(new Order(
-                        rs.getInt("OrderID"), 
-                        (Integer) rs.getObject("UserID"), 
+                        rs.getInt("OrderID"),
+                        (Integer) rs.getObject("UserID"),
                         rs.getTimestamp("OrderDate") != null ? rs.getTimestamp("OrderDate").toLocalDateTime() : null,
                         rs.getString("Status"),
                         rs.getString("PaymentMethod"),
-                        rs.getString("ShippingAddress"), 
-                        rs.getDouble("TotalAmount"), 
-                        (Boolean) rs.getObject("IsInstalment"), 
-                        rs.getString("ReceiverName"), 
+                        rs.getString("ShippingAddress"),
+                        rs.getDouble("TotalAmount"),
+                        (Boolean) rs.getObject("IsInstalment"),
+                        rs.getString("ReceiverName"),
                         rs.getString("ReceiverPhone"),
                         (Integer) rs.getObject("StaffID"),
                         (Integer) rs.getObject("ShipperID")
@@ -297,7 +293,7 @@ public class OrderDAO extends DBContext {
         }
         return list;
     }
-    
+
     public void deleteOrderByID(int id) {
         String[] deleteStatements = {
             "DELETE FROM Payments WHERE OrderID = ?",
@@ -328,19 +324,19 @@ public class OrderDAO extends DBContext {
             }
         }
     }
-    
+
     public int addNewOrder(Order o) {
         String sql = "INSERT INTO Orders (UserID, Status, PaymentMethod, ShippingAddress, TotalAmount, IsInstalment, ReceiverName, ReceiverPhone) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            ps.setObject(1, o.getUserID()); 
+            ps.setObject(1, o.getUserID());
             ps.setString(2, o.getStatus());
             ps.setString(3, o.getPaymentMethod());
             ps.setString(4, o.getShippingAddress());
             ps.setDouble(5, o.getTotalAmount());
-            ps.setObject(6, o.getIsInstalment()); 
-            ps.setString(7, o.getReceiverName()); 
-            ps.setString(8, o.getReceiverPhone()); 
+            ps.setObject(6, o.getIsInstalment());
+            ps.setString(7, o.getReceiverName());
+            ps.setString(8, o.getReceiverPhone());
             ps.executeUpdate();
 
             ResultSet rs = ps.getGeneratedKeys();
@@ -352,7 +348,7 @@ public class OrderDAO extends DBContext {
         }
         return -1;
     }
-    
+
     public List<OrderDetails> getAllOrderDetailByOrderID(int oid) {
         VariantsDAO vdao = new VariantsDAO();
         String sql = "SELECT * FROM OrderDetails WHERE OrderID = ?";
@@ -378,7 +374,61 @@ public class OrderDAO extends DBContext {
         }
         return list;
     }
-    
+
+    /**
+     * Get orders for a customer phone number filtered by status.
+     *
+     * @param phone Customer phone number (supports partial match).
+     * @param status The status to filter by.
+     * @return List of Order objects.
+     */
+    public List<Order> getOrdersByPhoneAndStatus(String phone, String status) {
+        List<Order> list = new ArrayList<>();
+        String sql = "SELECT o.OrderID, o.UserID, buyer.FullName AS BuyerName, buyer.Phone AS BuyerPhone, "
+                + "o.ShippingAddress, o.TotalAmount, o.PaymentMethod, o.Status, o.OrderDate, "
+                + "shippers.UserID AS ShipperID, shippers.FullName AS ShipperName, shippers.Phone AS ShipperPhone "
+                + "FROM Orders o "
+                + "JOIN Users buyer ON o.UserID = buyer.UserID "
+                + "LEFT JOIN Sales s ON o.OrderID = s.OrderID "
+                + "LEFT JOIN Users shippers ON s.ShipperID = shippers.UserID "
+                + "WHERE buyer.Phone LIKE ? AND o.Status = ?";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, "%" + phone + "%");
+            ps.setString(2, status);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Users buyer = new Users();
+                    buyer.setFullName(rs.getString("BuyerName"));
+                    buyer.setPhone(rs.getString("BuyerPhone"));
+
+                    Users shipper = null;
+                    int shipperID = rs.getInt("ShipperID");
+                    if (shipperID != 0) {
+                        shipper = new Users();
+                        shipper.setUserId(shipperID);
+                        shipper.setFullName(rs.getString("ShipperName"));
+                        shipper.setPhone(rs.getString("ShipperPhone"));
+                    }
+
+                    Order o = new Order(
+                            rs.getInt("OrderID"),
+                            buyer, shipper,
+                            rs.getString("ShippingAddress"),
+                            rs.getBigDecimal("TotalAmount").doubleValue(),
+                            rs.getTimestamp("OrderDate").toLocalDateTime(),
+                            rs.getString("Status"));
+                    o.setPaymentMethod(rs.getString("PaymentMethod"));
+                    list.add(o);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    // --- START OF MERGED CODE ---
     public List<Order> getAllPendingInstalment(List<Order> listInstalment) {
         PaymentsDAO pmdao = new PaymentsDAO();
         List<Order> list = new ArrayList<>();
@@ -395,7 +445,7 @@ public class OrderDAO extends DBContext {
         }
         return list;
     }
-    
+
     public List<Order> getAllCompletedInstalment(List<Order> listInstalment) {
         PaymentsDAO pmdao = new PaymentsDAO();
         List<Order> list = new ArrayList<>();
@@ -438,15 +488,15 @@ public class OrderDAO extends DBContext {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 list.add(new Order(
-                        rs.getInt("OrderID"), 
-                        (Integer) rs.getObject("UserID"), 
+                        rs.getInt("OrderID"),
+                        (Integer) rs.getObject("UserID"),
                         rs.getTimestamp("OrderDate") != null ? rs.getTimestamp("OrderDate").toLocalDateTime() : null,
                         rs.getString("Status"),
                         rs.getString("PaymentMethod"),
-                        rs.getString("ShippingAddress"), 
-                        rs.getDouble("TotalAmount"), 
-                        (Boolean) rs.getObject("IsInstalment"), 
-                        rs.getString("ReceiverName"), 
+                        rs.getString("ShippingAddress"),
+                        rs.getDouble("TotalAmount"),
+                        (Boolean) rs.getObject("IsInstalment"),
+                        rs.getString("ReceiverName"),
                         rs.getString("ReceiverPhone"),
                         (Integer) rs.getObject("StaffID"),
                         (Integer) rs.getObject("ShipperID")
@@ -466,16 +516,16 @@ public class OrderDAO extends DBContext {
             ps.setString(2, statusFilter);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                 list.add(new Order(
-                        rs.getInt("OrderID"), 
-                        (Integer) rs.getObject("UserID"), 
+                list.add(new Order(
+                        rs.getInt("OrderID"),
+                        (Integer) rs.getObject("UserID"),
                         rs.getTimestamp("OrderDate") != null ? rs.getTimestamp("OrderDate").toLocalDateTime() : null,
                         rs.getString("Status"),
                         rs.getString("PaymentMethod"),
-                        rs.getString("ShippingAddress"), 
-                        rs.getDouble("TotalAmount"), 
-                        (Boolean) rs.getObject("IsInstalment"), 
-                        rs.getString("ReceiverName"), 
+                        rs.getString("ShippingAddress"),
+                        rs.getDouble("TotalAmount"),
+                        (Boolean) rs.getObject("IsInstalment"),
+                        rs.getString("ReceiverName"),
                         rs.getString("ReceiverPhone"),
                         (Integer) rs.getObject("StaffID"),
                         (Integer) rs.getObject("ShipperID")
@@ -494,16 +544,16 @@ public class OrderDAO extends DBContext {
             ps.setString(1, statusFilter);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                 list.add(new Order(
-                        rs.getInt("OrderID"), 
-                        (Integer) rs.getObject("UserID"), 
+                list.add(new Order(
+                        rs.getInt("OrderID"),
+                        (Integer) rs.getObject("UserID"),
                         rs.getTimestamp("OrderDate") != null ? rs.getTimestamp("OrderDate").toLocalDateTime() : null,
                         rs.getString("Status"),
                         rs.getString("PaymentMethod"),
-                        rs.getString("ShippingAddress"), 
-                        rs.getDouble("TotalAmount"), 
-                        (Boolean) rs.getObject("IsInstalment"), 
-                        rs.getString("ReceiverName"), 
+                        rs.getString("ShippingAddress"),
+                        rs.getDouble("TotalAmount"),
+                        (Boolean) rs.getObject("IsInstalment"),
+                        rs.getString("ReceiverName"),
                         rs.getString("ReceiverPhone"),
                         (Integer) rs.getObject("StaffID"),
                         (Integer) rs.getObject("ShipperID")
@@ -527,7 +577,7 @@ public class OrderDAO extends DBContext {
         }
         return list;
     }
-    
+
     public List<Order> getAllOrderInstalmentByPhone(String phone) {
         String sql = "Select * from Orders Where ReceiverPhone = ? AND IsInstalment = 1";
         List<Order> list = new ArrayList<>();
@@ -535,16 +585,16 @@ public class OrderDAO extends DBContext {
             ps.setString(1, phone);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                 list.add(new Order(
-                        rs.getInt("OrderID"), 
-                        (Integer) rs.getObject("UserID"), 
+                list.add(new Order(
+                        rs.getInt("OrderID"),
+                        (Integer) rs.getObject("UserID"),
                         rs.getTimestamp("OrderDate") != null ? rs.getTimestamp("OrderDate").toLocalDateTime() : null,
                         rs.getString("Status"),
                         rs.getString("PaymentMethod"),
-                        rs.getString("ShippingAddress"), 
-                        rs.getDouble("TotalAmount"), 
-                        (Boolean) rs.getObject("IsInstalment"), 
-                        rs.getString("ReceiverName"), 
+                        rs.getString("ShippingAddress"),
+                        rs.getDouble("TotalAmount"),
+                        (Boolean) rs.getObject("IsInstalment"),
+                        rs.getString("ReceiverName"),
                         rs.getString("ReceiverPhone"),
                         (Integer) rs.getObject("StaffID"),
                         (Integer) rs.getObject("ShipperID")
@@ -561,16 +611,16 @@ public class OrderDAO extends DBContext {
         List<Order> list = new ArrayList<>();
         try (PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                 list.add(new Order(
-                        rs.getInt("OrderID"), 
-                        (Integer) rs.getObject("UserID"), 
+                list.add(new Order(
+                        rs.getInt("OrderID"),
+                        (Integer) rs.getObject("UserID"),
                         rs.getTimestamp("OrderDate") != null ? rs.getTimestamp("OrderDate").toLocalDateTime() : null,
                         rs.getString("Status"),
                         rs.getString("PaymentMethod"),
-                        rs.getString("ShippingAddress"), 
-                        rs.getDouble("TotalAmount"), 
-                        (Boolean) rs.getObject("IsInstalment"), 
-                        rs.getString("ReceiverName"), 
+                        rs.getString("ShippingAddress"),
+                        rs.getDouble("TotalAmount"),
+                        (Boolean) rs.getObject("IsInstalment"),
+                        rs.getString("ReceiverName"),
                         rs.getString("ReceiverPhone"),
                         (Integer) rs.getObject("StaffID"),
                         (Integer) rs.getObject("ShipperID")
@@ -645,7 +695,7 @@ public class OrderDAO extends DBContext {
         }
         return orders;
     }
-    
+
     // (Giữ nguyên checkUserPurchase)
     public boolean checkUserPurchase(int userID, int productID, String storage) {
         String sql = "SELECT \n"
@@ -677,212 +727,169 @@ public class OrderDAO extends DBContext {
         }
         return false;
     }
-   
-    
-   
+
 //CỦA THỊNH CẤM ĐỤNG    
+    public boolean assignShipperAndStaff(int orderID, int staffID, int shipperID) {
+        String sql = "UPDATE Orders SET StaffID = ?, ShipperID = ?, Status = 'In Transit' "
+                + "WHERE OrderID = ? AND Status = 'Pending'";
 
-public boolean assignShipperAndStaff(int orderID, int staffID, int shipperID) {
-    String sql = "UPDATE Orders SET StaffID = ?, ShipperID = ?, Status = 'In Transit' "
-              + "WHERE OrderID = ? AND Status = 'Pending'"; 
-    
-    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-        stmt.setInt(1, staffID);
-        stmt.setInt(2, shipperID);
-        stmt.setInt(3, orderID);
-        
-        int rowsAffected = stmt.executeUpdate();
-        
-  
-        if (rowsAffected == 0) {
-            System.out.println("assignShipperAndStaff No rows affected for OrderID: " + orderID);
-            
-            checkOrderStatus(orderID);
-        } else {
-            System.out.println("assignShipperAndStaff Successfully assigned OrderID: " + orderID);
-        }
-        
-        return rowsAffected > 0;
-    } catch (SQLException e) {
-        System.err.println("assignShipperAndStaff SQL Error: " + e.getMessage());
-        e.printStackTrace();
-        return false;
-    }
-}
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, staffID);
+            stmt.setInt(2, shipperID);
+            stmt.setInt(3, orderID);
 
+            int rowsAffected = stmt.executeUpdate();
 
-public boolean cancelOrderByStaff(int orderID, int staffID) {
-    String sql = "UPDATE Orders SET StaffID = ?, ShipperID = NULL, Status = 'Cancelled' "
-              + "WHERE OrderID = ? AND Status = 'Pending'";
-    
-    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-        stmt.setInt(1, staffID);
-        stmt.setInt(2, orderID);
-        
-        int rowsAffected = stmt.executeUpdate();
-        
-        
-        if (rowsAffected == 0) {
-            System.out.println("cancelOrderByStaff No rows affected for OrderID: " + orderID);
-            checkOrderStatus(orderID);
-        } else {
-            System.out.println("cancelOrderByStaff Successfully cancelled OrderID: " + orderID);
-        }
-        
-        return rowsAffected > 0;
-    } catch (SQLException e) {
-        System.err.println("cancelOrderByStaff SQL Error: " + e.getMessage());
-        e.printStackTrace();
-        return false;
-    }
-}
+            if (rowsAffected == 0) {
+                System.out.println("assignShipperAndStaff No rows affected for OrderID: " + orderID);
 
-public boolean updateOrderStatusByShipper(int orderID, int shipperID, String newStatus) {
-    // Validate status
-    if (!newStatus.equals("Delivered") && !newStatus.equals("Cancelled")) {
-        System.out.println("updateOrderStatusByShipper Invalid status: " + newStatus);
-        return false;
-    }
-    
-    String sql = "UPDATE Orders SET Status = ? "
-              + "WHERE OrderID = ? AND ShipperID = ? AND Status = 'In Transit'";
-    
-    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-        stmt.setString(1, newStatus);
-        stmt.setInt(2, orderID);
-        stmt.setInt(3, shipperID);
-        
-        int rowsAffected = stmt.executeUpdate();
-        
-        
-        if (rowsAffected == 0) {
-            System.out.println("updateOrderStatusByShipper No rows affected for OrderID: " + orderID + ", ShipperID: " + shipperID);
-            checkOrderStatus(orderID);
-        } else {
-            System.out.println("updateOrderStatusByShipper Successfully updated OrderID: " + orderID + " to " + newStatus);
-        }
-        
-        return rowsAffected > 0;
-    } catch (SQLException e) {
-        System.err.println("updateOrderStatusByShipper SQL Error: " + e.getMessage());
-        e.printStackTrace();
-        return false;
-    }
-}
-
-
-private void checkOrderStatus(int orderID) {
-    String sql = "SELECT OrderID, Status, StaffID, ShipperID FROM Orders WHERE OrderID = ?";
-    try (PreparedStatement ps = conn.prepareStatement(sql)) {
-        ps.setInt(1, orderID);
-        ResultSet rs = ps.executeQuery();
-        if (rs.next()) {
-            System.out.println("Order exists - OrderID: " + rs.getInt("OrderID") 
-                + ", Status: [" + rs.getString("Status") + "]"
-                + ", StaffID: " + rs.getObject("StaffID")
-                + ", ShipperID: " + rs.getObject("ShipperID"));
-        } else {
-            System.out.println("Order not found - OrderID: " + orderID);
-        }
-    } catch (SQLException e) {
-        e.printStackTrace();
-    }
-}
-
-
-public List<Order> getAllOrderForStaff(int staffID) {
-    List<Order> orders = new ArrayList<>();
-    
-    String sql = "SELECT o.*, "
-            + "b.UserID AS BuyerID, b.FullName AS BuyerName, b.Phone AS BuyerPhone, "
-            + "s.UserID AS ShipperID_Alias, s.FullName AS ShipperName, s.Phone AS ShipperPhone "
-            + "FROM [Orders] o "
-            + "LEFT JOIN [Users] b ON o.UserID = b.UserID " 
-            + "LEFT JOIN [Users] s ON o.ShipperID = s.UserID " 
-            + "WHERE o.Status = 'Pending' OR o.StaffID = ? "
-            + "ORDER BY o.OrderDate DESC";
-
-    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-        stmt.setInt(1, staffID);
-        ResultSet rs = stmt.executeQuery();
-
-        while (rs.next()) {
-            orders.add(mapResultSetToOrderWithUsers(rs));
-        }
-    } catch (SQLException e) {
-        e.printStackTrace();
-    }
-    return orders;
-}
-
-
-public List<Order> getOrdersByStatusForStaff(int staffID, String status) {
-    List<Order> orders = new ArrayList<>();
-    
-    StringBuilder sql = new StringBuilder(
-            "SELECT o.*, "
-            + "b.UserID AS BuyerID, b.FullName AS BuyerName, b.Phone AS BuyerPhone, "
-            + "s.UserID AS ShipperID_Alias, s.FullName AS ShipperName, s.Phone AS ShipperPhone "
-            + "FROM [Orders] o "
-            + "LEFT JOIN [Users] b ON o.UserID = b.UserID "
-            + "LEFT JOIN [Users] s ON o.ShipperID = s.UserID "); 
-
-    if (status.equalsIgnoreCase("Pending")) {
-        sql.append("WHERE o.Status = 'Pending'");
-    } else {
-        sql.append("WHERE o.Status = ? AND o.StaffID = ?");
-    }
-    sql.append(" ORDER BY o.OrderDate DESC");
-
-    try (PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
-        if (status.equalsIgnoreCase("Pending")) {
-            // Không cần set parameter
-        } else {
-            stmt.setString(1, status);
-            stmt.setInt(2, staffID);
-        }
-        
-        ResultSet rs = stmt.executeQuery();
-        while (rs.next()) {
-            orders.add(mapResultSetToOrderWithUsers(rs));
-        }
-    } catch (SQLException e) {
-        e.printStackTrace();
-    }
-    return orders;
-}
-
-
-public List<Order> getOrdersByPhoneAndStatus(String phone, String status) {
-    List<Order> list = new ArrayList<>();
-    
-    String sql = "SELECT o.*, "
-            + "b.UserID AS BuyerID, b.FullName AS BuyerName, b.Phone AS BuyerPhone, "
-            + "s.UserID AS ShipperID_Alias, s.FullName AS ShipperName, s.Phone AS ShipperPhone "
-            + "FROM Orders o "
-            + "LEFT JOIN Users b ON o.UserID = b.UserID "
-            + "LEFT JOIN Users s ON o.ShipperID = s.UserID ";
-            
-    if (status.equalsIgnoreCase("Pending")) {
-         sql += "WHERE o.ReceiverPhone LIKE ? AND o.Status = 'Pending'";
-    } else {
-         sql += "WHERE o.ReceiverPhone LIKE ? AND o.Status = ?";
-    }
-
-    try (PreparedStatement ps = conn.prepareStatement(sql)) {
-        ps.setString(1, "%" + phone + "%");
-        if (!status.equalsIgnoreCase("Pending")) {
-            ps.setString(2, status);
-        }
-        
-        try (ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                list.add(mapResultSetToOrderWithUsers(rs));
+                checkOrderStatus(orderID);
+            } else {
+                System.out.println("assignShipperAndStaff Successfully assigned OrderID: " + orderID);
             }
+
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            System.err.println("assignShipperAndStaff SQL Error: " + e.getMessage());
+            e.printStackTrace();
+            return false;
         }
-    } catch (SQLException e) {
-        e.printStackTrace();
     }
-    return list;
-}
+
+    public boolean cancelOrderByStaff(int orderID, int staffID) {
+        String sql = "UPDATE Orders SET StaffID = ?, ShipperID = NULL, Status = 'Cancelled' "
+                + "WHERE OrderID = ? AND Status = 'Pending'";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, staffID);
+            stmt.setInt(2, orderID);
+
+            int rowsAffected = stmt.executeUpdate();
+
+            if (rowsAffected == 0) {
+                System.out.println("cancelOrderByStaff No rows affected for OrderID: " + orderID);
+                checkOrderStatus(orderID);
+            } else {
+                System.out.println("cancelOrderByStaff Successfully cancelled OrderID: " + orderID);
+            }
+
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            System.err.println("cancelOrderByStaff SQL Error: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean updateOrderStatusByShipper(int orderID, int shipperID, String newStatus) {
+        // Validate status
+        if (!newStatus.equals("Delivered") && !newStatus.equals("Cancelled")) {
+            System.out.println("updateOrderStatusByShipper Invalid status: " + newStatus);
+            return false;
+        }
+
+        String sql = "UPDATE Orders SET Status = ? "
+                + "WHERE OrderID = ? AND ShipperID = ? AND Status = 'In Transit'";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, newStatus);
+            stmt.setInt(2, orderID);
+            stmt.setInt(3, shipperID);
+
+            int rowsAffected = stmt.executeUpdate();
+
+            if (rowsAffected == 0) {
+                System.out.println("updateOrderStatusByShipper No rows affected for OrderID: " + orderID + ", ShipperID: " + shipperID);
+                checkOrderStatus(orderID);
+            } else {
+                System.out.println("updateOrderStatusByShipper Successfully updated OrderID: " + orderID + " to " + newStatus);
+            }
+
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            System.err.println("updateOrderStatusByShipper SQL Error: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private void checkOrderStatus(int orderID) {
+        String sql = "SELECT OrderID, Status, StaffID, ShipperID FROM Orders WHERE OrderID = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, orderID);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                System.out.println("Order exists - OrderID: " + rs.getInt("OrderID")
+                        + ", Status: [" + rs.getString("Status") + "]"
+                        + ", StaffID: " + rs.getObject("StaffID")
+                        + ", ShipperID: " + rs.getObject("ShipperID"));
+            } else {
+                System.out.println("Order not found - OrderID: " + orderID);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public List<Order> getAllOrderForStaff(int staffID) {
+        List<Order> orders = new ArrayList<>();
+
+        String sql = "SELECT o.*, "
+                + "b.UserID AS BuyerID, b.FullName AS BuyerName, b.Phone AS BuyerPhone, "
+                + "s.UserID AS ShipperID_Alias, s.FullName AS ShipperName, s.Phone AS ShipperPhone "
+                + "FROM [Orders] o "
+                + "LEFT JOIN [Users] b ON o.UserID = b.UserID "
+                + "LEFT JOIN [Users] s ON o.ShipperID = s.UserID "
+                + "WHERE o.Status = 'Pending' OR o.StaffID = ? "
+                + "ORDER BY o.OrderDate DESC";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, staffID);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                orders.add(mapResultSetToOrderWithUsers(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return orders;
+    }
+
+    public List<Order> getOrdersByStatusForStaff(int staffID, String status) {
+        List<Order> orders = new ArrayList<>();
+
+        StringBuilder sql = new StringBuilder(
+                "SELECT o.*, "
+                + "b.UserID AS BuyerID, b.FullName AS BuyerName, b.Phone AS BuyerPhone, "
+                + "s.UserID AS ShipperID_Alias, s.FullName AS ShipperName, s.Phone AS ShipperPhone "
+                + "FROM [Orders] o "
+                + "LEFT JOIN [Users] b ON o.UserID = b.UserID "
+                + "LEFT JOIN [Users] s ON o.ShipperID = s.UserID ");
+
+        if (status.equalsIgnoreCase("Pending")) {
+            sql.append("WHERE o.Status = 'Pending'");
+        } else {
+            sql.append("WHERE o.Status = ? AND o.StaffID = ?");
+        }
+        sql.append(" ORDER BY o.OrderDate DESC");
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
+            if (status.equalsIgnoreCase("Pending")) {
+                // Không cần set parameter
+            } else {
+                stmt.setString(1, status);
+                stmt.setInt(2, staffID);
+            }
+
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                orders.add(mapResultSetToOrderWithUsers(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return orders;
+    }
+
 }

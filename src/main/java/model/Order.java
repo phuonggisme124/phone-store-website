@@ -26,12 +26,14 @@ public class Order {
     private Integer staffID;             // int (Allow Nulls -> Integer)
     private Integer shipperID;           // int (Allow Nulls -> Integer)
 
+
     // --- 2. CÁC TRƯỜNG QUAN HỆ (ĐỂ JOIN) ---
     private Users buyer;    // Đối tượng User (Khách hàng)
     private Users shippers; // Đối tượng User (Shipper)
     
     // --- 3. TRƯỜNG CŨ (BỊ DƯ, TỪ CODE CŨ CỦA BẠN) ---
     // (Chúng ta giữ lại để các constructor cũ không bị lỗi)
+
     private int interestRateID;
     private String buyerName; // Tên cũ của ReceiverName
     private String buyerPhone; // Tên cũ của ReceiverPhone
@@ -46,7 +48,19 @@ public class Order {
     }
 
     /**
-     * Constructor ĐẦY ĐỦ NHẤT (12 cột) - Dùng cho DAO mới
+     * 
+     * @param orderID
+     * @param userID
+     * @param orderDate
+     * @param status
+     * @param paymentMethod
+     * @param shippingAddress
+     * @param totalAmount
+     * @param isInstalment
+     * @param receiverName
+     * @param receiverPhone
+     * @param staffID
+     * @param shipperID 
      */
     public Order(int orderID, Integer userID, LocalDateTime orderDate, String status,
                    String paymentMethod, String shippingAddress, double totalAmount,
@@ -112,6 +126,7 @@ public class Order {
         this.receiverPhone = buyerPhone; // Ánh xạ tên cũ
     }
 
+
     /**
      * (Giữ nguyên - Dùng cho PaymentServlet)
      */
@@ -151,8 +166,6 @@ public class Order {
         }
     }
 
-
-    // --- 5. GETTERS AND SETTERS (SẠCH SẼ) ---
 
     public int getOrderID() {
         return orderID;
