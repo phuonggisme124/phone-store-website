@@ -124,7 +124,7 @@
                             <h1 class="fw-bold ps-3 mb-4 fw-bold text-primary">Manage Orders</h1>
                         </div>
                         <div class="container-fluid p-4 ps-3">
-                            <a class="btn btn-primary px-4 py-2 rounded-pill shadow-sm" href="review?action=showInstalment">
+                            <a class="btn btn-primary px-4 py-2 rounded-pill shadow-sm" href="order?action=showInstalment">
                                 <i class="bi bi-box-seam me-2"></i> Instalment
                             </a>
                         </div>

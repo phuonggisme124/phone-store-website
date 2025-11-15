@@ -3,7 +3,7 @@
     Created on : Oct 25, 2025, 4:17:27?PM
     Author     : duy
 --%>
-
+<link rel="icon" type="image/x-icon" href="images/favicon.jpg">
 <nav class="sidebar bg-white shadow-sm border-end">
     <%
         String action = request.getParameter("action");
@@ -35,7 +35,6 @@
                ><i class="bi bi-people me-2"></i>Users</a></li>
         <li><a href="${pageContext.request.contextPath}/category?action=manageCategory" <%= (action.equals("manageCategory")) ? "class='active'" : ""%>
 
-               ><i class="bi bi-grid me-2"></i>Category</a></li>
-        <li><a href="#"><i class="bi bi-gear me-2"></i>Settings</a></li>            
+               ><i class="bi bi-grid me-2"></i>Category</a></li>          
     </ul>
 </nav>

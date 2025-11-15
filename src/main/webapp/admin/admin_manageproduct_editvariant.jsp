@@ -111,11 +111,7 @@
                         <input type="text" class="form-control" name="price" value="<%= String.format("%.0f", variant.getPrice())%>">
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Cost Price</label>
-                        <input type="text" class="form-control" name="cost" value="<%= String.format("%.0f", profit.getCostPrice())%>">
-                        <input type="hidden" class="form-control" name="oldCost" value="<%= String.format("%.0f", profit.getCostPrice())%>">
-                    </div>
+                  
 
                     <div class="mb-3">
 

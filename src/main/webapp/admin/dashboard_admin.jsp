@@ -19,6 +19,7 @@
 
         <!-- Custom CSS -->
         <link rel="stylesheet" href="<%= request.getContextPath()%>/css/dashboard_admin.css">
+        <link rel="stylesheet" href="<%= request.getContextPath()%>/css/dashboard_table.css">
     </head>
     <body>
         <div class="d-flex" id="wrapper">
@@ -27,8 +28,7 @@
 
 
             <!-- Page Content -->
-            <%  
-                Users user = (Users) session.getAttribute("user");
+            <%                Users user = (Users) session.getAttribute("user");
                 ProductDAO pdao = new ProductDAO();
                 VariantsDAO vdao = new VariantsDAO();
                 SupplierDAO sldao = new SupplierDAO();
@@ -50,7 +50,7 @@
                 double percentIncome = (incomeOfMonth / incomeTargetOfMonth) * 100;
 
                 int currentYear = Calendar.getInstance().get(Calendar.YEAR);
-                int currentMonth = Calendar.getInstance().get(Calendar.MONTH) +1;
+                int currentMonth = Calendar.getInstance().get(Calendar.MONTH) + 1;
 
                 int yearSelect = (int) request.getAttribute("yearSelect");
                 int monthSelect = (int) request.getAttribute("monthSelect");
@@ -77,12 +77,12 @@
                         </button>
                         <div class="d-flex align-items-center ms-auto">
                             <!-- Search bar in navbar -->
-                            
+
 
                             <a href="logout" class="btn btn-outline-danger btn-sm me-3">Logout</a>
                             <div class="d-flex align-items-center">
                                 <img src="https://i.pravatar.cc/40" class="rounded-circle me-2" width="35">
-                                <span><%= user.getFullName() %></span>
+                                <span><%= user.getFullName()%></span>
                             </div>
                         </div>
                     </div>
@@ -91,7 +91,7 @@
                 <!-- Main Dashboard -->
                 <div class="container-fluid p-4">
                     <div class="row g-3">
-                        
+
                         <div class="col-xl-3 col-md-6">
                             <div class="card month-stat-card revenue">
                                 <h6>Total Product</h6>
@@ -128,7 +128,7 @@
 
                     <div class="row mt-4 g-4">
                         <!-- Chart Income -->
-                        <div class="col-md-8">
+                        <div class="">
                             <div class="card border-0 shadow-sm p-3">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div class="card border-0 p-3">
@@ -164,12 +164,12 @@
                         </div>
 
                         <!-- Chart Orders -->
-                        <div class="col-md-4">
+<!--                        <div class="col-md-4">
                             <div class="card border-0 shadow-sm p-3">
                                 <h6>Orders</h6>
                                 <div id="orderChart" class="mt-3"></div>
                             </div>
-                        </div>
+                        </div>-->
                     </div>
 
                     <!-- Nhóm Target -->

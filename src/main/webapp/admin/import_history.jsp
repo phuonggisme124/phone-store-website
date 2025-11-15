@@ -70,29 +70,35 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <% if (listImports != null && !listImports.isEmpty()) {
+                     <% if (listImports != null && !listImports.isEmpty()) {
+
                                 for (Profit p : listImports) {%>
+
                         <tr>
+
                             <td><%= p.getProfitID()%></td>
+
                             <%
                                 Variants v = vdao.getVariantByID(p.getVariantID());
                             %>
-                            <td><%= pdao.getNameByID(v.getProductID())%></td>
-                            <td><%= v.getStorage()%></td>
-                            <td><%= v.getColor()%></td>
-                            <td><%= p.getQuantity()%></td>
-                            <td><%= String.format("%,.0f", p.getCostPrice())%></td>
-                            <td><%= String.format("%,.0f", p.getSellingPrice())%></td>
-                            <td><%= p.getCalculatedDate()%></td>
-                        </tr>
-                        <% }
-                        } else { %>
-                        <tr>
-                            <td colspan="6" class="text-center text-muted py-4">
-                                <i class="bi bi-inbox"></i> No stock entry history yet.
-                            </td>
-                        </tr>
-                        <% }%>
+                    <td><%= p.getProfitID()%></td>
+                    
+                    <td><%= pdao.getNameByID(v.getProductID())%></td>
+                    <td><%= v.getStorage()%></td>
+                    <td><%= v.getColor()%></td>
+                    <td><%= p.getQuantity()%></td>
+                    <td><%= String.format("%,.0f", p.getCostPrice())%></td>
+                    <td><%= String.format("%,.0f", p.getSellingPrice())%></td>
+                    <td><%= p.getCalculatedDate()%></td>
+                    </tr>
+                    <% }
+                    } else { %>
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-4">
+                            <i class="bi bi-inbox"></i> No stock entry history yet.
+                        </td>
+                    </tr>
+                    <% }%>
                     </tbody>
                 </table>
             </div>

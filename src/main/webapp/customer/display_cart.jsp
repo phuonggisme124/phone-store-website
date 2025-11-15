@@ -50,6 +50,7 @@
         <section id="banner-top" class="position-relative overflow-hidden bg-light-blue"></section>
 
         <%
+
             NumberFormat vnFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
             double initialTotalPrice = 0;
             ProductDAO pDAO = new ProductDAO();

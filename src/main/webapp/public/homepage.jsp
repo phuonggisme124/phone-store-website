@@ -465,7 +465,7 @@
                                             <%=p.getVariants().get(0).getStorage()%></a>
                                     </h3>
 
-                                    <span class="item-price text-primary"><%= vnFormat.format(p.getVariants().get(0).getPrice())%></span>
+                                    <span class="item-price text-primary"><%= vnFormat.format(p.getVariants().get(0).getDiscountPrice())%></span>
                                 </div>
                             </div>
                         </div>

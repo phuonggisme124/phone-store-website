@@ -105,11 +105,13 @@ public class VariantsServlet extends HttpServlet {
             request.setAttribute("pID", pID);
             request.getRequestDispatcher("admin/admin_manageproduct_createvariant.jsp").forward(request, response);
         } else if (action.equals("editVariant")) {
+
             int vid = Integer.parseInt(request.getParameter("vid"));
             int pID = Integer.parseInt(request.getParameter("pID"));
 
             int profitID = pfdao.getMaxProfitID(vid);
             Profit profit = pfdao.getProfitByID(profitID);
+        
 
             Variants variant = vdao.getVariantByID(vid);
             Products product = pdao.getProductByID(pID);
@@ -164,7 +166,7 @@ public class VariantsServlet extends HttpServlet {
             String color = request.getParameter("color");
             String storage = request.getParameter("storage");
             double price = Double.parseDouble(request.getParameter("price"));
-            double cost = Double.parseDouble(request.getParameter("cost"));
+//            double cost = Double.parseDouble(request.getParameter("cost"));
             int stock = Integer.parseInt(request.getParameter("stock"));
             String description = request.getParameter("description");
             Variants variant;
@@ -217,7 +219,7 @@ public class VariantsServlet extends HttpServlet {
 
                 vdao.updateDiscountPrice();
                 Variants v = vdao.getVariantByID(currentVariantID);
-                pfdao.createProfit(currentVariantID, v.getDiscountPrice(), cost, stock);
+//                pfdao.createProfit(currentVariantID, v.getDiscountPrice(), cost, stock);
                 session.setAttribute("successCreateProduct", pdao.getNameByID(v.getProductID())
                         + (v.getStorage() != null ? " " + v.getStorage() : "")
                         + (v.getColor() != null ? " " + v.getColor() : "") + " created successfully!");
@@ -330,9 +332,6 @@ public class VariantsServlet extends HttpServlet {
 
                 vdao.updateDiscountPrice();
 
-
-
-
                 if (oldStock < stock && oldCost != cost) {
                     int quantity = stock - oldStock;
                     pfdao.updateQuantityAndCost(vID, cost, quantity);
@@ -360,12 +359,12 @@ public class VariantsServlet extends HttpServlet {
             pfdao.deleteProfitByVariantID(vID);
             Variants variant = vdao.getVariantByID(vID);
             vdao.deleteVariantByID(vID);
-            
+
             session.setAttribute("successDeleteProduct", pdao.getNameByID(variant.getProductID())
                     + (variant.getStorage() != null ? " " + variant.getStorage() : "")
                     + (variant.getColor() != null ? " " + variant.getColor() : "") + " delete successfully!");
             response.sendRedirect("product?action=productDetail&pID=" + pID);
-           
+
         }
     }
 

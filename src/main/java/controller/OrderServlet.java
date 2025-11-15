@@ -281,8 +281,13 @@ public class OrderServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
 
         if (action == null) {
+            int orderID = Integer.parseInt(request.getParameter("orderID"));
+            String newStatus = request.getParameter("newStatus");
+            OrderDAO oDAO = new OrderDAO();
+            oDAO.updateOrderStatus(orderID, newStatus);
             response.sendRedirect("order");
             return;
+            
         }
 
         if ("assignShipper".equals(action)) {

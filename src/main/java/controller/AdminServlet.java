@@ -130,8 +130,6 @@ public class AdminServlet extends HttpServlet {
             List<Users> listUser = udao.getAllUsers();
             List<Double> monthlyIncome = pfdao.getAllIncomeOfYear(yearSelect);
             List<Integer> monthlyOrder = pfdao.getAllOrderOfYear(yearSelect);
-            System.out.println("tháng đang truy vấn: " + monthSelect);
-            System.out.println("tháng gui về: " + monthSelectStr);
             int importOfMonth = pfdao.getImportByMonthAndYear(monthSelect, yearSelect);
             int soldOfMonth = pfdao.getSoldByMonthAndYear(monthSelect, yearSelect);
             double revenueTargetOfMonth = pfdao.getRevenueTargetByMonthAndYear(monthSelect, yearSelect);

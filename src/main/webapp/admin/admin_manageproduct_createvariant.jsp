@@ -121,10 +121,10 @@
                         <label class="form-label">Sell Price</label>
                         <input type="text" class="form-control" name="price" value="" required>
                     </div>
-                    <div class="mb-3">
+<!--                    <div class="mb-3">
                         <label class="form-label">Cost Price</label>
                         <input type="text" class="form-control" name="cost" value="" required>
-                    </div>
+                    </div>-->
 
                     <div class="mb-3">
                         <label class="form-label">Stock</label>

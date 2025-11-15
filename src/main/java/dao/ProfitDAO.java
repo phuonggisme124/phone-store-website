@@ -27,21 +27,21 @@ public class ProfitDAO extends DBContext {
         super();
     }
 
-    public void createProfit(int currentVariantID, Double discountPrice, double cost, int stock) {
-        String sql = "INSERT INTO Profits (VariantID, Quantity, SellingPrice, CostPrice) VALUES (?, ?, ?, ?)";
-        try {
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setInt(1, currentVariantID);
-            ps.setInt(2, stock);
-            ps.setDouble(3, discountPrice);
-            ps.setDouble(4, cost);
-
-            ps.executeUpdate();
-            ps.close();
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-    }
+//    public void createProfit(int currentVariantID, Double discountPrice, int stock) {
+//        String sql = "INSERT INTO Profits (VariantID, Quantity, SellingPrice, CostPrice) VALUES (?, ?, ?, ?)";
+//        try {
+//            PreparedStatement ps = conn.prepareStatement(sql);
+//            ps.setInt(1, currentVariantID);
+//            ps.setInt(2, stock);
+//            ps.setDouble(3, discountPrice);
+//            ps.setDouble(4, cost);
+//
+//            ps.executeUpdate();
+//            ps.close();
+//        } catch (Exception e) {
+//            System.out.println(e.getMessage());
+//        }
+//    }
 
     public int getMaxProfitID(int VariantID) {
         String sql = "SELECT MAX(ProfitID) AS ProfitID\n"
@@ -147,7 +147,7 @@ public class ProfitDAO extends DBContext {
                     System.out.println(e.getMessage());
                 }
 
-                createProfit(variantID, discountPrice, costPrice, newQuantity);
+//                createProfit(variantID, discountPrice, costPrice, newQuantity);
             } else {
                 String sql = "UPDATE Profits\n"
                         + "SET SellingPrice = ?\n"
@@ -217,7 +217,7 @@ public class ProfitDAO extends DBContext {
             System.out.println(e.getMessage());
         }
     }
-
+// tính doanh thu thực tế theo năm 
     public List<Double> getAllIncomeOfYear(int yearSelect) {
         DecimalFormat df = new DecimalFormat("#.00");
         List<Double> list = new ArrayList<>();
@@ -241,7 +241,7 @@ public class ProfitDAO extends DBContext {
 
         return list;
     }
-
+// chi phí vốn 
     public double getCostByMonthAndYear(int month, int yearSelect) {
         String sql = " SELECT \n"
                 + "    SUM(CostPrice * Quantity) AS TotalCostPrice\n"
@@ -265,7 +265,7 @@ public class ProfitDAO extends DBContext {
         }
         return 0;
     }
-
+// doanh thu thực tế tính theo tháng
     public double getRevenueByMonthAndYear(int month, int yearSelect) {
         String sql = "SELECT \n"
                 + "    SUM(od.UnitPrice * od.Quantity) AS TotalOrderValue\n"
@@ -335,7 +335,7 @@ public class ProfitDAO extends DBContext {
         }
         return 0;
     }
-
+// doanh thu ước tính  
     public int getImportByMonthAndYear(int monthSelect, int yearSelect) {
         String sql = "SELECT \n"
                 + "    SUM(Quantity) AS TotalImportedProducts\n"
@@ -357,7 +357,7 @@ public class ProfitDAO extends DBContext {
         }
         return 0;
     }
-
+// doanh thu mục tiêu trong tháng
     public double getRevenueTargetByMonthAndYear(int monthSelect, int yearSelect) {
         String sql = "SELECT \n"
                 + "    SUM(SellingPrice * Quantity) AS TotalRevenue\n"
@@ -382,7 +382,7 @@ public class ProfitDAO extends DBContext {
         }
         return 0;
     }
-
+// tính tổng số lượng bán ra tháng or năm 
     public int getSoldByMonthAndYear(int monthSelect, int yearSelect) {
         String sql = "SELECT \n"
                 + "    SUM(od.Quantity) AS TotalQuantitySold\n"
@@ -442,7 +442,7 @@ public class ProfitDAO extends DBContext {
             } else {
 
                 if (quantity != 0) {
-                    createProfit(vID, variant.getDiscountPrice(), profit.getCostPrice(), quantity);
+//                    createProfit(vID, variant.getDiscountPrice(), profit.getCostPrice(), quantity);
                 }
             }
         } else {
@@ -486,7 +486,7 @@ public class ProfitDAO extends DBContext {
             } else {
 
                 if (quantity != 0) {
-                    createProfit(vID, variant.getDiscountPrice(), cost, quantity);
+//                    createProfit(vID, variant.getDiscountPrice(), cost, quantity);
                 }
             }
         } else {

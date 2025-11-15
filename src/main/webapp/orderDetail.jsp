@@ -40,7 +40,7 @@
         </table>
 
         <br>
-        <a href="order">← Quay lại danh sách</a>
+
     </body>
 </html>
 

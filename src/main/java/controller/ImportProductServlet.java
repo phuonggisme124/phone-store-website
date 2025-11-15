@@ -88,7 +88,7 @@ public class ImportProductServlet extends HttpServlet {
             
             // Kiểm tra nếu chọn "Tạo mới" thì chuyển hướng
             if ("NEW".equals(productSelect)) {
-                response.sendRedirect("admin?action=showCreateProduct"); // Sửa lại action cho khớp với AdminServlet của bạn
+                response.sendRedirect("admin?action=showCreateProduct"); 
                 return;
             } 
             

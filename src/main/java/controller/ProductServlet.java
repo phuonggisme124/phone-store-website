@@ -159,7 +159,6 @@ public class ProductServlet extends HttpServlet {
 
             request.setAttribute("productID", pID);
             request.setAttribute("rating", rating);
-    
             request.setAttribute("variants", variants);
             request.setAttribute("listProducts", listProducts);
             request.setAttribute("listVariants", listVariants);
