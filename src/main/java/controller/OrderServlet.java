@@ -21,6 +21,10 @@ import model.Payments;
 import model.Users;
 import com.google.gson.Gson;
 
+/**
+ * OrderServlet - Handles order management for Staff, Shipper, Admin, and Customer
+ * Updated: Removed cancelOrder action for Staff (customers now cancel their own orders)
+ */
 @WebServlet(name = "OrderServlet", urlPatterns = {"/order"})
 public class OrderServlet extends HttpServlet {
 
@@ -82,7 +86,7 @@ public class OrderServlet extends HttpServlet {
                 request.setAttribute("orders", orders);
                 targetPage = "orders.jsp";
 
-            } else if (userRole == 4) { // Admin (Thêm trường hợp này để Admin vào thẳng Dashboard Admin)
+            } else if (userRole == 4) { // Admin
                 response.sendRedirect("order?action=manageOrderAdmin");
                 return;
             } else {
@@ -122,14 +126,14 @@ public class OrderServlet extends HttpServlet {
             request.setAttribute("listCategory", listCategory);
 
             request.getRequestDispatcher(targetPage).forward(request, response);
-        } // --- STAFF MANAGE ORDER ---
+        } 
+        // --- STAFF MANAGE ORDER ---
         else if ("manageOrder".equals(action)) {
             HttpSession session = request.getSession();
             Users currentUser = (Users) session.getAttribute("user");
 
             if (currentUser == null || (currentUser.getRole() != 2 && currentUser.getRole() != 4)) {
                 response.sendRedirect("login");
-
                 return;
             }
 
@@ -168,7 +172,8 @@ public class OrderServlet extends HttpServlet {
                 request.getRequestDispatcher("admin/dashboard_admin_manageorder.jsp").forward(request, response);
             }
 
-        } // --- AJAX SEARCH PHONE ---
+        } 
+        // --- AJAX SEARCH PHONE ---
         else if ("searchPhone".equals(action)) {
             String term = request.getParameter("term");
             List<String> phones = udao.getAllBuyerPhones();
@@ -180,10 +185,10 @@ public class OrderServlet extends HttpServlet {
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             response.getWriter().write(new Gson().toJson(phones));
-        } // --- ADMIN ORDER DETAIL ---
+        } 
+        // --- ADMIN ORDER DETAIL ---
         else if (action.equals("orderDetail")) {
             int oid = Integer.parseInt(request.getParameter("id"));
-            // Kiểm tra null để tránh lỗi nếu tham số không tồn tại
             String isInstalmentParam = request.getParameter("isIntalment");
             boolean isInstalment = (isInstalmentParam != null) ? Boolean.parseBoolean(isInstalmentParam) : false;
 
@@ -196,25 +201,22 @@ public class OrderServlet extends HttpServlet {
             request.setAttribute("listPayments", listPayments);
             request.setAttribute("isIntalment", isInstalment);
             request.getRequestDispatcher("admin/admin_manageorder_detail.jsp").forward(request, response);
-        } // --- INSTALMENT ---
+        } 
+        // --- INSTALMENT ---
         else if (action.equals("showInstalment")) {
-            // Lấy danh sách đơn trả góp
             List<Order> listOrder = dao.getAllOrderInstalment();
             List<String> listPhone = dao.getAllPhoneInstalment();
-
-            // --- MỚI THÊM: Lấy danh sách Staff và Shipper ---
             List<Users> listShippers = udao.getAllShippers();
-            List<Users> listStaff = udao.getUsersByRole(2); // Role 2 là Staff
+            List<Users> listStaff = udao.getUsersByRole(2);
 
             request.setAttribute("listOrder", listOrder);
             request.setAttribute("listPhone", listPhone);
-
-            // Gửi sang JSP
             request.setAttribute("listShippers", listShippers);
             request.setAttribute("listStaff", listStaff);
 
             request.getRequestDispatcher("admin/admin_manageorder_instalment.jsp").forward(request, response);
-        } // --- SEARCH ORDER (ADMIN) ---
+        } 
+        // --- SEARCH ORDER (ADMIN) ---
         else if (action.equals("searchOrder")) {
             String phone = request.getParameter("phone");
             String status = request.getParameter("status");
@@ -227,7 +229,6 @@ public class OrderServlet extends HttpServlet {
                 listOrder = dao.getAllOrderByPhoneAndStatus(phone, status);
             }
 
-            // --- MỚI THÊM: Phải gửi kèm List Staff/Shipper để không bị mất tên khi search ---
             List<Users> listShippers = udao.getAllShippers();
             List<Users> listStaff = udao.getUsersByRole(2);
             request.setAttribute("listShippers", listShippers);
@@ -238,7 +239,8 @@ public class OrderServlet extends HttpServlet {
             request.setAttribute("status", status);
             request.setAttribute("listPhone", listPhone);
             request.getRequestDispatcher("admin/dashboard_admin_manageorder.jsp").forward(request, response);
-        } // --- FILTER ORDER (ADMIN) ---
+        } 
+        // --- FILTER ORDER (ADMIN) ---
         else if (action.equals("filterOrder")) {
             String phone = request.getParameter("phone");
             String status = request.getParameter("status");
@@ -255,7 +257,6 @@ public class OrderServlet extends HttpServlet {
                 listOrder = dao.getAllOrderByPhoneAndStatus(phone, status);
             }
 
-            // --- MỚI THÊM: Phải gửi kèm List Staff/Shipper để không bị mất tên khi filter ---
             List<Users> listShippers = udao.getAllShippers();
             List<Users> listStaff = udao.getUsersByRole(2);
             request.setAttribute("listShippers", listShippers);
@@ -280,16 +281,16 @@ public class OrderServlet extends HttpServlet {
         OrderDAO dao = new OrderDAO();
         HttpSession session = request.getSession(false);
 
+        // Default action: Update order status
         if (action == null) {
             int orderID = Integer.parseInt(request.getParameter("orderID"));
             String newStatus = request.getParameter("newStatus");
-            OrderDAO oDAO = new OrderDAO();
-            oDAO.updateOrderStatus(orderID, newStatus);
+            dao.updateOrderStatus(orderID, newStatus);
             response.sendRedirect("order");
             return;
-            
         }
 
+        // --- ASSIGN SHIPPER (Staff/Admin) ---
         if ("assignShipper".equals(action)) {
             if (session == null) {
                 response.sendRedirect("login");
@@ -297,7 +298,6 @@ public class OrderServlet extends HttpServlet {
             }
             Users currentUser = (Users) session.getAttribute("user");
 
-            // Cần xem xét nếu Admin (Role 4) cũng được phép assign shipper
             if (currentUser == null || (currentUser.getRole() != 2 && currentUser.getRole() != 4)) {
                 response.sendRedirect("login");
                 return;
@@ -310,57 +310,24 @@ public class OrderServlet extends HttpServlet {
                 boolean assignSuccess = dao.assignShipperAndStaff(orderID, currentUser.getUserId(), shipperID);
 
                 if (assignSuccess) {
-                    session.setAttribute("message", "Shipper assigned successfully!");
+                    session.setAttribute("message", "Shipper assigned successfully! Stock has been reduced.");
                 } else {
-                    session.setAttribute("error", "Cannot assign shipper, Order must be Pending!");
+                    session.setAttribute("error", "Cannot assign shipper. Order must be Pending!");
                 }
             } catch (NumberFormatException e) {
-                System.err.println("lỗi shipper: " + e.getMessage());
-                session.setAttribute("error", "lỗi shipper");
+                System.err.println("Error assigning shipper: " + e.getMessage());
+                session.setAttribute("error", "Invalid shipper assignment data.");
             }
 
-            // Điều hướng dựa trên Role
             if (currentUser.getRole() == 4) {
                 response.sendRedirect("order?action=manageOrderAdmin");
             } else {
                 response.sendRedirect("order?action=manageOrder");
             }
             return;
-        } else if ("cancelOrder".equals(action)) {
-            if (session == null) {
-                response.sendRedirect("login");
-                return;
-            }
-            Users currentUser = (Users) session.getAttribute("user");
-
-            if (currentUser == null || (currentUser.getRole() != 2 && currentUser.getRole() != 4)) {
-                response.sendRedirect("login");
-                return;
-            }
-
-            try {
-                int orderID = Integer.parseInt(request.getParameter("orderID"));
-
-                boolean cancelSuccess = dao.cancelOrderByStaff(orderID, currentUser.getUserId());
-
-                if (cancelSuccess) {
-                    session.setAttribute("message", "Order cancel successful!");
-                } else {
-                    session.setAttribute("error", "Order cannot cancel. Order must be Pending!");
-                }
-            } catch (NumberFormatException e) {
-                System.err.println("lỗi cancel: " + e.getMessage());
-                session.setAttribute("error", "lỗi cancel.");
-            }
-
-            // Điều hướng dựa trên Role
-            if (currentUser.getRole() == 4) {
-                response.sendRedirect("order?action=manageOrderAdmin");
-            } else {
-                response.sendRedirect("order?action=manageOrder");
-            }
-            return;
-        } else if ("updateStatus".equals(action)) {
+        } 
+        // --- UPDATE STATUS (Shipper only) ---
+        else if ("updateStatus".equals(action)) {
             if (session == null) {
                 response.sendRedirect("login");
                 return;
@@ -386,25 +353,25 @@ public class OrderServlet extends HttpServlet {
                 boolean updateSuccess = dao.updateOrderStatusByShipper(orderID, currentUser.getUserId(), newStatus);
 
                 if (updateSuccess) {
-                    session.setAttribute("message", "Status updated successfully!");
+                    session.setAttribute("message", "Order status updated to " + newStatus + " successfully!");
                 } else {
-                    session.setAttribute("error", "Cannot update. Must be In Transit!");
+                    session.setAttribute("error", "Cannot update status. Order must be In Transit and assigned to you!");
                 }
             } catch (NumberFormatException e) {
-                System.err.println("Lỗi cập nhật status: " + e.getMessage());
-                session.setAttribute("error", "Lỗi cập nhật status.");
+                System.err.println("Error updating status: " + e.getMessage());
+                session.setAttribute("error", "Invalid status update data.");
             }
 
             response.sendRedirect("order");
             return;
         }
 
-        // Trường hợp action không hợp lệ
+        // Invalid action
         response.sendRedirect("order");
     }
 
     @Override
     public String getServletInfo() {
-        return "OrderServlet - Handles order management for Staff, Shipper, and Admin";
+        return "OrderServlet - Handles order management for Staff, Shipper, Admin, and Customer";
     }
 }

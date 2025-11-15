@@ -211,7 +211,7 @@ public class PaymentServlet extends HttpServlet {
                 if (buyFrom != null && buyFrom.equalsIgnoreCase("buyNowFromCart")) {
                     cartDAO.removeCartItem(userID, c.getVariant().getVariantID());
                 }
-                vDAO.decreaseQuantity(c.getVariant().getVariantID(), c.getQuantity());
+                //vDAO.decreaseQuantity(c.getVariant().getVariantID(), c.getQuantity());
             }
 
             session.setAttribute("cart", carts);

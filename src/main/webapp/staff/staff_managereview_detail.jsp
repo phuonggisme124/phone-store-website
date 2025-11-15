@@ -329,9 +329,9 @@
                     <h4 class="fw-bold text-primary">Mantis</h4>
                 </div>
                 <ul class="list-unstyled ps-3">
-                    <li><a href="staff?action=manageProduct"><i class="bi bi-box me-2"></i>Products</a></li>
-                    <li><a href="staff?action=manageOrder"><i class="bi bi-bag me-2"></i>Orders</a></li>
-                    <li><a href="staff?action=manageReview" class="fw-bold text-primary"><i class="bi bi-chat-left-text me-2"></i>Reviews</a></li>
+                    <li><a href="product?action=manageProduct"><i class="bi bi-box me-2"></i>Products</a></li>
+                    <li><a href="order?action=manageOrder"><i class="bi bi-bag me-2"></i>Orders</a></li>
+                    <li><a href="review?action=manageReview" class="fw-bold text-primary"><i class="bi bi-chat-left-text me-2"></i>Reviews</a></li>
                 </ul>
             </nav>
 
@@ -416,7 +416,7 @@
                                         <p class="comment"><%= review.getComment()%></p>
 
 
-                                        <form action="staff?action=replyReview" method="post">
+                                        <form action="review?action=replyReview" method="post">
                                             <p><strong>Reply:</strong></p>
 
                                             <div class="reply-box">
