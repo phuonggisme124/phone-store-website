@@ -109,7 +109,7 @@ h1::after {
     content: '';
     position: absolute;
     left: 12px;
-    top: 5px;
+    top: 50px;
     height: 18px;
     width: 18px;
     background-color: #fff;
