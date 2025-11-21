@@ -39,7 +39,7 @@ public class DBContext {
             String dbURL = "jdbc:sqlserver://localhost:1433;"
                     + "databaseName=PhoneStore;"
                     + "user=sa;"
-                    + "password=261204;"
+                    + "password=1234;"
                     + "encrypt=true;trustServerCertificate=true;";
 
             // Establish the connection
