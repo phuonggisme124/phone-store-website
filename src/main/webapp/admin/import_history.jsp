@@ -19,6 +19,7 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/css/dashboard_admin.css">
+        <link rel="stylesheet" href="css/importproduct.css">
         <style>
             body {
                 background-color: #f8f9fa;
@@ -41,64 +42,57 @@
             }
         </style>
     </head>
-    <body>
-        <%-- Sidebar admin --%>
+
+    <body >
         <jsp:include page="sidebar.jsp"/>
 
-        <div class="container-content">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2 class="text-primary mb-0">
+        <div class="import-product-page">
+            <div class="ih-wrapper-header">
+                <h2 class="ih-wrapper-title">
                     <i class="bi bi-box-seam"></i> Import History
                 </h2>
-                <a href="${pageContext.request.contextPath}/admin?action=showImportForm" class="btn btn-add">
+                <a href="${pageContext.request.contextPath}/admin?action=showImportForm" 
+                   class="ih-wrapper-btn-add">
                     <i class="bi bi-plus-circle"></i> Import
                 </a>
             </div>
 
-            <div class="table-responsive shadow-sm bg-white p-3 rounded">
-                <table class="table table-hover align-middle">
+            <div class="ih-wrapper-table-container ih-wrapper-responsive">
+                <table class="ih-wrapper-table">
                     <thead>
                         <tr>
                             <th>ProfitID</th>
                             <th>ProductName</th>
                             <th>Storage</th>
                             <th>Color</th>
-                            <th>Quality</th>
-                            <th>Selling Price(VNĐ)</th>
+                            <th>Quantity</th>
                             <th>Cost Price(VNĐ)</th>
+                            <th>Selling Price(VNĐ)</th>
                             <th>CalculatedDate</th>
                         </tr>
                     </thead>
                     <tbody>
-                     <% if (listImports != null && !listImports.isEmpty()) {
-
+                        <% if (listImports != null && !listImports.isEmpty()) {
                                 for (Profit p : listImports) {%>
-
                         <tr>
-
                             <td><%= p.getProfitID()%></td>
-
-                            <%
-                                Variants v = vdao.getVariantByID(p.getVariantID());
-                            %>
-                    <td><%= p.getProfitID()%></td>
-                    
-                    <td><%= pdao.getNameByID(v.getProductID())%></td>
-                    <td><%= v.getStorage()%></td>
-                    <td><%= v.getColor()%></td>
-                    <td><%= p.getQuantity()%></td>
-                    <td><%= String.format("%,.0f", p.getCostPrice())%></td>
-                    <td><%= String.format("%,.0f", p.getSellingPrice())%></td>
-                    <td><%= p.getCalculatedDate()%></td>
-                    </tr>
-                    <% }
-                    } else { %>
-                    <tr>
-                        <td colspan="6" class="text-center text-muted py-4">
-                            <i class="bi bi-inbox"></i> No stock entry history yet.
-                        </td>
-                    </tr>
-                    <% }%>
+                            <td><%= p.getProductName()%></td>
+                            <td><%= p.getStorage()%></td>
+                            <td><%= p.getColor()%></td>
+                            <td><%= p.getQuantity()%></td>
+                            <td><%= String.format("%,.0f", p.getCostPrice())%></td>
+                            <td><%= String.format("%,.0f", p.getSellingPrice())%></td>
+                            <td><%= p.getCalculatedDate()%></td>
+                        </tr>
+                        <% }
+                        } else { %>
+                        <tr>
+                            <td colspan="8" class="ih-wrapper-empty">
+                                <i class="bi bi-inbox"></i>
+                                <br>No stock entry history yet.
+                            </td>
+                        </tr>
+                        <% }%>
                     </tbody>
                 </table>
             </div>
