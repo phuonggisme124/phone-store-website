@@ -18,7 +18,7 @@ import utils.DBContext;
 /**
  *
  * @author thịnh
- * @note Updated: Removed cancelOrderByStaff, Added stock reduction in assignShipperAndStaff
+ * 
  */
 public class OrderDAO extends DBContext {
 
@@ -396,13 +396,6 @@ public class OrderDAO extends DBContext {
         return list;
     }
 
-    /**
-     * Get orders for a customer phone number filtered by status.
-     *
-     * @param phone Customer phone number (supports partial match).
-     * @param status The status to filter by.
-     * @return List of Order objects.
-     */
     public List<Order> getOrdersByPhoneAndStatus(String phone, String status) {
         List<Order> list = new ArrayList<>();
         String sql = "SELECT o.OrderID, o.UserID, buyer.FullName AS BuyerName, buyer.Phone AS BuyerPhone, "
@@ -747,20 +740,12 @@ public class OrderDAO extends DBContext {
         return false;
     }
 
-    /**
-     * Assign shipper and staff to order, update status to 'In Transit'
-     * AND reduce stock for all variants in the order
-     * 
-     * @param orderID Order ID to assign
-     * @param staffID Staff ID assigning the order
-     * @param shipperID Shipper ID for delivery
-     * @return true if successful, false otherwise
-     */
+
     public boolean assignShipperAndStaff(int orderID, int staffID, int shipperID) {
         try {
             conn.setAutoCommit(false);
             
-            // Step 1: Update order status
+            // Update order status
             String updateOrderSQL = "UPDATE Orders SET StaffID = ?, ShipperID = ?, Status = 'In Transit' "
                     + "WHERE OrderID = ? AND Status = 'Pending'";
             
@@ -779,7 +764,7 @@ public class OrderDAO extends DBContext {
                 }
             }
             
-            // Step 2: Reduce stock for each variant in order details
+            // trừ stock
             String getOrderDetailsSQL = "SELECT VariantID, Quantity FROM OrderDetails WHERE OrderID = ?";
             String updateStockSQL = "UPDATE Variants SET Stock = Stock - ? WHERE VariantID = ?";
             
@@ -823,14 +808,33 @@ public class OrderDAO extends DBContext {
         }
     }
 
-    /**
-     * Update order status by shipper (Delivered or Cancelled)
-     * 
-     * @param orderID Order ID to update
-     * @param shipperID Shipper ID updating the status
-     * @param newStatus New status (must be 'Delivered' or 'Cancelled')
-     * @return true if successful, false otherwise
-     */
+   
+    public boolean cancelOrderByStaff(int orderID, int staffID) {
+        String sql = "UPDATE Orders SET StaffID = ?, ShipperID = NULL, Status = 'Cancelled' "
+                + "WHERE OrderID = ? AND Status = 'Pending'";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, staffID);
+            stmt.setInt(2, orderID);
+
+            int rowsAffected = stmt.executeUpdate();
+
+            if (rowsAffected == 0) {
+                System.out.println("cancelOrderByStaff: No rows affected for OrderID: " + orderID);
+                checkOrderStatus(orderID);
+            } else {
+                System.out.println("cancelOrderByStaff: Successfully cancelled OrderID: " + orderID);
+            }
+
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            System.err.println("cancelOrderByStaff SQL Error: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+  
     public boolean updateOrderStatusByShipper(int orderID, int shipperID, String newStatus) {
         // Validate status
         if (!newStatus.equals("Delivered") && !newStatus.equals("Cancelled")) {
@@ -926,7 +930,7 @@ public class OrderDAO extends DBContext {
 
         try (PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
             if (status.equalsIgnoreCase("Pending")) {
-                // Không cần set parameter
+               
             } else {
                 stmt.setString(1, status);
                 stmt.setInt(2, staffID);
