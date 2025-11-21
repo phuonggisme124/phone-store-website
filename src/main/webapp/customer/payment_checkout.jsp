@@ -437,7 +437,7 @@
                     openModal(installmentModal);
                 });
 
-                // --- SỬA ĐỔI LOGIC KHI MỞ MODAL CHUYỂN KHOẢN ---
+                // --- MODAL CHUYỂN KHOẢN ---
                 openTransferModalBtn.addEventListener('click', (e) => {
                     document.querySelectorAll('.payment-option').forEach(el => el.classList.remove('selected'));
                     e.currentTarget.classList.add('selected');

@@ -5,7 +5,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import model.Order;
@@ -28,14 +27,12 @@ public class OrderDAO extends DBContext {
 
     private Order mapResultSetToOrderWithUsers(ResultSet rs) throws SQLException {
 
-
         Order order = new Order();
         // Buyer information
         String name = rs.getString("ReceiverName");
         String phone = rs.getString("ReceiverPhone");
         String address = rs.getString("ShippingAddress");
         Users buyer = new Users(name, phone);
-
 
         order.setOrderID(rs.getInt("OrderID"));
         order.setTotalAmount(rs.getDouble("TotalAmount"));
@@ -148,7 +145,18 @@ public class OrderDAO extends DBContext {
             stmt.setInt(1, shipperId);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                orders.add(mapResultSetToOrderWithUsers(rs));
+                Order o = new Order();
+                String name = rs.getString("ReceiverName");
+                String phone = rs.getString("ReceiverPhone");
+                Users buyer = new Users(name, phone);
+                o.setBuyer(buyer);
+                o.setOrderID(rs.getInt("OrderID"));
+                o.setReceiverName(rs.getString("ReceiverName"));
+                o.setReceiverPhone(rs.getString("ReceiverPhone"));
+                o.setShippingAddress(rs.getString("ShippingAddress"));
+                o.setTotalAmount(rs.getDouble("TotalAmount"));
+                o.setStatus(rs.getString("Status"));
+                orders.add(o);
             }
         } catch (SQLException e) {
             e.printStackTrace();
