@@ -31,6 +31,7 @@ public class DBContext {
 
             // Establish the connection
 
+
             conn = DriverManager.getConnection(dbURL);
       
             if (conn != null) {

@@ -179,11 +179,11 @@ public class ImportProductServlet extends HttpServlet {
 
             // 4. CHUYỂN HƯỚNG
             // -------------------------------------------------------------
-            response.sendRedirect("admin?action=importproduct&msg=success");
+            response.sendRedirect("admin?action=importproduct");
 
         } catch (Exception e) {
             e.printStackTrace();
-            response.sendRedirect("admin?action=importproduct&msg=error");
+            response.sendRedirect("admin?action=importproduct");
         }
     }
 
