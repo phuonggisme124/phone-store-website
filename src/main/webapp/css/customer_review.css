@@ -374,38 +374,31 @@ form {
     padding: 0;
 }
 
-/* 1. Nút Xóa Chính */
-.delete-review-btn {
-    /* Thiết lập cơ bản */
-    background: none; /* Không có nền mặc định */
-    border: none; /* Không có viền mặc định */
-    padding: 5px 10px; /* Khoảng đệm bên trong nút */
-    cursor: pointer;
-
-    /* Kiểu chữ và màu sắc (Màu đỏ là chuẩn cho nút xóa) */
-    color: #dc3545; /* Màu đỏ tiêu chuẩn (Bootstrap danger) */
-    font-size: 14px;
-    font-weight: 600; /* Chữ đậm nhẹ */
-    text-transform: capitalize; /* Viết hoa chữ cái đầu (tùy chọn) */
-
-    /* Căn chỉnh nội dung (icon và chữ) */
-    display: flex;
+.btn-delete-review {
+    display: inline-flex;
     align-items: center;
+    gap: 8px;
 
-    /* Hiệu ứng mượt */
+    padding: 9px 18px;
+    background-color: #ffe5e5; /* Nền đỏ rất nhạt */
+    color: #c0392b; /* Chữ đỏ đậm */
+    border: none;
+    border-radius: 8px;
+
+    font-weight: 500;
+    cursor: pointer;
     transition: all 0.2s ease-in-out;
 }
 
-/* 2. Hiệu ứng Hover */
-.delete-review-btn:hover {
-    color: #a71d2a; /* Đậm hơn khi hover */
-    background-color: #f8d7da; /* Nền đỏ nhạt khi hover để nhấn mạnh */
-    border-radius: 4px;
+.btn-delete-review:hover {
+    background-color: #ffcccc; 
+    color: #a93226;
 }
 
-/* 3. Icon (Thùng rác) */
-.delete-icon {
-    margin-right: 5px; /* Khoảng cách giữa icon và chữ "Delete" */
-    font-size: 14px; /* Đảm bảo icon có kích thước phù hợp với chữ */
-    line-height: 1; /* Căn chỉnh icon với chữ */
+.btn-delete-review svg {
+    transition: transform 0.2s;
+}
+/* hiệu ứng của icon */
+.btn-delete-review:hover svg {
+    transform: rotate(-10deg) scale(1.1);
 }

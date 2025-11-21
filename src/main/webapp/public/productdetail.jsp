@@ -370,7 +370,7 @@
                             <strong>Reply:</strong> <%= r.getReply()%>
                         </div>
                         <% }%>
-                        <div style="background: yellow; color: black; border: 1px solid red;">
+                        <div style="background: yellow; color: black;">
 
                         </div>
                         <% if (isLoggedIn && userID == r.getUser().getUserId()) {%>
