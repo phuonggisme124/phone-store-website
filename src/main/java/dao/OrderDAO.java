@@ -400,13 +400,6 @@ public class OrderDAO extends DBContext {
         return list;
     }
 
-    /**
-     * Get orders for a customer phone number filtered by status.
-     *
-     * @param phone Customer phone number (supports partial match).
-     * @param status The status to filter by.
-     * @return List of Order objects.
-     */
     public List<Order> getOrdersByPhoneAndStatus(String phone, String status) {
         List<Order> list = new ArrayList<>();
         String sql = "SELECT o.OrderID, o.UserID, buyer.FullName AS BuyerName, buyer.Phone AS BuyerPhone, "
@@ -929,7 +922,7 @@ public class OrderDAO extends DBContext {
 
         try (PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
             if (status.equalsIgnoreCase("Pending")) {
-                // Không cần set parameter
+
             } else {
                 stmt.setString(1, status);
                 stmt.setInt(2, staffID);

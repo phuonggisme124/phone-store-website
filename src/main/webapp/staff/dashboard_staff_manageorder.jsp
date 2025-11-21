@@ -37,7 +37,7 @@
             <h4 class="fw-bold text-primary">Mantis</h4>
         </div>
         <ul class="list-unstyled ps-3">
-            <li><a href="product?action=manageProduct"><i class="bi bi-box me-2"></i>Products</a></li>
+            <li><a href="order?action=manageProduct"><i class="bi bi-box me-2"></i>Products</a></li>
             <li><a href="order?action=manageOrder" class="fw-bold text-primary"><i class="bi bi-bag me-2"></i>Orders</a></li>
             <li><a href="review?action=manageReview"><i class="bi bi-chat-left-text me-2"></i>Reviews</a></li>
         </ul>
@@ -196,9 +196,12 @@
                                         <button class="btn btn-sm btn-outline-primary me-1" onclick="openAssignModal(<%= o.getOrderID()%>)">
                                             <i class="bi bi-truck"></i> Assign
                                         </button>
+                                        <button class="btn btn-sm btn-outline-danger" onclick="openCancelModal(<%= o.getOrderID()%>)">
+                                            <i class="bi bi-x-circle"></i> Cancel
+                                        </button>
                                         
                                     <% } else if (isCancelled && !hasShipper) { %>
-                                        <span class="text-muted">Cancelled by Customer</span>
+                                        <span class="text-muted">Cancelled</span>
                                         
                                     <% } else if (hasShipper) { %>
                                         <div class="d-flex align-items-center">
@@ -227,7 +230,7 @@
             </div>
         </div>
 
-        <!-- Modal: Order Detail -->
+        <!-- model order detail-->
         <div class="modal fade" id="orderDetailModal" tabindex="-1" aria-labelledby="orderDetailModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-xl modal-dialog-scrollable">
                 <div class="modal-content">
@@ -256,7 +259,7 @@
             </div>
         </div>
 
-        <!-- Modal: Assign Shipper -->
+        <!-- modal chọn shipper -->
         <div class="modal fade" id="shipperModal" tabindex="-1">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
@@ -295,6 +298,38 @@
             </div>
         </div>
 
+        <!-- Modal: Cancel Order -->
+        <div class="modal fade" id="cancelModal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header bg-danger text-white">
+                        <h5 class="modal-title">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>Confirm Cancel Order
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to cancel order <strong id="cancelOrderIDText">#</strong>?</p>
+                        <p class="text-muted small mb-0">
+                            <i class="bi bi-info-circle me-1"></i>This action cannot be undone.
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="bi bi-x-lg me-1"></i>No
+                        </button>
+                        <form action="order" method="POST" id="cancelOrderForm" class="d-inline">
+                            <input type="hidden" name="action" value="cancelOrder">
+                            <input type="hidden" name="orderID" id="cancelOrderID">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="bi bi-trash me-1"></i>Cancel Order
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 
@@ -303,16 +338,21 @@
 <script>
     var assignModal = null;
     var orderDetailModal = null;
+    var cancelModal = null;
 
     window.onload = function () {
         var shipperModalEl = document.getElementById('shipperModal');
         var orderDetailModalEl = document.getElementById('orderDetailModal');
+        var cancelModalEl = document.getElementById('cancelModal');
         
         if (shipperModalEl) {
             assignModal = new bootstrap.Modal(shipperModalEl);
         }
         if (orderDetailModalEl) {
             orderDetailModal = new bootstrap.Modal(orderDetailModalEl);
+        }
+        if (cancelModalEl) {
+            cancelModal = new bootstrap.Modal(cancelModalEl);
         }
     };
 
@@ -321,28 +361,30 @@
         if (assignModal) assignModal.show();
     }
 
+    function openCancelModal(orderID) {
+        document.getElementById("cancelOrderID").value = orderID;
+        document.getElementById("cancelOrderIDText").innerText = "#" + orderID;
+        if (cancelModal) cancelModal.show();
+    }
+
     function submitAssignForm(shipperID) {
         document.getElementById("modalShipperID").value = shipperID;
         document.getElementById("assignShipperForm").submit();
     }
 
-    // View Order Detail
     function viewOrderDetail(orderID, isInstalment) {
         if (orderDetailModal) {
             orderDetailModal.show();
         }
-        
-        // Fetch order details via AJAX
+             
         fetch('order?action=orderDetail&id=' + orderID + '&isIntalment=' + isInstalment)
             .then(response => response.text())
             .then(html => {
-                // Extract only the content we need (tables)
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(html, 'text/html');
                 
                 let content = '<div class="container-fluid">';
                 
-                // Get products table
                 const productsCard = doc.querySelector('.card');
                 if (productsCard) {
                     content += '<div class="mb-4">';
@@ -374,7 +416,7 @@
     }
 </script>
 
-<!-- Autocomplete Search -->
+
 <script>
     var debounceTimer;
     function showSuggestions(str) {
@@ -417,7 +459,7 @@
     });
 </script>
 
-<!-- Sidebar Toggle -->
+
 <script>
     var menuToggle = document.getElementById("menu-toggle");
     if (menuToggle) {

@@ -24,9 +24,9 @@ import dao.OrderDetailDAO;
 import dao.VariantsDAO;
 
 /**
- * OrderServlet - Handles order management for Staff, Shipper, Admin, and
- * Customer Updated: Removed cancelOrder action for Staff (customers now cancel
- * their own orders)
+ * OrderServlet - Handles order management for Staff, Shipper, Admin, and Customer
+ * Authors: phương, thịnh, duy
+ * Note: Removed cancelOrder action for Staff (customers now cancel their own orders)
  */
 @WebServlet(name = "OrderServlet", urlPatterns = {"/order"})
 public class OrderServlet extends HttpServlet {
@@ -278,7 +278,6 @@ public class OrderServlet extends HttpServlet {
         OrderDAO dao = new OrderDAO();
         HttpSession session = request.getSession(false);
 
-        // Default action: Update order status
         if (action == null) {
             int orderID = Integer.parseInt(request.getParameter("orderID"));
             String newStatus = request.getParameter("newStatus");
@@ -286,7 +285,7 @@ public class OrderServlet extends HttpServlet {
                 OrderDetailDAO oDDAO = new OrderDetailDAO();
                 List<OrderDetails> oDList = oDDAO.getOrderDetailByOrderID(orderID);
                 VariantsDAO vDAO = new VariantsDAO();
-                //If user cancle order, return stock of product
+                //If user cancel order, return stock of product
                 for (OrderDetails oD : oDList) {
                     vDAO.increaseQuantity(oD.getVariantID(), oD.getQuantity());
                 }
@@ -296,7 +295,7 @@ public class OrderServlet extends HttpServlet {
             return;
         }
 
-        // --- ASSIGN SHIPPER (Staff/Admin) ---
+        // chọn shipper
         if ("assignShipper".equals(action)) {
             if (session == null) {
                 response.sendRedirect("login");
@@ -371,7 +370,6 @@ public class OrderServlet extends HttpServlet {
             return;
         }
 
-        // Invalid action
         response.sendRedirect("order");
     }
 
