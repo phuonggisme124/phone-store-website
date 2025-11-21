@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import model.Products;
+import model.Profit;
 import model.Promotions;
 import model.Variants;
 
@@ -73,6 +74,7 @@ public class PromotionServlet extends HttpServlet {
             throws ServletException, IOException {
         ProductDAO pdao = new ProductDAO();
         PromotionsDAO pmtdao = new PromotionsDAO();
+       
         String action = request.getParameter("action");
 
         if (action == null) {

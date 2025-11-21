@@ -164,9 +164,7 @@
                                 <i class="bi bi-trash me-2"></i> Delete Product
                             </a>
                         </div>
-                        <a href="admin?action=manageProduct" class="btn btn-outline-secondary">
-                            <i class="bi bi-arrow-left me-2"></i>Back to Products
-                        </a>
+
                     </div>
                 </div>
 
