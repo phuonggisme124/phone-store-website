@@ -60,7 +60,7 @@ public class PaymentServlet extends HttpServlet {
                     return;
                 }
 
-                // Nếu mọi thứ ổn, tiếp tục tạo cart
+                
                 cart = new Carts(userID, variant, quantity);
                 cart.setCartID(userID);
                 List<Carts> carts = new ArrayList<>();
@@ -205,17 +205,19 @@ public class PaymentServlet extends HttpServlet {
             VariantsDAO vDAO = new VariantsDAO();
             CartDAO cartDAO = new CartDAO();
             String buyFrom = (String) session.getAttribute("buyFrom");
-            for (Carts c : carts) {
+            
                 if (buyFrom != null && buyFrom.equalsIgnoreCase("buyNowFromCart")) {
+                    for (Carts c : carts) {
                     cartDAO.removeCartItem(userID, c.getVariant().getVariantID());
                 }
+                    session.setAttribute("cart", carts);
                 //vDAO.decreaseQuantity(c.getVariant().getVariantID(), c.getQuantity());
             }
 
-            session.setAttribute("cart", carts);
+            
             session.removeAttribute("cartCheckout");
 
-            response.sendRedirect("homepage");
+            request.getRequestDispatcher("homepage").forward(request, response);
         }
     }
 
