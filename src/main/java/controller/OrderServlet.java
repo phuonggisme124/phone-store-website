@@ -20,10 +20,13 @@ import model.OrderDetails;
 import model.Payments;
 import model.Users;
 import com.google.gson.Gson;
+import dao.OrderDetailDAO;
+import dao.VariantsDAO;
 
 /**
- * phương, thịnh, duy
- * 
+ * OrderServlet - Handles order management for Staff, Shipper, Admin, and Customer
+ * Authors: phương, thịnh, duy
+ * Note: Removed cancelOrder action for Staff (customers now cancel their own orders)
  */
 @WebServlet(name = "OrderServlet", urlPatterns = {"/order"})
 public class OrderServlet extends HttpServlet {
@@ -126,8 +129,7 @@ public class OrderServlet extends HttpServlet {
             request.setAttribute("listCategory", listCategory);
 
             request.getRequestDispatcher(targetPage).forward(request, response);
-        } 
-        // staff của thịnh cấm đụng
+        } // --- STAFF MANAGE ORDER ---
         else if ("manageOrder".equals(action)) {
             HttpSession session = request.getSession();
             Users currentUser = (Users) session.getAttribute("user");
@@ -172,8 +174,7 @@ public class OrderServlet extends HttpServlet {
                 request.getRequestDispatcher("admin/dashboard_admin_manageorder.jsp").forward(request, response);
             }
 
-        } 
-        // ajax tìm sđt
+        } // --- AJAX SEARCH PHONE ---
         else if ("searchPhone".equals(action)) {
             String term = request.getParameter("term");
             List<String> phones = udao.getAllBuyerPhones();
@@ -185,8 +186,7 @@ public class OrderServlet extends HttpServlet {
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             response.getWriter().write(new Gson().toJson(phones));
-        } 
-        // order detail admin
+        } // --- ADMIN ORDER DETAIL ---
         else if (action.equals("orderDetail")) {
             int oid = Integer.parseInt(request.getParameter("id"));
             String isInstalmentParam = request.getParameter("isIntalment");
@@ -201,8 +201,7 @@ public class OrderServlet extends HttpServlet {
             request.setAttribute("listPayments", listPayments);
             request.setAttribute("isIntalment", isInstalment);
             request.getRequestDispatcher("admin/admin_manageorder_detail.jsp").forward(request, response);
-        } 
-        //instalment
+        } // --- INSTALMENT ---
         else if (action.equals("showInstalment")) {
             List<Order> listOrder = dao.getAllOrderInstalment();
             List<String> listPhone = dao.getAllPhoneInstalment();
@@ -215,8 +214,7 @@ public class OrderServlet extends HttpServlet {
             request.setAttribute("listStaff", listStaff);
 
             request.getRequestDispatcher("admin/admin_manageorder_instalment.jsp").forward(request, response);
-        } 
-        // tìm order admin
+        } // --- SEARCH ORDER (ADMIN) ---
         else if (action.equals("searchOrder")) {
             String phone = request.getParameter("phone");
             String status = request.getParameter("status");
@@ -239,8 +237,7 @@ public class OrderServlet extends HttpServlet {
             request.setAttribute("status", status);
             request.setAttribute("listPhone", listPhone);
             request.getRequestDispatcher("admin/dashboard_admin_manageorder.jsp").forward(request, response);
-        } 
-        // phân role
+        } // --- FILTER ORDER (ADMIN) ---
         else if (action.equals("filterOrder")) {
             String phone = request.getParameter("phone");
             String status = request.getParameter("status");
@@ -281,10 +278,18 @@ public class OrderServlet extends HttpServlet {
         OrderDAO dao = new OrderDAO();
         HttpSession session = request.getSession(false);
 
-//của thịnh cấm đụng
         if (action == null) {
             int orderID = Integer.parseInt(request.getParameter("orderID"));
             String newStatus = request.getParameter("newStatus");
+            if (newStatus.equalsIgnoreCase("cancelled")) {
+                OrderDetailDAO oDDAO = new OrderDetailDAO();
+                List<OrderDetails> oDList = oDDAO.getOrderDetailByOrderID(orderID);
+                VariantsDAO vDAO = new VariantsDAO();
+                //If user cancel order, return stock of product
+                for (OrderDetails oD : oDList) {
+                    vDAO.increaseQuantity(oD.getVariantID(), oD.getQuantity());
+                }
+            }
             dao.updateOrderStatus(orderID, newStatus);
             response.sendRedirect("order");
             return;
@@ -325,43 +330,7 @@ public class OrderServlet extends HttpServlet {
                 response.sendRedirect("order?action=manageOrder");
             }
             return;
-        } 
-        // hủy đơn
-        else if ("cancelOrder".equals(action)) {
-            if (session == null) {
-                response.sendRedirect("login");
-                return;
-            }
-            Users currentUser = (Users) session.getAttribute("user");
-
-            if (currentUser == null || (currentUser.getRole() != 2 && currentUser.getRole() != 4)) {
-                response.sendRedirect("login");
-                return;
-            }
-
-            try {
-                int orderID = Integer.parseInt(request.getParameter("orderID"));
-
-                boolean cancelSuccess = dao.cancelOrderByStaff(orderID, currentUser.getUserId());
-
-                if (cancelSuccess) {
-                    session.setAttribute("message", "Order cancelled successfully!");
-                } else {
-                    session.setAttribute("error", "Cannot cancel order. Order must be Pending!");
-                }
-            } catch (NumberFormatException e) {
-                System.err.println("Error cancelling order: " + e.getMessage());
-                session.setAttribute("error", "Invalid order cancellation data.");
-            }
-
-            if (currentUser.getRole() == 4) {
-                response.sendRedirect("order?action=manageOrderAdmin");
-            } else {
-                response.sendRedirect("order?action=manageOrder");
-            }
-            return;
-        }
-        // --- UPDATE STATUS (Shipper only) ---
+        } // --- UPDATE STATUS (Shipper only) ---
         else if ("updateStatus".equals(action)) {
             if (session == null) {
                 response.sendRedirect("login");
@@ -401,7 +370,6 @@ public class OrderServlet extends HttpServlet {
             return;
         }
 
-        
         response.sendRedirect("order");
     }
 

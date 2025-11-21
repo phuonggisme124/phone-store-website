@@ -5,7 +5,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import model.Order;
@@ -18,7 +17,8 @@ import utils.DBContext;
 /**
  *
  * @author thịnh
- * 
+ * @note Updated: Removed cancelOrderByStaff, Added stock reduction in
+ * assignShipperAndStaff
  */
 public class OrderDAO extends DBContext {
 
@@ -157,6 +157,10 @@ public class OrderDAO extends DBContext {
                 o.setShippingAddress(rs.getString("ShippingAddress"));
                 o.setTotalAmount(rs.getDouble("TotalAmount"));
                 o.setStatus(rs.getString("Status"));
+                Timestamp ts = rs.getTimestamp("OrderDate");
+                if (ts != null) {
+                    o.setOrderDate(ts.toLocalDateTime());
+                }
                 orders.add(o);
             }
         } catch (SQLException e) {
@@ -740,22 +744,30 @@ public class OrderDAO extends DBContext {
         return false;
     }
 
-
+    /**
+     * Assign shipper and staff to order, update status to 'In Transit' AND
+     * reduce stock for all variants in the order
+     *
+     * @param orderID Order ID to assign
+     * @param staffID Staff ID assigning the order
+     * @param shipperID Shipper ID for delivery
+     * @return true if successful, false otherwise
+     */
     public boolean assignShipperAndStaff(int orderID, int staffID, int shipperID) {
         try {
             conn.setAutoCommit(false);
-            
-            // Update order status
+
+            // Step 1: Update order status
             String updateOrderSQL = "UPDATE Orders SET StaffID = ?, ShipperID = ?, Status = 'In Transit' "
                     + "WHERE OrderID = ? AND Status = 'Pending'";
-            
+
             try (PreparedStatement stmt = conn.prepareStatement(updateOrderSQL)) {
                 stmt.setInt(1, staffID);
                 stmt.setInt(2, shipperID);
                 stmt.setInt(3, orderID);
-                
+
                 int rowsAffected = stmt.executeUpdate();
-                
+
                 if (rowsAffected == 0) {
                     System.out.println("assignShipperAndStaff: No rows affected for OrderID: " + orderID);
                     checkOrderStatus(orderID);
@@ -763,33 +775,32 @@ public class OrderDAO extends DBContext {
                     return false;
                 }
             }
-            
-            // trừ stock
+
+            // Step 2: Reduce stock for each variant in order details
             String getOrderDetailsSQL = "SELECT VariantID, Quantity FROM OrderDetails WHERE OrderID = ?";
             String updateStockSQL = "UPDATE Variants SET Stock = Stock - ? WHERE VariantID = ?";
-            
-            try (PreparedStatement getDetails = conn.prepareStatement(getOrderDetailsSQL);
-                 PreparedStatement updateStock = conn.prepareStatement(updateStockSQL)) {
-                
+
+            try (PreparedStatement getDetails = conn.prepareStatement(getOrderDetailsSQL); PreparedStatement updateStock = conn.prepareStatement(updateStockSQL)) {
+
                 getDetails.setInt(1, orderID);
                 ResultSet rs = getDetails.executeQuery();
-                
+
                 while (rs.next()) {
                     int variantID = rs.getInt("VariantID");
                     int quantity = rs.getInt("Quantity");
-                    
+
                     updateStock.setInt(1, quantity);
                     updateStock.setInt(2, variantID);
                     updateStock.executeUpdate();
-                    
+
                     System.out.println("Reduced stock for VariantID: " + variantID + " by " + quantity + " units");
                 }
             }
-            
+
             conn.commit();
             System.out.println("assignShipperAndStaff: Successfully assigned OrderID: " + orderID + " and updated stock");
             return true;
-            
+
         } catch (SQLException e) {
             System.err.println("assignShipperAndStaff SQL Error: " + e.getMessage());
             e.printStackTrace();
@@ -808,33 +819,14 @@ public class OrderDAO extends DBContext {
         }
     }
 
-   
-    public boolean cancelOrderByStaff(int orderID, int staffID) {
-        String sql = "UPDATE Orders SET StaffID = ?, ShipperID = NULL, Status = 'Cancelled' "
-                + "WHERE OrderID = ? AND Status = 'Pending'";
-
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, staffID);
-            stmt.setInt(2, orderID);
-
-            int rowsAffected = stmt.executeUpdate();
-
-            if (rowsAffected == 0) {
-                System.out.println("cancelOrderByStaff: No rows affected for OrderID: " + orderID);
-                checkOrderStatus(orderID);
-            } else {
-                System.out.println("cancelOrderByStaff: Successfully cancelled OrderID: " + orderID);
-            }
-
-            return rowsAffected > 0;
-        } catch (SQLException e) {
-            System.err.println("cancelOrderByStaff SQL Error: " + e.getMessage());
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-  
+    /**
+     * Update order status by shipper (Delivered or Cancelled)
+     *
+     * @param orderID Order ID to update
+     * @param shipperID Shipper ID updating the status
+     * @param newStatus New status (must be 'Delivered' or 'Cancelled')
+     * @return true if successful, false otherwise
+     */
     public boolean updateOrderStatusByShipper(int orderID, int shipperID, String newStatus) {
         // Validate status
         if (!newStatus.equals("Delivered") && !newStatus.equals("Cancelled")) {
@@ -930,7 +922,7 @@ public class OrderDAO extends DBContext {
 
         try (PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
             if (status.equalsIgnoreCase("Pending")) {
-               
+
             } else {
                 stmt.setString(1, status);
                 stmt.setInt(2, staffID);

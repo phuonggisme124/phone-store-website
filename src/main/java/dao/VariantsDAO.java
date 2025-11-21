@@ -719,12 +719,12 @@ public class VariantsDAO extends DBContext {
         return list;
     }
 
-    public boolean decreaseQuantity(int variantID, int quantityToSubtract) {
-        String sql = "UPDATE Variants SET Stock = Stock - ? WHERE VariantID = ? AND Stock >= ?";
+    public boolean increaseQuantity(int variantID, int quantity) {
+        String sql = "UPDATE Variants SET Stock = Stock + ? WHERE VariantID = ? AND Stock >= ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, quantityToSubtract);
+            ps.setInt(1, quantity);
             ps.setInt(2, variantID);
-            ps.setInt(3, quantityToSubtract); // tránh âm số lượng
+            ps.setInt(3, quantity); // tránh âm số lượng
             int rowsAffected = ps.executeUpdate();
             return rowsAffected > 0;
         } catch (SQLException e) {

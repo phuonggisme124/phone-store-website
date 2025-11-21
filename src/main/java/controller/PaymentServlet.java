@@ -148,34 +148,32 @@ public class PaymentServlet extends HttpServlet {
                 }
                 InterestRateDAO iRDAO = new InterestRateDAO();
                 InterestRate iR = iRDAO.getInterestRatePercentByIstalmentPeriod(term);
+
                 double totalPriceIfInstalment = totalPrice + ((totalPrice * iR.getPercent()) / 100);
-                // Thêm OrderDetails với OrderID MỚI TẠO
                 Order o = new Order(userID, paymentMethodArr[0], specificAddress, totalPriceIfInstalment, "Pending", isInstalment, new Users(receiverName, receiverPhone));
                 PaymentsDAO pmDAO = new PaymentsDAO();
 
                 int newOrderID = oDAO.addNewOrder(o);
 
                 o.setOrderID(newOrderID);
-                //Khi có thanh toán bằng trả góp thì tạo 1 danh sách các payment cần phải trả cho đơn hàng thanh toán đó dựa theo số tháng mà người dùng chọn
                 o.setOrderDate(LocalDateTime.now());
                 pmDAO.insertNewPayment(o, term);
                 OrderDetailDAO oDDAO = new OrderDetailDAO();
-                if (iR != null) {
-                    for (Carts c : carts) {
-                        // SỬA QUAN TRỌNG: Dùng newOrderID thay vì userID
-                        double unitPriceIfInstalment = c.getVariant().getDiscountPrice() + ((c.getVariant().getDiscountPrice() * iR.getPercent()) / 100);
-                        OrderDetails oD = new OrderDetails(
-                                newOrderID, // OrderID mới tạo (VD: 156, 157, 158...)
-                                c.getVariant().getVariantID(),
-                                c.getQuantity(),
-                                unitPriceIfInstalment,
-                                iR.getInstalmentPeriod(),
-                                unitPriceIfInstalment / iR.getInstalmentPeriod(),
-                                0,
-                                iR.getPercent()
-                        );
-                        oDDAO.insertNewOrderDetail(oD, isInstalment);
-                    }
+
+                for (Carts c : carts) {
+                    double unitPriceIfInstalment = c.getVariant().getDiscountPrice() + ((c.getVariant().getDiscountPrice() * iR.getPercent()) / 100);
+                    OrderDetails oD = new OrderDetails(
+                            newOrderID,
+                            c.getVariant().getVariantID(),
+                            c.getQuantity(),
+                            unitPriceIfInstalment,
+                            iR.getInterestRateID(),
+                            unitPriceIfInstalment / iR.getInstalmentPeriod(),
+                            0,
+                            iR.getPercent()
+                    );
+                    oDDAO.insertNewOrderDetail(oD, isInstalment);
+
                 }
 
             } else {

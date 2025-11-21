@@ -22,7 +22,7 @@
         <!-- Custom CSS -->
         <link rel="stylesheet" href="css/dashboard_admin.css">
         <link rel="stylesheet" href="css/dashboard_table.css">
-  
+        <link rel="stylesheet" href="css/importproduct.css">
 
         <style>
             .content-area {
@@ -149,7 +149,7 @@
     const regex = /^[0-9]+(GB|TB)$/;
     if (!regex.test(storage)) {
     document.getElementById("storageError").innerText =
-            "Dung lượng không hợp lệ! Ví dụ: 64GB, 128GB, 1TB.";
+            "Invalid capacity! Please enter format: 64GB, 128GB, 1TB.";
     this.classList.add("is-invalid");
     } else {
     document.getElementById("storageError").innerText = "";
@@ -163,7 +163,7 @@
             const storage = document.getElementById("storage").value.trim().toUpperCase();
     const regex = /^[0-9]+(GB|TB)$/;
     if (!regex.test(storage)) {
-    alert("Dung lượng không hợp lệ! Hãy nhập dạng: 64GB, 128GB, 1TB...");
+    alert("Invalid capacity! Please enter format: 64GB, 128GB, 1TB...");
     return false; // chặn submit
     }
 
