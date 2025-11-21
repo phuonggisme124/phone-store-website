@@ -154,7 +154,7 @@ public class AdminServlet extends HttpServlet {
 
             request.getRequestDispatcher("admin/dashboard_admin.jsp").forward(request, response);
         } else if (action.equals("importproduct")) {
-            // ACTION 1: HIỂN THỊ DANH SÁCH LỊCH SỬ NHẬP KHO (Giống Manage Product)          
+            // danh sách nhập kho         
             List<Profit> listImports = pfdao.getAllProfit();
             request.setAttribute("listImports", listImports);
             request.getRequestDispatcher("admin/import_history.jsp").forward(request, response);
@@ -162,14 +162,14 @@ public class AdminServlet extends HttpServlet {
             List<Products> listProducts = pdao.getAllProduct();
             request.setAttribute("listProducts", listProducts);
             request.getRequestDispatcher("admin/importProduct.jsp").forward(request, response);
-        } // Thêm đoạn này vào doGet của AdminServlet
+        } 
         else if (action.equals("showCreateProduct")) {
             List<Category> listCategory = ctdao.getAllCategories();
             List<Suppliers> listSupplier = sldao.getAllSupplier();
-            // 2. Gửi dữ liệu sang JSP
+            //  Gửi dữ liệu sang JSP
             request.setAttribute("listCategories", listCategory);
             request.setAttribute("listSupplier", listSupplier);
-            // 3. Chuyển hướng đến trang tạo mới
+            // Chuyển hướng đến trang tạo mới
             request.getRequestDispatcher("admin/admin_manageproduct_create.jsp").forward(request, response);
         } else if (action.equals("checkVariant")) {
             try {
@@ -179,7 +179,7 @@ public class AdminServlet extends HttpServlet {
   
                 Variants v = vdao.getVariantByProductStorageColor(productID, storage, color);
 
-                // Tạo đối tượng JSON đơn giản
+                
                 String jsonResponse;
                 if (v != null) {
                     jsonResponse = "{\"exists\": true}";
@@ -187,7 +187,7 @@ public class AdminServlet extends HttpServlet {
                     jsonResponse = "{\"exists\": false}";
                 }
 
-                // Trả JSON về cho JavaScript
+             
                 response.setContentType("application/json");
                 response.setCharacterEncoding("UTF-8");
                 response.getWriter().write(jsonResponse);

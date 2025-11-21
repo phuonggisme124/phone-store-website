@@ -70,7 +70,7 @@
                 <%
                     UsersDAO udao = new UsersDAO();
                     List<Order> listOrder = (List<Order>) request.getAttribute("listOrder");
-                    String action = (String) request.getAttribute("action");
+//                    String action = (String) request.getAttribute("action");
                     List<Sale> listSales = (List<Sale>) request.getAttribute("listSales");
                     
                     List<Order> statusInstalment = null;
@@ -98,7 +98,6 @@
                                     <th>Receiver Phone</th>
                                     <th>Receiver Name</th>
                                     <th>Address</th>
-
                                     <th>Method</th>
                                     <th>Order Date</th>
                                     <th>Total Amount</th>
@@ -118,7 +117,7 @@
                             %>
 
                             <tbody>
-                                <tr  onclick="window.location.href = 'admin?action=orderDetail&id=<%= o.getOrderID()%>&isInstalment=<%= o.isIsInstallment()%>'">
+                                <tr  onclick="window.location.href = 'admin?action=orderDetail&id=<%= o.getOrderID()%>&isInstalment=<%= o.getIsInstalment() %>'">
                                     <td><%= o.getOrderID()%></td>
                                     <td><%= udao.getUserByID(o.getUserID()).getFullName()%></td>
                                     <td><%= o.getBuyerPhone()%></td>

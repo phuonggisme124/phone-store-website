@@ -556,14 +556,14 @@ public class ProfitDAO extends DBContext {
     public List<Profit> getAllProfit() {
         List<Profit> list = new ArrayList<>();
 
-        // Câu SQL này JOIN 3 bảng: Profit, Variants, và Products
+   
         String sql = "SELECT p.name, v.storage, v.color, v.imageURL, "
                 + "       pr.* "
-                + // Lấy tất cả các cột từ bảng Profit
+                + 
                 "FROM Profits pr "
                 + "JOIN Variants v ON pr.variantID = v.variantID "
                 + "JOIN Products p ON v.productID = p.productID "
-                + "ORDER BY pr.calculatedDate DESC"; // Sắp xếp mới nhất lên đầu
+                + "ORDER BY pr.calculatedDate DESC"; 
 
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
