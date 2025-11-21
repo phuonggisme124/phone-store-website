@@ -134,28 +134,34 @@
 
                                 <div>
                                     <label for="receiverPhone" class="block text-sm font-medium text-gray-700">Phone Number</label>
-                                    <input type="text" id="receiverPhone" name="receiverPhone" value="<%=user.getPhone()%>" placeholder="Enter receiver's phone number" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm sm:text-sm" required>
-                                </div>
-
-                                <div>
-                                    <label for="city" class="block text-sm font-medium text-gray-700">Province/City</label>
-                                    <select id="city" name="city" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm sm:text-sm" required>
-                                        <option value="">-- Select province/city --</option>
-                                    </select>
-                                </div>
-
-                                <div>
-                                    <label for="address" class="block text-sm font-medium text-gray-700">Specific Address</label>
-                                    <textarea id="address" name="address" rows="3" placeholder="House number, street name, ward/commune, district..." class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm sm:text-sm" required></textarea>
-                                </div>
+                                    <input type="text" 
+                                           id="receiverPhone" 
+                                           name="receiverPhone" 
+                                           value="<%= user.getPhone() != null ? user.getPhone() : ""%>" 
+                                           placeholder="Enter receiver's phone number" 
+                                           class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm sm:text-sm" 
+                                           required>                                </div>
                             </div>
 
-                            <div class="flex justify-between items-center border-t pt-4">
-                                <p class="text-gray-700">Subtotal:</p>
-                                <p class="text-theme font-bold text-xl"><%= String.format("%,.0f", totalPrice)%> VND</p>
+                            <div>
+                                <label for="city" class="block text-sm font-medium text-gray-700">Province/City</label>
+                                <select id="city" name="city" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm sm:text-sm" required>
+                                    <option value="">-- Select province/city --</option>
+                                </select>
                             </div>
 
-                            <button type="submit" id="confirm-btn" class="confirm-btn">Continue</button>
+                            <div>
+                                <label for="address" class="block text-sm font-medium text-gray-700">Specific Address</label>
+                                <textarea id="address" name="address" rows="3" placeholder="House number, street name, ward/commune, district..." class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm sm:text-sm" required></textarea>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between items-center border-t pt-4">
+                            <p class="text-gray-700">Subtotal:</p>
+                            <p class="text-theme font-bold text-xl"><%= String.format("%,.0f", totalPrice)%> VND</p>
+                        </div>
+
+                        <button type="submit" id="confirm-btn" class="confirm-btn">Continue</button>
                         </div>
                     </form>
                 </main>
@@ -165,20 +171,20 @@
         <script>
             const citySelect = document.getElementById("city");
             fetch("http://provinces.open-api.vn/api/p/")
-                .then(res => res.json())
-                .then(provinces => {
-                    citySelect.innerHTML = '<option value="">-- Select province/city --</option>';
-                    provinces.forEach(p => {
-                        const opt = document.createElement("option");
-                        opt.value = p.name;
-                        opt.textContent = p.name;
-                        citySelect.appendChild(opt);
+                    .then(res => res.json())
+                    .then(provinces => {
+                        citySelect.innerHTML = '<option value="">-- Select province/city --</option>';
+                        provinces.forEach(p => {
+                            const opt = document.createElement("option");
+                            opt.value = p.name;
+                            opt.textContent = p.name;
+                            citySelect.appendChild(opt);
+                        });
+                    })
+                    .catch(error => {
+                        console.error("Error loading province/city list:", error);
+                        citySelect.innerHTML = '<option value="">Error loading data</option>';
                     });
-                })
-                .catch(error => {
-                    console.error("Error loading province/city list:", error);
-                    citySelect.innerHTML = '<option value="">Error loading data</option>';
-                });
         </script>
     </body>
 </html>

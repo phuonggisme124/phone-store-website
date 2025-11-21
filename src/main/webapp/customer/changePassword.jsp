@@ -38,10 +38,11 @@
 
         <style>
             body {
-                background: white;
+                background: #EDF1F3;
                 min-height: 100vh;
                 font-family: 'Jost', sans-serif;
-                padding-top: 80px;
+                margin-top: 120px;
+                padding: 20px;
             }
 
             .profile-container {
