@@ -16,7 +16,12 @@
 
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <title>Lịch Sử Giao Dịch</title>
+
+        <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="css/style.css">
+        <link rel="stylesheet" type="text/css" href="css/profile.css">
         <link href="css/transaction.css" rel="stylesheet">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -36,7 +41,8 @@
             VariantsDAO vDAO = new VariantsDAO();
 
             Map<String, String> statusCssMap = Map.of(
-                    "In Transit", "shipping", "Delivered", "completed", "Cancelled", "cancelled"
+                    "In Transit", "shipping", "Delivered", "completed", "Cancelled", "cancelled", "Pending", "pending"
+
             );
 
             String currentStatus = request.getParameter("status");
@@ -45,96 +51,149 @@
             }
         %>
         <section id="billboard" class="bg-light-blue overflow-hidden padding-large" >
-            <div class="transaction-container">
-                <h1>Lịch Sử Giao Dịch</h1>
+            <div class="profile-container">
+                <div class="profile-wrapper">
 
-                <div class="custom-select-wrapper">
-                    <div class="select-selected">
-                        <%
-                            if ("Delivered".equals(currentStatus))
-                                out.print("Hoàn thành");
-                            else if ("In Transit".equals(currentStatus))
-                                out.print("Đang giao");
-                            else if ("Cancelled".equals(currentStatus))
-                                out.print("Đã hủy");
-                            else if ("Pending".equals(currentStatus))
-                                out.print("Dang xu ly");
-                            else
-                                out.print("Tất cả trạng thái");
-                        %>
-                    </div>
-                    <div class="select-items select-hide">
-                        <div data-value="All">Tất cả trạng thái</div>
-                        <div data-value="Delivered">Hoàn thành</div>
-                        <div data-value="In Transit">Đang giao</div>
-                        <div data-value="Pending">Đang xu ly</div>
-                        <div data-value="Cancelled">Đã hủy</div>
-                    </div>
-                </div>
-                <form action="user" method="get" id="filterForm" style="display:none;">
-                    <input type="hidden" name="status" id="statusInput" value="<%= currentStatus%>">
-                    <input type="hidden" name="action" value="transaction">
-                </form>
-                <div class="timeline-list">
-                    <% if (oList != null && !oList.isEmpty()) { %>
-                    <<% for (int i = oList.size() - 1; i >= 0; i--) {
+                    <!-- Sidebar -->
+                    <aside class="profile-sidebar">
+                        <h3>Hello, <%= user.getFullName()%></h3>
+
+                        <a href="user?action=transaction" class="sidebar-link">
+                            <i class="fas fa-shopping-bag"></i>
+                            <span>My Orders</span>
+                        </a>
+                        <a href="user?action=payInstallment" class="sidebar-link">
+                            <i class="fas fa-receipt"></i>
+                            <span>Installment Paying</span>
+                        </a>
+
+                        <a href="user" class="sidebar-link">
+                            <i class="fas fa-user"></i>
+                            <span>Profile & Address</span>
+                        </a>
+
+                        <a href="user?action=changePassword" class="sidebar-link">
+                            <i class="fas fa-lock"></i>
+                            <span>Change Password</span>
+                        </a>
+
+                        <form action="logout" method="post">
+                            <button type="submit" class="logout-btn">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </button>
+                        </form>
+                    </aside>
+
+                    <!-- Main Content -->
+                    <main class="profile-content">
+                        <div class="profile-header">
+                            <div class="transaction-container">
+                                <h1>Lịch Sử Giao Dịch</h1>
+
+                                <div class="custom-select-wrapper">
+                                    <div class="select-selected">
+                                        <%
+                                            if ("Delivered".equals(currentStatus))
+                                                out.print("Hoàn thành");
+                                            else if ("In Transit".equals(currentStatus))
+                                                out.print("Đang giao");
+                                            else if ("Cancelled".equals(currentStatus))
+                                                out.print("Đã hủy");
+                                            else if ("Pending".equals(currentStatus))
+                                                out.print("Dang xu ly");
+                                            else
+                                                out.print("Tất cả trạng thái");
+                                        %>
+                                    </div>
+                                    <div class="select-items select-hide">
+                                        <div data-value="All">Tất cả trạng thái</div>
+                                        <div data-value="Delivered">Hoàn thành</div>
+                                        <div data-value="In Transit">Đang giao</div>
+                                        <div data-value="Pending">Đang xử lý</div>
+                                        <div data-value="Cancelled">Đã hủy</div>
+                                    </div>
+                                </div>
+                                <form action="user" method="get" id="filterForm" style="display:none;">
+                                    <input type="hidden" name="status" id="statusInput" value="<%= currentStatus%>">
+                                    <input type="hidden" name="action" value="transaction">
+                                </form>
+                                <div class="timeline-list">
+                                    <% if (oList != null && !oList.isEmpty()) { %>
+                                    <% for (int i = oList.size() - 1; i >= 0; i--) {
                             Order o = oList.get(i);%>
-                    <div class="timeline-item">
-                        <div class="transaction-card">
-                            <div class="card-header">
-                                <div class="order-info">
-                                    <div>
-                                        <div class="order-id">Mã đơn #<%= o.getOrderID()%></div>
-                                        <div class="order-date"><%= o.getOrderDate().format(dtFormatter)%></div>
-                                    </div>
-                                </div>
-                                <div class="header-right">
-                                    <div>
-                                        <div class="total-amount-header"><%= vnFormat.format(o.getTotalAmount())%></div>
-                                        <div class="status-badge status-<%= statusCssMap.getOrDefault(o.getStatus(), "")%>">
-                                            <%= o.getStatus()%>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                                    <div class="timeline-item">
+                                        <div class="transaction-card">
+                                            <div class="card-header">
+                                                <div class="order-info">
+                                                    <div>
+                                                        <div class="order-id">Mã đơn #<%= o.getOrderID()%></div>
+                                                        <div class="order-date"><%= o.getOrderDate().format(dtFormatter)%></div>
+                                                    </div>
+                                                </div>
+                                                <div class="header-right">
+                                                    <div>
+                                                        <div class="total-amount-header"><%= vnFormat.format(o.getTotalAmount())%></div>
+                                                        <div class="status-badge status-<%= statusCssMap.getOrDefault(o.getStatus(), "")%>">
+                                                            <%= o.getStatus()%>
+                                                        </div>
 
-                            <div class="card-details-wrapper">
-                                <div class="shipping-info">
-                                    <p><strong>Người nhận</strong>: <%= o.getBuyer().getFullName() + " - " + o.getBuyer().getPhone()%></p>
-                                    <p><strong>Địa chỉ</strong>: <%= o.getShippingAddress()%></p>
-                                    <p><strong>Thanh toán</strong>: Thanh toán khi nhận hàng (COD)</p>
-                                </div>
+                                                    </div>
+                                                </div>
+                                            </div>
 
-                                <div class="product-list">
-                                    <%
-                                        List<OrderDetails> details = allOrderDetails.get(o.getOrderID());
-                                        if (details != null && !details.isEmpty()) {
-                                            for (OrderDetails d : details) {
-                                                Variants v = vDAO.getVariantByID(d.getVariantID());
-                                    %>
-                                    <div class="product-item">
-                                        <img src="images/<%= v.getImageList()[0]%>" alt="Ảnh sản phẩm">
-                                        <div class="product-details">
-                                            <p class="product-name"><%= pDAO.getNameByID(v.getProductID())%></p>
-                                            <p class="product-spec"><%= v.getStorage()%> - <%= v.getColor()%></p>
-                                        </div>
-                                        <div class="product-price-qty">
-                                            <span>x<%= d.getQuantity()%></span>
-                                            <strong><%= vnFormat.format(d.getUnitPrice())%></strong>
+                                            <div class="card-details-wrapper">
+                                                <div class="shipping-info">
+                                                    <p><strong>Người nhận</strong>: <%= o.getBuyer().getFullName() + " - " + o.getBuyer().getPhone()%></p>
+                                                    <p><strong>Địa chỉ</strong>: <%= o.getShippingAddress()%></p>
+                                                    <p><strong>Thanh toán</strong>: Thanh toán khi nhận hàng (COD)</p>
+                                                </div>
+
+                                                <div class="product-list">
+                                                    <%
+                                                        List<OrderDetails> details = allOrderDetails.get(o.getOrderID());
+                                                        if (details != null && !details.isEmpty()) {
+                                                            for (OrderDetails d : details) {
+                                                                Variants v = vDAO.getVariantByID(d.getVariantID());
+                                                    %>
+                                                    <div class="product-item">
+                                                        <img src="images/<%= v.getImageList()[0]%>" alt="Ảnh sản phẩm">
+                                                        <div class="product-details">
+                                                            <p class="product-name"><%= pDAO.getNameByID(v.getProductID())%></p>
+                                                            <p class="product-spec"><%= v.getStorage()%> - <%= v.getColor()%></p>
+                                                        </div>
+                                                        <div class="product-price-qty">
+                                                            <span>x<%= d.getQuantity()%></span>
+                                                            <strong><%= vnFormat.format(d.getUnitPrice())%></strong>
+                                                        </div>
+                                                    </div>
+                                                    <%
+                                                            }
+                                                        }
+                                                    %>
+                                                </div>
+
+
+                                                <% if (o.getStatus().equals("Pending")) { %>
+                                                <form action="user" method="post" style="margin-top: 10px; text-align: right;">
+                                                    <input type="hidden" name="orderID" value="<%= o.getOrderID() %>">
+                                                    <input type="hidden" name="action" value="cancelOrder">
+                                                    <button style="border-radius: 15px" type="submit" class="btn btn-danger btn-sm"
+                                                            onclick="return confirm('Bạn chắc chắn muốn hủy đơn này?');">
+                                                        Hủy đơn
+                                                    </button>
+                                                </form>
+
+                                                <% } %>
+                                            </div>
                                         </div>
                                     </div>
-                                    <%
-                                            }
-                                        }
-                                    %>
+                                    <% } %>
+                                    <% } else { %>
+                                    <p style="text-align:center; color:#6c757d; font-size:1.1em; margin-top:50px;">Bạn chưa có giao dịch nào.</p>
+                                    <% }%>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <% } %>
-                    <% } else { %>
-                    <p style="text-align:center; color:#6c757d; font-size:1.1em; margin-top:50px;">Bạn chưa có giao dịch nào.</p>
-                    <% }%>
                 </div>
             </div>
         </section>

@@ -876,5 +876,17 @@ public class VariantsDAO extends DBContext {
         }
         return generatedID;
     }
+    
+    public void reduceStock(int variantID, int quantity) {
+    String sql = "UPDATE Variants SET Stock = Stock - ? WHERE VariantID = ?";
+    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setInt(1, quantity);
+        ps.setInt(2, variantID);
+        ps.executeUpdate();
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+
 
 }

@@ -243,6 +243,14 @@ public class UserServlet extends HttpServlet {
                 response.sendRedirect("user?action=payInstallment");
             }
 
+        } else if ("cancelOrder".equals(action)) {
+            int orderID = Integer.parseInt(request.getParameter("orderID"));
+            Order o = orderDAO.getOrderById(orderID);
+
+            if (o != null && ("Pending".equals(o.getStatus()) || "In Transit".equals(o.getStatus()))) {
+                orderDAO.updateOrderStatus(orderID, "Cancelled");
+            }
+            response.sendRedirect("user?action=transaction"); 
         } else {
             response.sendRedirect("user?action=view");
         }

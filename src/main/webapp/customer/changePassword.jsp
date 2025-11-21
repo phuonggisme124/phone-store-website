@@ -366,11 +366,15 @@
             <div class="profile-wrapper">
                 <!-- Sidebar -->
                 <aside class="profile-sidebar">
-                    <h3>Hello, <%= user.getFullName() %></h3>
+                    <h3>Hello, <%= user.getFullName()%></h3>
 
                     <a href="user?action=transaction" class="sidebar-link">
                         <i class="fas fa-shopping-bag"></i>
                         <span>My Orders</span>
+                    </a>
+                    <a href="user?action=payInstallment" class="sidebar-link">
+                        <i class="fas fa-receipt"></i>
+                        <span>Installment Paying</span>
                     </a>
 
                     <a href="user" class="sidebar-link">

@@ -1,7 +1,7 @@
 /* --- General Styles --- */
 body {
     font-family: 'Poppins', sans-serif;
-    background-color: #f7f8fa;
+    background-color: white;
     color: #333;
     margin: 0;
     padding: 20px;
@@ -171,6 +171,10 @@ h1::after {
 .status-cancelled {
     background-color: #dc3545;
 }
+.status-pending {
+    background-color: #8B5CF6;
+}
+
 
 /* --- Expandable Details --- */
 .card-details-wrapper {
