@@ -29,7 +29,8 @@
 
                 <div class="installment-list">
                     <% if (oList != null && !oList.isEmpty()) {
-                            for (Order o : oList) {
+                            for (int i = oList.size() - 1; i >= 0; i--) {
+                                Order o = oList.get(i);
                                 List<Payments> pList = allPayments.get(o.getOrderID());
                                 int paidCount = 0;
 
@@ -169,8 +170,8 @@
 
                         // Thông tin ngân hàng của bạn
                         const bankId = "970422"; // MB Bank
-                        const accountNumber = "343339799999";
-                        const accountName = "PHAM HOANG PHUONG";
+                        const accountNumber = "0968418098";
+                        const accountName = "TRANG TIEN DAT";
 
                         // Tạo link VietQR
                         const encodedDescription = encodeURIComponent(transferDescription);
@@ -235,7 +236,7 @@
                 // === HÀM KIỂM TRA THANH TOÁN (ĐÃ SỬA) ===
                 async function checkPaid(description, paymentId) {
                     try {
-                        const response = await fetch("https://script.google.com/macros/s/AKfycbz2ZSvZF7bJkTqXnOUXbdqUQMmuc7w27wAjB4efbKSSA1q6yqGj6uxek5nP0W4VgK6xgw/exec");
+                        const response = await fetch("https://script.google.com/macros/s/AKfycbwVGFzfs_VMzmWN9kXOcLW2o5HNR407tycQzyyq20NjEOn32MBZw6GSBFVi5uRtWtSwqw/exec");
                         const data = await response.json();
                         const lastPaid = data.data[data.data.length - 1];
                         const lastDescription = lastPaid["Mô tả"];

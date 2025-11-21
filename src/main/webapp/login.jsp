@@ -8,6 +8,75 @@
         <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
         <link rel="stylesheet" type="text/css" href="css/login.css">
+        <style>
+            body {
+                background: #f8f9fa;
+            }
+
+            /* Thanh trên */
+            header {
+                background: #ffffff;
+                box-shadow: 0px 2px 6px rgba(0,0,0,0.1);
+                padding: 15px 0;
+                top: 0;
+                width: 100%;
+                z-index: 10;
+                text-align: center;
+            }
+
+            header h3 {
+                margin: 0;
+                font-weight: bold;
+                letter-spacing: 2px;
+                pointer-events: none;
+            }
+
+            /* Container */
+            .auth-wrapper {
+                max-width: 450px;
+                margin: 120px auto;
+                padding: 20px;
+            }
+
+            /* Nút chọn */
+            .auth-buttons {
+                display: flex;
+                justify-content: center;
+                gap: 20px;
+                margin-bottom: 30px;
+            }
+
+            .auth-buttons button {
+                width: 45%;
+            }
+
+            /* Form */
+            .auth-form {
+                display: none;
+                background: #fff;
+                padding: 25px;
+                border-radius: 8px;
+                box-shadow: 0px 3px 8px rgba(0,0,0,0.1);
+            }
+
+            .auth-form.active {
+                display: block;
+            }
+
+            /* 2. CSS cho nút hiển thị mật khẩu */
+            .password-wrapper {
+                position: relative;
+            }
+
+            .password-icon {
+                position: absolute;
+                top: 50%;
+                right: 12px;
+                transform: translateY(-50%);
+                cursor: pointer;
+                color: #6c757d;
+            }
+        </style>
     </head>
 
     <body>
@@ -50,7 +119,7 @@
                                 <i class="bi bi-eye-slash password-icon" id="toggleLoginPassword"></i>
                             </div>
                         </div>
-
+                        <div><a href ="forgotPassword"> Forget password? </a></div>
                         <!-- GOOGLE SIGN IN BUTTON (new version) -->
                         <div class="text-center mt-3">
                             <a id="signButton" class="btn btn-light w-100 d-flex align-items-center justify-content-center gap-2 border">

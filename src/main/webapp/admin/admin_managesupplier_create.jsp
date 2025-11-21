@@ -59,6 +59,7 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Phone</label>
+                     
                         <input type="text" class="form-control" name="phone" id="phone" value="">
                         <p id="phoneError" class="text-danger mt-2" style="display:none;">Please enter phone number!</p>
                         <p id="phoneFormat" class="text-danger mt-2" style="display:none;">Phone number is not in correct format!</p>

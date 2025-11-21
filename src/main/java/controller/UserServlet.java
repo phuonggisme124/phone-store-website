@@ -122,8 +122,9 @@ public class UserServlet extends HttpServlet {
 
             // FIXED: Merged from conflicting branch
             case "changePassword":
-                response.sendRedirect("customer/changePassword.jsp");
+                request.getRequestDispatcher("customer/changePassword.jsp").forward(request, response);
                 break;
+
             case "manageUser":
                 List<Users> listUsers = udao.getAllUsers();
                 request.setAttribute("listUsers", listUsers);
@@ -270,8 +271,11 @@ public class UserServlet extends HttpServlet {
     private void updateUserPassword(HttpServletRequest request, HttpServletResponse response, Users user, HttpSession session)
             throws ServletException, IOException {
         String oldPass = request.getParameter("oldPassword");
+        System.out.println(oldPass);
         String newPass = request.getParameter("newPassword");
+        System.out.println(newPass);
         String confirmPass = request.getParameter("confirmPassword");
+        System.out.println(confirmPass);
 
         // REFACTORED: Use the dedicated DAO method for checking password
         if (!usersDAO.checkOldPassword(user.getUserId(), oldPass)) {
@@ -286,9 +290,9 @@ public class UserServlet extends HttpServlet {
             user.setPassword(usersDAO.hashMD5(newPass));
             session.setAttribute("user", user);
 
-            request.setAttribute("message", "Đổi mật khẩu thành công!");
+            session.setAttribute("message", "Đổi mật khẩu thành công!");
         }
-
-        request.getRequestDispatcher("changePassword.jsp").forward(request, response);
+        response.sendRedirect("user?action=changePassword");
+//        request.getRequestDispatcher("customer/changePassword.jsp").forward(request, response);
     }
 }

@@ -1,0 +1,110 @@
+/* ===== Import Product Page CSS ===== */
+
+body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* Main wrapper */
+.import-product-page {
+    margin-left: 250px; /* space for sidebar */
+    padding: 30px;
+}
+
+/* ===== Header ===== */
+.ih-wrapper-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.ih-wrapper-title {
+    font-size: 28px;
+    font-weight: 600;
+    color: #0d6efd;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Add button */
+.ih-wrapper-btn-add {
+    background-color: #0d6efd;
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 16px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: 0.2s;
+}
+
+.ih-wrapper-btn-add:hover {
+    background-color: #0b5ed7;
+    color: white;
+}
+
+/* ===== Table Style ===== */
+.ih-wrapper-table-container {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    overflow-x: auto;
+}
+
+.ih-wrapper-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 900px;
+}
+
+.ih-wrapper-table thead th {
+    background-color: #0d6efd;
+    color: white;
+    padding: 12px;
+    font-size: 15px;
+    text-align: left;
+}
+
+.ih-wrapper-table tbody td {
+    padding: 12px;
+    border-bottom: 1px solid #e5e5e5;
+    font-size: 15px;
+}
+
+.ih-wrapper-table tbody tr:hover {
+    background-color: #eef5ff;
+}
+
+/* Empty row */
+.ih-wrapper-empty {
+    text-align: center;
+    padding: 40px;
+    color: #6c757d;
+    font-size: 18px;
+}
+
+.ih-wrapper-empty i {
+    font-size: 40px;
+    margin-bottom: 10px;
+    color: #adb5bd;
+}
+
+
+/* ===== Cost Price Column ===== */
+.ih-wrapper-table tbody td:nth-child(6) {
+   color: #dc3545; 
+    font-weight: 500;
+}
+
+/* ===== Selling Price Column ===== */
+.ih-wrapper-table tbody td:nth-child(7) {
+    color: #198754; /* xanh lá */
+    font-weight: 600;
+}

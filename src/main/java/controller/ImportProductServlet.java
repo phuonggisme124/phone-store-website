@@ -10,13 +10,20 @@ import dao.VariantsDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
+import jakarta.servlet.http.Part;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Part;
+import java.io.File;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import model.Products;
 import model.Profit;
 import model.Variants;
@@ -25,6 +32,7 @@ import model.Variants;
  *
  * @author USER
  */
+@MultipartConfig
 @WebServlet(name = "ImportProductServlet", urlPatterns = {"/importproduct"})
 public class ImportProductServlet extends HttpServlet {
 
@@ -80,23 +88,21 @@ public class ImportProductServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
+        request.setCharacterEncoding("UTF-8");
         try {
             // 1. XỬ LÝ INPUT TỪ FORM
             // -------------------------------------------------------------
             String productSelect = request.getParameter("productID");
-            
+
             // Kiểm tra nếu chọn "Tạo mới" thì chuyển hướng
             if ("NEW".equals(productSelect)) {
-                response.sendRedirect("admin?action=showCreateProduct"); // Sửa lại action cho khớp với AdminServlet của bạn
+                response.sendRedirect("admin?action=showCreateProduct");
                 return;
-            } 
-            
-            int productID = Integer.parseInt(productSelect);
+            }
 
-            // Lấy dữ liệu và dùng .trim() để xóa khoảng trắng thừa (tránh lỗi "Black " != "Black")
-            String storage = request.getParameter("storage").trim();
-            String color = request.getParameter("color").trim();
+            int productID = Integer.parseInt(productSelect);
+            String storage = request.getParameter("storage").trim().toUpperCase();
+            String color = request.getParameter("color").trim().toUpperCase();
 
             // Parse số liệu
             int quantity = Integer.parseInt(request.getParameter("quantity"));
@@ -105,10 +111,32 @@ public class ImportProductServlet extends HttpServlet {
 
             // Lấy thời gian hiện tại
             LocalDateTime dateTime = LocalDateTime.now();
+            String description = request.getParameter("description");
+            String uploadPath = getServletContext().getRealPath("") + File.separator + "uploads" + File.separator + "products";
+            File uploadDir = new File(uploadPath);
+            if (!uploadDir.exists()) {
+                uploadDir.mkdirs();
+            }
 
+            List<String> photoPathsForDB = new ArrayList<>();
+            List<Part> photoParts = request.getParts().stream()
+                    .filter(part -> "photos".equals(part.getName()) && part.getSize() > 0)
+                    .collect(Collectors.toList());
+
+            for (Part photoPart : photoParts) {
+                String originalFileName = photoPart.getSubmittedFileName();
+                String uniqueFileName = System.currentTimeMillis() + "_" + originalFileName;
+                String filePath = uploadPath + File.separator + uniqueFileName;
+                photoPart.write(filePath);
+                photoPathsForDB.add("uploads/products/" + uniqueFileName);
+            }
+
+            // Lấy ảnh đầu tiên làm ảnh đại diện mới (nếu có)
+            String newMainImagePath = (!photoPathsForDB.isEmpty()) ? photoPathsForDB.get(0) : null;
             // Khởi tạo DAO
             VariantsDAO variantDAO = new VariantsDAO();
             ProfitDAO profitDAO = new ProfitDAO();
+            ProductDAO pdao = new ProductDAO();
 
             // 2. KIỂM TRA VARIANT ĐÃ TỒN TẠI CHƯA?
             // -------------------------------------------------------------
@@ -117,43 +145,40 @@ public class ImportProductServlet extends HttpServlet {
 
             if (variant != null) {
 
-                int currentStock = variant.getStock();
-
-                int newTotalStock = currentStock + quantity;
-
-                variantDAO.updateVariantPriceAndStock(variant.getVariantID(), newTotalStock, sellingPrice);
-
                 variantID = variant.getVariantID();
-                System.out.println("Updated Variant ID: " + variantID + ". Old Stock: " + currentStock + " -> New Stock: " + newTotalStock);
+
+                // Cập nhật đối tượng 'variant' có sẵn trong bộ nhớ
+                int newTotalStock = variant.getStock() + quantity;
+                variant.setStock(newTotalStock);
+                variant.setPrice(sellingPrice); // Luôn cập nhật giá bán mới
+
+                // Gọi hàm DAO mới để update mọi thứ
+                variantDAO.updateVariantPriceAndStock(variantID, newTotalStock, sellingPrice);
 
             } else {
-   
-                Variants newVariant = new Variants();
-                newVariant.setProductID(productID);
-                newVariant.setColor(color);
-                newVariant.setStorage(storage);
-                newVariant.setPrice(sellingPrice);
-                newVariant.setDiscountPrice(sellingPrice); // Giá giảm mặc định bằng giá gốc
-                newVariant.setStock(quantity);             // Mới tinh thì Stock bằng số nhập vào
-                
-                // Set các giá trị mặc định để tránh lỗi Database
-                newVariant.setDescription("Hàng mới nhập kho");
-                newVariant.setImageUrl("default.jpg"); 
-                
-                variantID = variantDAO.createVariant(newVariant);
-                System.out.println("Created New Variant ID: " + variantID);
-            }
+                request.setAttribute("pID", productID);
+                Products product = pdao.getProductByID(productID);
+                request.setAttribute("product", product);
 
+                // Nếu có description + ảnh thì vẫn giữ, hoặc người dùng sẽ nhập ở trang create variant
+                request.getRequestDispatcher("admin/admin_manageproduct_createvariant.jsp").forward(request, response);
+                return;
+            }
             // 3. LƯU LỊCH SỬ NHẬP HÀNG (PROFIT)
             // -------------------------------------------------------------
+            // Logic này giờ dùng chung cho cả 2 trường hợp (if và else)
+            // vì chúng ta đã có 'variantID'
             Profit profit = new Profit();
             profit.setVariantID(variantID);
-            profit.setQuantity(quantity);     // Lưu số lượng vừa nhập (không phải tổng)
-            profit.setCostPrice(costPrice);   // Lưu giá vốn
+            profit.setQuantity(quantity);       // Lưu số lượng vừa nhập
+            profit.setCostPrice(costPrice);     // Lưu giá vốn
             profit.setSellingPrice(sellingPrice);
             profit.setCalculatedDate(dateTime);
 
             profitDAO.addProfit(profit);
+
+            // 4. CHUYỂN HƯỚNG
+            // -------------------------------------------------------------
             response.sendRedirect("admin?action=importproduct&msg=success");
 
         } catch (Exception e) {
@@ -161,7 +186,6 @@ public class ImportProductServlet extends HttpServlet {
             response.sendRedirect("admin?action=importproduct&msg=error");
         }
     }
-    
 
     /**
      * Returns a short description of the servlet.

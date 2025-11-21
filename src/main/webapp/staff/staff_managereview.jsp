@@ -112,9 +112,9 @@
                 </div>
                 <ul class="list-unstyled ps-3">
 
-                    <li><a href="staff?action=manageProduct"><i class="bi bi-box me-2"></i>Products</a></li>
-                    <li><a href="staff?action=manageOrder"><i class="bi bi-bag me-2"></i>Orders</a></li>
-                    <li><a href="staff?action=manageReview" class="fw-bold text-primary"><i class="bi bi-chat-left-text me-2"></i>Reviews</a></li>
+                    <li><a href="product?action=manageProduct"><i class="bi bi-box me-2"></i>Products</a></li>
+                    <li><a href="order?action=manageOrder"><i class="bi bi-bag me-2"></i>Orders</a></li>
+                    <li><a href="review?action=manageReview" class="fw-bold text-primary"><i class="bi bi-chat-left-text me-2"></i>Reviews</a></li>
                 </ul>
             </nav>
 
@@ -131,7 +131,7 @@
 
 
                             <!-- Search Product -->
-                            <form action="staff" method="get" class="d-flex position-relative me-3" id="searchForm" autocomplete="off">
+                            <form action="review" method="get" class="d-flex position-relative me-3" id="searchForm" autocomplete="off">
                                 <input type="hidden" name="action" value="manageReview">
                                 <!-- Giữ lại ratingFilter nếu đang filter -->
 
@@ -148,7 +148,7 @@
 
 
                             <!-- Filter Rating -->
-                            <form action="staff" method="get" class="dropdown me-3">
+                            <form action="review" method="get" class="dropdown me-3">
                                 <input type="hidden" name="action" value="manageReview">
                                 <!-- Giữ lại productName nếu đang search -->
 
@@ -226,7 +226,7 @@
                                                     continue;
                                                 }
                                         %>
-                                        <tr onclick="window.location.href = 'staff?action=reviewDetail&rID=<%= r.getReviewID()%>'" style="cursor: pointer;">
+                                        <tr onclick="window.location.href = 'review?action=reviewDetail&rID=<%= r.getReviewID()%>'" style="cursor: pointer;">
                                             <td>#<%= r.getReviewID()%></td>
                                             <td><%= r.getUser().getFullName()%></td>
                                             <td><%= productName%> <%= r.getVariant().getStorage()%></td>
@@ -271,7 +271,7 @@
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                             </div>
 
-                            <form action="staff" method="post">
+                            <form action="review" method="post">
                                 <input type="hidden" name="action" value="replyReview">
                                 <input type="hidden" name="reviewID" id="modalReviewID">
                                 <div class="modal-body">

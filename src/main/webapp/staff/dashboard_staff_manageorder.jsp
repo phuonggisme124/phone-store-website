@@ -37,9 +37,9 @@
             <h4 class="fw-bold text-primary">Mantis</h4>
         </div>
         <ul class="list-unstyled ps-3">
-            <li><a href="staff?action=manageProduct"><i class="bi bi-box me-2"></i>Products</a></li>
+            <li><a href="product?action=manageProduct"><i class="bi bi-box me-2"></i>Products</a></li>
             <li><a href="order?action=manageOrder" class="fw-bold text-primary"><i class="bi bi-bag me-2"></i>Orders</a></li>
-            <li><a href="staff?action=manageReview"><i class="bi bi-chat-left-text me-2"></i>Reviews</a></li>
+            <li><a href="review?action=manageReview"><i class="bi bi-chat-left-text me-2"></i>Reviews</a></li>
         </ul>
     </nav>
 
@@ -95,7 +95,7 @@
 
         <div class="container-fluid p-4">
 
-            <!-- in thông báo -->
+            <!-- Messages -->
             <%
                 String message = (String) session.getAttribute("message");
                 if (message != null) {
@@ -165,7 +165,7 @@
                                     }
                                 }
                             %>
-                            <tr>
+                            <tr style="cursor: pointer;" onclick="viewOrderDetail(<%= o.getOrderID()%>, <%= o.getIsInstalment() != null && o.getIsInstalment() %>)">
                                 <td>#<%= o.getOrderID()%></td>
                                 <td>
                                     <% if (o.getBuyer() != null) { %>
@@ -185,29 +185,22 @@
                                 <td><%= currencyFormatter.format(o.getTotalAmount())%></td>
                                 <td><%= o.getOrderDate()%></td>
                                 <td><span class="<%= badgeClass%> fs-6 px-3 py-2"><%= status%></span></td>
-                                <td>
+                                <td onclick="event.stopPropagation();">
                                     <%
-                                        // Logic hiển thị nút/shipper
                                         boolean isPending = status != null && "pending".equalsIgnoreCase(status.trim());
                                         boolean hasShipper = o.getShippers() != null;
                                         boolean isCancelled = status != null && "cancelled".equalsIgnoreCase(status.trim());
                                     %>
                                     
                                     <% if (isPending) { %>
-                                        <!-- pending cho 2 nút -->
                                         <button class="btn btn-sm btn-outline-primary me-1" onclick="openAssignModal(<%= o.getOrderID()%>)">
                                             <i class="bi bi-truck"></i> Assign
                                         </button>
-                                        <button class="btn btn-sm btn-outline-danger" onclick="openCancelModal(<%= o.getOrderID()%>)">
-                                            <i class="bi bi-x-circle"></i> Cancel
-                                        </button>
                                         
                                     <% } else if (isCancelled && !hasShipper) { %>
-                                        <!-- staff cancel NA  -->
-                                        <span class="text-muted">N/A</span>
+                                        <span class="text-muted">Cancelled by Customer</span>
                                         
                                     <% } else if (hasShipper) { %>
-                                        <!-- assign shipper tên shipper -->
                                         <div class="d-flex align-items-center">
                                             <i class="bi bi-person-badge text-primary me-2"></i>
                                             <div>
@@ -234,7 +227,36 @@
             </div>
         </div>
 
-        <!-- chọn shipper -->
+        <!-- Modal: Order Detail -->
+        <div class="modal fade" id="orderDetailModal" tabindex="-1" aria-labelledby="orderDetailModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title" id="orderDetailModalLabel">
+                            <i class="bi bi-receipt me-2"></i>Order Details
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="orderDetailContent">
+                            <div class="text-center py-5">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <p class="mt-3 text-muted">Loading order details...</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="bi bi-x-lg me-1"></i>Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal: Assign Shipper -->
         <div class="modal fade" id="shipperModal" tabindex="-1">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
@@ -272,38 +294,6 @@
                 </div>
             </div>
         </div>
-        
-        <!-- cancel -->
-        <div class="modal fade" id="cancelModal" tabindex="-1">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header bg-danger text-white">
-                        <h5 class="modal-title">
-                            <i class="bi bi-exclamation-triangle-fill me-2"></i>Confirm Cancel
-                        </h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <p>Are you sure you want to cancel order <strong id="cancelOrderIDText">#</strong>?</p>
-                        <p class="text-muted small mb-0">
-                            <i class="bi bi-info-circle me-1"></i> Cannot undone.
-                        </p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                            <i class="bi bi-x-lg me-1"></i>No
-                        </button>
-                        <form action="order" method="POST" id="cancelOrderForm" class="d-inline">
-                            <input type="hidden" name="action" value="cancelOrder">
-                            <input type="hidden" name="orderID" id="cancelOrderID">
-                            <button type="submit" class="btn btn-danger">
-                                <i class="bi bi-trash me-1"></i>Cancel Order
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
 
     </div>
 </div>
@@ -312,17 +302,17 @@
 
 <script>
     var assignModal = null;
-    var cancelModal = null;
+    var orderDetailModal = null;
 
     window.onload = function () {
         var shipperModalEl = document.getElementById('shipperModal');
-        var cancelModalEl = document.getElementById('cancelModal');
+        var orderDetailModalEl = document.getElementById('orderDetailModal');
         
         if (shipperModalEl) {
             assignModal = new bootstrap.Modal(shipperModalEl);
         }
-        if (cancelModalEl) {
-            cancelModal = new bootstrap.Modal(cancelModalEl);
+        if (orderDetailModalEl) {
+            orderDetailModal = new bootstrap.Modal(orderDetailModalEl);
         }
     };
 
@@ -330,16 +320,57 @@
         document.getElementById("modalOrderID").value = orderID;
         if (assignModal) assignModal.show();
     }
-    
-    function openCancelModal(orderID) {
-        document.getElementById("cancelOrderID").value = orderID;
-        document.getElementById("cancelOrderIDText").innerText = "#" + orderID;
-        if (cancelModal) cancelModal.show();
-    }
 
     function submitAssignForm(shipperID) {
         document.getElementById("modalShipperID").value = shipperID;
         document.getElementById("assignShipperForm").submit();
+    }
+
+    // View Order Detail
+    function viewOrderDetail(orderID, isInstalment) {
+        if (orderDetailModal) {
+            orderDetailModal.show();
+        }
+        
+        // Fetch order details via AJAX
+        fetch('order?action=orderDetail&id=' + orderID + '&isIntalment=' + isInstalment)
+            .then(response => response.text())
+            .then(html => {
+                // Extract only the content we need (tables)
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                
+                let content = '<div class="container-fluid">';
+                
+                // Get products table
+                const productsCard = doc.querySelector('.card');
+                if (productsCard) {
+                    content += '<div class="mb-4">';
+                    content += '<h5 class="fw-bold text-secondary mb-3"><i class="bi bi-cart-check me-2"></i>Products in Order</h5>';
+                    content += productsCard.querySelector('.table-responsive, table').outerHTML;
+                    content += '</div>';
+                }
+                
+                // Get payment schedule if exists
+                const allCards = doc.querySelectorAll('.card');
+                if (allCards.length > 1) {
+                    content += '<div class="mb-4">';
+                    content += '<h5 class="fw-bold text-secondary mb-3"><i class="bi bi-calendar-check me-2"></i>Payment Schedule</h5>';
+                    content += allCards[1].querySelector('.table-responsive, table').outerHTML;
+                    content += '</div>';
+                }
+                
+                content += '</div>';
+                
+                document.getElementById('orderDetailContent').innerHTML = content;
+            })
+            .catch(error => {
+                console.error('Error loading order details:', error);
+                document.getElementById('orderDetailContent').innerHTML = 
+                    '<div class="alert alert-danger m-3">' +
+                    '<i class="bi bi-exclamation-triangle me-2"></i>Failed to load order details. Please try again.' +
+                    '</div>';
+            });
     }
 </script>
 
@@ -377,7 +408,6 @@
         }, 200);
     }
 
-    // Close suggestion box when clicking outside
     document.addEventListener('click', function(event) {
         var box = document.getElementById("suggestionBox");
         var searchInput = document.getElementById("searchPhone");

@@ -111,11 +111,7 @@
                         <input type="text" class="form-control" name="price" value="<%= String.format("%.0f", variant.getPrice())%>">
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Cost Price</label>
-                        <input type="text" class="form-control" name="cost" value="<%= String.format("%.0f", profit.getCostPrice())%>">
-                        <input type="hidden" class="form-control" name="oldCost" value="<%= String.format("%.0f", profit.getCostPrice())%>">
-                    </div>
+
 
                     <div class="mb-3">
 
@@ -146,7 +142,14 @@
                     <input type="hidden" name="imagesToDelete" id="imagesToDelete" value="">
 
                     <div id="image-preview-container" class="image-preview-container d-flex flex-wrap gap-2 mb-3 options-row">
-                        <input type="hidden" name="images" value="<%= variant.getImageUrl()%>">
+<!--                        <input type="hidden" name="images" value="<%= variant.getImageUrl()%>">-->
+                        <%
+                            String imageUrl = variant.getImageUrl();
+                            if (imageUrl == null) {
+                                imageUrl = ""; // Chuyển giá trị null thành chuỗi rỗng
+                            }
+                        %>
+                        <input type="hidden" name="images" value="<%= imageUrl%>">
                         <%
                             boolean hasExistingImages = (existingImages != null && existingImages.length > 0); // Dâu sửa lại check này một chút
                             if (hasExistingImages) {

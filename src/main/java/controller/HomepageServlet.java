@@ -27,6 +27,7 @@ public class HomepageServlet extends HttpServlet {
         PromotionsDAO pmtdao = new PromotionsDAO();
         
         pmtdao.updateAllStatus();
+        vdao.updateDiscountPrice();
         
 
         // ====== KIỂM TRA ROLE ======

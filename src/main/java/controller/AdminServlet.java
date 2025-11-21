@@ -4,6 +4,7 @@
  */
 package controller;
 
+import com.google.gson.Gson;
 import dao.CategoryDAO;
 import dao.OrderDAO;
 import dao.PaymentsDAO;
@@ -130,8 +131,6 @@ public class AdminServlet extends HttpServlet {
             List<Users> listUser = udao.getAllUsers();
             List<Double> monthlyIncome = pfdao.getAllIncomeOfYear(yearSelect);
             List<Integer> monthlyOrder = pfdao.getAllOrderOfYear(yearSelect);
-            System.out.println("tháng đang truy vấn: " + monthSelect);
-            System.out.println("tháng gui về: " + monthSelectStr);
             int importOfMonth = pfdao.getImportByMonthAndYear(monthSelect, yearSelect);
             int soldOfMonth = pfdao.getSoldByMonthAndYear(monthSelect, yearSelect);
             double revenueTargetOfMonth = pfdao.getRevenueTargetByMonthAndYear(monthSelect, yearSelect);
@@ -172,6 +171,32 @@ public class AdminServlet extends HttpServlet {
             request.setAttribute("listSupplier", listSupplier);
             // 3. Chuyển hướng đến trang tạo mới
             request.getRequestDispatcher("admin/admin_manageproduct_create.jsp").forward(request, response);
+        } else if (action.equals("checkVariant")) {
+            try {
+                int productID = Integer.parseInt(request.getParameter("productID"));
+                String storage = request.getParameter("storage").trim().toUpperCase();
+                String color = request.getParameter("color").trim().toUpperCase();
+  
+                Variants v = vdao.getVariantByProductStorageColor(productID, storage, color);
+
+                // Tạo đối tượng JSON đơn giản
+                String jsonResponse;
+                if (v != null) {
+                    jsonResponse = "{\"exists\": true}";
+                } else {
+                    jsonResponse = "{\"exists\": false}";
+                }
+
+                // Trả JSON về cho JavaScript
+                response.setContentType("application/json");
+                response.setCharacterEncoding("UTF-8");
+                response.getWriter().write(jsonResponse);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                response.getWriter().write("{\"error\": \"Lỗi server\"}");
+            }
         }
 
     }
@@ -195,7 +220,6 @@ public class AdminServlet extends HttpServlet {
         VariantsDAO vdao = new VariantsDAO();
         PromotionsDAO pmtdao = new PromotionsDAO();
         ReviewDAO rdao = new ReviewDAO();
-        
 
     }
 

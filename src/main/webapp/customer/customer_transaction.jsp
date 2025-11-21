@@ -77,7 +77,8 @@
                 </form>
                 <div class="timeline-list">
                     <% if (oList != null && !oList.isEmpty()) { %>
-                    <% for (Order o : oList) {%>
+                    <<% for (int i = oList.size() - 1; i >= 0; i--) {
+                            Order o = oList.get(i);%>
                     <div class="timeline-item">
                         <div class="transaction-card">
                             <div class="card-header">
