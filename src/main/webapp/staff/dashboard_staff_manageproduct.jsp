@@ -151,7 +151,11 @@
                                     // Lọc theo Brand nếu không phải "All"
                                     if (!currentBrand.equals("All") && !p.getBrand().equals(currentBrand)) continue;
                                 %>
+<<<<<<< HEAD
                                 <tr onclick="window.location.href='staff?action=productDetail&id=<%= p.getProductID()%>'" style="cursor: pointer;">
+=======
+                                <tr onclick="window.location.href='product?action=productDetail&id=<%= p.getProductID()%>'" style="cursor: pointer;">
+>>>>>>> 085e962 (push new version)
                                     <td>#<%= p.getProductID() %></td>
                                     <td>
                                         <% for (Category ct : listCategory) {

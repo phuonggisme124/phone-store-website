@@ -288,8 +288,20 @@
                                             style="cursor: pointer;">
                                             <td><span class="badge bg-primary">#<%= v.getVariantID()%></span></td>
                                             <td><strong><%= nameProduct%></strong></td>
+<<<<<<< HEAD
                                             <td>
                                                 <span class="badge" style="background-color: <%= v.getColor().toLowerCase()%>; color: white;">
+=======
+                                            <%
+                                             String textColor = "white";
+                                             if (v.getColor().equalsIgnoreCase("white") ) {
+                                                    textColor ="black";
+                                                }
+                                            
+                                            %>
+                                            <td>
+                                                <span class="badge" style="background-color: <%= v.getColor().toLowerCase()%>;  color: <%= textColor %>;">
+>>>>>>> 085e962 (push new version)
                                                     <%= v.getColor()%>
                                                 </span>
                                             </td>

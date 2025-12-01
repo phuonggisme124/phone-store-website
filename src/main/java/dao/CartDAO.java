@@ -103,7 +103,7 @@ public class CartDAO extends DBContext {
 
     }
 
-    public boolean isAddedInCart(int userID, int variantID) {
+    public boolean isAddedInCart(int userID, int variantID, int change) {
         String sql = "SELECT * FROM Carts WHERE Carts.UserID = ? AND Carts.VariantID = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             // Bind parameters to the SQL statement
@@ -112,7 +112,7 @@ public class CartDAO extends DBContext {
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 int quantity = rs.getInt("Quantity");
-                this.updateQuantityExistedItemInCart(userID, variantID, quantity);
+                this.updateQuantityExistedItemInCart(userID, variantID, quantity, change);
                 return true;
             }
 
@@ -124,10 +124,10 @@ public class CartDAO extends DBContext {
 
     }
 
-    public void updateQuantityExistedItemInCart(int cartID, int variantID, int quantity) {
+    public void updateQuantityExistedItemInCart(int cartID, int variantID, int quantity, int change) {
         String sql = "UPDATE Carts SET Quantity = ? WHERE UserID = ? AND VariantID = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, quantity + 1);
+            stmt.setInt(1, quantity + change);
             stmt.setInt(2, cartID);
             stmt.setInt(3, variantID);
             stmt.executeUpdate();
