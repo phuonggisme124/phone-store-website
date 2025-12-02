@@ -412,21 +412,34 @@ public class UsersDAO extends DBContext {
     public void createRole(int newUserID, int role) {
         String sql = null;
         if (role == 2) {
-            sql = "INSERT INTO Staffs (StaffID) VALUES (?)";
-        } else if (role == 3) {
-            sql = "INSERT INTO Shippers (ShipperID) VALUES (?)";
-        } else if (role == 1) {
-            sql = "INSERT INTO Customers (CustomerID) VALUES (?)";
-        }
-
-        if (sql != null) {
+            sql = "INSERT INTO Staffs (StaffID, Rate, Experience) VALUES (?, ?, ?)";
+            double rate = 1.0;
+            int experience = 0;
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setInt(1, newUserID);
+                ps.setDouble(2, rate);
+                ps.setInt(3, experience);
                 ps.executeUpdate();
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
+
+        } else if (role == 3) {
+            sql = "INSERT INTO Shippers (ShipperID, Rate, Commision) VALUES (?, ?, ?)";
+            double rate = 1.0;
+            double commision = 1.0;
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setInt(1, newUserID);
+                ps.setDouble(2, rate);
+                ps.setDouble(3, commision);
+                ps.executeUpdate();
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        } else if (role == 1) {
+            sql = "INSERT INTO Customers (CustomerID) VALUES (?)";
         }
+
     }
 
     /**
