@@ -938,4 +938,29 @@ public class OrderDAO extends DBContext {
         return orders;
     }
 
+    
+        public boolean cancelOrderByStaff(int orderID, int staffID) {
+        String sql = "UPDATE Orders SET StaffID = ?, ShipperID = NULL, Status = 'Cancelled' "
+                + "WHERE OrderID = ? AND Status = 'Pending'";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, staffID);
+            stmt.setInt(2, orderID);
+
+            int rowsAffected = stmt.executeUpdate();
+
+            if (rowsAffected == 0) {
+                System.out.println("cancelOrderByStaff: No rows affected for OrderID: " + orderID);
+                checkOrderStatus(orderID);
+            } else {
+                System.out.println("cancelOrderByStaff: Successfully cancelled OrderID: " + orderID);
+            }
+
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            System.err.println("cancelOrderByStaff SQL Error: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

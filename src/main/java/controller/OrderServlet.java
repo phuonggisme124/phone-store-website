@@ -330,7 +330,44 @@ public class OrderServlet extends HttpServlet {
                 response.sendRedirect("order?action=manageOrder");
             }
             return;
-        } // --- UPDATE STATUS (Shipper only) ---
+        }
+        //của thịnh cấm đụng
+        // hủy đơn
+        else if ("cancelOrder".equals(action)) {
+            if (session == null) {
+                response.sendRedirect("login");
+                return;
+            }
+            Users currentUser = (Users) session.getAttribute("user");
+
+            if (currentUser == null || (currentUser.getRole() != 2 && currentUser.getRole() != 4)) {
+                response.sendRedirect("login");
+                return;
+            }
+
+            try {
+                int orderID = Integer.parseInt(request.getParameter("orderID"));
+
+                boolean cancelSuccess = dao.cancelOrderByStaff(orderID, currentUser.getUserId());
+
+                if (cancelSuccess) {
+                    session.setAttribute("message", "Order cancelled successfully!");
+                } else {
+                    session.setAttribute("error", "Cannot cancel order. Order must be Pending!");
+                }
+            } catch (NumberFormatException e) {
+                System.err.println("Error cancelling order: " + e.getMessage());
+                session.setAttribute("error", "Invalid order cancellation data.");
+            }
+
+            if (currentUser.getRole() == 4) {
+                response.sendRedirect("order?action=manageOrderAdmin");
+            } else {
+                response.sendRedirect("order?action=manageOrder");
+            }
+            return;
+        }
+// --- UPDATE STATUS (Shipper only) ---
         else if ("updateStatus".equals(action)) {
             if (session == null) {
                 response.sendRedirect("login");

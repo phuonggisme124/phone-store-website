@@ -50,38 +50,31 @@
         %>
 
         <script>
-    const allColors = <%= new Gson().toJson(allColors)%>;
-    const allStorages = <%= new Gson().toJson(allStorages)%>;
+            const allColors = <%= new Gson().toJson(allColors)%>;
+            const allStorages = <%= new Gson().toJson(allStorages)%>;
         </script>
 
         <div class="d-flex" id="wrapper">
-            <!-- Sidebar -->
             <nav class="sidebar bg-white shadow-sm border-end">
-
                 <div class="sidebar-header p-3">
                     <h4 class="fw-bold text-primary">Mantis</h4>
                 </div>
                 <ul class="list-unstyled ps-3">
-
                     <li><a href="product?action=manageProduct" class="fw-bold text-primary"><i class="bi bi-box me-2"></i>Products</a></li>
                     <li><a href="order?action=manageOrder"><i class="bi bi-bag me-2"></i>Orders</a></li>
                     <li><a href="review?action=manageReview"><i class="bi bi-chat-left-text me-2"></i>Reviews</a></li>
                 </ul>
             </nav>
 
-            <!-- Page Content -->
             <div class="page-content flex-grow-1">
-                <!-- Navbar -->
                 <nav class="navbar navbar-light bg-white shadow-sm">
                     <div class="container-fluid">
                         <button class="btn btn-outline-primary" id="menu-toggle">
                             <i class="bi bi-list"></i>
                         </button>
                         <div class="d-flex align-items-center ms-auto">
-
-
                             <!-- Search Color -->
-                            <form action="staff" method="get" class="d-flex position-relative me-3" id="searchColorForm" autocomplete="off">
+                            <form action="product" method="get" class="d-flex position-relative me-3" id="searchColorForm" autocomplete="off">
                                 <input type="hidden" name="action" value="productDetail">
                                 <input type="hidden" name="productId" value="<%= selectedProductId != null ? selectedProductId : ""%>">
                                 <input type="hidden" name="storage" value="<%= currentStorage%>">
@@ -95,9 +88,8 @@
                                      style="top: 100%; z-index: 1000;"></div>
                             </form>
 
-
-                            <!-- Filter Storage -->
-                            <form action="staff" method="get" class="dropdown me-3">
+                            <!-- filter -->
+                            <form action="product" method="get" class="dropdown me-3">
                                 <input type="hidden" name="action" value="productDetail">
                                 <input type="hidden" name="productId" value="<%= selectedProductId != null ? selectedProductId : ""%>">
                                 <input type="hidden" name="color" value="<%= currentColor%>">
@@ -108,12 +100,11 @@
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="filterDropdown">
                                     <li><button type="submit" name="storage" value="" class="dropdown-item">All Storage</button></li>
-                                        <% if (allStorages != null) {
-
-                                    for (String storage : allStorages) {%>
+                                    <% if (allStorages != null) {
+                                        for (String storage : allStorages) {%>
                                     <li><button type="submit" name="storage" value="<%= storage%>" class="dropdown-item <%= storage.equals(currentStorage) ? "active" : ""%>"><%= storage%></button></li>
                                         <% }
-                                }%>
+                                    }%>
                                 </ul>
                             </form>
 
@@ -126,8 +117,6 @@
                     </div>
                 </nav>
 
-
-                <!-- Variants Table -->
                 <div class="container-fluid p-4">
                     <div class="card shadow-sm border-0 p-4">
                         <div class="card-body p-0">
@@ -141,31 +130,30 @@
                                     </p>
                                     <% } %>
                                 </div>
-                                <a href="staff?action=manageProduct" class="btn btn-outline-secondary">
+                                <a href="product?action=manageProduct" class="btn btn-outline-secondary">
                                     <i class="bi bi-arrow-left me-2"></i>Back to Products
                                 </a>
                             </div>
 
-
-                            <!-- Active Filters Display -->
+                            <!-- filters -->
                             <% if (!currentColor.isEmpty() || !currentStorage.isEmpty()) { %>
                             <div class="ps-3 mb-3">
                                 <span class="text-muted me-2">Active Filters:</span>
                                 <% if (!currentColor.isEmpty()) {%>
                                 <span class="badge bg-primary me-2">
                                     Color: <%= currentColor%>
-                                    <a href="staff?action=productDetail&productId=<%= selectedProductId%>&storage=<%= currentStorage%>" 
+                                    <a href="product?action=productDetail&productId=<%= selectedProductId%>&storage=<%= currentStorage%>" 
                                        class="text-white ms-1" style="text-decoration: none;">×</a>
                                 </span>
                                 <% } %>
                                 <% if (!currentStorage.isEmpty()) {%>
                                 <span class="badge bg-secondary me-2">
                                     Storage: <%= currentStorage%>
-                                    <a href="staff?action=productDetail&productId=<%= selectedProductId%>&color=<%= currentColor%>" 
+                                    <a href="product?action=productDetail&productId=<%= selectedProductId%>&color=<%= currentColor%>" 
                                        class="text-white ms-1" style="text-decoration: none;">×</a>
                                 </span>
                                 <% }%>
-                                <a href="staff?action=productDetail&productId=<%= selectedProductId%>" class="btn btn-sm btn-outline-danger">
+                                <a href="product?action=productDetail&productId=<%= selectedProductId%>" class="btn btn-sm btn-outline-danger">
                                     Clear All
                                 </a>
                             </div>
@@ -183,19 +171,17 @@
                                             <th>Product Name</th>
                                             <th>Color</th>
                                             <th>Storage</th>
-
                                             <th>Price</th>
                                             <th>Discount Price</th>
                                             <th>Stock</th>
                                             <th>Description</th>
-                                            <th>ImageURL</th>
-
+                                            <th>Image</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <% for (Variants v : listVariants) {
                                                 if (v.getProductID() != selProductId) {
-                                                    continue; // chỉ show variants của product hiện tại
+                                                    continue;
                                                 }
                                                 Products matchedProduct = null;
                                                 for (Products p : listProducts) {
@@ -204,33 +190,44 @@
                                                         break;
                                                     }
                                                 }
+                                                
+                                                // màu
+                                                String textColor = "white";
+                                                if (v.getColor().equalsIgnoreCase("white")) {
+                                                    textColor = "black";
+                                                }
                                         %>
                                         <tr>
-                                            <td>#<%= v.getVariantID()%></td>
-                                            <td><%= matchedProduct != null ? matchedProduct.getName() : "Unknown"%></td>
-                                            <td><%= v.getColor()%></td>
-                                            <td><%= v.getStorage()%></td>
-                                            <td><%= String.format("$%,.0f", v.getPrice())%></td>
+                                            <td><span class="badge bg-primary">#<%= v.getVariantID()%></span></td>
+                                            <td><strong><%= matchedProduct != null ? matchedProduct.getName() : "Unknown"%></strong></td>
+                                            <td>
+                                                <span class="badge" style="background-color: <%= v.getColor().toLowerCase()%>; color: <%= textColor%>;">
+                                                    <%= v.getColor()%>
+                                                </span>
+                                            </td>
+                                            <td><i class="bi bi-device-hdd me-1"></i><%= v.getStorage()%></td>
+                                            <td><%= String.format("%,.0f", v.getPrice())%> ₫</td>
                                             <td>
                                                 <% if (v.getDiscountPrice() != null) {%>
-                                                <%= String.format("$%,.0f", v.getDiscountPrice())%>
+                                                <strong><%= String.format("%,.0f", v.getDiscountPrice())%> ₫</strong>
                                                 <% } else { %>
                                                 <span class="text-muted">N/A</span>
                                                 <% } %>
                                             </td>
                                             <td>
-                                                <% if (v.getStock() > 0) {%>
-                                                <span class="badge bg-success"><%= v.getStock()%></span>
-
+                                                <% if (v.getStock() > 10) {%>
+                                                <span class="badge bg-success"><%= v.getStock()%> units</span>
+                                                <% } else if (v.getStock() > 0) {%>
+                                                <span class="badge bg-warning text-dark"><%= v.getStock()%> units</span>
                                                 <% } else { %>
                                                 <span class="badge bg-danger">Out of Stock</span>
                                                 <% }%>
                                             </td>
-
                                             <td><%= v.getDescription() != null ? (v.getDescription().length() > 50 ? v.getDescription().substring(0, 50) + "..." : v.getDescription()) : "N/A"%></td>
                                             <td>
                                                 <% if (v.getImageUrl() != null && !v.getImageUrl().isEmpty()) {%>
-                                                <img src="<%= v.getImageUrl()%>" alt="Product" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
+                                                <img src="images/<%= v.getImageList()[0] %>" alt="Product" 
+                                                     style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
                                                 <% } else { %>
                                                 <span class="text-muted">No image</span>
                                                 <% } %>
@@ -255,6 +252,11 @@
         <script src="js/dashboard.js"></script>
 
         <script>
+            //thu menu
+            document.getElementById("menu-toggle").addEventListener("click", function () {
+                document.getElementById("wrapper").classList.toggle("toggled");
+            });
+
             var debounceTimer;
             function showColorSuggestions(str) {
                 clearTimeout(debounceTimer);
@@ -298,17 +300,5 @@
                 }
             });
         </script>
-        <script>
-            document.getElementById("menu-toggle").addEventListener("click", function () {
-                document.getElementById("wrapper").classList.toggle("toggled");
-            });
-        </script>
-
-        <script>
-            document.getElementById("menu-toggle").addEventListener("click", function () {
-                document.getElementById("wrapper").classList.toggle("toggled");
-            });
-        </script>
     </body>
 </html>
-
