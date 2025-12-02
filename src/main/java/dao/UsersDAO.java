@@ -48,8 +48,7 @@ public class UsersDAO extends DBContext {
     public List<Users> getAllUsers() {
         List<Users> list = new ArrayList<>();
         String sql = "SELECT * FROM Users";
-        try (PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        try (PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 list.add(mapResultSetToUser(rs));
             }
@@ -60,7 +59,8 @@ public class UsersDAO extends DBContext {
     }
 
     /**
-     * Hash a plaintext password using MD5. Note: MD5 is weak; prefer bcrypt/Argon2 for new apps.
+     * Hash a plaintext password using MD5. Note: MD5 is weak; prefer
+     * bcrypt/Argon2 for new apps.
      */
     public String hashMD5(String pass) {
         try {
@@ -97,7 +97,8 @@ public class UsersDAO extends DBContext {
     }
 
     /**
-     * Login by email only (no password check) - useful for OAuth / session creation flows.
+     * Login by email only (no password check) - useful for OAuth / session
+     * creation flows.
      */
     public Users loginWithEmail(String email) {
         String sql = "SELECT * FROM Users WHERE Email = ?";
@@ -229,7 +230,8 @@ public class UsersDAO extends DBContext {
     }
 
     /**
-     * Retrieves all sales records with staff and shipper info in a single query.
+     * Retrieves all sales records with staff and shipper info in a single
+     * query.
      */
     public List<Sale> getAllSales() {
         List<Sale> list = new ArrayList<>();
@@ -241,8 +243,7 @@ public class UsersDAO extends DBContext {
                 + "LEFT JOIN Users staff ON s.StaffID = staff.UserID "
                 + "LEFT JOIN Users shipper ON s.ShipperID = shipper.UserID";
 
-        try (PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        try (PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 Users staff = new Users(rs.getInt("StaffID"), rs.getString("StaffName"), rs.getString("StaffPhone"));
                 Users shipper = new Users(rs.getInt("ShipperID"), rs.getString("ShipperName"), rs.getString("ShipperPhone"));
@@ -264,8 +265,7 @@ public class UsersDAO extends DBContext {
     public List<Users> getAllShippers() {
         List<Users> list = new ArrayList<>();
         String sql = "SELECT * FROM Users WHERE Role = 3";
-        try (PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        try (PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 list.add(mapResultSetToUser(rs));
             }
@@ -343,8 +343,7 @@ public class UsersDAO extends DBContext {
     public List<String> getAllBuyerPhones() {
         List<String> phones = new ArrayList<>();
         String sql = "SELECT DISTINCT u.Phone FROM Orders o JOIN Users u ON o.UserID = u.UserID WHERE u.Phone IS NOT NULL AND u.Phone <> ''";
-        try (PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        try (PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 phones.add(rs.getString("Phone"));
             }
@@ -375,8 +374,8 @@ public class UsersDAO extends DBContext {
     }
 
     /**
-     * Check if a user exists by email.
-     * Returns true if user exists, false otherwise.
+     * Check if a user exists by email. Returns true if user exists, false
+     * otherwise.
      */
     public boolean getUserByEmail(String email) {
         String sql = "SELECT * FROM Users WHERE Email = ?";
@@ -396,8 +395,7 @@ public class UsersDAO extends DBContext {
      */
     public int getMaxUserID() {
         String sql = "SELECT MAX(UserID) AS MaxUserID FROM Users";
-        try (PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        try (PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             if (rs.next()) {
                 return rs.getInt("MaxUserID");
             }
@@ -408,7 +406,8 @@ public class UsersDAO extends DBContext {
     }
 
     /**
-     * Create role-specific entry (Staffs / Shippers / Customers) for a new user.
+     * Create role-specific entry (Staffs / Shippers / Customers) for a new
+     * user.
      */
     public void createRole(int newUserID, int role) {
         String sql = null;
@@ -431,7 +430,8 @@ public class UsersDAO extends DBContext {
     }
 
     /**
-     * Update user role: insert into new role table, then delete old role record.
+     * Update user role: insert into new role table, then delete old role
+     * record.
      */
     public void updateUserByRole(int userId, int role, int oldRole) {
         // Insert into new role table
@@ -515,4 +515,30 @@ public class UsersDAO extends DBContext {
             return false;
         }
     }
+
+public void insertPhone(int userID, String phone) {
+    String sql = "UPDATE Users SET Phone = ? WHERE UserID = ?";
+    
+    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setString(1, phone);  
+        ps.setInt(2, userID);    
+        
+        ps.executeUpdate();
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+
+public void insertAddress(int userID, String address) {
+    String sql = "UPDATE Users SET Address = ? WHERE UserID = ?";
+    
+    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setString(1, address);  
+        ps.setInt(2, userID);    
+        
+        ps.executeUpdate();
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
 }

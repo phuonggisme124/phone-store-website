@@ -408,7 +408,8 @@
     <script src="js/jquery-1.11.0.min.js"></script>
     <script src="js/bootstrap.bundle.min.js"></script>
 
-    <script>
+   <script>
+
             const modal = document.getElementById("reviewModal");
             const openModalBtn = document.getElementById("openReviewModal");
             const closeBtn = document.getElementsByClassName("close-button")[0];
@@ -423,38 +424,57 @@
                     modal.style.display = "none";
             };
 
-            // Quantity Logic
-            const minusBtn = document.querySelector('.minus-btn');
-            const plusBtn = document.querySelector('.plus-btn');
-            const quantityInput = document.getElementById('quantity-display');
-            const stockError = document.getElementById('stock-error');
-            const stock = parseInt(document.querySelector('.quantity-selector').dataset.stock);
-            const hiddenInputs = document.querySelectorAll('.hiddenQuantityInput');
+         
+            document.addEventListener("DOMContentLoaded", function() {
+                const minusBtn = document.querySelector('.minus-btn');
+                const plusBtn = document.querySelector('.plus-btn');
+                const quantityInput = document.getElementById('quantity-display');
+                const stockError = document.getElementById('stock-error');
 
-            if (minusBtn && plusBtn && quantityInput) {
-                minusBtn.addEventListener('click', () => {
-                    let val = parseInt(quantityInput.value);
-                    if (val > 1) {
-                        val--;
-                        quantityInput.value = val;
-                        hiddenInputs.forEach(i => i.value = val);
-                        stockError.style.display = "none";
-                    }
-                });
+                const quantitySelector = document.querySelector('.quantity-selector');
+                const stock = quantitySelector ? parseInt(quantitySelector.dataset.stock) : 0;
 
-                plusBtn.addEventListener('click', () => {
-                    let val = parseInt(quantityInput.value);
-                    if (val < stock) {
-                        val++;
-                        quantityInput.value = val;
-                        hiddenInputs.forEach(i => i.value = val);
-                        stockError.style.display = "none";
-                    } else {
-                        stockError.style.display = "block";
-                    }
-                });
-            }
+                function updateHiddenQuantity(val) {
+                    const hiddenInputs = document.querySelectorAll('.hiddenQuantityInput');
+                    hiddenInputs.forEach(input => {
+                        input.value = val;
+                        input.setAttribute('value', val); // Cập nhật attribute HTML để chắc chắn nhận
+                    });
+                }
 
+                if (minusBtn && plusBtn && quantityInput) {
+                    quantityInput.value = 1;
+                    updateHiddenQuantity(1);
+
+                    minusBtn.addEventListener('click', () => {
+                        let val = parseInt(quantityInput.value);
+                        if (isNaN(val)) val = 1;
+                        
+                        if (val > 1) {
+                            val--;
+                            quantityInput.value = val;
+                            updateHiddenQuantity(val); // Cập nhật form ẩn
+                            if (stockError) stockError.style.display = "none";
+                        }
+                    });
+
+                    plusBtn.addEventListener('click', () => {
+                        let val = parseInt(quantityInput.value);
+                        if (isNaN(val)) val = 1;
+
+                        if (val < stock) {
+                            val++;
+                            quantityInput.value = val;
+                            updateHiddenQuantity(val); // Cập nhật form ẩn
+                            if (stockError) stockError.style.display = "none";
+                        } else {
+                            if (stockError) stockError.style.display = "block";
+                        }
+                    });
+                }
+            });
+
+            // --- PHẦN CHANGE IMAGE GIỮ NGUYÊN ---
             function changeImage(thumb) {
                 const mainImg = document.getElementById('displayedImage');
                 const allThumbs = document.querySelectorAll('.thumbnail');

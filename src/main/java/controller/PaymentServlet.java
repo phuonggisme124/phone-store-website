@@ -5,6 +5,7 @@ import dao.InterestRateDAO;
 import dao.OrderDAO;
 import dao.OrderDetailDAO;
 import dao.PaymentsDAO;
+import dao.UsersDAO;
 import dao.VariantsDAO;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
@@ -60,7 +61,6 @@ public class PaymentServlet extends HttpServlet {
                     return;
                 }
 
-                
                 cart = new Carts(userID, variant, quantity);
                 cart.setCartID(userID);
                 List<Carts> carts = new ArrayList<>();
@@ -95,7 +95,6 @@ public class PaymentServlet extends HttpServlet {
                 }
             }
 
-            // Lưu vào cartCheckout, KHÔNG ghi đè cart gốc
             session.setAttribute("cartCheckout", cartSelectedItemsList);
 
             request.getRequestDispatcher("customer/payment.jsp").forward(request, response);
@@ -182,19 +181,14 @@ public class PaymentServlet extends HttpServlet {
                 if (totalPriceStr != null && !totalPriceStr.isEmpty()) {
                     totalPrice = Double.parseDouble(totalPriceStr);
                 }
-
-                // SỬA: Lấy từ cartCheckout thay vì cart
-                // Tạo Order và LẤY OrderID được tự động sinh
                 Order o = new Order(userID, paymentMethod, specificAddress, totalPrice, "Pending", isInstalment, new Users(receiverName, receiverPhone));
-
                 int newOrderID = oDAO.addNewOrder(o);
                 o.setOrderID(newOrderID);
-                // Thêm OrderDetails với OrderID MỚI TẠO
+ 
                 OrderDetailDAO oDDAO = new OrderDetailDAO();
                 for (Carts c : carts) {
-                    // SỬA QUAN TRỌNG: Dùng newOrderID thay vì userID
                     OrderDetails oD = new OrderDetails(
-                            newOrderID, // OrderID mới tạo (VD: 156, 157, 158...)
+                            newOrderID, 
                             c.getVariant().getVariantID(),
                             c.getQuantity(),
                             c.getVariant().getDiscountPrice()
@@ -202,21 +196,30 @@ public class PaymentServlet extends HttpServlet {
                     oDDAO.insertNewOrderDetail(oD, isInstalment);
                 }
             }
-            VariantsDAO vDAO = new VariantsDAO();
             CartDAO cartDAO = new CartDAO();
             String buyFrom = (String) session.getAttribute("buyFrom");
-            
-                if (buyFrom != null && buyFrom.equalsIgnoreCase("buyNowFromCart")) {
-                    for (Carts c : carts) {
+
+            if (buyFrom != null && buyFrom.equalsIgnoreCase("buyNowFromCart")) {
+                for (Carts c : carts) {
                     cartDAO.removeCartItem(userID, c.getVariant().getVariantID());
                 }
-                    session.setAttribute("cart", carts);
-                //vDAO.decreaseQuantity(c.getVariant().getVariantID(), c.getQuantity());
+                
+                List<Carts> updatedCart = cartDAO.getItemIntoCartByUserID(userID);
+                session.setAttribute("cart", updatedCart);
+            }
+            UsersDAO uDAO  = new UsersDAO();
+            if(u.getPhone() == null || u.getPhone().isEmpty()) {      
+                uDAO.insertPhone(u.getUserId(), receiverPhone);
+                u.setPhone(receiverPhone);
+            }
+            boolean updateAddressBasedOnAPI = "true".equals(request.getParameter("updateAddressBasedOnAPI"));
+            if(u.getAddress() == null || u.getAddress().isEmpty() || updateAddressBasedOnAPI) {
+                uDAO.insertAddress(userID, specificAddress);
+                u.setAddress(specificAddress);
             }
 
-            
             session.removeAttribute("cartCheckout");
-
+            session.removeAttribute("buyFrom");
             request.getRequestDispatcher("homepage").forward(request, response);
         }
     }
