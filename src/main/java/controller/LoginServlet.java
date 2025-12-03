@@ -15,6 +15,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.net.URLDecoder;
 import java.util.List;
 import model.Carts;
 import model.Users;
@@ -30,8 +31,8 @@ public class LoginServlet extends HttpServlet {
     /**
      * Handles user logout by invalidating the current session.
      *
-     * This method is triggered when a GET request is made to /login,
-     * which is treated as a logout action in this context.
+     * This method is triggered when a GET request is made to /login, which is
+     * treated as a logout action in this context.
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -42,7 +43,12 @@ public class LoginServlet extends HttpServlet {
         if (session != null) {
             session.invalidate(); // Destroy the current session to log out the user
         }
-
+        // Lấy tham số redirect từ URL (ví dụ: login?redirect=product...)
+        String redirect = request.getParameter("redirect");
+        if (redirect != null) {
+            // Gửi nó sang trang JSP
+            request.setAttribute("redirect", redirect);
+        }
         // Redirect the user back to the login page after logout
         request.getRequestDispatcher("login.jsp").forward(request, response);
     }
@@ -50,12 +56,11 @@ public class LoginServlet extends HttpServlet {
     /**
      * Handles user login functionality.
      *
-     * Workflow:
-     * 1. Get login credentials (email & password) from the request.
-     * 2. Validate that both fields are not empty.
-     * 3. Use UsersDAO to verify user credentials.
-     * 4. If valid → create a session and redirect based on the user role.
-     * 5. If invalid → forward back to login.jsp with an error message.
+     * Workflow: 1. Get login credentials (email & password) from the request.
+     * 2. Validate that both fields are not empty. 3. Use UsersDAO to verify
+     * user credentials. 4. If valid → create a session and redirect based on
+     * the user role. 5. If invalid → forward back to login.jsp with an error
+     * message.
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -64,6 +69,7 @@ public class LoginServlet extends HttpServlet {
         // Get user input from the login form
         String email = request.getParameter("username");
         String password = request.getParameter("password");
+        String redirect = request.getParameter("redirect"); // Lấy URL redirect nếu có
 
         // Validate empty fields
         if (email == null || email.trim().isEmpty() || password == null || password.isEmpty()) {
@@ -83,6 +89,23 @@ public class LoginServlet extends HttpServlet {
             // Create a new session for the logged-in user
             HttpSession session = request.getSession();
             session.setAttribute("user", u); // Store the user object in the session
+            // Nếu có redirect URL từ productdetail.jsp, quay lại đó
+            if (u.getRole() == 1) {
+                if (redirect != null && !redirect.isEmpty()) {
+                    try {
+                        String decodedURL = URLDecoder.decode(redirect, "UTF-8");
+                        CartDAO cDAO = new CartDAO();
+                        List<Carts> carts = cDAO.getItemIntoCartByUserID(u.getUserId());
+                        session.setAttribute("cart", carts);
+                        response.sendRedirect(decodedURL);
+                        return;
+                    } catch (Exception e) {
+                        System.err.println("Error decoding redirect URL: " + e.getMessage());
+                    }
+                }
+               
+            }
+
             // Get the user's role (default to "1" if null)
             String roleValue = (u.getRole() != null) ? u.getRole().toString() : "1";
 
@@ -98,7 +121,8 @@ public class LoginServlet extends HttpServlet {
                     break;
                 case "2":
                     // Role 2: Staff → Redirect to staff page
-                    response.sendRedirect("staff");
+                   
+                    response.sendRedirect("product");
                     break;
                 case "1":
                 default:

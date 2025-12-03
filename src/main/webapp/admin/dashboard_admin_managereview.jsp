@@ -59,7 +59,8 @@
                         <div class="d-flex align-items-center ms-auto">
 
                             <!-- Search Phone -->
-                            <form action="admin" method="get" class="d-flex position-relative me-3" id="searchForm" autocomplete="off">
+                            <form action="review" method="get" class="d-flex position-relative me-3" id="searchForm" autocomplete="off">
+
                                 <input type="hidden" name="action" value="searchReview">
                                 <input type="hidden" name="rating" value="<%= rating%>">
 
@@ -83,7 +84,8 @@
 
 
                             <!-- Filter Status -->
-                            <form action="admin" method="get" class="dropdown me-3">
+                            <form action="review" method="get" class="dropdown me-3">
+
                                 <input type="hidden" name="action" value="filterReview">
                                 <!-- Giữ lại phone nếu đang search -->
                                 <input type="hidden" name="productID" value="<%= productID%>">
@@ -180,7 +182,6 @@
         <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
         <!-- Custom JS -->
-        <script src="js/dashboard.js"></script>
         <script>
                                         document.addEventListener("DOMContentLoaded", function () {
                                             // ===== LẤY DANH SÁCH SẢN PHẨM KHÔNG TRÙNG =====
@@ -268,5 +269,4 @@
             });
         </script>
     </body>
->>>>>>> Stashed changes
 </html>

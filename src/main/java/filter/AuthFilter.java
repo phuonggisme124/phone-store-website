@@ -15,6 +15,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.annotation.WebFilter;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -155,28 +156,28 @@ public class AuthFilter implements Filter {
         if (uri.startsWith(context + "/admin")) {
             // Role admin = 4
             if (role != 4) {
-                res.sendRedirect(context + "/homepage");
+                res.sendRedirect(context + "/logout");
                 return;
             }
         }
 
         if (uri.startsWith(context + "/customer")) {
             if (role != 1) {
-                res.sendRedirect(context + "/homepage");
+                res.sendRedirect(context + "/logout");
                 return;
             }
         }
 
         if (uri.startsWith(context + "/staff")) {
             if (role != 2) {
-                res.sendRedirect(context + "/homepage");
+                res.sendRedirect(context + "/logout");
                 return;
             }
         }
 
         if (uri.startsWith(context + "/shipper")) {
             if (role != 3) {
-                res.sendRedirect(context + "/homepage");
+                res.sendRedirect(context + "/logout");
                 return;
             }
         }

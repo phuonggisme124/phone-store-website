@@ -12,6 +12,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import java.util.List;
 import model.Suppliers;
 
 /**
@@ -77,6 +79,11 @@ public class SupplierServlet extends HttpServlet {
             Suppliers supplier = sldao.getSupplierByID(supplierID);
             request.setAttribute("supplier", supplier);
             request.getRequestDispatcher("admin/admin_managesupplier_edit.jsp").forward(request, response);
+        }else if(action.equals("manageSupplier")){
+            List<Suppliers> listSupplier = sldao.getAllSupplier();
+            request.setAttribute("listSupplier", listSupplier);
+
+            request.getRequestDispatcher("admin/dashboard_admin_managesupplier.jsp").forward(request, response);
         }
     }
 
@@ -91,7 +98,7 @@ public class SupplierServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+        HttpSession session = request.getSession();
         SupplierDAO sldao = new SupplierDAO();
         String action = request.getParameter("action");
         if (action == null) {
@@ -109,7 +116,9 @@ public class SupplierServlet extends HttpServlet {
             String address = request.getParameter("address");
 
             sldao.createSupplier(name, phone, email, address);
-            response.sendRedirect("admin?action=manageSupplier");
+            session.setAttribute("successCreateSupplier", name + " create successfully!");
+            
+            response.sendRedirect("supplier?action=manageSupplier");
         }else if (action.equals("updateSupplier")) {
             int sID = Integer.parseInt(request.getParameter("sID"));
             String name = request.getParameter("name");
@@ -118,13 +127,14 @@ public class SupplierServlet extends HttpServlet {
             String address = request.getParameter("address");
 
             sldao.updateSupplier(sID, name, phone, email, address);
-
-            response.sendRedirect("admin?action=manageSupplier");
+            session.setAttribute("successUpdateSupplier", name + " update successfully!");
+            response.sendRedirect("supplier?action=manageSupplier");
         }else if (action.equals("deleteSupplier")) {
             int sID = Integer.parseInt(request.getParameter("sID"));
-
+            Suppliers supplier = sldao.getSupplierByID(sID);
             sldao.deleteSupplier(sID);
-            response.sendRedirect("admin?action=manageSupplier");
+            session.setAttribute("successDeleteSupplier", supplier.getName() + " delete successfully!");
+            response.sendRedirect("supplier?action=manageSupplier");
         }
         
     }

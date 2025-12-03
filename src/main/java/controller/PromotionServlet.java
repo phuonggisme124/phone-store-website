@@ -15,6 +15,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -98,6 +99,15 @@ public class PromotionServlet extends HttpServlet {
             request.setAttribute("product", product);
 
             request.getRequestDispatcher("admin/admin_managepromotion_edit.jsp").forward(request, response);
+        } else if (action.equals("managePromotion")) {
+            pmtdao.updateAllStatus();
+            List<Products> listProducts = pdao.getAllProduct();
+            List<Promotions> listPromotions = pmtdao.getAllPromotion();
+
+            request.setAttribute("listProducts", listProducts);
+            request.setAttribute("listPromotions", listPromotions);
+
+            request.getRequestDispatcher("admin/dashboard_admin_managepromotion.jsp").forward(request, response);
         }
     }
 
@@ -113,7 +123,7 @@ public class PromotionServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         DateTimeFormatter formatDate = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-
+        HttpSession session = request.getSession();
         LocalDateTime today = LocalDate.now().atStartOfDay();
         ProfitDAO pfdao = new ProfitDAO();
         ProductDAO pdao = new ProductDAO();
@@ -158,8 +168,8 @@ public class PromotionServlet extends HttpServlet {
             for (Variants v : listVariant) {
                 pfdao.updateSellPriceByVariantID(v.getVariantID());
             }
-
-            response.sendRedirect("admin?action=managePromotion");
+            session.setAttribute("successCreatePromotion", pdao.getProductByID(pID).getName() + " created promotion successfully!");
+            response.sendRedirect("promotion?action=managePromotion");
         } else if (action.equals("updatePromotion")) {
             int pmtID = Integer.parseInt(request.getParameter("pmtID"));
             int pID = Integer.parseInt(request.getParameter("pID"));
@@ -177,7 +187,8 @@ public class PromotionServlet extends HttpServlet {
             for (Variants v : listVariant) {
                 pfdao.updateSellPriceByVariantID(v.getVariantID());
             }
-            response.sendRedirect("admin?action=managePromotion");
+            session.setAttribute("successUpdatePromotion", pdao.getProductByID(pID).getName() + " updated promotion successfully!");
+            response.sendRedirect("promotion?action=managePromotion");
         } else if (action.equals("deletePromotion")) {
             int pmtID = Integer.parseInt(request.getParameter("pmtID"));
             Promotions promotion = pmtdao.getPromotionByID(pmtID);
@@ -187,7 +198,8 @@ public class PromotionServlet extends HttpServlet {
             for (Variants v : listVariant) {
                 pfdao.updateSellPriceByVariantID(v.getVariantID());
             }
-            response.sendRedirect("admin?action=managePromotion");
+            session.setAttribute("successDeletePromotion", pdao.getProductByID(promotion.getProductID()).getName() + " deleted promotion successfully!");
+            response.sendRedirect("promotion?action=managePromotion");
         }
     }
 

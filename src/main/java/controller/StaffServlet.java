@@ -40,7 +40,7 @@ public class StaffServlet extends HttpServlet {
         SupplierDAO sldao = new SupplierDAO();
         CategoryDAO ctdao = new CategoryDAO();
         VariantsDAO vdao = new VariantsDAO();
-        SalesDAO sdao = new SalesDAO();
+        //đã xóa bản sales SalesDAO sdao = new SalesDAO();
         ReviewDAO rdao = new ReviewDAO();
 
         if (action == null) {
@@ -94,8 +94,8 @@ public class StaffServlet extends HttpServlet {
                 int orderID = Integer.parseInt(request.getParameter("orderID"));
                 int shipperID = Integer.parseInt(request.getParameter("shipperID"));
 
-                sdao.assignShipperForOrder(orderID, currentUser.getUserId(), shipperID);
-                odao.updateOrderStatus(orderID, "In Transit");
+//                sdao.assignShipperForOrder(orderID, currentUser.getUserId(), shipperID);
+//                odao.updateOrderStatus(orderID, "In Transit");
             } catch (NumberFormatException e) {
                 System.err.println("Lỗi khi gán Shipper: " + e.getMessage());
             }
@@ -205,44 +205,20 @@ public class StaffServlet extends HttpServlet {
             try {
                 int reviewID = Integer.parseInt(request.getParameter("reviewID"));
                 String reply = request.getParameter("reply");
-                
-                // Kiểm tra xem có phải là update hay reply mới
-                Review existingReview = reviewDAO.getReviewByID(reviewID);
-                boolean isUpdate = (existingReview != null && existingReview.getReply() != null && !existingReview.getReply().isEmpty());
-                
                 reviewDAO.replyToReview(reviewID, reply);
-                
-                // Redirect với success parameter tương ứng
-                if (isUpdate) {
-                    response.sendRedirect("staff?action=manageReview&success=update");
-                } else {
-                    response.sendRedirect("staff?action=manageReview&success=reply");
-                }
+                response.sendRedirect("staff?action=manageReview");
             } catch (Exception e) {
                 e.printStackTrace();
                 response.sendRedirect("error.jsp");
             }
         } else if (action.equals("replyReview")) {
-            try {
-                int rID = Integer.parseInt(request.getParameter("rID"));
-                String reply = request.getParameter("reply");
+            int rID = Integer.parseInt(request.getParameter("rID"));
 
-                // Kiểm tra xem có phải là update hay reply mới
-                Review existingReview = reviewDAO.getReviewByID(rID);
-                boolean isUpdate = (existingReview != null && existingReview.getReply() != null && !existingReview.getReply().isEmpty());
+            String reply = request.getParameter("reply");
 
-                reviewDAO.updateReview(rID, reply);
-                
-                // Redirect với success parameter tương ứng
-                if (isUpdate) {
-                    response.sendRedirect("staff?action=manageReview&success=update");
-                } else {
-                    response.sendRedirect("staff?action=manageReview&success=reply");
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                response.sendRedirect("error.jsp");
-            }
+            reviewDAO.updateReview(rID, reply);
+            response.sendRedirect("staff?action=manageReview");
+
         }
     }
 

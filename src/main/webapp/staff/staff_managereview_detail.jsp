@@ -312,6 +312,7 @@
                 padding-bottom: 15px;
             }
         </style>
+>>>>>>> origin/main
     </head>
     <body>
         <%
@@ -321,6 +322,7 @@
         %>
 
         <div class="d-flex" id="wrapper">
+
             <!-- Sidebar -->
             <nav class="sidebar bg-white shadow-sm border-end">
                 <div class="sidebar-header p-3">
@@ -350,7 +352,6 @@
                         </div>
                     </div>
                 </nav>
-
                 <!-- Reviews Table -->
                 <div class="container-fluid p-4">
                     <div class="card shadow-sm border-0 p-4">
@@ -414,6 +415,7 @@
                                         <p><strong>Comment:</strong></p>
                                         <p class="comment"><%= review.getComment()%></p>
 
+
                                         <form action="staff?action=replyReview" method="post">
                                             <p><strong>Reply:</strong></p>
 
@@ -425,11 +427,13 @@
 
                                             <button type="submit" class="send-btn">Send Reply</button>
                                         </form>                 
+
                                     </div>
                                 </div>
                             </div>
                             <% } else { %>
                             <div class="alert alert-info m-4" role="alert">
+
                                 <i class="bi bi-info-circle me-2"></i>No reviews available.
                             </div>
                             <% }%>

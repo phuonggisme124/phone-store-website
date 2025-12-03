@@ -507,3 +507,26 @@ input[type="radio"]:checked + .color-label {
     }
 }
 
+/* to màu dung lượng */
+.option-label {
+    display: inline-block;
+    padding: 8px 14px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    margin: 5px;
+    text-decoration: none;
+    color: #333;
+    transition: all 0.2s ease;
+}
+
+.option-label:hover {
+    border-color: #007bff;
+    color: #007bff;
+}
+
+.option-label.selected {
+    background-color: #007bff; /* xanh */
+    color: white; /* chữ trắng */
+    border-color: #007bff;
+}
+

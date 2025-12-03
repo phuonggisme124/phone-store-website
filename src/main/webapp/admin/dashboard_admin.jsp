@@ -27,7 +27,9 @@
 
 
             <!-- Page Content -->
-            <%                ProductDAO pdao = new ProductDAO();
+            <%  
+                Users user = (Users) session.getAttribute("user");
+                ProductDAO pdao = new ProductDAO();
                 VariantsDAO vdao = new VariantsDAO();
                 SupplierDAO sldao = new SupplierDAO();
                 int totalSupplier = sldao.getAllSupplier().size();
@@ -48,7 +50,8 @@
                 double percentIncome = (incomeOfMonth / incomeTargetOfMonth) * 100;
 
                 int currentYear = Calendar.getInstance().get(Calendar.YEAR);
-                int currentMonth = Calendar.getInstance().get(Calendar.MONTH);
+                int currentMonth = Calendar.getInstance().get(Calendar.MONTH) +1;
+
                 int yearSelect = (int) request.getAttribute("yearSelect");
                 int monthSelect = (int) request.getAttribute("monthSelect");
                 List<Double> monthlyIncome = (List<Double>) request.getAttribute("monthlyIncome");
@@ -69,18 +72,17 @@
                 <!-- Navbar -->
                 <nav class="navbar navbar-light bg-white shadow-sm">
                     <div class="container-fluid">
-                        <button class="btn btn-outline-primary" id="menu-toggle"><i class="bi bi-list"></i></button>
+                        <button class="btn btn-outline-primary" id="menu-toggle">
+                            <i class="bi bi-list"></i>
+                        </button>
                         <div class="d-flex align-items-center ms-auto">
-                            <div class="position-relative me-3">
-                                <a href="${pageContext.request.contextPath}/logout">logout</a>
-                            </div>
-                            <i class="bi bi-bell me-3 fs-5"></i>
-                            <div class="position-relative me-3">
-                                <i class="bi bi-github fs-5"></i>
-                            </div>
+                            <!-- Search bar in navbar -->
+                            
+
+                            <a href="logout" class="btn btn-outline-danger btn-sm me-3">Logout</a>
                             <div class="d-flex align-items-center">
                                 <img src="https://i.pravatar.cc/40" class="rounded-circle me-2" width="35">
-                                <span>Admin</span>
+                                <span><%= user.getFullName() %></span>
                             </div>
                         </div>
                     </div>
@@ -89,38 +91,36 @@
                 <!-- Main Dashboard -->
                 <div class="container-fluid p-4">
                     <div class="row g-3">
-                        <!--                        <div class="col-xl-3 col-md-6">
-                                                    <div class="card p-3 border-0 shadow-sm">
-                                                        <h6>Total Page Views</h6>
-                                                        <h3 class="fw-bold text-primary"></h3>
-                                                        <small class="text-success"><i class="bi bi-graph-up"></i> +59.3%</small>
-                                                    </div>
-                                                </div>-->
+                        
                         <div class="col-xl-3 col-md-6">
-                            <div class="card p-3 border-0 shadow-sm">
+                            <div class="card month-stat-card revenue">
                                 <h6>Total Product</h6>
-                                <h3 class="fw-bold text-primary"><%= totalProduct%></h3>
+                                <h3 class="fw-bold text-success"><%= totalProduct%></h3>
 
                             </div>
                         </div>
                         <div class="col-xl-3 col-md-6">
-                            <div class="card p-3 border-0 shadow-sm">
+                            <div class="card month-stat-card sold">
                                 <h6>Total Users</h6>
-                                <h3 class="fw-bold text-success"><%= listUser != null ? listUser.size() : ""%></h3>
+                                <h3 class="fw-bold text-warning"><%= listUser != null ? listUser.size() : ""%></h3>
 
                             </div>
                         </div>
                         <div class="col-xl-3 col-md-6">
-                            <div class="card p-3 border-0 shadow-sm">
+
+                            <div class="card month-stat-card income">
                                 <h6>Total Variant</h6>
-                                <h3 class="fw-bold text-warning"><%= totalVariant%></h3>
+                                <h3 class="fw-bold text-danger"><%= totalVariant%></h3>
+
 
                             </div>
                         </div>
                         <div class="col-xl-3 col-md-6">
-                            <div class="card p-3 border-0 shadow-sm">
+
+                            <div class="card month-stat-card cost">
                                 <h6>Total Supplier</h6>
-                                <h3 class="fw-bold text-danger"><%= totalSupplier%></h3>
+                                <h3 class="fw-bold text-primary"><%= totalSupplier%></h3>
+
 
                             </div>
                         </div>
@@ -180,25 +180,33 @@
                         <div class="col-xl-3 col-md-3">
                             <div class="card month-stat-card revenue">
                                 <h6>Total Revenue Target</h6>
-                                <h3><%= String.format("%.2f", revenueTargetOfMonth / 1000000)%> m</h3>
+
+                                <h3 class="text-success"><%= String.format("%.2f", revenueTargetOfMonth / 1000000)%> m</h3>
+
                             </div>
                         </div>
                         <div class="col-xl-3 col-md-3">
                             <div class="card month-stat-card sold">
                                 <h6>Total Products Imported</h6>
-                                <h3><%= importOfMonth%></h3>
+
+                                <h3 class="text-warning"><%= importOfMonth%></h3>
+
                             </div>
                         </div>
                         <div class="col-xl-3 col-md-5">
                             <div class="card month-stat-card income">
                                 <h6>Income Target</h6>
-                                <h3><%= String.format("%.2f", incomeTargetOfMonth / 1000000)%> m</h3>
+
+                                <h3 class="text-danger"><%= String.format("%.2f", incomeTargetOfMonth / 1000000)%> m</h3>
+
                             </div>
                         </div>
                         <div class="col-xl-3 col-md-5">
                             <div class="card month-stat-card cost">
                                 <h6>Total Purchase Cost</h6>
-                                <h3><%= String.format("%.2f", costOfMonth / 1000000)%> m</h3>
+
+                                <h3 class="text-primary"><%= String.format("%.2f", costOfMonth / 1000000)%> m</h3>
+
                             </div>
                         </div>
                     </div>
@@ -211,7 +219,9 @@
                         <div class="col-xl-3 col-md-6">
                             <div class="card month-stat-card revenue">
                                 <h6>Total Revenue</h6>
-                                <h3><%= String.format("%.2f", revenueOfMonth / 1000000)%> m</h3>
+
+                                <h3 class="text-success"><%= String.format("%.2f", revenueOfMonth / 1000000)%> m</h3>
+
                                 <div class="progress">
                                     <div class="progress-bar bg-success" role="progressbar"
                                          style="width: <%= percentRevenue%>%;" 
@@ -223,7 +233,9 @@
                         <div class="col-xl-3 col-md-6">
                             <div class="card month-stat-card sold">
                                 <h6>Sold Products</h6>
-                                <h3><%= soldOfMonth%></h3>
+
+                                <h3 class="text-warning"><%= soldOfMonth%></h3>
+
                                 <div class="progress">
                                     <div class="progress-bar bg-warning" role="progressbar"
                                          style="width: <%= percentSold%>%;" 
@@ -235,7 +247,8 @@
                         <div class="col-xl-3 col-md-6">
                             <div class="card month-stat-card income">
                                 <h6>Income</h6>
-                                <h3><%= String.format("%.2f", incomeOfMonth / 1000000)%> m</h3>
+                                <h3 class="text-danger"><%= String.format("%.2f", incomeOfMonth / 1000000)%> m</h3>
+
                                 <div class="progress">
                                     <div class="progress-bar bg-danger" role="progressbar"
                                          style="width: <%= percentIncome%>%;" 

@@ -398,11 +398,6 @@
                                             </tr>
                                         </tbody>
                                     </table>
-
-<<<<<<< HEAD
-                                    <div class="mt-4">
-                                        <a href="user?action=edit" class="btn btn-primary px-4 me-2">Chỉnh sửa thông tin</a>
-=======
                                     <div class="mt-4 d-flex gap-3">
                                         <a href="user?action=edit" class="btn btn-primary">
                                             <i class="fas fa-edit"></i> Edit Profile
@@ -410,7 +405,6 @@
                                         <a href="logout" class="btn btn-outline-danger">
                                             <i class="fas fa-sign-out-alt"></i> Logout
                                         </a>
->>>>>>> a00e84feffbb0886aeae7175af3a19e816cf2043
                                     </div>
                                 </div>
                             </div>

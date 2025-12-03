@@ -21,7 +21,8 @@
 
         <!-- Custom CSS -->
         <link rel="stylesheet" href="css/dashboard_admin.css">
-        <link rel="stylesheet" href="css/review_detail.css">
+        <link rel="stylesheet" href="css/dashboard_admin_managereview.css">
+
         <link href="css/dashboard_table.css" rel="stylesheet">
     </head>
     <body>
@@ -58,52 +59,43 @@
                 <div class="container-fluid p-4">
                     <input type="text" class="form-control w-25" placeholder="🔍 Search">
                 </div>
-                <%
-                    ProductDAO pdao = new ProductDAO();
+                <%                    ProductDAO pdao = new ProductDAO();
+
                     ReviewDAO rdao = new ReviewDAO();
                     Review review = (Review) request.getAttribute("review");
                     List<String> listImage = rdao.getImages(review.getImage());
                 %>
                 <!-- Table -->
                 <div class="review-container">
-                    <!-- Left: Product Image -->
+
+                    <!-- Left: Product Info & Images -->
+
                     <%
                         if (listImage != null && !listImage.isEmpty()) {
                     %>
                     <div class="review-left">
-                        <h3 class="product-name"><%= pdao.getNameByID(review.getVariant().getProductID())%> <%= review.getVariant().getStorage()%></h3>
-
-                        <!-- Radio buttons (ẩn) -->
-                        <%
-                            for (int i = 1; i <= listImage.size(); i++) {
-                        %>
-                        <input type="radio" name="thumb" id="img<%= i%>" <%= (i == 1) ? "checked" : ""%>>
-                        <%
-                            }
-                        %>
-
-
-                        <!-- Ảnh chính -->            
-                        <div class="main-image">
-                            <%
-                                for (int i = 1; i <= listImage.size(); i++) {
-                            %>
-                            <img src="images_review/<%= listImage.get(i - 1)%>" class="image img<%= i%>">
-                            <%
-                                }
-                            %>
-
+                        <div class="product-info">
+                            <h3 class="product-name">
+                                <%= pdao.getNameByID(review.getVariant().getProductID())%>
+                            </h3>
+                            <p class="product-storage"><%= review.getVariant().getStorage()%></p>
                         </div>
 
-                        <!-- Thumbnail -->
-                        <div class="thumbnail-list">
-                            <%
-                                for (int i = 1; i <= listImage.size(); i++) {
-                            %>
-                            <label for="img<%= i%>"><img src="images_review/<%= listImage.get(i - 1)%>" alt="<%= listImage.get(i - 1)%>"></label>
-                                <%
-                                    }   
-                                %>
+                        <div class="image-section">
+                            <!-- Ảnh chính -->
+                            <div class="main-image">
+                                <img id="main-img" src="images_review/<%= listImage.get(0)%>" alt="Product Image">
+                            </div>
+
+                            <!-- Ảnh phụ -->
+                            <div class="thumbnail-list">
+                                <% for (int i = 0; i < listImage.size(); i++) {%>
+                                <img class="thumb" 
+                                     src="images_review/<%= listImage.get(i)%>" 
+                                     alt="Thumbnail" 
+                                     onclick="changeImage(this)">
+                                <% } %>
+                            </div>
 
                         </div>
                     </div>
@@ -113,18 +105,23 @@
 
                     <!-- Right: Review Info -->
                     <div class="review-right">
-
-
                         <div class="review-info">
                             <p><strong>User Name:</strong> <%= review.getUser().getFullName()%></p>
-                            <p><strong>Rating:</strong> <%= review.getRating()%></p>
+
+                            <p><strong>Rating:</strong> 
+                                <span class="stars">
+                                    <% for (int s = 1; s <= 5; s++) {%>
+                                    <i class="bi <%= (s <= review.getRating()) ? "bi-star-fill" : "bi-star"%>"></i>
+                                    <% }%>
+                                </span>
+                            </p>
+
                             <p><strong>Review Date:</strong> <%= review.getReviewDate()%></p>
                             <p><strong>Comment:</strong></p>
                             <p class="comment"><%= review.getComment()%></p>
 
                             <form action="review?action=replyReview" method="post">
                                 <p><strong>Reply:</strong></p>
-
                                 <div class="reply-box">
                                     <textarea name="reply" class="reply-input" placeholder="Your reply..."><%= (review.getReply() != null) ? review.getReply() : ""%></textarea>
                                 </div>
@@ -132,13 +129,10 @@
                                 <input type="hidden" name="rID" value="<%= review.getReviewID()%>">
 
                                 <button type="submit" class="send-btn">Send Reply</button>
-                            </form>                 
+                            </form>
                         </div>
-
-
                     </div>
                 </div>
-
             </div>
 
 

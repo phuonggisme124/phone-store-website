@@ -1,3 +1,4 @@
+<%@page import="model.Profit"%>
 <%@page import="model.Suppliers"%>
 <%@page import="model.Products"%>
 <%@page import="model.Variants"%>
@@ -62,7 +63,8 @@
                 <%                    Variants variant = (Variants) request.getAttribute("variant");
                     String[] existingImages = variant.getImageList();
                     Products product = (Products) request.getAttribute("product");
-                    List<Suppliers> listSupplier = (List<Suppliers>) request.getAttribute("listSupplier");
+                    Profit profit = (Profit) request.getAttribute("profit");
+
                 %>
                 <!-- Table -->
                 <form action="variants" method="post" class="w-50 mx-auto bg-light p-4 rounded shadow" enctype="multipart/form-data">
@@ -70,9 +72,10 @@
                         <input type="hidden" class="form-control" name="vID" value="<%= variant.getVariantID()%>" readonly>
                     </div>
                     <div class="mb-3">
-                        <input type="hidden" class="form-control" name="ctID" value="<%= product.getCategoryID() %>" readonly>
+                        <input type="hidden" class="form-control" name="ctID" value="<%= product.getCategoryID()%>" readonly>
                     </div>
-                    
+
+
                     <div class="mb-3">
                         <input type="hidden" class="form-control" name="pID" value="<%= product.getProductID()%>" readonly>
                     </div>
@@ -103,11 +106,19 @@
                         }
                     %>
                     <div class="mb-3">
-                        <label class="form-label">Price</label>
+                        <label class="form-label">Sell Price</label>
+
                         <input type="text" class="form-control" name="price" value="<%= String.format("%.0f", variant.getPrice())%>">
                     </div>
 
                     <div class="mb-3">
+                        <label class="form-label">Cost Price</label>
+                        <input type="text" class="form-control" name="cost" value="<%= String.format("%.0f", profit.getCostPrice())%>">
+                        <input type="hidden" class="form-control" name="oldCost" value="<%= String.format("%.0f", profit.getCostPrice())%>">
+                    </div>
+
+                    <div class="mb-3">
+
                         <label class="form-label">Stock</label>
                         <input type="text" class="form-control" name="stock" value="<%= variant.getStock()%>">
                     </div>
@@ -182,112 +193,51 @@
 
             <!-- Custom JS -->
             <script src="js/dashboard.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
             <script>
                 document.addEventListener('DOMContentLoaded', function () {
-                    const fileInput = document.getElementById('photo-upload-input');
-                    const previewContainer = document.getElementById('image-preview-container');
-                    const noPhotoMessage = document.getElementById('no-photo-message');
-                    const imagesToDeleteInput = document.getElementById('imagesToDelete');
+                    const form = document.querySelector('form[action="variants"]');
+                    const deleteBtn = form?.querySelector('button[name="action"][value="deleteVariant"]');
 
-                    // 🧩 Cập nhật thông báo "no images"
-                    function updateNoPhotoMessage() {
-                        const totalImages = previewContainer.querySelectorAll('.image-preview-item').length;
-                        noPhotoMessage.style.display = totalImages === 0 ? 'block' : 'none';
+                    if (!deleteBtn) {
+                        console.error("Delete button not found!");
+                        return;
                     }
 
-                    // 🧩 Hiển thị preview ảnh mới
-                    // 🧩 Hiển thị preview ảnh mới (PHIÊN BẢN SỬA LỖI)
-                    function displayImagePreview(file) {
-                        if (!file.type || !file.type.startsWith('image/'))
-                            return;
+                    deleteBtn.addEventListener('click', function (event) {
+                        event.preventDefault(); // Prevent default submit
 
-                        const reader = new FileReader();
-
-                        reader.onload = function (e) {
-                            const imgURL = e.target.result; // Vẫn lấy link ảnh như cũ
-
-                            // 1. Tạo div bọc ngoài
-                            const imgWrapper = document.createElement('div');
-                            imgWrapper.classList.add('image-preview-item', 'new-image');
-
-                            // 2. Tạo thẻ <img>
-                            const img = document.createElement('img');
-                            img.src = imgURL; // <--- GÁN TRỰC TIẾP, không qua chuỗi
-                            img.className = "img-thumbnail";
-                            img.alt = "Ảnh thực tế sản phẩm";
-                            img.style.width = "100px";
-                            img.style.height = "100px";
-                            img.style.objectFit = "cover";
-
-                            // 3. Tạo thẻ <button>
-                            const button = document.createElement('button');
-                            button.type = "button";
-                            button.className = "btn btn-danger btn-sm remove-image-btn";
-                            button.innerHTML = '<i class="bi bi-x-circle-fill"></i>';
-
-                            // 4. Gắn img và button vào div bọc ngoài
-                            imgWrapper.appendChild(img);
-                            imgWrapper.appendChild(button);
-
-                            // 5. Gắn div bọc ngoài vào container
-                            previewContainer.appendChild(imgWrapper);
-                            updateNoPhotoMessage();
-                        };
-
-                        reader.readAsDataURL(file);
-                    }
-
-                    // 🧩 Render preview cho tất cả file trong input
-                    function renderImagePreviews() {
-                        // Xóa toàn bộ ảnh preview mới (nhưng KHÔNG xóa ảnh cũ từ DB)
-                        previewContainer.querySelectorAll('.image-preview-item.new-image').forEach(item => item.remove());
-
-                        // Tạo preview cho tất cả file được chọn
-                        Array.from(fileInput.files).forEach(displayImagePreview);
-                    }
-
-                    // 🧩 Khi chọn ảnh mới
-                    fileInput.addEventListener('change', function () {
-                        console.log('1. Đã chọn file!'); // LOG 1
-                        renderImagePreviews();
-                    });
-
-                    // 🧩 Khi nhấn nút "x" xóa ảnh mới
-                    previewContainer.addEventListener('click', function (e) {
-                        const removeBtn = e.target.closest('.remove-image-btn');
-                        if (!removeBtn)
-                            return;
-
-                        const item = removeBtn.closest('.image-preview-item');
-                        const allNewImages = Array.from(previewContainer.querySelectorAll('.image-preview-item.new-image'));
-                        const indexToRemove = allNewImages.indexOf(item);
-
-                        if (indexToRemove >= 0) {
-                            const dt = new DataTransfer();
-                            Array.from(fileInput.files).forEach((file, i) => {
-                                if (i !== indexToRemove)
-                                    dt.items.add(file);
-                            });
-                            fileInput.files = dt.files;
-                            renderImagePreviews();
-                        }
-                    });
-
-                    // 🧩 Khi nhấn nút "x" xóa ảnh cũ (ảnh đã có trong DB)
-                    previewContainer.addEventListener('click', function (e) {
-                        const removeExistingBtn = e.target.closest('.remove-existing-image-btn');
-                        if (!removeExistingBtn)
-                            return;
-
-                        const imageName = removeExistingBtn.dataset.imageName;
-                        if (imageName) {
-                            let currentValue = imagesToDeleteInput.value.trim();
-                            currentValue += currentValue ? "#" + imageName : imageName;
-                            imagesToDeleteInput.value = currentValue;
-                        }
-
-                        removeExistingBtn.closest('.image-preview-item').remove();
-                        updateNoPhotoMessage();
+                        Swal.fire({
+                            title: 'Are you sure you want to delete this variant?',
+                            text: 'This action cannot be undone.',
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#dc3545',
+                            cancelButtonColor: '#6c757d',
+                            confirmButtonText: 'Delete',
+                            cancelButtonText: 'Cancel',
+                            reverseButtons: true,
+                            background: '#fff',
+                            color: '#333',
+                            customClass: {
+                                popup: 'shadow-lg rounded-4 p-3',
+                                confirmButton: 'px-4 py-2 rounded-3',
+                                cancelButton: 'px-4 py-2 rounded-3'
+                            }
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // Ensure correct action is sent
+                                let actionInput = form.querySelector('input[name="action"]');
+                                if (!actionInput) {
+                                    actionInput = document.createElement('input');
+                                    actionInput.type = 'hidden';
+                                    actionInput.name = 'action';
+                                    form.appendChild(actionInput);
+                                }
+                                actionInput.value = 'deleteVariant';
+                                form.submit();
+                            }
+                        });
                     });
                 });
             </script>

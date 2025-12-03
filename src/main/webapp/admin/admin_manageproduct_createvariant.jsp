@@ -19,46 +19,66 @@
 
         <!-- Custom CSS -->
         <link rel="stylesheet" href="css/dashboard_admin.css">
-        <link rel="stylesheet" href="css/admin_review.css">
-        <link rel="stylesheet" href="css/manage_product.css">
 
         <link href="css/dashboard_table.css" rel="stylesheet">
+        <link href="css/dashboard_admin_manageproduct.css" rel="stylesheet">
+
     </head>
     <body>
         <div class="d-flex" id="wrapper">
             <!-- Sidebar -->
             <%@ include file="sidebar.jsp" %>
 
+            <%
+                Users currentUser = (Users) session.getAttribute("user");
+            %>
+
             <!-- Page Content -->
             <div class="page-content flex-grow-1">
                 <!-- Navbar -->
                 <nav class="navbar navbar-light bg-white shadow-sm">
                     <div class="container-fluid">
-                        <button class="btn btn-outline-primary" id="menu-toggle"><i class="bi bi-list"></i></button>
-                        <form class="d-none d-md-flex ms-3">
-                            <input class="form-control" type="search" placeholder="Ctrl + K" readonly>
-                        </form>
+                        <button class="btn btn-outline-primary" id="menu-toggle">
+                            <i class="bi bi-list"></i>
+                        </button>
                         <div class="d-flex align-items-center ms-auto">
-                            <div class="position-relative me-3">
-                                <a href="logout">logout</a>
-                            </div>
-                            <i class="bi bi-bell me-3 fs-5"></i>
-                            <div class="position-relative me-3">
-                                <i class="bi bi-github fs-5"></i>
-                            </div>
+                            <!-- Search bar in navbar -->
+                            <form action="admin" method="get" class="d-flex position-relative me-3" id="searchForm" autocomplete="off" style="width: 250px;">
+                                <input type="hidden" name="action" value="manageProduct">
+                               
+                                <input class="form-control me-2" type="text" id="searchProduct" name="productName"
+                                       
+                                       oninput="showSuggestions(this.value)">
+                                <button class="btn btn-outline-primary" type="submit">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                                <div id="suggestionBox" class="list-group position-absolute"
+                                     style="top: 100%; left: 0; width: 250px; z-index: 1000;"></div>
+                            </form>
+
+                            <!-- Filter Brand -->
+                            <form action="admin" method="get" class="dropdown me-3">
+                                <input type="hidden" name="action" value="manageProduct">
+                                
+
+                                <button class="btn btn-outline-secondary fw-bold dropdown-toggle"
+                                        type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-funnel"></i> Brand
+                                </button>
+                                
+                            </form>
+
+                            <a href="logout" class="btn btn-outline-danger btn-sm me-3">Logout</a>
                             <div class="d-flex align-items-center">
                                 <img src="https://i.pravatar.cc/40" class="rounded-circle me-2" width="35">
-                                <span>Admin</span>
+                                <span><%= currentUser.getFullName()%></span>
+
                             </div>
                         </div>
                     </div>
                 </nav>
 
-                <!-- Search bar -->
-                <div class="container-fluid p-4">
-                    <input type="text" class="form-control w-25" placeholder="🔍 Search">
-                </div>
-
+                <!-- Search bar -->               
 
                 <%                    int pID = (int) request.getAttribute("pID");
                     Products product = (Products) request.getAttribute("product");

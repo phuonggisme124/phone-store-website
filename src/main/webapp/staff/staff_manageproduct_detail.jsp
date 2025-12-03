@@ -22,6 +22,7 @@
                 response.sendRedirect("login.jsp");
                 return;
             }
+
             if (currentUser.getRole() != 2) {
                 response.sendRedirect("login");
                 return;
@@ -56,10 +57,12 @@
         <div class="d-flex" id="wrapper">
             <!-- Sidebar -->
             <nav class="sidebar bg-white shadow-sm border-end">
+
                 <div class="sidebar-header p-3">
                     <h4 class="fw-bold text-primary">Mantis</h4>
                 </div>
                 <ul class="list-unstyled ps-3">
+
                     <li><a href="staff?action=manageProduct" class="fw-bold text-primary"><i class="bi bi-box me-2"></i>Products</a></li>
                     <li><a href="staff?action=manageOrder"><i class="bi bi-bag me-2"></i>Orders</a></li>
                     <li><a href="staff?action=manageReview"><i class="bi bi-chat-left-text me-2"></i>Reviews</a></li>
@@ -76,6 +79,7 @@
                         </button>
                         <div class="d-flex align-items-center ms-auto">
 
+
                             <!-- Search Color -->
                             <form action="staff" method="get" class="d-flex position-relative me-3" id="searchColorForm" autocomplete="off">
                                 <input type="hidden" name="action" value="productDetail">
@@ -91,6 +95,7 @@
                                      style="top: 100%; z-index: 1000;"></div>
                             </form>
 
+
                             <!-- Filter Storage -->
                             <form action="staff" method="get" class="dropdown me-3">
                                 <input type="hidden" name="action" value="productDetail">
@@ -104,6 +109,7 @@
                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="filterDropdown">
                                     <li><button type="submit" name="storage" value="" class="dropdown-item">All Storage</button></li>
                                         <% if (allStorages != null) {
+
                                     for (String storage : allStorages) {%>
                                     <li><button type="submit" name="storage" value="<%= storage%>" class="dropdown-item <%= storage.equals(currentStorage) ? "active" : ""%>"><%= storage%></button></li>
                                         <% }
@@ -119,6 +125,7 @@
                         </div>
                     </div>
                 </nav>
+
 
                 <!-- Variants Table -->
                 <div class="container-fluid p-4">
@@ -138,6 +145,7 @@
                                     <i class="bi bi-arrow-left me-2"></i>Back to Products
                                 </a>
                             </div>
+
 
                             <!-- Active Filters Display -->
                             <% if (!currentColor.isEmpty() || !currentStorage.isEmpty()) { %>
@@ -175,11 +183,13 @@
                                             <th>Product Name</th>
                                             <th>Color</th>
                                             <th>Storage</th>
+
                                             <th>Price</th>
                                             <th>Discount Price</th>
                                             <th>Stock</th>
                                             <th>Description</th>
                                             <th>ImageURL</th>
+
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -211,10 +221,12 @@
                                             <td>
                                                 <% if (v.getStock() > 0) {%>
                                                 <span class="badge bg-success"><%= v.getStock()%></span>
+
                                                 <% } else { %>
                                                 <span class="badge bg-danger">Out of Stock</span>
                                                 <% }%>
                                             </td>
+
                                             <td><%= v.getDescription() != null ? (v.getDescription().length() > 50 ? v.getDescription().substring(0, 50) + "..." : v.getDescription()) : "N/A"%></td>
                                             <td>
                                                 <% if (v.getImageUrl() != null && !v.getImageUrl().isEmpty()) {%>
@@ -241,6 +253,7 @@
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
         <script src="js/dashboard.js"></script>
+
         <script>
             var debounceTimer;
             function showColorSuggestions(str) {
@@ -298,3 +311,4 @@
         </script>
     </body>
 </html>
+

@@ -26,36 +26,28 @@
             <!-- Sidebar -->
             <%@ include file="sidebar.jsp" %>
 
+            <%                Users currentUser = (Users) session.getAttribute("user");
+            %>
+
             <!-- Page Content -->
             <div class="page-content flex-grow-1">
                 <!-- Navbar -->
                 <nav class="navbar navbar-light bg-white shadow-sm">
                     <div class="container-fluid">
-                        <button class="btn btn-outline-primary" id="menu-toggle"><i class="bi bi-list"></i></button>
-                        <form class="d-none d-md-flex ms-3">
-                            <input class="form-control" type="search" placeholder="Ctrl + K" readonly>
-                        </form>
+                        <button class="btn btn-outline-primary" id="menu-toggle">
+                            <i class="bi bi-list"></i>
+                        </button>
                         <div class="d-flex align-items-center ms-auto">
-                            <div class="position-relative me-3">
-                                <a href="logout">logout</a>
-                            </div>
-                            <i class="bi bi-bell me-3 fs-5"></i>
-                            <div class="position-relative me-3">
-                                <i class="bi bi-github fs-5"></i>
-                            </div>
+                            <a href="logout" class="btn btn-outline-danger btn-sm me-3">Logout</a>
                             <div class="d-flex align-items-center">
                                 <img src="https://i.pravatar.cc/40" class="rounded-circle me-2" width="35">
-                                <span>Admin</span>
+                                <span><%= currentUser.getFullName()%></span>
                             </div>
                         </div>
                     </div>
                 </nav>
 
                 <!-- Search bar -->
-                <div class="container-fluid p-4">
-                    <h1 class="w-50 mx-auto bg-light p-4 rounded shadow">Create Product</h1>
-                </div>
-
 
                 <%                    Variants variant = (Variants) request.getAttribute("variant");
                     Products product = (Products) request.getAttribute("product");
@@ -63,7 +55,13 @@
                     List<Category> listCategories = (List<Category>) request.getAttribute("listCategories");
                 %>
                 <!-- Table -->
-                <form action="product" method="post" id="productForm" class="w-50 mx-auto bg-light p-4 rounded shadow">
+                <form action="product" method="post" id="productForm" class="w-50 mx-auto bg-light p-4 rounded shadow m-3">
+
+
+                    <div class="container-fluid p-4 ps-3">
+                        <h1 class="fw-bold ps-3 mb-4 fw-bold text-primary">Create Product</h1>
+                    </div>
+
                     <div class="mb-3" >
                         <%
                             if (session.getAttribute("existName") != null) {
@@ -83,7 +81,10 @@
 
                     <div class="mb-3">
                         <label class="form-label">Name</label>
-                        <input type="text" class="form-control" name="pName" value="" required>
+
+                        <input type="text" class="form-control" name="pName" id="pName" value="">
+                        <p id="productNameError" class="text-danger mt-2" style="display:none;">Please enter product name!</p>
+
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Category</label>
@@ -101,14 +102,15 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Brand</label>
-                        <input type="text" class="form-control" name="brand" value="" required>
+                        <input type="text" class="form-control" name="brand" id="brand" value="">
+                        <p id="brandError" class="text-danger mt-2" style="display:none;">Please enter product brand!</p>
                     </div>
-
                     <div class="mb-3">
                         <label class="form-label">Warranty Period</label>
-                        <input type="text" class="form-control" name="warrantyPeriod" value="" required>
-                    </div>
+                        <input type="text" class="form-control" name="warrantyPeriod" id="warrantyPeriod" value="">
+                        <p id="warrantyPeriodError" class="text-danger mt-2" style="display:none;">Please enter warranty period!</p>
 
+                    </div>
                     <div class="mb-3">
                         <label class="form-label">Supplier</label>
                         <select class="form-select" name="supplierID" id="supplierID">
@@ -125,27 +127,34 @@
                     </div>
                     <div class="mb-3" id="group-tech">
                         <label class="form-label">OS</label>
-                        <input type="text" class="form-control" name="os">
+                        <input type="text" class="form-control" name="os" id="os" value="">
+                        <p id="osError" class="text-danger mt-2" style="display:none;">Please enter operating system!</p>
                     </div>
                     <div class="mb-3" id="group-cpu">
                         <label class="form-label">CPU</label>
-                        <input type="text" class="form-control" name="cpu">
+                        <input type="text" class="form-control" name="cpu" id="cpu" value="">
+                        <p id="cpuError" class="text-danger mt-2" style="display:none;">Please enter CPU!</p>
                     </div>
                     <div class="mb-3" id="group-gpu">
                         <label class="form-label">GPU</label>
-                        <input type="text" class="form-control" name="gpu">
+                        <input type="text" class="form-control" name="gpu" id="gpu" value="">
+                        <p id="gpuError" class="text-danger mt-2" style="display:none;">Please enter GPU!</p>
                     </div>
                     <div class="mb-3" id="group-ram">
                         <label class="form-label">RAM</label>
-                        <input type="text" class="form-control" name="ram">
+                        <input type="text" class="form-control" name="ram" id="ram" value="">
+                        <p id="ramError" class="text-danger mt-2" style="display:none;">Please enter RAM!</p>
                     </div>
                     <div class="mb-3" id="group-battery">
                         <label class="form-label">Battery Capacity</label>
-                        <input type="number" class="form-control" name="batteryCapacity">
+                        <input type="number" class="form-control" name="batteryCapacity" id="batteryCapacity" value="">
+                        <p id="batteryCapacityError" class="text-danger mt-2" style="display:none;">Please enter battery capacity!</p>
                     </div>
                     <div class="mb-3" id="group-touchscreen">
                         <label class="form-label">Touchscreen</label>
-                        <input type="text" class="form-control" name="touchscreen">
+                        <input type="text" class="form-control" name="touchscreen" id="touchscreen" value=""> 
+                        <p id="touchscreenError" class="text-danger mt-2" style="display:none;">Please enter touchscreen!</p>
+
                     </div>
 
                     <div class="mb-3">
@@ -167,10 +176,31 @@
             <script src="js/create_product.js"></script>
             <script>
                 document.getElementById("productForm").addEventListener("submit", function (e) {
+
+
+
                     const category = document.getElementById("category");
                     const supplier = document.getElementById("supplierID");
+                    const productName = document.getElementById("pName");
+                    const brand = document.getElementById("brand");
+                    const warrantyPeriod = document.getElementById("warrantyPeriod");
+                    const os = document.getElementById("os");
+                    const cpu = document.getElementById("cpu");
+                    const gpu = document.getElementById("gpu");
+                    const ram = document.getElementById("ram");
+                    const batteryCapacity = document.getElementById("batteryCapacity");
+                    const touchscreen = document.getElementById("touchscreen");
+
                     const categoryError = document.getElementById("categoryError");
                     const supplierError = document.getElementById("supplierError");
+                    const productNameError = document.getElementById("productNameError");
+                    const brandError = document.getElementById("brandError");
+                    const warrantyPeriodError = document.getElementById("warrantyPeriodError");
+                    const osError = document.getElementById("osError");
+                    const cpuError = document.getElementById("cpuError");
+                    const gpuError = document.getElementById("gpuError");
+                    const ramError = document.getElementById("ramError");
+                    const touchscreenError = document.getElementById("touchscreenError");
 
                     let isValid = true;
 
@@ -194,6 +224,125 @@
                         supplier.classList.remove("is-invalid");
                     }
 
+                    //check product name
+                    if (productName.value === "") {
+                        productNameError.style.display = "block";
+                        productName.classList.add("is-invalid");
+                        isValid = false;
+                    } else {
+                        productNameError.style.display = "none";
+                        productName.classList.remove("is-invalid");
+                    }
+
+                    //check brand
+                    if (brand.value === "") {
+                        brandError.style.display = "block";
+                        brand.classList.add("is-invalid");
+                        isValid = false;
+                    } else {
+                        brandError.style.display = "none";
+                        brand.classList.remove("is-invalid");
+                    }
+
+                    //check warranty Period
+                    if (warrantyPeriod.value === "") {
+                        warrantyPeriodError.style.display = "block";
+                        warrantyPeriod.classList.add("is-invalid");
+                        isValid = false;
+                    } else {
+                        warrantyPeriodError.style.display = "none";
+                        warrantyPeriod.classList.remove("is-invalid");
+                    }
+
+                    if (category.value === "1" || category.value === "3") {
+                        //check os
+                        if (os.value === "") {
+                            osError.style.display = "block";
+                            os.classList.add("is-invalid");
+                            isValid = false;
+                        } else {
+                            osError.style.display = "none";
+                            os.classList.remove("is-invalid");
+                        }
+                        //check cpu
+                        if (cpu.value === "") {
+                            cpuError.style.display = "block";
+                            cpu.classList.add("is-invalid");
+                            isValid = false;
+                        } else {
+                            cpuError.style.display = "none";
+                            cpu.classList.remove("is-invalid");
+                        }
+
+                        //check gpu
+                        if (gpu.value === "") {
+                            gpuError.style.display = "block";
+                            gpu.classList.add("is-invalid");
+                            isValid = false;
+                        } else {
+                            gpuError.style.display = "none";
+                            gpu.classList.remove("is-invalid");
+                        }
+
+                        //check ram
+                        if (ram.value === "") {
+                            ramError.style.display = "block";
+                            ram.classList.add("is-invalid");
+                            isValid = false;
+                        } else {
+                            ramError.style.display = "none";
+                            ram.classList.remove("is-invalid");
+                        }
+                        
+                        //check battery Capacity
+                        if (batteryCapacity.value === "") {
+                            batteryCapacityError.style.display = "block";
+                            batteryCapacity.classList.add("is-invalid");
+                            isValid = false;
+                        } else {
+                            batteryCapacityError.style.display = "none";
+                            batteryCapacity.classList.remove("is-invalid");
+                        }
+                        
+                        //check touchscreen
+                        if (touchscreen.value === "") {
+                            touchscreenError.style.display = "block";
+                            touchscreen.classList.add("is-invalid");
+                            isValid = false;
+                        } else {
+                            touchscreenError.style.display = "none";
+                            touchscreen.classList.remove("is-invalid");
+                        }
+                    }else if (category.value === "2"){
+                        //check gpu
+                        if (gpu.value === "") {
+                            gpuError.style.display = "block";
+                            gpu.classList.add("is-invalid");
+                            isValid = false;
+                        } else {
+                            gpuError.style.display = "none";
+                            gpu.classList.remove("is-invalid");
+                        }
+                        //check battery Capacity
+                        if (batteryCapacity.value === "") {
+                            batteryCapacityError.style.display = "block";
+                            batteryCapacity.classList.add("is-invalid");
+                            isValid = false;
+                        } else {
+                            batteryCapacityError.style.display = "none";
+                            batteryCapacity.classList.remove("is-invalid");
+                        }
+                        //check touchscreen
+                        if (touchscreen.value === "") {
+                            touchscreenError.style.display = "block";
+                            touchscreen.classList.add("is-invalid");
+                            isValid = false;
+                        } else {
+                            touchscreenError.style.display = "none";
+                            touchscreen.classList.remove("is-invalid");
+                        }
+                    }
+
                     // Nếu có lỗi thì chặn submit & cuộn tới ô lỗi đầu tiên
                     if (!isValid) {
                         e.preventDefault();
@@ -214,7 +363,6 @@
                 ];
 
                 const filteredGroups = techGroups.filter(id => id !== "group-cpu" && id !== "group-tech" && id !== "group-ram");
-                
 
                 // Hàm ẩn tất cả nhóm
                 function hideAllGroups() {
@@ -244,6 +392,5 @@
                     }
                 });
             </script>
-
     </body>
 </html>

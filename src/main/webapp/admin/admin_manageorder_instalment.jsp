@@ -1,7 +1,8 @@
+<%@page import="java.time.LocalDateTime"%>
+<%@page import="java.time.format.DateTimeFormatter"%>
 <%@page import="com.google.gson.Gson"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="dao.UsersDAO"%>
-<%@page import="model.Sale"%>
 <%@page import="model.Order"%>
 <%@page import="model.Suppliers"%>
 <%@page import="model.Category"%>
@@ -13,16 +14,15 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>Admin Dashboard</title>
+        <title>Admin Dashboard - Instalment Orders</title>
 
-        <!-- Bootstrap -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-        <!-- Icons -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
-        <!-- Custom CSS -->
         <link rel="stylesheet" href="css/dashboard_admin.css">
+        <link rel="stylesheet" href="css/search.css">
+
         <link href="css/dashboard_table.css" rel="stylesheet">
     </head>
     <body>
@@ -37,28 +37,14 @@
                 status = "Filter";
             }
             List<String> listPhone = (List<String>) request.getAttribute("listPhone");
+
+            if (listPhone == null) listPhone = new ArrayList<>();
         %>
         <div class="d-flex" id="wrapper">
-            <!-- Sidebar -->
-            <nav class="sidebar bg-white shadow-sm border-end">
-                <div class="sidebar-header p-3">
-                    <h4 class="fw-bold text-primary">Mantis</h4>
-                </div>
-                <ul class="list-unstyled ps-3">
-                    <li><a href="admin" ><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
-                    <li><a href="admin?action=manageProduct"><i class="bi bi-box me-2"></i>Products</a></li>
-                    <li><a href="admin?action=manageSupplier"><i class="bi bi-truck me-2"></i>Suppliers</a></li>
-                    <li><a href="admin?action=managePromotion"><i class="bi bi-tag me-2"></i></i>Promotions</a></li>
-                    <li><a href="admin?action=manageOrder" class="active"><i class="bi bi-bag me-2"></i>Orders</a></li>
-                    <li><a href="admin?action=manageReview"><i class="bi bi-bag me-2"></i>Reviews</a></li>
-                    <li><a href="admin?action=manageUser"><i class="bi bi-people me-2"></i>Users</a></li>
-                    <li><a href="#"><i class="bi bi-gear me-2"></i>Settings</a></li>
-                </ul>
-            </nav>
+            <%@ include file="sidebar.jsp" %>
 
-            <!-- Page Content -->
             <div class="page-content flex-grow-1">
-                <!-- Navbar -->
+
                 <nav class="navbar navbar-light bg-white shadow-sm">
                     <div class="container-fluid">
                         <button class="btn btn-outline-primary" id="menu-toggle">
@@ -66,10 +52,10 @@
                         </button>
                         <div class="d-flex align-items-center ms-auto">
 
-                            <!-- Search Phone -->
-                            <form action="admin" method="get" class="d-flex position-relative me-3" id="searchForm" autocomplete="off">
-                                <input type="hidden" name="action" value="searchInstalment">
-                                <input type="hidden" name="status" value="<%= status%>">
+
+                            <form action="order" method="get" class="d-flex position-relative me-3" id="searchForm" autocomplete="off">
+                                <input type="hidden" name="action" value="searchInstalment"> <input type="hidden" name="status" value="<%= status%>">
+
                                 <div class="position-relative" style="width: 300px;">
                                     <input class="form-control" type="text" id="searchPhone" name="phone"
                                            placeholder="Search Phone Number..."
@@ -85,10 +71,10 @@
                             </form>
 
 
-                            <!-- Filter Status -->
-                            <form action="admin" method="get" class="dropdown me-3">
+
+                            <form action="order" method="get" class="dropdown me-3">
                                 <input type="hidden" name="action" value="filterInstalment">
-                                <!-- Giữ lại phone nếu đang search -->
+
                                 <input type="hidden" name="phone" value="<%= phone%>">
 
                                 <button class="btn btn-outline-secondary fw-bold dropdown-toggle" 
@@ -109,35 +95,39 @@
                             <a href="logout" class="btn btn-outline-danger btn-sm">Logout</a>
                             <div class="d-flex align-items-center ms-3">
                                 <img src="https://i.pravatar.cc/40" class="rounded-circle me-2" width="35">
-                                <span><%= user != null ? user.getFullName() : "Staff"%></span>
+
+                                <span><%= user != null ? user.getFullName() : "Admin"%></span>
+
                             </div>
                         </div>
                     </div>
                 </nav>
 
-                <!-- Search bar -->
-                
+
                 <%
                     UsersDAO udao = new UsersDAO();
-                    List<Order> listOrder = (List<Order>) request.getAttribute("listOrder");
+                    // Lấy danh sách đơn hàng (Servlet đã lọc sẵn đây là đơn trả góp)
+                    List<Order> listInstalment = (List<Order>) request.getAttribute("listOrder");
+                    
+                    // MỚI: Lấy list Staff/Shipper để hiển thị tên
+                    List<Users> listStaff = (List<Users>) request.getAttribute("listStaff");
+                    List<Users> listShippers = (List<Users>) request.getAttribute("listShippers");
+                    
+                    if(listStaff == null) listStaff = new ArrayList<>();
+                    if(listShippers == null) listShippers = new ArrayList<>();
 
-                    List<Sale> listSales = (List<Sale>) request.getAttribute("listSales");
-                    List<Order> listInstalment = new ArrayList<>();
-
-                    for (Order o : listOrder) {
-
-                        if (o.isIsInstallment() == 1) {
-                            listInstalment.add(o);
-                        }
-                    }
                 %>
 
                 <%
                     if (listInstalment != null && !listInstalment.isEmpty()) {
                 %>
-                <!-- Table -->
-                <div class="card shadow-sm border-0 p-4">
+
+                <div class="card shadow-sm border-0 p-4 m-3">
                     <div class="card-body p-0">
+                         <div class="container-fluid p-4 ps-3">
+                            <h1 class="fw-bold ps-3 mb-4 fw-bold text-primary">Instalment Orders</h1>
+                        </div>
+
                         <table class="table table-hover align-middle mb-0">
                             <thead class="table-light">
                                 <tr>
@@ -146,7 +136,6 @@
                                     <th>Receiver Phone</th>
                                     <th>Receiver Name</th>
                                     <th>Address</th>
-
                                     <th>Method</th>
                                     <th>Order Date</th>
                                     <th>Total Amount</th>
@@ -157,43 +146,62 @@
                                 </tr>
                             </thead>
 
-
-
+                            <tbody>
                             <%
                                 for (Order o : listInstalment) {
+                                    
+                                    // --- LOGIC TÌM TÊN STAFF/SHIPPER ---
+                                    String staffName = "Not Assigned";
+                                    int sID = o.getStaffID(); 
+                                    if (sID != 0) {
+                                        for (Users u : listStaff) {
+                                            if (u.getUserId() == sID) {
+                                                staffName = u.getFullName();
+                                                break;
+                                            }
+                                        }
+                                    }
 
-
+                                    String shipperName = "Not Assigned";
+                                    int shipID = o.getShipperID();
+                                    if (shipID != 0) {
+                                        for (Users u : listShippers) {
+                                            if (u.getUserId() == shipID) {
+                                                shipperName = u.getFullName();
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    // ----------------------------------
+                                    
+                                    // Format Date
+                                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+                                    String dateFormated = "";
+                                    LocalDateTime createAt = o.getOrderDate();
+                                    if (createAt != null) {
+                                        dateFormated = createAt.format(formatter);
+                                    }
                             %>
+                                <tr  onclick="window.location.href = 'order?action=orderDetail&id=<%= o.getOrderID()%>&isInstalment=true'">
+                                    <td>#<%= o.getOrderID()%></td>
 
-                            <tbody>
-                                <tr  onclick="window.location.href = 'order?action=orderDetail&id=<%= o.getOrderID()%>&isInstalment=<%= o.isIsInstallment()%>'">
-                                    <td><%= o.getOrderID()%></td>
                                     <td><%= udao.getUserByID(o.getUserID()).getFullName()%></td>
                                     <td><%= o.getBuyerPhone()%></td>
                                     <td><%= o.getBuyerName()%></td>
                                     <td><%= o.getShippingAddress()%></td>
-                                    <td><%= o.getPaymentMethod()%></td>
-                                    <td><%= o.getOrderDate()%></td>
-                                    <td><%= o.getTotalAmount()%></td>
-                                    <%
-                                        for (Sale s : listSales) {
-                                            if (o.getOrderID() == s.getOrderID()) {
-                                    %>
-                                    <td><%= s.getStaff().getFullName()%></td>   
-                                    <td><%= s.getShipper().getFullName()%></td>   
-                                    <%
-                                            }
-                                        }
-                                    %>
+                                    <td><span class="badge bg-info text-dark"><%= o.getPaymentMethod()%></span></td>
+                                    <td><%= dateFormated%></td>
+                                    <td class="fw-bold"><%= String.format("%,.0f", o.getTotalAmount())%></td>
+                                    
+                                    <td><%= staffName%></td>   
+                                    <td><%= shipperName%></td>   
 
                                     <td><%= o.getStatus()%></td>
                                 </tr>                          
-                            </tbody>
-
                             <%
-
                                 }
                             %>
+                            </tbody>
 
                         </table>
                     </div>
@@ -208,69 +216,67 @@
                     }
                 %>
             </div>
-        </div>>
+        </div>
 
-        <!-- JS Libraries -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
         <script>
+            const phoneNumbers = <%= new Gson().toJson(listPhone)%>;
+            const searchInput = document.getElementById("searchPhone");
+            const suggestionBox = document.getElementById("suggestionBox");
 
-                                    const phoneNumbers = <%= new Gson().toJson(listPhone)%>;
-                                    const searchInput = document.getElementById("searchPhone");
-                                    const suggestionBox = document.getElementById("suggestionBox");
+            // Hàm hiển thị gợi ý
+            function fetchSuggestions(query) {
+                query = query.trim().toLowerCase();
+                suggestionBox.innerHTML = "";
 
-// Hàm hiển thị gợi ý
-                                    function fetchSuggestions(query) {
-                                        query = query.trim().toLowerCase();
-                                        suggestionBox.innerHTML = "";
+                if (!query) {
+                    suggestionBox.style.display = "none";
+                    return;
+                }
 
-                                        if (!query) {
-                                            suggestionBox.style.display = "none";
-                                            return;
-                                        }
+                const matches = phoneNumbers.filter(num => num.includes(query));
 
-                                        const matches = phoneNumbers.filter(num => num.includes(query));
+                if (matches.length === 0) {
+                    suggestionBox.style.display = "none";
+                    return;
+                }
 
-                                        if (matches.length === 0) {
-                                            suggestionBox.style.display = "none";
-                                            return;
-                                        }
+                matches.forEach(num => {
+                    const item = document.createElement("button");
+                    item.type = "button";
+                    item.className = "list-group-item list-group-item-action";
+                    item.innerHTML = highlightMatch(num, query);
 
-                                        matches.forEach(num => {
-                                            const item = document.createElement("button");
-                                            item.type = "button";
-                                            item.className = "list-group-item list-group-item-action";
-                                            item.innerHTML = highlightMatch(num, query);
+                    item.addEventListener("click", () => {
+                        searchInput.value = num;
+                        suggestionBox.style.display = "none";
+                        document.getElementById("searchForm").submit();
+                    });
 
-                                            item.addEventListener("click", () => {
-                                                searchInput.value = num;
-                                                suggestionBox.style.display = "none";
-                                                document.getElementById("searchForm").submit();
-                                            });
+                    suggestionBox.appendChild(item);
+                });
 
-                                            suggestionBox.appendChild(item);
-                                        });
+                suggestionBox.style.display = "block";
+            }
 
-                                        suggestionBox.style.display = "block";
-                                    }
+            // Tô đậm phần khớp
+            function highlightMatch(text, keyword) {
+                const regex = new RegExp(`(${keyword})`, "gi");
+                return text.replace(regex, `<strong>$1</strong>`);
+            }
 
-// Tô đậm phần khớp
-                                    function highlightMatch(text, keyword) {
-                                        const regex = new RegExp(`(${keyword})`, "gi");
-                                        return text.replace(regex, `<strong>$1</strong>`);
-                                    }
-
-// Ẩn box khi click ra ngoài
-                                    document.addEventListener("click", (e) => {
-                                        if (!e.target.closest("#searchForm")) {
-                                            suggestionBox.style.display = "none";
-
-                                        }
-                                    });
-
+            // Ẩn box khi click ra ngoài
+            document.addEventListener("click", (e) => {
+                if (!e.target.closest("#searchForm")) {
+                    suggestionBox.style.display = "none";
+                }
+            });
+            
+            document.getElementById("menu-toggle").addEventListener("click", function () {
+                document.getElementById("wrapper").classList.toggle("toggled");
+            });
         </script>
-
-        <!-- Custom JS -->
-        <script src="js/dashboard.js"></script>
     </body>
 </html>
+

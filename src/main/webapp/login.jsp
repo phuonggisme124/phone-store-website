@@ -92,6 +92,17 @@
                 <div id="login-form" class="auth-form"> 
                     <h2 class="text-center mb-4">Login</h2>
                     <form action="login" method="post">
+                        <%
+                            String redirectVal = (String) request.getAttribute("redirect");
+                            if (redirectVal == null) {
+                                // Fallback: cố gắng lấy từ param nếu vào thẳng jsp
+                                redirectVal = request.getParameter("redirect");
+                            }
+                            if (redirectVal != null) {
+                        %>
+                        <input type="hidden" name="redirect" value="<%= redirectVal%>">
+                        <% } %>
+
                         <div class="mb-3">
                             <label for="u_email" class="form-label">Email</label>
                             <input type="email" class="form-control" name="username" id="u_email" required placeholder="Enter Email">
@@ -108,12 +119,9 @@
                         <% if (error != null) {%>
                         <p style="color:red; margin-top: 10px;"><%= error%></p>
                         <% }%>
-
-                        <div class="text-end mt-1">
-                            <a href="forgotPassword" style="font-size: 0.9rem; text-decoration: none;">Forgot Password?</a>
+                        <div class="text-end mt-2">
+                            <a href="forgotPassword" class="text-decoration-none" style="font-size: 0.9rem; color: #0d6efd;">Forgot password?</a>
                         </div>
-
-
                         <div class="text-center mt-4">
                             <button type="submit" class="btn btn-dark w-100">Login</button>
                         </div>
@@ -152,7 +160,7 @@
                                 <input type="password" class="form-control" name="rePassword" id="reg_repwd" required placeholder="Enter Repeat Password">
                                 <i class="bi bi-eye-slash password-icon" id="toggleRegisterRePassword"></i>
                             </div>
-                        </div>
+                        </div>                      
                         <div class="text-center mt-4">
                             <button type="submit" class="btn btn-dark w-100">Register</button>
                         </div>

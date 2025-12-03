@@ -6,6 +6,7 @@ package dao;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
@@ -82,7 +83,7 @@ public class ProfitDAO extends DBContext {
                     updateSelling(variant.getDiscountPrice(), variant.getVariantID(), profit.getCalculatedDate(), profit.getQuantity(), profit.getCostPrice(), profitID);
                 }
 
-            } 
+            }
 
         } else {
             System.out.println("khong update duoc");
@@ -225,13 +226,13 @@ public class ProfitDAO extends DBContext {
         if (yearSelect < currentYear) {
             currentMonth = 12;
         } else {
-            currentMonth = Calendar.getInstance().get(Calendar.MONTH);
+            currentMonth = Calendar.getInstance().get(Calendar.MONTH)+1;
         }
 
         for (int i = 1; i <= currentMonth; i++) {
             double cost = getCostByMonthAndYear(i, yearSelect);
             double revenue = getRevenueByMonthAndYear(i, yearSelect);
-            double income = (revenue - cost)/1000000;
+            double income = (revenue - cost) / 1000000;
             String formatted = df.format(income);
             double finalIncome = Double.parseDouble(formatted.replace(",", "."));
             System.out.println("Tháng " + i + " lợi nhận : " + income);
@@ -283,7 +284,7 @@ public class ProfitDAO extends DBContext {
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 double revenue = rs.getDouble("TotalOrderValue");
-                
+
                 return revenue;
             }
         } catch (Exception e) {
@@ -299,7 +300,7 @@ public class ProfitDAO extends DBContext {
         if (yearSelect < currentYear) {
             currentMonth = 12;
         } else {
-            currentMonth = Calendar.getInstance().get(Calendar.MONTH);
+            currentMonth = Calendar.getInstance().get(Calendar.MONTH) + 1;
         }
 
         for (int i = 1; i <= currentMonth; i++) {
@@ -373,7 +374,7 @@ public class ProfitDAO extends DBContext {
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 double revenue = rs.getDouble("TotalRevenue");
-                
+
                 return revenue;
             }
         } catch (Exception e) {
@@ -438,14 +439,11 @@ public class ProfitDAO extends DBContext {
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                 }
-            }else {
-                
+            } else {
+
                 if (quantity != 0) {
                     createProfit(vID, variant.getDiscountPrice(), profit.getCostPrice(), quantity);
                 }
-
-                
-
             }
         } else {
             System.out.println("khong update duoc");
@@ -453,8 +451,122 @@ public class ProfitDAO extends DBContext {
 
     }
 
-    public void updateProfit() {
+    public void updateQuantityAndCost(int vID, double cost, int quantity) {
+        VariantsDAO vdao = new VariantsDAO();
+        Variants variant = vdao.getVariantByID(vID);
+        LocalDateTime now = LocalDateTime.now();
+        int monthValue = now.getMonthValue();
+        int yearValue = now.getYear();
+        int profitID = getMaxProfitID(vID);
 
+        Profit profit = getProfitByID(profitID);
+
+        if (profit != null) {
+            int monthProfit = profit.getCalculatedDate().getMonthValue();
+            int yearProfit = profit.getCalculatedDate().getYear();
+            System.out.println("Tháng của profit có VariantID = " + vID + " là: " + monthProfit);
+            System.out.println("Năm của profit có VariantID = " + vID + " là: " + yearProfit);
+            if (monthProfit == monthValue && yearProfit == yearValue) {
+                int totalQuantity = profit.getQuantity() + quantity;
+                String sql = "UPDATE Profits\n"
+                        + "SET Quantity = ?,\n"
+                        + " CostPrice = ?\n"
+                        + "Where ProfitID = ?;";
+
+                try {
+                    PreparedStatement ps = conn.prepareStatement(sql);
+                    ps.setInt(1, totalQuantity);
+                    ps.setDouble(2, cost);
+                    ps.setInt(3, profitID);
+                    ps.executeUpdate();
+
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
+            } else {
+
+                if (quantity != 0) {
+                    createProfit(vID, variant.getDiscountPrice(), cost, quantity);
+                }
+            }
+        } else {
+            System.out.println("khong update duoc");
+        }
+
+    }
+
+    public void updateCost(int vID, double cost) {
+        VariantsDAO vdao = new VariantsDAO();
+        Variants variant = vdao.getVariantByID(vID);
+        LocalDateTime now = LocalDateTime.now();
+        int monthValue = now.getMonthValue();
+        int yearValue = now.getYear();
+        int profitID = getMaxProfitID(vID);
+
+        Profit profit = getProfitByID(profitID);
+
+        if (profit != null) {
+            int monthProfit = profit.getCalculatedDate().getMonthValue();
+            int yearProfit = profit.getCalculatedDate().getYear();
+            System.out.println("Tháng của profit có VariantID = " + vID + " là: " + monthProfit);
+            System.out.println("Năm của profit có VariantID = " + vID + " là: " + yearProfit);
+            if (monthProfit == monthValue && yearProfit == yearValue) {
+
+                String sql = "UPDATE Profits\n"
+                        + "SET CostPrice = ?\n"
+                        + "Where ProfitID = ?;";
+
+                try {
+                    PreparedStatement ps = conn.prepareStatement(sql);
+
+                    ps.setDouble(1, cost);
+                    ps.setInt(2, profitID);
+                    ps.executeUpdate();
+
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+        } else {
+            System.out.println("khong update duoc");
+        }
+
+    }
+    
+     //importProuct
+    public void addProfit(Profit p) throws SQLException {
+        String sql = "INSERT INTO Profits (VariantID, Quantity, SellingPrice, CostPrice, CalculatedDate) VALUES (?, ?, ?, ?, ?)";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, p.getVariantID());
+            ps.setInt(2, p.getQuantity());
+            ps.setDouble(3, p.getSellingPrice());
+            ps.setDouble(4, p.getCostPrice());
+            ps.setTimestamp(5, Timestamp.valueOf(p.getCalculatedDate()));
+            ps.executeUpdate();
+        }
+    }
+
+    public List<Profit> getAllProfit() {
+        List<Profit> list = new ArrayList<>();
+        String sql = "SELECT * FROM Profits ORDER BY CalculatedDate DESC";
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Profit p = new Profit();
+                p.setProfitID(rs.getInt("ProfitID"));
+                p.setVariantID(rs.getInt("VariantID"));
+                p.setQuantity(rs.getInt("Quantity"));
+                p.setCostPrice(rs.getDouble("CostPrice"));
+                p.setSellingPrice(rs.getDouble("SellingPrice"));
+                // Chuyển đổi Date tùy kiểu dữ liệu của bạn (ở đây ví dụ dùng Timestamp)
+                p.setCalculatedDate(rs.getTimestamp("CalculatedDate").toLocalDateTime());
+                list.add(p);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
     }
 
 }

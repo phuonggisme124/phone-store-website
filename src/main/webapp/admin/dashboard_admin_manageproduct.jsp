@@ -1,3 +1,7 @@
+
+<%@page import="java.time.LocalDateTime"%>
+<%@page import="java.time.format.DateTimeFormatter"%>
+
 <%@page import="model.Suppliers"%>
 <%@page import="model.Category"%>
 <%@page import="model.Products"%>
@@ -23,6 +27,9 @@
         <!-- Custom CSS -->
         <link rel="stylesheet" href="css/dashboard_admin.css">
         <link href="css/dashboard_table.css" rel="stylesheet">
+
+        <link href="css/dashboard_admin_manageproduct.css" rel="stylesheet">
+
     </head>
     <body>
         <%
@@ -67,7 +74,9 @@
 
         <div class="d-flex" id="wrapper">
             <!-- Sidebar -->
-           <%@ include file="sidebar.jsp" %>
+
+            <%@ include file="sidebar.jsp"%>
+
 
             <!-- Page Content -->
             <div class="page-content flex-grow-1">
@@ -120,21 +129,36 @@
                         </div>
                     </div>
                 </nav>
-                            
-                <!-- Create Product Button -->
-                <div class="container-fluid p-4 ps-3">
-                    <h1 class="fw-bold ps-3 mb-4 fw-bold text-primary">Manage Products</h1>
-                </div>
-                <div class="container-fluid p-4 ps-3">
-                    <a class="btn btn-primary px-4 py-2 rounded-pill shadow-sm" href="product?action=createProduct">
-                        <i class="bi bi-box-seam me-2"></i> Create Product
-                    </a>
-                </div>
+
 
                 <!-- Products Table -->
-                <div class="card shadow-sm border-0 p-4">
+                <%
+                   
+                    String successDeleteProduct = (String) session.getAttribute("successDeleteProduct");
+                    if (successDeleteProduct != null) {
+                %>
+                <div class="alert alert-success alert-dismissible fade show w-50 mx-auto mt-3" role="alert">
+                    <i class="bi bi-check-circle-fill me-2"></i><%= successDeleteProduct%>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+
+                <%
+                        session.removeAttribute("successCreateProduct");
+                    }
+                %>
+
+                <div class="card shadow-sm border-0 p-4 m-3">
                     <div class="card-body p-0">
-                        
+                        <div class="container-fluid p-4 ps-3">
+                            <h1 class="fw-bold ps-3 mb-4 fw-bold text-primary">Manage Products</h1>
+                        </div>
+                        <!-- Create Product Button -->
+                        <div class="container-fluid p-4 ps-3">
+                            <a class="btn btn-primary px-4 py-2 rounded-pill shadow-sm" href="product?action=createProduct">
+                                <i class="bi bi-box-seam me-2"></i> Create Product
+                            </a>
+                        </div>
+
                         <% if (currentListProduct != null && !currentListProduct.isEmpty()) { %>
                         <div class="table-responsive">
                             <table class="table table-hover align-middle mb-0">
@@ -185,7 +209,16 @@
                                         <td><%= p.getName()%></td>
                                         <td><span class="badge bg-info"><%= p.getBrand()%></span></td>
                                         <td><%= p.getWarrantyPeriod()%></td>
-                                        <td><%= p.getCreatedAt()%></td>
+                                        <%
+                                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+                                            String dateFormated = "";
+                                            LocalDateTime createAt = p.getCreatedAt();
+                                            if (createAt != null) {
+                                                dateFormated = createAt.format(formatter);
+                                            }
+                                        %>
+                                        <td><%= dateFormated%></td>
+
                                     </tr>
                                     <% } %>
                                 </tbody>
@@ -205,7 +238,6 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
         <!-- Custom JS -->
-        <script src="js/dashboard.js"></script>
         <script>
                                         var currentOrderID = null;
                                         var myModal = null;
@@ -260,11 +292,22 @@
                                                 }
                                             }, 200);
                                         }
+
+                                        // Ẩn suggestions khi click bên ngoài
+                                        document.addEventListener('click', function (e) {
+                                            var searchInput = document.getElementById('searchProduct');
+                                            var suggestionBox = document.getElementById('suggestionBox');
+                                            if (!searchInput.contains(e.target) && !suggestionBox.contains(e.target)) {
+                                                suggestionBox.innerHTML = "";
+                                            }
+                                        });
+
         </script>
         <script>
             document.getElementById("menu-toggle").addEventListener("click", function () {
                 document.getElementById("wrapper").classList.toggle("toggled");
             });
         </script>
+
     </body>
 </html>

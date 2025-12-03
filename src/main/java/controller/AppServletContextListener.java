@@ -35,7 +35,7 @@ public class AppServletContextListener implements ServletContextListener {
             // tạo application scope (biến toàn cục)
             ServletContext context = sce.getServletContext();
             
-            // Lưu list vào application scope
+            // Lưu list này vào application scope
             context.setAttribute("globalProductList", productList);
             context.setAttribute("globalVariantsList", variantsList);
             

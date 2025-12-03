@@ -55,12 +55,12 @@ public class NotificationDAO {
         return 0;
     }
 
-    // Đánh dấu đã đọc
-    public void markAllAsRead(int userId) throws SQLException {
-        String sql = "UPDATE Notifications SET isView = 1 WHERE UserID = ?";
-        PreparedStatement ps = conn.prepareStatement(sql);
-        ps.setInt(1, userId);
-        ps.executeUpdate();
+    public void markAllAsRead(int userId) throws Exception {
+        String sql = "UPDATE Notifications SET isView = 1 WHERE UserID = ? AND isView = 0";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ps.executeUpdate();
+        }
     }
 
     public void markAsRead(int notificationID) throws SQLException {
@@ -70,6 +70,5 @@ public class NotificationDAO {
             ps.executeUpdate();
         }
     }
-    
 
 }

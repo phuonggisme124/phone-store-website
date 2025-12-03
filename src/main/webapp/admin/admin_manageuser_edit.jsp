@@ -51,15 +51,19 @@
                 <div class="container-fluid p-4">
                     <input type="text" class="form-control w-25" placeholder="🔍 Search">
                 </div>
-                
 
-                <%
-                    Users user = (Users) request.getAttribute("user");
+
+
+                <%                    
+                    Users user = (Users) request.getAttribute("currentUser");
+
                 %>
                 <!-- Table -->
                 <form action="user" method="post" class="w-50 mx-auto bg-light p-4 rounded shadow">
                     <div class="mb-3" >
-                        <%                            
+
+                        <%
+
                             if (session.getAttribute("exist") != null) {
                                 String exist = (String) session.getAttribute("exist");
                                 out.println("<p class='error-message'>" + exist + "</p>");
@@ -95,6 +99,7 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Role</label>
+                        <input type="hidden" name="oldRole" value="<%= user.getRole() %>">
                         <select class="form-select" name="role" id="role">
                             <option value="1" <%= (user.getRole().equals(1) ? "selected" : "")%>>Customer</option>
                             <option value="2" <%= (user.getRole().equals(2) ? "selected" : "")%>>Staff</option>
@@ -104,9 +109,8 @@
                     <div class="mb-3">
                         <label class="form-label">Status</label>
                         <select class="form-select" name="status" id="status">
-                            <option value="active" <%= (user.getStatus().equals("active") ? "selected" : "")%>>Active</option>
-                            <option value="banned" <%= (user.getStatus().equals("banned") ? "selected" : "")%>>Banned</option>
-
+                            <option value="active" <%= (user.getStatus().equalsIgnoreCase("active") ? "selected" : "")%>>Active</option>
+                            <option value="locked" <%= (user.getStatus().equalsIgnoreCase("locked") ? "selected" : "")%>>Locked</option>
                         </select>
                     </div>
                     <div class="d-flex gap-2">
@@ -124,5 +128,53 @@
 
             <!-- Custom JS -->
             <script src="js/dashboard.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    const form = document.querySelector('form[action="user"]');
+                    const deleteBtn = form?.querySelector('button[name="action"][value="deleteUserAdmin"]');
+
+                    if (!deleteBtn) {
+                        console.error("Delete button not found!");
+                        return;
+                    }
+
+                    deleteBtn.addEventListener('click', function (event) {
+                        event.preventDefault(); // Prevent default submit
+
+                        Swal.fire({
+                            title: 'Are you sure you want to delete this user?',
+                            text: 'This action cannot be undone.',
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#dc3545',
+                            cancelButtonColor: '#6c757d',
+                            confirmButtonText: 'Delete',
+                            cancelButtonText: 'Cancel',
+                            reverseButtons: true,
+                            background: '#fff',
+                            color: '#333',
+                            customClass: {
+                                popup: 'shadow-lg rounded-4 p-3',
+                                confirmButton: 'px-4 py-2 rounded-3',
+                                cancelButton: 'px-4 py-2 rounded-3'
+                            }
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // Ensure correct action is sent
+                                let actionInput = form.querySelector('input[name="action"]');
+                                if (!actionInput) {
+                                    actionInput = document.createElement('input');
+                                    actionInput.type = 'hidden';
+                                    actionInput.name = 'action';
+                                    form.appendChild(actionInput);
+                                }
+                                actionInput.value = 'deleteUserAdmin';
+                                form.submit();
+                            }
+                        });
+                    });
+                });
+            </script>
     </body>
 </html>

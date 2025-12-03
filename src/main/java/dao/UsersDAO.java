@@ -1,7 +1,6 @@
 package dao;
 
 import java.security.MessageDigest;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -386,9 +385,168 @@ public class UsersDAO extends DBContext {
         return false;
     }
 
+    public int getMaxUserID() {
+        String sql = "  SELECT MAX(UserID) AS MaxUserID\n"
+                + "FROM [PhoneStore].[dbo].[Users];";
+
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                int userID = rs.getInt("MaxUserID");
+                return userID;
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        return -1;
+    }
+
+    public void createRole(int newUserID, int role) {
+
+        if (role == 2) {
+            String sql = "INSERT INTO Staffs (StaffID) "
+                    + "VALUES (?)";
+            
+            try{
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ps.setInt(1, newUserID);
+                ps.executeUpdate();
+            }catch(Exception e){
+                System.out.println(e.getMessage());
+            }
+        }else if(role == 3){
+            String sql = "INSERT INTO Shippers (ShipperID) "
+                    + "VALUES (?)";
+            
+            try{
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ps.setInt(1, newUserID);
+                ps.executeUpdate();
+            }catch(Exception e){
+                System.out.println(e.getMessage());
+            }
+        }else if(role == 1){
+            String sql = "INSERT INTO Customers (CustomerID) "
+                    + "VALUES (?)";
+            
+            try{
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ps.setInt(1, newUserID);
+                ps.executeUpdate();
+            }catch(Exception e){
+                System.out.println(e.getMessage());
+            }
+        }
+    }
+
+    public void updateUserByRole(int userId, int role, int oldRole) {
+        
+        if (role == 2) {
+            String sql = "INSERT INTO Staffs (StaffID) "
+                    + "VALUES (?)";
+            
+            try{
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ps.setInt(1, userId);
+                ps.executeUpdate();
+                
+            }catch(Exception e){
+                System.out.println(e.getMessage());
+            }
+        }else if(role == 3){
+            String sql = "INSERT INTO Shippers (ShipperID) "
+                    + "VALUES (?)";
+            
+            try{
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ps.setInt(1, userId);
+                ps.executeUpdate();
+            }catch(Exception e){
+                System.out.println(e.getMessage());
+            }
+        }else if(role == 1){
+            String sql = "INSERT INTO Customers (CustomerID) "
+                    + "VALUES (?)";
+            
+            try{
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ps.setInt(1, userId);
+                ps.executeUpdate();
+            }catch(Exception e){
+                System.out.println(e.getMessage());
+            }
+        }
+        deleteByRole(userId, oldRole);
+    }
+
+    public void deleteByRole(int userId, int oldRole) {
+        
+         if (oldRole == 2) {
+            String sql = "Delete From Staffs\n"
+                    + "Where StaffID = ?";
+            
+            try{
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ps.setInt(1, userId);
+                ps.executeUpdate();
+            }catch(Exception e){
+                System.out.println(e.getMessage());
+            }
+        }else if(oldRole == 3){
+            String sql = "Delete From Shippers\n"
+                    + "Where StaffID = ?";
+            
+            try{
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ps.setInt(1, userId);
+                ps.executeUpdate();
+            }catch(Exception e){
+                System.out.println(e.getMessage());
+            }
+        }else if(oldRole == 1){
+            String sql = "Delete From Customers\n"
+                    + "Where CustomerID = ?";
+            
+            try{
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ps.setInt(1, userId);
+                ps.executeUpdate();
+            }catch(Exception e){
+                System.out.println(e.getMessage());
+            }
+        }
+    }
+    
+ //của thịnh để check role staff và admin để mana order   
+    /**
+     * Retrieve all users who have a specific role.
+     *
+     * @param role The role ID (e.g., 2 for Staff, 3 for Shipper)
+     * @return List of Users objects matching the role
+     */
+    public List<Users> getUsersByRole(int role) {
+        List<Users> list = new ArrayList<>();
+        String sql = "SELECT * FROM Users WHERE Role = ?";
+        
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, role);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    // Tái sử dụng helper method đã có để tạo đối tượng Users
+                    list.add(mapResultSetToUser(rs)); 
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
     public Users getUserByEmailAndPhone(String email, String phone) {
         String sql = "SELECT * FROM Users WHERE email = ? AND phone = ?";
-        try (Connection conn = new DBContext().conn; PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, email);
             ps.setString(2, phone);
             ResultSet rs = ps.executeQuery();
@@ -408,5 +566,4 @@ public class UsersDAO extends DBContext {
         }
         return null;
     }
-
 }

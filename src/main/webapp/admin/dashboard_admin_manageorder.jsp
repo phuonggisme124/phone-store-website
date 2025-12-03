@@ -1,6 +1,8 @@
+<%@page import="java.util.ArrayList"%>
+<%@page import="java.time.LocalDateTime"%>
+<%@page import="java.time.format.DateTimeFormatter"%>
 <%@page import="com.google.gson.Gson"%>
 <%@page import="dao.UsersDAO"%>
-<%@page import="model.Sale"%>
 <%@page import="model.Order"%>
 <%@page import="model.Suppliers"%>
 <%@page import="model.Category"%>
@@ -14,16 +16,14 @@
         <meta charset="UTF-8">
         <title>Admin Dashboard - Manage Order</title>
 
-        <!-- Bootstrap -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-        <!-- Icons -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
-        <!-- Custom CSS -->
         <link rel="stylesheet" href="css/dashboard_admin.css">
         <link rel="stylesheet" href="css/search.css">
         <link href="css/dashboard_table.css" rel="stylesheet">
+        <link href="css/dashboard_admin_manageorder.css" rel="stylesheet">
     </head>
     <body>
         <%
@@ -37,14 +37,15 @@
                 status = "Filter";
             }
             List<String> listPhone = (List<String>) request.getAttribute("listPhone");
+
+            if (listPhone == null)
+                listPhone = new ArrayList<>();
         %>
         <div class="d-flex" id="wrapper">
-            <!-- Sidebar -->
             <%@ include file="sidebar.jsp" %>
 
-            <!-- Page Content -->
             <div class="page-content flex-grow-1">
-                <!-- Navbar -->
+
                 <nav class="navbar navbar-light bg-white shadow-sm">
                     <div class="container-fluid">
                         <button class="btn btn-outline-primary" id="menu-toggle">
@@ -52,8 +53,9 @@
                         </button>
                         <div class="d-flex align-items-center ms-auto">
 
-                            <!-- Search Phone -->
-                            <form action="admin" method="get" class="d-flex position-relative me-3" id="searchForm" autocomplete="off">
+
+                            <form action="order" method="get" class="d-flex position-relative me-3" id="searchForm" autocomplete="off">
+
                                 <input type="hidden" name="action" value="searchOrder">
                                 <input type="hidden" name="status" value="<%= status%>">
                                 <div class="position-relative" style="width: 300px;">
@@ -71,10 +73,9 @@
                             </form>
 
 
-                            <!-- Filter Status -->
-                            <form action="admin" method="get" class="dropdown me-3">
+                            <form action="order" method="get" class="dropdown me-3">
                                 <input type="hidden" name="action" value="filterOrder">
-                                <!-- Giữ lại phone nếu đang search -->
+
                                 <input type="hidden" name="phone" value="<%= phone%>">
 
                                 <button class="btn btn-outline-secondary fw-bold dropdown-toggle" 
@@ -98,31 +99,35 @@
                             <a href="logout" class="btn btn-outline-danger btn-sm">Logout</a>
                             <div class="d-flex align-items-center ms-3">
                                 <img src="https://i.pravatar.cc/40" class="rounded-circle me-2" width="35">
-                                <span><%= user != null ? user.getFullName() : "Staff"%></span>
+
+                                <span><%= user != null ? user.getFullName() : "Admin"%></span>
+
                             </div>
                         </div>
                     </div>
                 </nav>
 
 
-                <div class="container-fluid p-4 ps-3">
-                    <a class="btn btn-primary px-4 py-2 rounded-pill shadow-sm" href="admin?action=showInstalment">
-                        <i class="bi bi-box-seam me-2"></i> Instalment
-                    </a>
-                </div>
+
+
                 <%
                     UsersDAO udao = new UsersDAO();
                     List<Order> listOrder = (List<Order>) request.getAttribute("listOrder");
-
-                    List<Sale> listSales = (List<Sale>) request.getAttribute("listSales");
                 %>
 
                 <%
                     if (listOrder != null && !listOrder.isEmpty()) {
                 %>
-                <!-- Table -->
-                <div class="card shadow-sm border-0 p-4">
+                <div class="card shadow-sm border-0 p-4 m-3">
                     <div class="card-body p-0">
+                        <div class="container-fluid p-4 ps-3">
+                            <h1 class="fw-bold ps-3 mb-4 fw-bold text-primary">Manage Orders</h1>
+                        </div>
+                        <div class="container-fluid p-4 ps-3">
+                            <a class="btn btn-primary px-4 py-2 rounded-pill shadow-sm" href="review?action=showInstalment">
+                                <i class="bi bi-box-seam me-2"></i> Instalment
+                            </a>
+                        </div>
                         <table class="table table-hover align-middle mb-0">
                             <thead class="table-light">
                                 <tr>
@@ -131,55 +136,73 @@
                                     <th>Receiver Phone</th>
                                     <th>Receiver Name</th>
                                     <th>Address</th>
-
                                     <th>Method</th>
                                     <th>Order Date</th>
                                     <th>Total Amount</th>
                                     <th>Staff</th>
                                     <th>Shipper</th>
                                     <th>Status</th>
-
                                 </tr>
                             </thead>
 
-
-
-                            <%
-                                for (Order o : listOrder) {
-
-
-                            %>
-
                             <tbody>
-                                <tr  onclick="window.location.href = 'order?action=orderDetail&id=<%= o.getOrderID()%>&isInstalment=<%= o.isIsInstallment()%>'">
-                                    <td><%= o.getOrderID()%></td>
+                                <%
+                                    for (Order o : listOrder) {
+
+                                        String statusOrder = o.getStatus();
+                                        String statusBadge;
+                                        if (statusOrder != null && statusOrder.equalsIgnoreCase("Pending")) {
+                                            statusBadge = "<span class='badge status-yellow bg-success' style='font-size: 15px'>Pending</span>";
+                                        } else if (statusOrder != null && statusOrder.equalsIgnoreCase("In Transit")) {
+                                            statusBadge = "<span class='badge status-blue bg-success' style='font-size: 15px'>In Transit</span>";
+                                        } else if (statusOrder != null && statusOrder.equalsIgnoreCase("Delayed")) {
+                                            statusBadge = "<span class='badge status-black ' style='font-size: 15px'>Delayed</span>";
+                                        } else if (statusOrder != null && statusOrder.equalsIgnoreCase("Delivered")) {
+                                            statusBadge = "<span class='badge status-green bg-success' style='font-size: 15px'>Delivered</span>";
+                                        } else {
+                                            statusBadge = "<span class='badge status-red bg-success' style='font-size: 15px'>Cancelled</span>";
+                                        }
+                                %>                              
+
+                                <tr  onclick="window.location.href = 'order?action=orderDetail&id=<%= o.getOrderID()%>&isInstalment=<%= o.getIsInstalment()%>'">
+                                    <td>#<%= o.getOrderID()%></td>
                                     <td><%= udao.getUserByID(o.getUserID()).getFullName()%></td>
                                     <td><%= o.getBuyerPhone()%></td>
                                     <td><%= o.getBuyerName()%></td>
                                     <td><%= o.getShippingAddress()%></td>
                                     <td><%= o.getPaymentMethod()%></td>
-                                    <td><%= o.getOrderDate()%></td>
-                                    <td><%= o.getTotalAmount()%></td>
                                     <%
-                                        for (Sale s : listSales) {
-                                            if (o.getOrderID() == s.getOrderID()) {
+                                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+                                        String dateFormated = "";
+                                        LocalDateTime createAt = o.getOrderDate();
+                                        if (createAt != null) {
+                                            dateFormated = createAt.format(formatter);
+                                        }
                                     %>
-                                    <td><%= s.getStaff().getFullName()%></td>   
-                                    <td><%= s.getShipper().getFullName()%></td>   
+                                    <td><%= dateFormated%></td>
+                                    <td><%= String.format("%,.0f", o.getTotalAmount())%></td>
+
                                     <%
-                                            }
+                                        String staffName = "";
+                                        if (o.getStaffID() != 0) {
+                                            staffName = udao.getUserByID(o.getStaffID()).getFullName();
+                                        }
+                                        String shipperName = "";
+                                        if (o.getShipperID() != 0) {
+                                            shipperName = udao.getUserByID(o.getShipperID()).getFullName();
                                         }
                                     %>
 
-                                    <td><%= o.getStatus()%></td>
+
+                                    <td><%=staffName%></td>   
+
+                                    <td><%= shipperName%></td>  
+                                    <td><%= statusBadge%></td>
                                 </tr>                          
+                                <%
+                                    }
+                                %>
                             </tbody>
-
-                            <%
-
-                                }
-                            %>
-
                         </table>
                     </div>
                 </div>
@@ -195,21 +218,17 @@
             </div>
 
         </div>
-        <!-- JS Libraries -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
-        <!-- Custom JS -->
-
-
-
         <script>
-
                                     const phoneNumbers = <%= new Gson().toJson(listPhone)%>;
                                     const searchInput = document.getElementById("searchPhone");
                                     const suggestionBox = document.getElementById("suggestionBox");
 
-// Hàm hiển thị gợi ý
+
+                                    // Hàm hiển thị gợi ý
+
                                     function fetchSuggestions(query) {
                                         query = query.trim().toLowerCase();
                                         suggestionBox.innerHTML = "";
@@ -244,17 +263,19 @@
                                         suggestionBox.style.display = "block";
                                     }
 
-// Tô đậm phần khớp
+
+                                    // Tô đậm phần khớp
+
                                     function highlightMatch(text, keyword) {
                                         const regex = new RegExp(`(${keyword})`, "gi");
                                         return text.replace(regex, `<strong>$1</strong>`);
                                     }
 
-// Ẩn box khi click ra ngoài
+
+                                    // Ẩn box khi click ra ngoài
                                     document.addEventListener("click", (e) => {
                                         if (!e.target.closest("#searchForm")) {
                                             suggestionBox.style.display = "none";
-
                                         }
                                     });
 
@@ -264,14 +285,9 @@
             document.getElementById("menu-toggle").addEventListener("click", function () {
                 document.getElementById("wrapper").classList.toggle("toggled");
             });
-            document.getElementById("menu-toggle").addEventListener("click", function () {
-    console.log("Button clicked!");
-    const wrapper = document.getElementById("wrapper");
-    console.log("Wrapper found:", wrapper);
-    wrapper.classList.toggle("toggled");
-    console.log("Classes:", wrapper.classList);
-});
+
         </script>
 
     </body>
 </html>
+

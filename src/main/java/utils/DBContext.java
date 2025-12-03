@@ -45,7 +45,6 @@ public class DBContext {
                     + "password=1234;"
                     + "encrypt=true;trustServerCertificate=true;";
 
-
             // Establish the connection
             conn = DriverManager.getConnection(dbURL);
 

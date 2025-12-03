@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package controller;
 
 import dao.CategoryDAO;
@@ -20,9 +16,6 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import jakarta.servlet.http.Part;
-import java.io.File;
-import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,10 +29,6 @@ import model.Specification;
 import model.Suppliers;
 import model.Variants;
 
-/**
- *
- * @author duynu
- */
 @MultipartConfig
 @WebServlet(name = "ProductServlet", urlPatterns = {"/product"})
 public class ProductServlet extends HttpServlet {
@@ -60,7 +49,6 @@ public class ProductServlet extends HttpServlet {
         }
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods.">
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -74,7 +62,26 @@ public class ProductServlet extends HttpServlet {
         PromotionsDAO pmtdao = new PromotionsDAO();
         ProfitDAO pfdao = new ProfitDAO();
 
-        // === Case 1: View product details ===
+        
+        HttpSession session = request.getSession();
+        model.Users currentUser = (model.Users) session.getAttribute("user");
+
+        // mặt định manageProduct
+        if (action == null) {
+            action = "manageProduct";
+        }
+
+        // check role
+        if (action.equals("manageProduct") || action.equals("productDetail")
+                || action.equals("updateProduct") || action.equals("deleteProduct")
+                || action.equals("createProduct")) {
+            if (currentUser == null || (currentUser.getRole() != 2 && currentUser.getRole() != 4)) {
+                response.sendRedirect("login");
+                return;
+            }
+        }
+
+        // public
         if ("viewDetail".equals(action)) {
             String vID = request.getParameter("vID");
             int productID = Integer.parseInt(request.getParameter("pID"));
@@ -97,7 +104,6 @@ public class ProductServlet extends HttpServlet {
             }
 
             if (variants == null) {
-                // fallback nếu không truyền vID
                 variants = vdao.getVariant(
                         productID,
                         listVariants.get(0).getStorage(),
@@ -107,18 +113,9 @@ public class ProductServlet extends HttpServlet {
 
             List<Variants> listVariantRating = vdao.getAllVariantByStorage(variants.getProductID(), variants.getStorage());
             Specification specification = pdao.getSpecificationByProductID(productID);
-
-            // Lấy danh sách review theo VariantID
-            List<Review> listReview = new ArrayList<>();
-            try {
-                listReview = rdao.getReviewsByVariantID(variants.getVariantID());
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-
+            List<Review> listReview = rdao.getAllReviewByListVariant(listVariantRating);
             double rating = rdao.getTotalRating(listVariantRating, listReview);
 
-            // Pass data to JSP
             request.setAttribute("categoryID", cID);
             if (vID != null) {
                 request.setAttribute("vID", vID);
@@ -134,11 +131,11 @@ public class ProductServlet extends HttpServlet {
             request.setAttribute("listReview", listReview);
             request.setAttribute("product", p);
 
-            // Forward to product detail page
             request.getRequestDispatcher("public/productdetail.jsp").forward(request, response);
+        } 
+        
 
-            // === Case 2: Change storage variant ===
-        } else if ("selectStorage".equals(action)) {
+        else if ("selectStorage".equals(action)) {
             int pID = Integer.parseInt(request.getParameter("pID"));
             int cID = Integer.parseInt(request.getParameter("cID"));
             String storage = request.getParameter("storage");
@@ -151,17 +148,15 @@ public class ProductServlet extends HttpServlet {
             List<String> listStorage = vdao.getAllStorage(pID);
             List<Category> listCategory = pdao.getAllCategory();
 
-            // Retrieve specific variant
             variants = vdao.getVariant(pID, storage, color);
             if (variants == null && !listVariantRating.isEmpty()) {
-                // If color not found, select first available variant
                 variants = vdao.getVariant(pID, storage, listVariantRating.get(0).getColor());
             }
 
-            List<Review> listReview = rdao.getReview();
+            List<Review> listReview = rdao.getAllReviewByListVariant(listVariantRating);
             double rating = rdao.getTotalRating(listVariantRating, listReview);
             Specification specification = pdao.getSpecificationByProductID(pID);
-            // Send data to JSP
+
             request.setAttribute("productID", pID);
             request.setAttribute("rating", rating);
             request.setAttribute("categoryID", cID);
@@ -174,11 +169,11 @@ public class ProductServlet extends HttpServlet {
             request.setAttribute("listStorage", listStorage);
             request.setAttribute("listCategory", listCategory);
 
-            // Forward to product detail page
             request.getRequestDispatcher("public/productdetail.jsp").forward(request, response);
+        } 
+        
 
-// === Case 3: Filter by category ===
-        } else if ("category".equals(action)) {
+        else if ("category".equals(action)) {
             int cID = Integer.parseInt(request.getParameter("cID"));
             String variation = request.getParameter("variation");
             if (variation == null) {
@@ -199,8 +194,7 @@ public class ProductServlet extends HttpServlet {
                 listVariant = vdao.getAllVariantByCategoryAndOrderByPrice(cID, variation);
             }
 
-            // ====== THÊM DỮ LIỆU CHO THANH SEARCH ======
-            // Lấy TẤT CẢ products và variants để search
+  
             List<Products> productList1_search = pdao.getAllProduct();
             List<Variants> variantsList_search = new ArrayList<>();
             try {
@@ -211,36 +205,92 @@ public class ProductServlet extends HttpServlet {
 
             request.setAttribute("productList1", productList1_search);
             request.setAttribute("variantsList", variantsList_search);
-            // ============================================
-
-            // Set attributes for category page
             request.setAttribute("listVariant", listVariant);
             request.setAttribute("categoryID", cID);
             request.setAttribute("listProduct", listProduct);
             request.setAttribute("listReview", listReview);
 
-            // Forward to category JSP
             request.getRequestDispatcher("public/view_product_by_category.jsp").forward(request, response);
-        } else if (action.equals("productDetail")) {
+        } 
+        
 
-            int pID = Integer.parseInt(request.getParameter("pID"));
-            List<Products> listProducts = pdao.getAllProduct();
-            List<Variants> listVariants = vdao.getAllVariantByProductID(pID);
-            if (listVariants == null || listVariants.isEmpty()) {
-                response.sendRedirect("admin?action=manageProduct");
+        else if (action.equals("productDetail")) {
+            try {
+                List<Products> listProducts = pdao.getAllProduct();
+                List<Variants> listVariants;
 
-            } else {
-                //Promotions promotion = pmtdao.getPromotionByProductID(id);
 
-                request.setAttribute("pID", pID);
-                //request.setAttribute("promotion", promotion);
-                request.setAttribute("listProducts", listProducts);
-                request.setAttribute("listVariants", listVariants);
+                // check roel 2,4
+                if (currentUser.getRole() == 2) {
+                    // staff
+                    String productId = request.getParameter("productId");
+                    if (productId == null) {
+                        productId = request.getParameter("pID");
+                    }
+                    if (productId == null) {
+                        productId = request.getParameter("id");
+                    }
 
-                request.getRequestDispatcher("admin/admin_manageproduct_detail.jsp").forward(request, response);
+                    String color = request.getParameter("color");
+                    String storage = request.getParameter("storage");
+
+                    if (color != null && color.trim().isEmpty()) {
+                        color = null;
+                    }
+                    if (storage != null && storage.trim().isEmpty()) {
+                        storage = null;
+                    }
+
+ 
+                    if (productId != null && !productId.isEmpty()) {
+                        int id = Integer.parseInt(productId);
+                        if (color != null || storage != null) {
+                            listVariants = vdao.searchVariantsByProductId(id, color, storage);
+                        } else {
+                            listVariants = vdao.getAllVariantByProductID(id);
+                        }
+                    } else {
+                        listVariants = vdao.searchVariants(color, storage);
+                    }
+
+                    request.setAttribute("listVariants", listVariants);
+                    request.setAttribute("listProducts", listProducts);
+                    request.setAttribute("allColors", vdao.getAllColors());
+                    request.setAttribute("allStorages", vdao.getAllStorages());
+                    request.setAttribute("selectedProductId", productId);
+
+                    request.getRequestDispatcher("staff/staff_manageproduct_detail.jsp").forward(request, response);
+
+                } else if (currentUser.getRole() == 4) {
+                    // admin
+                    int pID = Integer.parseInt(request.getParameter("pID"));
+                    listVariants = vdao.getAllVariantByProductID(pID);
+
+                    if (listVariants == null || listVariants.isEmpty()) {
+                        response.sendRedirect("product?action=manageProduct");
+                        return;
+                    }
+
+                    request.setAttribute("pID", pID);
+                    request.setAttribute("listProducts", listProducts);
+                    request.setAttribute("listVariants", listVariants);
+
+                    request.getRequestDispatcher("admin/admin_manageproduct_detail.jsp").forward(request, response);
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                response.sendRedirect("error.jsp");
+            }
+        } 
+        
+
+        else if (action.equals("updateProduct")) {
+            if (currentUser.getRole() != 4) {
+                response.sendRedirect("product?action=manageProduct");
+                return;
             }
 
-        } else if (action.equals("updateProduct")) {
             int pID = Integer.parseInt(request.getParameter("pID"));
             List<Suppliers> listSupplier = sldao.getAllSupplier();
             List<Category> listCategories = ctdao.getAllCategories();
@@ -253,11 +303,19 @@ public class ProductServlet extends HttpServlet {
             request.setAttribute("product", product);
             request.setAttribute("specification", specification);
             request.getRequestDispatcher("admin/admin_manageproduct_editproduct.jsp").forward(request, response);
-        } else if (action.equals("deleteProduct")) {
+        } 
+        
+
+        else if (action.equals("deleteProduct")) {
+            if (currentUser.getRole() != 4) {
+                response.sendRedirect("product?action=manageProduct");
+                return;
+            }
+
             int pID = Integer.parseInt(request.getParameter("pID"));
-            
+
             List<Variants> listVariant = vdao.getVariantByProductID(pID);
-            for(Variants v : listVariant){
+            for (Variants v : listVariant) {
                 pfdao.deleteProfitByVariantID(v.getVariantID());
             }
             vdao.deleteVariantByProductID(pID);
@@ -265,14 +323,81 @@ public class ProductServlet extends HttpServlet {
             pdao.deleteSpecificationByProductID(pID);
             pmtdao.deletePromotionByProductID(pID);
             pdao.deleteProductByProductID(pID);
-            response.sendRedirect("admin?action=manageProduct");
-        } else if (action.equals("createProduct")) {
+
+            response.sendRedirect("product?action=manageProduct");
+
+        } 
+        
+
+        else if (action.equals("createProduct")) {
+            if (currentUser.getRole() != 4) {
+                response.sendRedirect("product?action=manageProduct");
+                return;
+            }
             List<Suppliers> listSupplier = sldao.getAllSupplier();
             List<Category> listCategories = ctdao.getAllCategories();
             request.setAttribute("listSupplier", listSupplier);
             request.setAttribute("listCategories", listCategories);
             request.getRequestDispatcher("admin/admin_manageproduct_create.jsp").forward(request, response);
+        } 
+        
+
+        else if (action.equals("manageProduct")) {
+            List<Products> listProducts = pdao.getAllProduct();
+            List<Category> listCategory = ctdao.getAllCategories();
+            List<Suppliers> listSupplier = sldao.getAllSupplier();
+
+  
+            for (Products product : listProducts) {
+                List<Variants> listVariant = vdao.getAllVariantByProductID(product.getProductID());
+                if (listVariant == null || listVariant.isEmpty()) {
+                    pdao.deleteSpecificationByProductID(product.getProductID());
+                    pmtdao.deletePromotionByProductID(product.getProductID());
+                    pdao.deleteProductByProductID(product.getProductID());
+                }
+            }
+
+            List<Products> currentListProduct = pdao.getAllProduct();
+            request.setAttribute("currentListProduct", currentListProduct);
+            request.setAttribute("listCategory", listCategory);
+            request.setAttribute("listSupplier", listSupplier);
+
+
+            // check role 2,4
+            if (currentUser.getRole() == 2) {
+                // staff
+                String productName = request.getParameter("productName");
+                String supplierIDStr = request.getParameter("supplierID");
+                Integer supplierID = null;
+
+                if (supplierIDStr != null && !supplierIDStr.equalsIgnoreCase("All")) {
+                    try {
+                        supplierID = Integer.parseInt(supplierIDStr);
+                    } catch (NumberFormatException e) {
+                        supplierID = null;
+                    }
+                }
+
+                List<Products> filteredProducts;
+                if (productName != null && !productName.trim().isEmpty() && supplierID != null) {
+                    filteredProducts = pdao.getProductsByNameAndSupplier(productName.trim(), supplierID);
+                } else if (productName != null && !productName.trim().isEmpty()) {
+                    filteredProducts = pdao.getProductsByName(productName.trim());
+                } else if (supplierID != null) {
+                    filteredProducts = pdao.getProductsBySupplier(supplierID);
+                } else {
+                    filteredProducts = currentListProduct;
+                }
+
+                request.setAttribute("listProducts", filteredProducts);
+                request.getRequestDispatcher("staff/dashboard_staff_manageproduct.jsp").forward(request, response);
+
+            } else if (currentUser.getRole() == 4) {
+                // admin
+                request.getRequestDispatcher("admin/dashboard_admin_manageproduct.jsp").forward(request, response);
+            }
         }
+
     }
 
     @Override
@@ -285,6 +410,15 @@ public class ProductServlet extends HttpServlet {
 
         if (action == null) {
             action = "dashboard";
+        }
+
+
+        model.Users currentUser = (model.Users) session.getAttribute("user");
+        if (action.equals("createProduct") || action.equals("updateProduct")) {
+            if (currentUser == null || currentUser.getRole() != 4) {
+                response.sendRedirect("login");
+                return;
+            }
         }
 
         if ("viewVariantColor".equals(action)) {
@@ -321,14 +455,21 @@ public class ProductServlet extends HttpServlet {
             String cpu = request.getParameter("cpu");
             String gpu = request.getParameter("gpu");
             String ram = request.getParameter("ram");
-            int batteryCapacity = Integer.parseInt(request.getParameter("batteryCapacity"));
+            String batteryCapacityStr = request.getParameter("batteryCapacity");
+            int batteryCapacity = 0;
+            if (batteryCapacityStr != null && !batteryCapacityStr.isEmpty()) {
+                batteryCapacity = Integer.parseInt(batteryCapacityStr);
+            }
+
             String touchscreen = request.getParameter("touchscreen");
 
             boolean isNameProduct = pdao.isProductByName(pName);
             if (isNameProduct) {
                 session.setAttribute("existName", pName + " already exists!");
 
-                response.sendRedirect("admin?action=createProduct");
+
+                response.sendRedirect("product?action=createProduct");
+
 
             } else {
                 pdao.createProduct(categoryID, supplierID, pName, brand, warrantyPeriod);
@@ -341,7 +482,7 @@ public class ProductServlet extends HttpServlet {
                     return;
                 }
 
-                response.sendRedirect("admin?action=manageProduct");
+                response.sendRedirect("product?action=manageProduct");
             }
         } else if (action.equals("updateProduct")) {
             int pID = Integer.parseInt(request.getParameter("pID"));
@@ -358,19 +499,17 @@ public class ProductServlet extends HttpServlet {
             int batteryCapacity = Integer.parseInt(request.getParameter("batteryCapacity"));
             String touchscreen = request.getParameter("touchscreen");
 
-
             pdao.updateProduct(pID, categoryID, supplierID, pName, brand, warrantyPeriod);
             pdao.updateSpecification(specID, os, cpu, gpu, ram, batteryCapacity, touchscreen);
 
-            response.sendRedirect("admin?action=manageProduct");
+            response.sendRedirect("product?action=manageProduct");
         } else if (action.equals("dashboard")) {
             response.sendRedirect("admin");
-
         }
     }
 
     @Override
     public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
+        return "ProductServlet - Staff can view/search, Admin can CRUD";
+    }
 }

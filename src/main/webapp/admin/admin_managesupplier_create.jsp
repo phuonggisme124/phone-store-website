@@ -28,9 +28,6 @@
                 <nav class="navbar navbar-light bg-white shadow-sm">
                     <div class="container-fluid">
                         <button class="btn btn-outline-primary" id="menu-toggle"><i class="bi bi-list"></i></button>
-                        <form class="d-none d-md-flex ms-3">
-                            <input class="form-control" type="search" placeholder="Ctrl + K" readonly>
-                        </form>
                         <div class="d-flex align-items-center ms-auto">
                             <div class="position-relative me-3">
                                 <a href="logout">logout</a>
@@ -51,35 +48,34 @@
                 <div class="container-fluid p-4">
                     <input type="text" class="form-control w-25" placeholder="🔍 Search">
                 </div>
-                
-
-                
                 <!-- Table -->
-                <form action="supplier?action=createSupplier" method="post" class="w-50 mx-auto bg-light p-4 rounded shadow">
-                    
+                <form action="supplier?action=createSupplier" id="supplierForm" method="post" class="w-50 mx-auto bg-light p-4 rounded shadow">
+
 
                     <div class="mb-3">
                         <label class="form-label">Name</label>
-                        <input type="text" class="form-control" name="name" value="" required>
+                        <input type="text" class="form-control" name="name" id="name" value="" >
+                        <p id="nameError" class="text-danger mt-2" style="display:none;">Please enter supplier name!</p>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Phone</label>
-                        <input type="text" class="form-control" name="phone" value="">
+                        <input type="text" class="form-control" name="phone" id="phone" value="">
+                        <p id="phoneError" class="text-danger mt-2" style="display:none;">Please enter phone number!</p>
+                        <p id="phoneFormat" class="text-danger mt-2" style="display:none;">Phone number is not in correct format!</p>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Email</label>
-                        <input type="email" class="form-control" name="email" value="" required>
-
+                        <input type="text" class="form-control" name="email" id="email" value="" >
+                        <p id="emailError" class="text-danger mt-2" style="display:none;">Please enter Email!</p>
+                        <p id="emailFormat" class="text-danger mt-2" style="display:none;">Email is not in correct format!</p>
                     </div>
-                    
-                    
+
+
                     <div class="mb-3">
                         <label class="form-label">Address</label>
-                        <input type="text" class="form-control" name="address" value="">
+                        <input type="text" class="form-control" name="address" id="address" value="">
+                        <p id="addressError" class="text-danger mt-2" style="display:none;">Please enter address!</p>
                     </div>
-                    
-                    
-                    
                     <button type="submit" class="btn btn-primary w-100">Create</button>
                 </form>
             </div>
@@ -91,5 +87,92 @@
 
             <!-- Custom JS -->
             <script src="js/dashboard.js"></script>
+            <script>
+                document.getElementById("supplierForm").addEventListener("submit", function (e) {
+                    const name = document.getElementById("name");
+                    const phone = document.getElementById("phone");
+                    const email = document.getElementById("email");
+                    const address = document.getElementById("address");
+
+
+                    const nameError = document.getElementById("nameError");
+                    const phoneError = document.getElementById("phoneError");
+                    const phoneFormat = document.getElementById("phoneFormat");
+                    const emailFormat = document.getElementById("emailFormat");
+                    const emailError = document.getElementById("emailError");
+                    const addressError = document.getElementById("addressError");
+
+                    let isValid = true;
+                    const reVN = /^(?:\+84|84|0)(?:3|5|7|8|9)\d{8}$/;
+                    const reEmail = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+                    // Check Name
+                    if (name.value === "") {
+                        nameError.style.display = "block";
+                        name.classList.add("is-invalid");
+                        isValid = false;
+                    } else {
+                        nameError.style.display = "none";
+                        name.classList.remove("is-invalid");
+                    }
+                    // Check address
+                    if (address.value === "") {
+                        addressError.style.display = "block";
+                        address.classList.add("is-invalid");
+                        isValid = false;
+                    } else {
+                        addressError.style.display = "none";
+                        address.classList.remove("is-invalid");
+                    }
+                    // Check Email
+                    if (email.value === "") {
+                        emailError.style.display = "block";
+                        email.classList.add("is-invalid");
+                        isValid = false;
+
+                    } else {
+                        emailError.style.display = "none";
+
+                        if (!reEmail.test(email.value)) {  
+                            emailFormat.style.display = "block";
+                            email.classList.add("is-invalid");
+                            isValid = false;
+                        } else {
+                            emailError.style.display = "none";
+                            emailFormat.style.display = "none";
+                            email.classList.remove("is-invalid");
+                        }
+                    }
+
+                    // Check Phone
+                    if (phone.value === "") {
+                        phoneError.style.display = "block";
+
+                        phone.classList.add("is-invalid");
+                        isValid = false;
+                    } else {
+                        phoneError.style.display = "none";
+                        if (!reVN.test(phone.value)) {
+
+                            phoneFormat.style.display = "block";
+                            phone.classList.add("is-invalid");
+                            isValid = false;
+                        } else {
+                            phoneError.style.display = "none";
+                            phoneFormat.style.display = "none";
+                            phone.classList.remove("is-invalid");
+                        }
+
+                    }
+
+                    // Nếu có lỗi thì chặn submit & cuộn tới ô lỗi đầu tiên
+                    if (!isValid) {
+                        e.preventDefault();
+                        document.querySelector(".is-invalid").scrollIntoView({
+                            behavior: "smooth",
+                            block: "center"
+                        });
+                    }
+                });
+            </script>
     </body>
 </html>

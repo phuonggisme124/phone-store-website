@@ -171,6 +171,51 @@
                 </div>
 
                 <!-- Variants Table -->
+                <%
+                    String successCreateProduct = (String) session.getAttribute("successCreateProduct");
+                    String successUpdateProduct = (String) session.getAttribute("successUpdateProduct");
+                    String successDeleteProduct = (String) session.getAttribute("successDeleteProduct");
+                    if (successCreateProduct != null) {
+                %>
+                <div class="alert alert-success alert-dismissible fade show w-50 mx-auto mt-3" role="alert">
+                    <i class="bi bi-check-circle-fill me-2"></i><%= successCreateProduct%>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+
+                <%
+                        session.removeAttribute("successCreateProduct");
+                    }
+                %>
+                
+                
+                <%
+                    
+                    
+                    if (successUpdateProduct != null) {
+                %>
+                <div class="alert alert-success alert-dismissible fade show w-50 mx-auto mt-3" role="alert">
+                    <i class="bi bi-check-circle-fill me-2"></i><%= successUpdateProduct%>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+
+                <%
+                        session.removeAttribute("successUpdateProduct");
+                    }
+                %>
+                <%
+                    
+                    
+                    if (successDeleteProduct != null) {
+                %>
+                <div class="alert alert-success alert-dismissible fade show w-50 mx-auto mt-3" role="alert">
+                    <i class="bi bi-check-circle-fill me-2"></i><%= successDeleteProduct%>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+
+                <%
+                        session.removeAttribute("successDeleteProduct");
+                    }
+                %>
                 <div class="container-fluid px-4 pb-4">
                     <div class="card shadow-sm border-0 p-4">
                         <div class="card-body p-0">
@@ -474,6 +519,16 @@
             document.getElementById("menu-toggle").addEventListener("click", function () {
                 document.getElementById("wrapper").classList.toggle("toggled");
             });
+        </script>
+        <script>
+            setTimeout(() => {
+                const alert = document.querySelector('.alert');
+                if (alert) {
+                    alert.classList.remove('show');
+                    alert.classList.add('fade');
+                    setTimeout(() => alert.remove(), 500);
+                }
+            }, 3000);
         </script>
     </body>
 </html>

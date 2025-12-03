@@ -215,9 +215,12 @@ public class ReviewDAO extends DBContext {
         int size = listVariantRating.size();
         for (int i = 0; i < size; i++) {
             int vID = listVariantRating.get(i).getVariantID();
+
             for (Review r : listReview) {
-                if (vID == r.getVariantID()) {
+
+                if (vID == r.getVariant().getVariantID()) {
                     count += 1;
+
                     rating += r.getRating();
 
                 }
@@ -238,7 +241,7 @@ public class ReviewDAO extends DBContext {
         for (int i = 0; i < size; i++) {
             int vID = listVariantRating.get(i).getVariantID();
             for (Review r : listReview) {
-                if (vID == r.getVariantID()) {
+                if (vID == r.getVariant().getVariantID()) {
                     count += 1;
 
                 }
@@ -255,7 +258,7 @@ public class ReviewDAO extends DBContext {
         for (int i = 0; i < size; i++) {
             int vID = listVariantRating.get(i).getVariantID();
             for (Review r : listReview) {
-                if (vID == r.getVariantID()) {
+                if (vID == r.getVariant().getVariantID()) {
                     count += 1;
                     if (rating == r.getRating()) {
                         countRating += 1;
@@ -505,7 +508,5 @@ public class ReviewDAO extends DBContext {
 
         return list;
     }
-
-
 
 }

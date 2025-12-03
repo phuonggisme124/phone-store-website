@@ -71,7 +71,8 @@
                             <form action="admin" method="get" class="d-flex position-relative me-3" id="searchForm" autocomplete="off" style="width: 250px;">
                                 <input type="hidden" name="action" value="manageCategory">
                                 <input class="form-control me-2" type="text" id="searchCategory" name="categoryName"
-                                       placeholder="🔍 Search Categoty" value="<%= currentCategoryName %>"
+                                     placeholder="Search Categoty" value="<%= currentCategoryName %>"
+
                                        oninput="showSuggestions(this.value)">
                                 <button class="btn btn-outline-primary" type="submit">
                                     <i class="bi bi-search"></i>
@@ -91,7 +92,8 @@
 
                 <!-- Create Category Button -->
                 <div class="container-fluid p-4 ps-3">
-                    <a class="btn btn-primary px-4 py-2 rounded-pill shadow-sm" href="admin?action=createCategory">
+                    <a class="btn btn-primary px-4 py-2 rounded-pill shadow-sm" href="category?action=createCategory">
+
                         <i class="bi bi-box-seam me-2"></i> Create Category
                     </a>
                 </div>
@@ -118,7 +120,9 @@
                                                 continue;
                                             }
                                     %>
-                                    <tr onclick="window.location.href = 'admin?action=editCategory&id=<%= c.getCategoryId()%>'" style="cursor: pointer;">
+
+                                    <tr onclick="window.location.href = 'category?action=editCategory&id=<%= c.getCategoryId()%>'" style="cursor: pointer;">
+
                                         <td>#<%= c.getCategoryId()%></td>
                                         <td><%= c.getCategoryName() %></td>
                                         <td><%= c.getDescription() %></td>

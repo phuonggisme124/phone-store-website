@@ -21,7 +21,6 @@
         <link href="css/dashboard_table.css" rel="stylesheet">
         <link rel="stylesheet" href="css/manage_product.css">
         <link href="css/phone.css" rel="stylesheet">
-
     </head>
     <body>
         <div class="d-flex" id="wrapper">
@@ -70,9 +69,9 @@
                         <input type="hidden" class="form-control" name="vID" value="<%= variant.getVariantID()%>" readonly>
                     </div>
                     <div class="mb-3">
-                        <input type="hidden" class="form-control" name="ctID" value="<%= product.getCategoryID() %>" readonly>
+                        <input type="hidden" class="form-control" name="ctID" value="<%= product.getCategoryID()%>" readonly>
                     </div>
-                    
+
                     <div class="mb-3">
                         <input type="hidden" class="form-control" name="pID" value="<%= product.getProductID()%>" readonly>
                     </div>
@@ -167,126 +166,176 @@
                         <button type="submit" name="action" value="updateVariant" class="btn btn-primary flex-fill">Update</button>
                         <button type="submit" name="action" value="deleteVariant" class="btn btn-danger flex-fill">Delete</button>
                     </div>
-
                 </form>
             </div>
+        </div>
 
+        <!-- JS Libraries -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
-            <!-- JS Libraries -->
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+        <!-- Custom JS -->
+        <script src="js/dashboard.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const fileInput = document.getElementById('photo-upload-input');
+                const previewContainer = document.getElementById('image-preview-container');
+                const noPhotoMessage = document.getElementById('no-photo-message');
+                const imagesToDeleteInput = document.getElementById('imagesToDelete');
 
-            <!-- Custom JS -->
-            <script src="js/dashboard.js"></script>
-            <script>
-                document.addEventListener('DOMContentLoaded', function () {
-                    const fileInput = document.getElementById('photo-upload-input');
-                    const previewContainer = document.getElementById('image-preview-container');
-                    const noPhotoMessage = document.getElementById('no-photo-message');
-                    const imagesToDeleteInput = document.getElementById('imagesToDelete');
+                // 🧩 Cập nhật thông báo "no images"
+                function updateNoPhotoMessage() {
+                    const totalImages = previewContainer.querySelectorAll('.image-preview-item').length;
+                    noPhotoMessage.style.display = totalImages === 0 ? 'block' : 'none';
+                }
 
-                    // 🧩 Cập nhật thông báo "no images"
-                    function updateNoPhotoMessage() {
-                        const totalImages = previewContainer.querySelectorAll('.image-preview-item').length;
-                        noPhotoMessage.style.display = totalImages === 0 ? 'block' : 'none';
-                    }
+                // 🧩 Hiển thị preview ảnh mới
+                // 🧩 Hiển thị preview ảnh mới (PHIÊN BẢN SỬA LỖI)
+                function displayImagePreview(file) {
+                    if (!file.type || !file.type.startsWith('image/'))
+                        return;
 
-                    // 🧩 Hiển thị preview ảnh mới
-                    // 🧩 Hiển thị preview ảnh mới (PHIÊN BẢN SỬA LỖI)
-                    function displayImagePreview(file) {
-                        if (!file.type || !file.type.startsWith('image/'))
-                            return;
+                    const reader = new FileReader();
 
-                        const reader = new FileReader();
+                    reader.onload = function (e) {
+                        const imgURL = e.target.result; // Vẫn lấy link ảnh như cũ
 
-                        reader.onload = function (e) {
-                            const imgURL = e.target.result; // Vẫn lấy link ảnh như cũ
+                        // 1. Tạo div bọc ngoài
+                        const imgWrapper = document.createElement('div');
+                        imgWrapper.classList.add('image-preview-item', 'new-image');
 
-                            // 1. Tạo div bọc ngoài
-                            const imgWrapper = document.createElement('div');
-                            imgWrapper.classList.add('image-preview-item', 'new-image');
+                        // 2. Tạo thẻ <img>
+                        const img = document.createElement('img');
+                        img.src = imgURL; // <--- GÁN TRỰC TIẾP, không qua chuỗi
+                        img.className = "img-thumbnail";
+                        img.alt = "Ảnh thực tế sản phẩm";
+                        img.style.width = "100px";
+                        img.style.height = "100px";
+                        img.style.objectFit = "cover";
 
-                            // 2. Tạo thẻ <img>
-                            const img = document.createElement('img');
-                            img.src = imgURL; // <--- GÁN TRỰC TIẾP, không qua chuỗi
-                            img.className = "img-thumbnail";
-                            img.alt = "Ảnh thực tế sản phẩm";
-                            img.style.width = "100px";
-                            img.style.height = "100px";
-                            img.style.objectFit = "cover";
+                        // 3. Tạo thẻ <button>
+                        const button = document.createElement('button');
+                        button.type = "button";
+                        button.className = "btn btn-danger btn-sm remove-image-btn";
+                        button.innerHTML = '<i class="bi bi-x-circle-fill"></i>';
 
-                            // 3. Tạo thẻ <button>
-                            const button = document.createElement('button');
-                            button.type = "button";
-                            button.className = "btn btn-danger btn-sm remove-image-btn";
-                            button.innerHTML = '<i class="bi bi-x-circle-fill"></i>';
+                        // 4. Gắn img và button vào div bọc ngoài
+                        imgWrapper.appendChild(img);
+                        imgWrapper.appendChild(button);
 
-                            // 4. Gắn img và button vào div bọc ngoài
-                            imgWrapper.appendChild(img);
-                            imgWrapper.appendChild(button);
-
-                            // 5. Gắn div bọc ngoài vào container
-                            previewContainer.appendChild(imgWrapper);
-                            updateNoPhotoMessage();
-                        };
-
-                        reader.readAsDataURL(file);
-                    }
-
-                    // 🧩 Render preview cho tất cả file trong input
-                    function renderImagePreviews() {
-                        // Xóa toàn bộ ảnh preview mới (nhưng KHÔNG xóa ảnh cũ từ DB)
-                        previewContainer.querySelectorAll('.image-preview-item.new-image').forEach(item => item.remove());
-
-                        // Tạo preview cho tất cả file được chọn
-                        Array.from(fileInput.files).forEach(displayImagePreview);
-                    }
-
-                    // 🧩 Khi chọn ảnh mới
-                    fileInput.addEventListener('change', function () {
-                        console.log('1. Đã chọn file!'); // LOG 1
-                        renderImagePreviews();
-                    });
-
-                    // 🧩 Khi nhấn nút "x" xóa ảnh mới
-                    previewContainer.addEventListener('click', function (e) {
-                        const removeBtn = e.target.closest('.remove-image-btn');
-                        if (!removeBtn)
-                            return;
-
-                        const item = removeBtn.closest('.image-preview-item');
-                        const allNewImages = Array.from(previewContainer.querySelectorAll('.image-preview-item.new-image'));
-                        const indexToRemove = allNewImages.indexOf(item);
-
-                        if (indexToRemove >= 0) {
-                            const dt = new DataTransfer();
-                            Array.from(fileInput.files).forEach((file, i) => {
-                                if (i !== indexToRemove)
-                                    dt.items.add(file);
-                            });
-                            fileInput.files = dt.files;
-                            renderImagePreviews();
-                        }
-                    });
-
-                    // 🧩 Khi nhấn nút "x" xóa ảnh cũ (ảnh đã có trong DB)
-                    previewContainer.addEventListener('click', function (e) {
-                        const removeExistingBtn = e.target.closest('.remove-existing-image-btn');
-                        if (!removeExistingBtn)
-                            return;
-
-                        const imageName = removeExistingBtn.dataset.imageName;
-                        if (imageName) {
-                            let currentValue = imagesToDeleteInput.value.trim();
-                            currentValue += currentValue ? "#" + imageName : imageName;
-                            imagesToDeleteInput.value = currentValue;
-                        }
-
-                        removeExistingBtn.closest('.image-preview-item').remove();
+                        // 5. Gắn div bọc ngoài vào container
+                        previewContainer.appendChild(imgWrapper);
                         updateNoPhotoMessage();
+                    };
+
+                    reader.readAsDataURL(file);
+                }
+
+                // 🧩 Render preview cho tất cả file trong input
+                function renderImagePreviews() {
+                    // Xóa toàn bộ ảnh preview mới (nhưng KHÔNG xóa ảnh cũ từ DB)
+                    previewContainer.querySelectorAll('.image-preview-item.new-image').forEach(item => item.remove());
+
+                    // Tạo preview cho tất cả file được chọn
+                    Array.from(fileInput.files).forEach(displayImagePreview);
+                }
+
+                // 🧩 Khi chọn ảnh mới
+                fileInput.addEventListener('change', function () {
+                    console.log('1. Đã chọn file!'); // LOG 1
+                    renderImagePreviews();
+                });
+
+                // 🧩 Khi nhấn nút "x" xóa ảnh mới
+                previewContainer.addEventListener('click', function (e) {
+                    const removeBtn = e.target.closest('.remove-image-btn');
+                    if (!removeBtn)
+                        return;
+
+                    const item = removeBtn.closest('.image-preview-item');
+                    const allNewImages = Array.from(previewContainer.querySelectorAll('.image-preview-item.new-image'));
+                    const indexToRemove = allNewImages.indexOf(item);
+
+                    if (indexToRemove >= 0) {
+                        const dt = new DataTransfer();
+                        Array.from(fileInput.files).forEach((file, i) => {
+                            if (i !== indexToRemove)
+                                dt.items.add(file);
+                        });
+                        fileInput.files = dt.files;
+                        renderImagePreviews();
+                    }
+                });
+
+                // 🧩 Khi nhấn nút "x" xóa ảnh cũ (ảnh đã có trong DB)
+                previewContainer.addEventListener('click', function (e) {
+                    const removeExistingBtn = e.target.closest('.remove-existing-image-btn');
+                    if (!removeExistingBtn)
+                        return;
+
+                    const imageName = removeExistingBtn.dataset.imageName;
+                    if (imageName) {
+                        let currentValue = imagesToDeleteInput.value.trim();
+                        currentValue += currentValue ? "#" + imageName : imageName;
+                        imagesToDeleteInput.value = currentValue;
+                    }
+
+                    removeExistingBtn.closest('.image-preview-item').remove();
+                    updateNoPhotoMessage();
+                });
+            });
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                // ✅ Lấy đúng nút Delete trong form
+                const form = document.querySelector('form[action="variants"]');
+                const deleteBtn = form.querySelector('button[name="action"][value="deleteVariant"]');
+
+                if (!deleteBtn) {
+                    console.error("❌ Không tìm thấy nút Delete!");
+                    return;
+                }
+
+                deleteBtn.addEventListener('click', function (event) {
+                    event.preventDefault(); // Ngăn submit gốc
+
+                    Swal.fire({
+                        title: 'Bạn có chắc muốn xóa biến thể này?',
+                        text: 'Hành động này không thể hoàn tác!',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#dc3545',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: '🗑️ Xóa ngay',
+                        cancelButtonText: 'Hủy',
+                        reverseButtons: true,
+                        background: '#fff',
+                        color: '#333',
+                        customClass: {
+                            popup: 'shadow-lg rounded-4 p-3',
+                            confirmButton: 'px-4 py-2 rounded-3',
+                            cancelButton: 'px-4 py-2 rounded-3'
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            Swal.fire({
+                                title: 'Đang xóa...',
+                                text: 'Vui lòng chờ trong giây lát 💫',
+                                icon: 'info',
+                                showConfirmButton: false,
+                                allowOutsideClick: false,
+                                didOpen: () => {
+                                    Swal.showLoading();
+                                    setTimeout(() => form.submit(), 1000);
+                                }
+                            });
+                        }
                     });
                 });
-            </script>
+            });
+        </script>
 
     </body>
 </html>

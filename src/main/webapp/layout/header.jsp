@@ -1,3 +1,7 @@
+<%@page import="model.Notification"%>
+<%@page import="dao.NotificationDAO"%>
+<%@page import="java.sql.Connection"%>
+<%@page import="utils.DBContext"%>
 <%@page import="model.Carts"%>
 <%@page import="java.util.HashMap"%>
 <%@page import="java.util.Map"%>
@@ -6,16 +10,7 @@
 <%@page import="model.Category"%>
 <%@page import="model.Products"%>
 <%@page import="java.util.List"%>
-<%@ page import="utils.DBContext" %>
-<%@ page import="dao.NotificationDAO" %>
 <%@ page import="model.Users" %>
-<%@ page import="java.util.List" %>
-<%@ page import="model.Notification" %>
-<%@ page import="java.text.SimpleDateFormat" %>
-<%@ page import="java.sql.Connection" %>
-<%@ page import="java.sql.PreparedStatement" %>
-<%@ page import="java.sql.ResultSet" %>
-
 
 <!DOCTYPE html>
 <html>
@@ -138,6 +133,7 @@
             }
         </style>
     </head>
+
 
 
     <body data-bs-spy="scroll" data-bs-target="#navbar" data-bs-root-margin="0px 0px -40%" data-bs-smooth-scroll="true" tabindex="0">
@@ -305,7 +301,6 @@
                                 </div>
                             </li>
 
-
                             <div class="user-items ps-5">
                                 <ul class="d-flex justify-content-end list-unstyled align-items-center">
                                     <%
@@ -334,16 +329,20 @@
                                     <li class="pe-3 position-relative">
                                         <button id="notification-bell" class="btn p-0 border-0 bg-transparent position-relative">
                                             <i class="bi bi-bell fs-4"></i>
+                                            <span id="notifCount" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                                0
+                                            </span>
                                         </button>
 
                                         <div id="notification-dropdown" class="notification-dropdown shadow rounded">
                                             <%
-                                                // K?t n?i DB tr?c ti?p
                                                 try (Connection conn = new DBContext().conn) {
                                                     NotificationDAO dao = new NotificationDAO(conn);
 
-                                                    // Hardcode userID = 1 (ho?c l?y t? session n?u mu?n)
-                                                    List<Notification> notifications = dao.getNotificationsByUser(1);
+                                                    Users currentUser = (Users) session.getAttribute("user");
+                                                    int userId = (currentUser != null) ? currentUser.getUserId() : 1;
+
+                                                    List<Notification> notifications = dao.getNotificationsByUser(userId);
 
                                                     if(notifications != null && !notifications.isEmpty()) {
                                                         for(Notification n : notifications) {
@@ -356,17 +355,24 @@
                                                         }
                                                     } else {
                                             %>
-                                            <div style="padding:10px;text-align:center;color:gray;">Không có thông báo</div>
+                                            <div style="padding:10px;text-align:center;color:gray;">No notifications</div>
                                             <%
                                                     }
 
+                                                    int unreadCount = dao.countUnread(userId);
+                                            %>
+                                            <script>
+                                                document.getElementById('notifCount').innerText = '<%= unreadCount %>';
+                                            </script>
+                                            <%
                                                 } catch(Exception e) {
-                                                    out.println("<div style='padding:10px;color:red;'>L?i load thông báo</div>");
+                                                    out.println("<div style='padding:10px;color:red;'>Error loading notifications</div>");
                                                     e.printStackTrace();
                                                 }
                                             %>
                                         </div>
                                     </li>
+
 
                                     <li class="pe-3">
                                         <a href="logout" class="nav-link p-0 text-dark text-uppercase fw-bold">Logout</a> 
@@ -515,6 +521,7 @@
                     header.classList.remove('header-scrolled');
                 }
             });
+
         })();
 
         document.addEventListener("DOMContentLoaded", function () {
@@ -522,9 +529,23 @@
             const dropdown = document.getElementById("notification-dropdown");
 
             bell.addEventListener("click", function (e) {
-                e.stopPropagation(); // tránh click ra ngoài ?óng ngay
-                dropdown.classList.toggle("show"); // b?t/t?t dropdown
+                e.stopPropagation();
+                const dropdown = document.getElementById("notification-dropdown");
+                dropdown.classList.toggle("show");
+
+                if (dropdown.classList.contains("show")) {
+                    fetch('notification', {
+                        method: 'POST'
+                    })
+                            .then(res => res.text())
+                            .then(data => {
+                                if (data === 'success') {
+                                    notifCount.innerText = '0'; // ?n badge
+                                }
+                            });
+                }
             });
+
 
             // Click ra ngoài ?? ?óng
             document.addEventListener("click", function (e) {
