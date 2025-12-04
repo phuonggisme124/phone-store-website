@@ -1,101 +1,111 @@
-<%@page import="dao.ProductDAO"%>
-<%@page import="model.Variants"%>
-<%@page import="dao.VariantsDAO"%>
-<%@page import="java.util.List"%>
-<%@page import="model.Profit"%>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-
-<%
-    List<Profit> listImports = (List<Profit>) request.getAttribute("listImports");
-    VariantsDAO vdao = new VariantsDAO();
-    ProductDAO pdao = new ProductDAO();
-%>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <!DOCTYPE html>
-<html>
+<html lang="vi">
     <head>
         <meta charset="UTF-8">
-        <title>Admin - Lịch sử nhập kho</title>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/dashboard_admin.css">
+        <title>Lịch Sử Nhập Kho - Admin</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
         <link rel="stylesheet" href="css/importproduct.css">
-        <style>
-            body {
-                background-color: #f8f9fa;
-                font-family: 'Segoe UI', sans-serif;
-            }
-            .container-content {
-                margin-left: 250px; /* để chừa chỗ cho sidebar */
-                padding: 30px;
-            }
-            .table th {
-                background-color: #0d6efd;
-                color: white;
-            }
-            .btn-add {
-                background-color: #0d6efd;
-                color: white;
-            }
-            .btn-add:hover {
-                background-color: #0b5ed7;
-            }
-        </style>
+        <link rel="stylesheet" href="css/dashboard_admin.css">
+        <link href="css/dashboard_table.css" rel="stylesheet">
+ 
     </head>
+    <body>
 
-    <body >
-        <jsp:include page="sidebar.jsp"/>
+        <div class="d-flex-wrapper">
 
-        <div class="import-product-page">
-            <div class="ih-wrapper-header">
-                <h2 class="ih-wrapper-title">
-                    <i class="bi bi-box-seam"></i> Import History
-                </h2>
-                <a href="${pageContext.request.contextPath}/admin?action=showImportForm" 
-                   class="ih-wrapper-btn-add">
-                    <i class="bi bi-plus-circle"></i> Import
-                </a>
+            <div class="sidebar-wrapper">
+                <jsp:include page="sidebar.jsp"/> 
             </div>
 
-            <div class="ih-wrapper-table-container ih-wrapper-responsive">
-                <table class="ih-wrapper-table">
-                    <thead>
-                        <tr>
-                            <th>ProfitID</th>
-                            <th>ProductName</th>
-                            <th>Storage</th>
-                            <th>Color</th>
-                            <th>Quantity</th>
-                            <th>Cost Price(VNĐ)</th>
-                            <th>Selling Price(VNĐ)</th>
-                            <th>CalculatedDate</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <% if (listImports != null && !listImports.isEmpty()) {
-                                for (Profit p : listImports) {%>
-                        <tr>
-                            <td><%= p.getProfitID()%></td>
-                            <td><%= p.getProductName()%></td>
-                            <td><%= p.getStorage()%></td>
-                            <td><%= p.getColor()%></td>
-                            <td><%= p.getQuantity()%></td>
-                            <td><%= String.format("%,.0f", p.getCostPrice())%></td>
-                            <td><%= String.format("%,.0f", p.getSellingPrice())%></td>
-                            <td><%= p.getCalculatedDate()%></td>
-                        </tr>
-                        <% }
-                        } else { %>
-                        <tr>
-                            <td colspan="8" class="ih-wrapper-empty">
-                                <i class="bi bi-inbox"></i>
-                                <br>No stock entry history yet.
-                            </td>
-                        </tr>
-                        <% }%>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+            <div class="main-content">
+                <div class="container-fluid">
+
+                    <div class="d-flex justify-content-center align-items-center position-relative mb-4">
+                        <h2 class="page-title mb-0">
+                            <i class="bi bi-clock-history me-2"></i> Lịch Sử Nhập Kho
+                        </h2>
+                        <a href="admin?action=showImportForm" class="btn btn-primary fw-bold shadow-sm px-4 position-absolute end-0">
+                            <i class="bi bi-plus-lg me-2"></i> Nhập Hàng Mới
+                        </a>
+                    </div>
+
+                    <c:if test="${not empty sessionScope.MESS}">
+                        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+                            <i class="bi bi-check-circle-fill me-2"></i> ${sessionScope.MESS}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                        <% session.removeAttribute("MESS");%>
+                    </c:if>
+
+                    <div class="card card-custom p-0 overflow-hidden">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0 border-light">
+                                <thead class="table-light fw-bold text-secondary small">
+                                    <tr>
+                                        <th class="ps-4" style="width: 10%">MÃ PHIẾU</th>
+                                        <th style="width: 15%">NGÀY NHẬP</th>
+                                        <th style="width: 20%">NHÀ CUNG CẤP</th>
+                                        <th style="width: 10%">NGƯỜI NHẬP</th>
+                                        <th class="text-end" style="width: 15%">TỔNG TIỀN</th>
+                                        <th style="width: 20%">GHI CHÚ</th>
+                                        <th class="text-center" style="width: 10%">HÀNH ĐỘNG</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <c:forEach items="${listImports}" var="i">
+                                        <tr>
+                                            <td class="ps-4 fw-bold text-primary">
+                                                #${i.importID}
+                                            </td>
+
+                                            <td class="text-secondary small">
+                                                <i class="bi bi-clock me-1"></i> ${i.formattedDate}
+                                            </td>
+
+                                            <td class="fw-bold text-dark text-truncate" title="${i.supplierName}">
+                                                ${i.supplierName}
+                                            </td>
+
+                                            <td>
+                                                <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 rounded-pill px-3">
+                                                    Admin
+                                                </span>
+                                            </td> 
+
+                                            <td class="text-end fw-bold text-danger">
+                                                <fmt:formatNumber value="${i.totalCost}" type="currency" currencySymbol="₫"/>
+                                            </td>
+
+                                            <td>
+                                                <div class="text-muted small text-truncate" title="${i.note}">
+                                                    ${i.note}
+                                                </div>
+                                            </td>
+
+                                            <td class="text-center">
+                                                <a href="admin?action=viewDetail&id=${i.importID}" class="btn btn-sm btn-light border hover-shadow rounded-pill px-3" title="Xem chi tiết">
+                                                    Xem <i class="bi bi-arrow-right-short"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </c:forEach>
+                                </tbody>
+                            </table>
+
+                            <c:if test="${empty listImports}">
+                                <div class="p-5 text-center text-muted">
+                                    <img src="https://cdn-icons-png.flaticon.com/512/4076/4076432.png" width="60" alt="Empty" class="mb-3 opacity-50">
+                                    <p class="fw-bold">Chưa có phiếu nhập hàng nào!</p>
+                                    <a href="admin?action=showImportForm" class="btn btn-sm btn-primary">Tạo phiếu ngay</a>
+                                </div>
+                            </c:if>
+                        </div>
+                    </div> </div>
+            </div> </div> <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     </body>
 </html>

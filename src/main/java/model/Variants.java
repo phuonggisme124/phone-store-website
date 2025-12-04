@@ -16,6 +16,8 @@ public class Variants {
     private String storage;       // Storage / size / version
     private String description;   // Detailed description of the variant
     private String imageUrl;      // URL to the representative image
+    private int categoryID;
+    private String productName;
 
     //=================== CONSTRUCTORS ===================//
     // No-argument constructor
@@ -36,10 +38,10 @@ public class Variants {
         this.description = description;
         this.imageUrl = imageUrl;
     }
-    
-        // Constructor for display in cart
-    public Variants(int variantID, int productID, String color, String storage, double price
-            , Double discountPrice, int stock,
+
+    // Constructor for display in cart
+    public Variants(int variantID, int productID, String color, String storage, double price,
+            Double discountPrice, int stock,
             String imageUrl) {
         this.variantID = variantID;
         this.productID = productID;
@@ -50,6 +52,7 @@ public class Variants {
         this.storage = storage;
         this.imageUrl = imageUrl;
     }
+
     //=================== GETTERS & SETTERS ===================//
     public int getVariantID() {
         return variantID;
@@ -129,4 +132,21 @@ public class Variants {
         }
         return this.imageUrl.split("#");
     }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
+    public int getCategoryID() {
+        return categoryID;
+    }
+
+    public void setCategoryID(int categoryID) {
+        this.categoryID = categoryID;
+    }
+
 }

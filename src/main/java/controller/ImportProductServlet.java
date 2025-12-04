@@ -4,8 +4,10 @@
  */
 package controller;
 
+import dao.ImportDAO;
 import dao.ProductDAO;
 import dao.ProfitDAO;
+import dao.SupplierDAO;
 import dao.VariantsDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -16,6 +18,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
 import java.io.File;
 import java.sql.SQLException;
@@ -24,8 +27,12 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import model.Import;
+import model.ImportDetail;
 import model.Products;
 import model.Profit;
+import model.Suppliers;
+import model.Users;
 import model.Variants;
 
 /**
@@ -74,7 +81,17 @@ public class ImportProductServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            SupplierDAO sup = new SupplierDAO();
+            List<Suppliers> listSup = sup.getAllSupplier();
+            request.setAttribute("listSup", listSup);
+            VariantsDAO var = new VariantsDAO();
+            List<Variants> listVar = var.getAllVariantsWithProductName();
+            request.setAttribute("listVar", listVar);
+            request.getRequestDispatcher("importProduct.jsp").forward(request, response);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -88,102 +105,57 @@ public class ImportProductServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.setCharacterEncoding("UTF-8");
         try {
-            // 1. XỬ LÝ INPUT TỪ FORM
-            // -------------------------------------------------------------
-            String productSelect = request.getParameter("productID");
+            HttpSession session = request.getSession();
+            Users user = (Users) session.getAttribute("acc");
+            int supplierID = Integer.parseInt(request.getParameter("supplierID"));
+            String note = request.getParameter("note");
+            String[] variantID = request.getParameterValues("variantID");
+            String[] qualities = request.getParameterValues("quantity");
+            String[] costPrice = request.getParameterValues("costPrice");
+            String[] sellingPrices = request.getParameterValues("sellingPrice");
+            List<ImportDetail> listDetails = new ArrayList<>();
+            double totalPrice = 0;
+            if (variantID != null) {
+                for (int i = 0; i < variantID.length; i++) {
+                    int vID = Integer.parseInt(variantID[i]);
+                    int qty = Integer.parseInt(qualities[i]);
+                    double price = Double.parseDouble(costPrice[i]);
+                    totalPrice += (qty * price); // tính tổng phiếu nhập  
+                    // Parse giá bán (thêm dòng này)
+                    double sellPrice = 0;
+                    if (sellingPrices != null && sellingPrices.length > i) {
+                        sellPrice = Double.parseDouble(sellingPrices[i]);
+                    }
+                    ImportDetail detail = new ImportDetail();
+                    detail.setVariantID(vID);
+                    detail.setQuality(qty);
+                    detail.setCostPrice(price);
+                    detail.setSellingPrice(sellPrice);
+                    listDetails.add(detail);
 
-            // Kiểm tra nếu chọn "Tạo mới" thì chuyển hướng
-            if ("NEW".equals(productSelect)) {
-                response.sendRedirect("admin?action=showCreateProduct");
-                return;
+                }
             }
-
-            int productID = Integer.parseInt(productSelect);
-            String storage = request.getParameter("storage").trim().toUpperCase();
-            String color = request.getParameter("color").trim().toUpperCase();
-
-            // Parse số liệu
-            int quantity = Integer.parseInt(request.getParameter("quantity"));
-            double costPrice = Double.parseDouble(request.getParameter("costPrice"));
-            double sellingPrice = Double.parseDouble(request.getParameter("sellingPrice"));
-
-            // Lấy thời gian hiện tại
-            LocalDateTime dateTime = LocalDateTime.now();
-            String description = request.getParameter("description");
-            String uploadPath = getServletContext().getRealPath("") + File.separator + "uploads" + File.separator + "products";
-            File uploadDir = new File(uploadPath);
-            if (!uploadDir.exists()) {
-                uploadDir.mkdirs();
-            }
-
-            List<String> photoPathsForDB = new ArrayList<>();
-            List<Part> photoParts = request.getParts().stream()
-                    .filter(part -> "photos".equals(part.getName()) && part.getSize() > 0)
-                    .collect(Collectors.toList());
-
-            for (Part photoPart : photoParts) {
-                String originalFileName = photoPart.getSubmittedFileName();
-                String uniqueFileName = System.currentTimeMillis() + "_" + originalFileName;
-                String filePath = uploadPath + File.separator + uniqueFileName;
-                photoPart.write(filePath);
-                photoPathsForDB.add("uploads/products/" + uniqueFileName);
-            }
-
-            // Lấy ảnh đầu tiên làm ảnh đại diện mới (nếu có)
-            String newMainImagePath = (!photoPathsForDB.isEmpty()) ? photoPathsForDB.get(0) : null;
-            // Khởi tạo DAO
-            VariantsDAO variantDAO = new VariantsDAO();
-            ProfitDAO profitDAO = new ProfitDAO();
-            ProductDAO pdao = new ProductDAO();
-
-            // 2. KIỂM TRA VARIANT ĐÃ TỒN TẠI CHƯA?
-            // -------------------------------------------------------------
-            Variants variant = variantDAO.getVariantByProductStorageColor(productID, storage, color);
-            int variantID;
-
-            if (variant != null) {
-
-                variantID = variant.getVariantID();
-
-                // Cập nhật đối tượng 'variant' có sẵn trong bộ nhớ
-                int newTotalStock = variant.getStock() + quantity;
-                variant.setStock(newTotalStock);
-                variant.setPrice(sellingPrice); // Luôn cập nhật giá bán mới
-
-                // Gọi hàm DAO mới để update mọi thứ
-                variantDAO.updateVariantPriceAndStock(variantID, newTotalStock, sellingPrice);
-
+            Import imp = new Import();
+            if (user != null) {
+                imp.setAccountID(user.getUserId());
             } else {
-                request.setAttribute("pID", productID);
-                Products product = pdao.getProductByID(productID);
-                request.setAttribute("product", product);
-
-                // Nếu có description + ảnh thì vẫn giữ, hoặc người dùng sẽ nhập ở trang create variant
-                request.getRequestDispatcher("admin/admin_manageproduct_createvariant.jsp").forward(request, response);
-                return;
+                imp.setAccountID(1);
             }
-            // 3. LƯU LỊCH SỬ NHẬP HÀNG (PROFIT)
-            // -------------------------------------------------------------
-            // Logic này giờ dùng chung cho cả 2 trường hợp (if và else)
-            // vì chúng ta đã có 'variantID'
-            Profit profit = new Profit();
-            profit.setVariantID(variantID);
-            profit.setQuantity(quantity);       // Lưu số lượng vừa nhập
-            profit.setCostPrice(costPrice);     // Lưu giá vốn
-            profit.setSellingPrice(sellingPrice);
-            profit.setCalculatedDate(dateTime);
-
-            profitDAO.addProfit(profit);
-
-            // 4. CHUYỂN HƯỚNG
-            // -------------------------------------------------------------
-            response.sendRedirect("admin?action=importproduct");
-
+            imp.setSupplierID(supplierID);
+            imp.setTotalCost(totalPrice);
+            imp.setNote(note);
+            ImportDAO dao = new ImportDAO();
+            boolean result = dao.insertImportTransaction(imp, listDetails);
+            if (result) {
+                session.setAttribute("MESS", "NHẬP HÀNG THÀNH CÔNG!");
+                response.sendRedirect("admin?action=importproduct");
+            } else {
+                request.setAttribute("ERROR", "LỖI HỆ THỐNG, VUI LÒNG THỬ LẠI");
+                request.getRequestDispatcher("admin/importProduct.jsp").forward(request, response);
+            }
         } catch (Exception e) {
             e.printStackTrace();
-            response.sendRedirect("admin?action=importproduct");
         }
     }
 

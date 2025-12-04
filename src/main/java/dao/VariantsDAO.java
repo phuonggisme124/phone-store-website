@@ -873,23 +873,22 @@ public class VariantsDAO extends DBContext {
             }
 
         } catch (Exception e) {
-           
+
             e.printStackTrace();
         }
         return generatedID;
     }
-    
-    public void reduceStock(int variantID, int quantity) {
-    String sql = "UPDATE Variants SET Stock = Stock - ? WHERE VariantID = ?";
-    try (PreparedStatement ps = conn.prepareStatement(sql)) {
-        ps.setInt(1, quantity);
-        ps.setInt(2, variantID);
-        ps.executeUpdate();
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
-}
 
+    public void reduceStock(int variantID, int quantity) {
+        String sql = "UPDATE Variants SET Stock = Stock - ? WHERE VariantID = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, quantity);
+            ps.setInt(2, variantID);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     public boolean updateVariant(Variants variant) {
         // Câu SQL này cập nhật các thông tin quan trọng
@@ -911,6 +910,39 @@ public class VariantsDAO extends DBContext {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public List<Variants> getAllVariantsWithProductName() {
+        List<Variants> list = new ArrayList<>();
+        String sql = "SELECT v.variantID, v.productID, v.color, v.storage, v.stock, v.price, "
+                + " p.Name AS ProductName, "
+                + " p.CategoryID "
+                + " FROM Variants v "
+                + "INNER JOIN Products p ON v.productID = p.productID";
+
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Variants v = new Variants();
+
+                // 1. Map các thông tin cơ bản của Variant
+                v.setVariantID(rs.getInt("variantID"));
+                v.setProductID(rs.getInt("productID"));
+                v.setColor(rs.getString("color"));
+                v.setStorage(rs.getString("storage"));
+                v.setStock(rs.getInt("stock"));
+                v.setPrice(rs.getDouble("price"));
+                v.setProductName(rs.getString("ProductName"));
+                v.setCategoryID(rs.getInt("CategoryID"));
+
+                list.add(v);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return list;
     }
 
 }
