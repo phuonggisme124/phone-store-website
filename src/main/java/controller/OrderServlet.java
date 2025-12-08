@@ -22,6 +22,7 @@ import model.Users;
 import com.google.gson.Gson;
 import dao.OrderDetailDAO;
 import dao.VariantsDAO;
+import java.util.HashMap;
 
 /**
  * OrderServlet - Handles order management for Staff, Shipper, Admin, and Customer
@@ -69,7 +70,13 @@ public class OrderServlet extends HttpServlet {
                 } else {
                     orders = dao.getOrdersByShipperIdAndStatus(userID, status);
                 }
-
+                HashMap<Integer, List<OrderDetails>> orderDetailList = new HashMap<>();
+                OrderDetailDAO oDDAO = new OrderDetailDAO();
+                for(Order o : orders) {
+                    List<OrderDetails> oDList = oDDAO.getOrderDetailByOrderID(o.getOrderID());
+                    orderDetailList.put(o.getOrderID(), oDList);
+                }
+                request.setAttribute("orderDetailList", orderDetailList);
                 request.setAttribute("orders", orders);
                 request.setAttribute("shipperName", currentUser.getFullName());
                 targetPage = "shipper/dashboard_shipper.jsp";
