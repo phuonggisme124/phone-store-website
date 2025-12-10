@@ -26,7 +26,7 @@ public class WishlistDAO extends DBContext {
             ps.setInt(3, variantId);
             ps.executeUpdate();
         } catch (Exception e) {
-            e.printStackTrace(); // ⭐ log lỗi để debug
+            e.printStackTrace(); 
         }
     }
 
