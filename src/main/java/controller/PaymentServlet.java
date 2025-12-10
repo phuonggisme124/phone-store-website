@@ -5,6 +5,7 @@ import dao.InterestRateDAO;
 import dao.OrderDAO;
 import dao.OrderDetailDAO;
 import dao.PaymentsDAO;
+import dao.UsersDAO;
 import dao.VariantsDAO;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
@@ -38,6 +39,7 @@ public class PaymentServlet extends HttpServlet {
         if (action != null && action.equalsIgnoreCase("buyNowFromProductDetail")) {
             try {
                 // BƯỚC 1: KIỂM TRA ĐĂNG NHẬP
+                session.setAttribute("buyFrom", action);
                 model.Users user = (model.Users) session.getAttribute("user");
                 Integer userID = user.getUserId();
                 if (userID == null) {
@@ -59,7 +61,6 @@ public class PaymentServlet extends HttpServlet {
                     return;
                 }
 
-                // Nếu mọi thứ ổn, tiếp tục tạo cart
                 cart = new Carts(userID, variant, quantity);
                 cart.setCartID(userID);
                 List<Carts> carts = new ArrayList<>();
@@ -74,6 +75,7 @@ public class PaymentServlet extends HttpServlet {
                 response.sendRedirect("homepage?error=invalid_parameter");
             }
         } else if (action.equalsIgnoreCase("buyNowFromCart")) {
+            session.setAttribute("buyFrom", action);
             List<Carts> carts = (List<Carts>) session.getAttribute("cart");
 
             String idsParam = request.getParameter("selectedIds");
@@ -93,7 +95,6 @@ public class PaymentServlet extends HttpServlet {
                 }
             }
 
-            // Lưu vào cartCheckout, KHÔNG ghi đè cart gốc
             session.setAttribute("cartCheckout", cartSelectedItemsList);
 
             request.getRequestDispatcher("customer/payment.jsp").forward(request, response);
@@ -146,34 +147,32 @@ public class PaymentServlet extends HttpServlet {
                 }
                 InterestRateDAO iRDAO = new InterestRateDAO();
                 InterestRate iR = iRDAO.getInterestRatePercentByIstalmentPeriod(term);
+
                 double totalPriceIfInstalment = totalPrice + ((totalPrice * iR.getPercent()) / 100);
-                // Thêm OrderDetails với OrderID MỚI TẠO
                 Order o = new Order(userID, paymentMethodArr[0], specificAddress, totalPriceIfInstalment, "Pending", isInstalment, new Users(receiverName, receiverPhone));
                 PaymentsDAO pmDAO = new PaymentsDAO();
 
                 int newOrderID = oDAO.addNewOrder(o);
 
                 o.setOrderID(newOrderID);
-                //Khi có thanh toán bằng trả góp thì tạo 1 danh sách các payment cần phải trả cho đơn hàng thanh toán đó dựa theo số tháng mà người dùng chọn
                 o.setOrderDate(LocalDateTime.now());
                 pmDAO.insertNewPayment(o, term);
                 OrderDetailDAO oDDAO = new OrderDetailDAO();
-                if (iR != null) {
-                    for (Carts c : carts) {
-                        // SỬA QUAN TRỌNG: Dùng newOrderID thay vì userID
-                        double unitPriceIfInstalment = c.getVariant().getDiscountPrice() + ((c.getVariant().getDiscountPrice() * iR.getPercent()) / 100);
-                        OrderDetails oD = new OrderDetails(
-                                newOrderID, // OrderID mới tạo (VD: 156, 157, 158...)
-                                c.getVariant().getVariantID(),
-                                c.getQuantity(),
-                                unitPriceIfInstalment,
-                                iR.getInstalmentPeriod(),
-                                unitPriceIfInstalment / iR.getInstalmentPeriod(),
-                                0,
-                                iR.getPercent()
-                        );
-                        oDDAO.insertNewOrderDetail(oD, isInstalment);
-                    }
+
+                for (Carts c : carts) {
+                    double unitPriceIfInstalment = c.getVariant().getDiscountPrice() + ((c.getVariant().getDiscountPrice() * iR.getPercent()) / 100);
+                    OrderDetails oD = new OrderDetails(
+                            newOrderID,
+                            c.getVariant().getVariantID(),
+                            c.getQuantity(),
+                            unitPriceIfInstalment,
+                            iR.getInterestRateID(),
+                            unitPriceIfInstalment / iR.getInstalmentPeriod(),
+                            0,
+                            iR.getPercent()
+                    );
+                    oDDAO.insertNewOrderDetail(oD, isInstalment);
+
                 }
 
             } else {
@@ -182,19 +181,14 @@ public class PaymentServlet extends HttpServlet {
                 if (totalPriceStr != null && !totalPriceStr.isEmpty()) {
                     totalPrice = Double.parseDouble(totalPriceStr);
                 }
-
-                // SỬA: Lấy từ cartCheckout thay vì cart
-                // Tạo Order và LẤY OrderID được tự động sinh
                 Order o = new Order(userID, paymentMethod, specificAddress, totalPrice, "Pending", isInstalment, new Users(receiverName, receiverPhone));
-
                 int newOrderID = oDAO.addNewOrder(o);
                 o.setOrderID(newOrderID);
-                // Thêm OrderDetails với OrderID MỚI TẠO
+ 
                 OrderDetailDAO oDDAO = new OrderDetailDAO();
                 for (Carts c : carts) {
-                    // SỬA QUAN TRỌNG: Dùng newOrderID thay vì userID
                     OrderDetails oD = new OrderDetails(
-                            newOrderID, // OrderID mới tạo (VD: 156, 157, 158...)
+                            newOrderID, 
                             c.getVariant().getVariantID(),
                             c.getQuantity(),
                             c.getVariant().getDiscountPrice()
@@ -202,17 +196,31 @@ public class PaymentServlet extends HttpServlet {
                     oDDAO.insertNewOrderDetail(oD, isInstalment);
                 }
             }
-            VariantsDAO vDAO = new VariantsDAO();
             CartDAO cartDAO = new CartDAO();
-            for (Carts c : carts) {
-                cartDAO.removeCartItem(userID, c.getVariant().getVariantID());
-                vDAO.decreaseQuantity(c.getVariant().getVariantID(), c.getQuantity());
+            String buyFrom = (String) session.getAttribute("buyFrom");
+
+            if (buyFrom != null && buyFrom.equalsIgnoreCase("buyNowFromCart")) {
+                for (Carts c : carts) {
+                    cartDAO.removeCartItem(userID, c.getVariant().getVariantID());
+                }
+                
+                List<Carts> updatedCart = cartDAO.getItemIntoCartByUserID(userID);
+                session.setAttribute("cart", updatedCart);
+            }
+            UsersDAO uDAO  = new UsersDAO();
+            if(u.getPhone() == null || u.getPhone().isEmpty()) {      
+                uDAO.insertPhone(u.getUserId(), receiverPhone);
+                u.setPhone(receiverPhone);
+            }
+            boolean updateAddressBasedOnAPI = "true".equals(request.getParameter("updateAddressBasedOnAPI"));
+            if(u.getAddress() == null || u.getAddress().isEmpty() || updateAddressBasedOnAPI) {
+                uDAO.insertAddress(userID, specificAddress);
+                u.setAddress(specificAddress);
             }
 
-            session.setAttribute("cart", carts);
             session.removeAttribute("cartCheckout");
-
-            response.sendRedirect("homepage");
+            session.removeAttribute("buyFrom");
+            request.getRequestDispatcher("homepage").forward(request, response);
         }
     }
 

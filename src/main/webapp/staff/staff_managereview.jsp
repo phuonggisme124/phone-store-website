@@ -12,11 +12,11 @@
         <title>Staff Dashboard - Product Reviews</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-
         <link rel="stylesheet" href="css/dashboard_staff.css">
         <link href="css/dashboard_table.css" rel="stylesheet">
         <style>
-            /* Toast notification style */
+           
+            /* thông báo */
             .toast-notification {
                 position: fixed;
                 top: 20px;
@@ -51,23 +51,175 @@
                     opacity: 0;
                 }
             }
+
+            /* động*/
+            .reply-badge {
+                display: inline-flex;
+                align-items: center;
+                padding: 6px 12px;
+                border-radius: 20px;
+                font-weight: 600;
+                font-size: 0.85rem;
+                transition: all 0.3s ease;
+                animation: fadeIn 0.5s ease-out;
+            }
+
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: scale(0.8);
+                }
+                to {
+                    opacity: 1;
+                    transform: scale(1);
+                }
+            }
+
+            .reply-badge.replied {
+                background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+                color: white;
+                box-shadow: 0 4px 12px rgba(17, 153, 142, 0.3);
+            }
+
+            .reply-badge.no-reply {
+                background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+                color: #666;
+            }
+
+            .reply-badge:hover {
+                transform: translateY(-2px) scale(1.05);
+                box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+            }
+
+            .reply-badge i {
+                margin-right: 6px;
+                animation: pulse 2s infinite;
+            }
+
+            @keyframes pulse {
+                0%, 100% {
+                    transform: scale(1);
+                }
+                50% {
+                    transform: scale(1.1);
+                }
+            }
+
+            /* sao nổi */
+            .star-rating i {
+                animation: starGlow 1.5s ease-in-out infinite;
+                animation-delay: calc(var(--star-index) * 0.1s);
+            }
+
+            @keyframes starGlow {
+                0%, 100% {
+                    filter: drop-shadow(0 0 2px rgba(255, 193, 7, 0.5));
+                }
+                50% {
+                    filter: drop-shadow(0 0 6px rgba(255, 193, 7, 0.8));
+                }
+            }
+
+            /* rê chuật hàng */
+            tbody tr {
+                transition: all 0.3s ease;
+                cursor: pointer;
+            }
+
+            tbody tr:hover {
+                background: linear-gradient(90deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+                transform: translateX(5px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            }
+
+            
+            #suggestionBox {
+                background: white;
+                border: 1px solid rgba(102, 126, 234, 0.2);
+                border-radius: 12px;
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+                overflow: hidden;
+            }
+
+            #suggestionBox .list-group-item {
+                border: none;
+                transition: all 0.3s ease;
+            }
+
+            #suggestionBox .list-group-item:hover {
+                background: linear-gradient(90deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+                transform: translateX(5px);
+                padding-left: 20px;
+            }
+
+          
+            .comment-preview {
+                max-width: 200px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                cursor: help;
+                position: relative;
+            }
+
+            .comment-preview:hover::after {
+                content: attr(data-full-comment);
+                position: absolute;
+                bottom: 100%;
+                left: 0;
+                background: rgba(0, 0, 0, 0.9);
+                color: white;
+                padding: 8px 12px;
+                border-radius: 8px;
+                white-space: normal;
+                max-width: 300px;
+                z-index: 1000;
+                font-size: 0.85rem;
+                animation: tooltipFadeIn 0.3s ease;
+            }
+
+            @keyframes tooltipFadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(5px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            
+            .card {
+                border-radius: 16px !important;
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08) !important;
+                transition: all 0.3s ease;
+            }
+
+            .card:hover {
+                box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12) !important;
+            }
+
+            
+            .btn {
+                border-radius: 10px;
+                transition: all 0.3s ease;
+            }
+
+            .btn:hover {
+                transform: translateY(-2px);
+            }
         </style>
     </head>
     <body>
         <%
             List<Review> listReview = (List<Review>) request.getAttribute("listReview");
             Users currentUser = (Users) session.getAttribute("user");
-
             
-            // Lấy giá trị filter/search hiện tại từ request
             String currentRating = request.getParameter("ratingFilter") != null ? request.getParameter("ratingFilter") : "All";
             String currentProductName = request.getParameter("productName") != null ? request.getParameter("productName") : "";
-            
-            // Kiểm tra có thông báo success không
             String successMessage = request.getParameter("success");
             
-            // Tạo danh sách tên sản phẩm để autocomplete
-
             ProductDAO pdao = new ProductDAO();
             List<String> allProductNames = new ArrayList<>();
             if (listReview != null) {
@@ -84,8 +236,7 @@
             const allProductNames = <%= new Gson().toJson(allProductNames) %>;
         </script>
 
-
-        <!-- Toast Notification -->
+       
         <% if (successMessage != null && !successMessage.isEmpty()) { %>
         <div class="toast-notification">
             <div class="alert alert-success alert-dismissible fade show shadow-lg" role="alert" id="successToast">
@@ -111,30 +262,25 @@
                     <h4 class="fw-bold text-primary">Mantis</h4>
                 </div>
                 <ul class="list-unstyled ps-3">
-
-                    <li><a href="staff?action=manageProduct"><i class="bi bi-box me-2"></i>Products</a></li>
-                    <li><a href="staff?action=manageOrder"><i class="bi bi-bag me-2"></i>Orders</a></li>
-                    <li><a href="staff?action=manageReview" class="fw-bold text-primary"><i class="bi bi-chat-left-text me-2"></i>Reviews</a></li>
+                    <li><a href="product?action=manageProduct"><i class="bi bi-box me-2"></i>Products</a></li>
+                    <li><a href="order?action=manageOrder"><i class="bi bi-bag me-2"></i>Orders</a></li>
+                    <li><a href="review?action=manageReview" class="fw-bold text-primary"><i class="bi bi-chat-left-text me-2"></i>Reviews</a></li>
+                    <li><a href="importproduct?action=staff_import"><i class="bi bi-chat-left-text me-2"></i>importProduct</a></li>
                 </ul>
             </nav>
 
-            <!-- Page Content -->
+           
             <div class="page-content flex-grow-1">
                 <!-- Navbar -->
-
                 <nav class="navbar navbar-light bg-white shadow-sm">
                     <div class="container-fluid">
                         <button class="btn btn-outline-primary" id="menu-toggle">
                             <i class="bi bi-list"></i>
                         </button>
                         <div class="d-flex align-items-center ms-auto">
-
-
                             <!-- Search Product -->
-                            <form action="staff" method="get" class="d-flex position-relative me-3" id="searchForm" autocomplete="off">
+                            <form action="review" method="get" class="d-flex position-relative me-3" id="searchForm" autocomplete="off">
                                 <input type="hidden" name="action" value="manageReview">
-                                <!-- Giữ lại ratingFilter nếu đang filter -->
-
                                 <input type="hidden" name="ratingFilter" value="<%= currentRating %>">
                                 <input class="form-control me-2" type="text" id="searchProduct" name="productName"
                                        placeholder="Search Product…" value="<%= currentProductName %>"
@@ -146,21 +292,16 @@
                                      style="top: 100%; z-index: 1000;"></div>
                             </form>
 
-
                             <!-- Filter Rating -->
-                            <form action="staff" method="get" class="dropdown me-3">
+                            <form action="review" method="get" class="dropdown me-3">
                                 <input type="hidden" name="action" value="manageReview">
-                                <!-- Giữ lại productName nếu đang search -->
-
                                 <input type="hidden" name="productName" value="<%= currentProductName %>">
-
                                 <button class="btn btn-outline-secondary fw-bold dropdown-toggle"
                                         type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="bi bi-funnel"></i> Filter
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="filterDropdown">
                                     <li><button type="submit" name="ratingFilter" value="All" class="dropdown-item">All Ratings</button></li>
-
                                     <li><button type="submit" name="ratingFilter" value="5" class="dropdown-item">
                                         <i class="bi bi-star-fill text-warning"></i> 5 Stars
                                     </button></li>
@@ -176,7 +317,6 @@
                                     <li><button type="submit" name="ratingFilter" value="1" class="dropdown-item">
                                         <i class="bi bi-star-fill text-warning"></i> 1 Star
                                     </button></li>
-
                                 </ul>
                             </form>
 
@@ -189,8 +329,7 @@
                     </div>
                 </nav>
 
-
-                <!-- Reviews Table -->
+                
                 <div class="container-fluid p-4">
                     <div class="card shadow-sm border-0 p-4">
                         <div class="card-body p-0">
@@ -207,43 +346,54 @@
                                             <th>Rating</th>
                                             <th>Comment</th>
                                             <th>Review Date</th>
-                                            <th>Reply</th>
+                                            <th>Reply Status</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <%
-
                                             for (Review r : listReview) {
                                                 String productName = pdao.getNameByID(r.getVariant().getProductID());
                                                 
-                                                // Lọc theo Rating nếu không phải "All"
                                                 if (!currentRating.equals("All") && r.getRating() != Integer.parseInt(currentRating)) {
                                                     continue;
                                                 }
                                                 
-                                                // Lọc theo Product Name nếu có search
                                                 if (!currentProductName.isEmpty() && !productName.toLowerCase().contains(currentProductName.toLowerCase())) {
                                                     continue;
                                                 }
+                                                
+                                                boolean hasReply = r.getReply() != null && !r.getReply().isEmpty();
                                         %>
-                                        <tr onclick="window.location.href = 'staff?action=reviewDetail&rID=<%= r.getReviewID()%>'" style="cursor: pointer;">
-                                            <td>#<%= r.getReviewID()%></td>
-                                            <td><%= r.getUser().getFullName()%></td>
+                                        <tr onclick="window.location.href = 'review?action=reviewDetail&rID=<%= r.getReviewID()%>'">
+                                            <td><span class="badge bg-primary">#<%= r.getReviewID()%></span></td>
+                                            <td><strong><%= r.getUser().getFullName()%></strong></td>
                                             <td><%= productName%> <%= r.getVariant().getStorage()%></td>
                                             <td>
-                                                <% for (int i = 0; i < r.getRating(); i++) { %>
-                                                <i class="bi bi-star-fill text-warning"></i>
-                                                <% } %>
-
-                                                <span class="ms-1"><%= r.getRating()%></span>
+                                                <!-- loop só sao -->
+                                                <div class="star-rating">
+                                                    <% for (int i = 0; i < r.getRating(); i++) { %>
+                                                    <i class="bi bi-star-fill text-warning" style="--star-index: <%= i %>;"></i>
+                                                    <% } %>
+                                                    <span class="ms-1 fw-bold"><%= r.getRating()%></span>
+                                                </div>
                                             </td>
-                                            <td><%= r.getComment()%></td>
+                                            <td>
+                                                <div class="comment-preview" data-full-comment="<%= r.getComment()%>">
+                                                    <%= r.getComment()%>
+                                                </div>
+                                            </td>
                                             <td><%= r.getReviewDate()%></td>
                                             <td>
-                                                <% if (r.getReply() != null && !r.getReply().isEmpty()) { %>
-                                                <i class="bi bi-check-circle-fill text-success"></i> Replied
+                                                <% if (hasReply) { %>
+                                                <span class="reply-badge replied">
+                                                    <i class="bi bi-check-circle-fill"></i>
+                                                    Replied
+                                                </span>
                                                 <% } else { %>
-                                                <i class="bi bi-dash-circle text-muted"></i> No reply
+                                                <span class="reply-badge no-reply">
+                                                    <i class="bi bi-dash-circle"></i>
+                                                    No reply
+                                                </span>
                                                 <% } %>
                                             </td>
                                         </tr>
@@ -255,72 +405,34 @@
                             <div class="alert alert-info m-4" role="alert">
                                 <i class="bi bi-info-circle me-2"></i>No reviews available.
                             </div>
-
                             <% }%>
                         </div>
                     </div>
                 </div>
-
-
-                <!-- Modal Reply -->
-                <div class="modal fade" id="replyModal" tabindex="-1">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Reply to Review</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                            </div>
-
-                            <form action="staff" method="post">
-                                <input type="hidden" name="action" value="replyReview">
-                                <input type="hidden" name="reviewID" id="modalReviewID">
-                                <div class="modal-body">
-                                    <div class="mb-3">
-                                        <label for="replyText" class="form-label">Reply</label>
-                                        <textarea class="form-control" id="replyText" name="reply" rows="3" required></textarea>
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="submit" class="btn btn-primary">Save Reply</button>
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-
             </div>
         </div>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
         <script>
-            // Menu toggle
+            // thu menu
             document.getElementById("menu-toggle").addEventListener("click", function () {
                 document.getElementById("wrapper").classList.toggle("toggled");
             });
 
-
-            // Reply Modal
-            var replyModal = null;
+            //thông báo
             window.onload = function () {
-                replyModal = new bootstrap.Modal(document.getElementById('replyModal'));
-                
-                // Tự động ẩn thông báo sau 3 giây
                 var successToast = document.getElementById('successToast');
                 if (successToast) {
                     setTimeout(function() {
-                        // Thêm class hiding để chạy animation
                         var toastContainer = successToast.closest('.toast-notification');
                         if (toastContainer) {
                             toastContainer.classList.add('hiding');
                         }
                         
-                        // Đợi animation hoàn thành rồi mới xóa element
                         setTimeout(function() {
                             var alert = bootstrap.Alert.getOrCreateInstance(successToast);
                             alert.close();
                             
-                            // Xóa parameter 'success' khỏi URL
                             if (window.history.replaceState) {
                                 var url = new URL(window.location);
                                 url.searchParams.delete('success');
@@ -330,14 +442,8 @@
                     }, 3000);
                 }
             };
-            
-            function openReplyModal(reviewID, currentReply) {
-                document.getElementById('modalReviewID').value = reviewID;
-                document.getElementById('replyText').value = currentReply;
-                replyModal.show();
-            }
 
-            // ------------------ Autocomplete ------------------
+            //gợi í
             var debounceTimer;
             function showSuggestions(str) {
                 clearTimeout(debounceTimer);
@@ -345,7 +451,6 @@
                     var box = document.getElementById("suggestionBox");
                     box.innerHTML = "";
                     if (str.length < 1) return;
-
 
                     var matches = allProductNames.filter(name => 
                         name.toLowerCase().includes(str.toLowerCase())
@@ -373,7 +478,7 @@
                 }, 200);
             }
 
-            // Ẩn suggestions khi click bên ngoài
+            
             document.addEventListener('click', function(e) {
                 var searchInput = document.getElementById('searchProduct');
                 var suggestionBox = document.getElementById('suggestionBox');
@@ -381,6 +486,14 @@
                     suggestionBox.innerHTML = "";
                 }
             });
+
+            // Add row animation on load
+//            document.addEventListener('DOMContentLoaded', function() {
+//                const rows = document.querySelectorAll('tbody tr');
+//                rows.forEach((row, index) => {
+//                    row.style.animation = `fadeIn 0.5s ease-out ${index * 0.05}s backwards`;
+//                });
+//            });
         </script>
     </body>
 </html>

@@ -20,7 +20,15 @@ import model.OrderDetails;
 import model.Payments;
 import model.Users;
 import com.google.gson.Gson;
+import dao.OrderDetailDAO;
+import dao.VariantsDAO;
+import java.util.HashMap;
 
+/**
+ * OrderServlet - Handles order management for Staff, Shipper, Admin, and Customer
+ * Authors: phương, thịnh, duy
+ * Note: Removed cancelOrder action for Staff (customers now cancel their own orders)
+ */
 @WebServlet(name = "OrderServlet", urlPatterns = {"/order"})
 public class OrderServlet extends HttpServlet {
 
@@ -62,7 +70,13 @@ public class OrderServlet extends HttpServlet {
                 } else {
                     orders = dao.getOrdersByShipperIdAndStatus(userID, status);
                 }
-
+                HashMap<Integer, List<OrderDetails>> orderDetailList = new HashMap<>();
+                OrderDetailDAO oDDAO = new OrderDetailDAO();
+                for(Order o : orders) {
+                    List<OrderDetails> oDList = oDDAO.getOrderDetailByOrderID(o.getOrderID());
+                    orderDetailList.put(o.getOrderID(), oDList);
+                }
+                request.setAttribute("orderDetailList", orderDetailList);
                 request.setAttribute("orders", orders);
                 request.setAttribute("shipperName", currentUser.getFullName());
                 targetPage = "shipper/dashboard_shipper.jsp";
@@ -82,7 +96,7 @@ public class OrderServlet extends HttpServlet {
                 request.setAttribute("orders", orders);
                 targetPage = "orders.jsp";
 
-            } else if (userRole == 4) { // Admin (Thêm trường hợp này để Admin vào thẳng Dashboard Admin)
+            } else if (userRole == 4) { // Admin
                 response.sendRedirect("order?action=manageOrderAdmin");
                 return;
             } else {
@@ -129,7 +143,6 @@ public class OrderServlet extends HttpServlet {
 
             if (currentUser == null || (currentUser.getRole() != 2 && currentUser.getRole() != 4)) {
                 response.sendRedirect("login");
-
                 return;
             }
 
@@ -160,7 +173,7 @@ public class OrderServlet extends HttpServlet {
                 List<String> listPhone = dao.getAllPhone();
 
                 for (Order o : listOrder) {
-                    System.out.println("OrderID: " + o.getOrderID() + " StaffID: "+ o.getStaffID());
+                    System.out.println("OrderID: " + o.getOrderID() + " StaffID: " + o.getStaffID());
                 }
                 request.setAttribute("listOrder", listOrder);
                 request.setAttribute("listPhone", listPhone);
@@ -183,7 +196,6 @@ public class OrderServlet extends HttpServlet {
         } // --- ADMIN ORDER DETAIL ---
         else if (action.equals("orderDetail")) {
             int oid = Integer.parseInt(request.getParameter("id"));
-            // Kiểm tra null để tránh lỗi nếu tham số không tồn tại
             String isInstalmentParam = request.getParameter("isIntalment");
             boolean isInstalment = (isInstalmentParam != null) ? Boolean.parseBoolean(isInstalmentParam) : false;
 
@@ -198,18 +210,13 @@ public class OrderServlet extends HttpServlet {
             request.getRequestDispatcher("admin/admin_manageorder_detail.jsp").forward(request, response);
         } // --- INSTALMENT ---
         else if (action.equals("showInstalment")) {
-            // Lấy danh sách đơn trả góp
             List<Order> listOrder = dao.getAllOrderInstalment();
             List<String> listPhone = dao.getAllPhoneInstalment();
-
-            // --- MỚI THÊM: Lấy danh sách Staff và Shipper ---
             List<Users> listShippers = udao.getAllShippers();
-            List<Users> listStaff = udao.getUsersByRole(2); // Role 2 là Staff
+            List<Users> listStaff = udao.getUsersByRole(2);
 
             request.setAttribute("listOrder", listOrder);
             request.setAttribute("listPhone", listPhone);
-
-            // Gửi sang JSP
             request.setAttribute("listShippers", listShippers);
             request.setAttribute("listStaff", listStaff);
 
@@ -227,7 +234,6 @@ public class OrderServlet extends HttpServlet {
                 listOrder = dao.getAllOrderByPhoneAndStatus(phone, status);
             }
 
-            // --- MỚI THÊM: Phải gửi kèm List Staff/Shipper để không bị mất tên khi search ---
             List<Users> listShippers = udao.getAllShippers();
             List<Users> listStaff = udao.getUsersByRole(2);
             request.setAttribute("listShippers", listShippers);
@@ -255,7 +261,6 @@ public class OrderServlet extends HttpServlet {
                 listOrder = dao.getAllOrderByPhoneAndStatus(phone, status);
             }
 
-            // --- MỚI THÊM: Phải gửi kèm List Staff/Shipper để không bị mất tên khi filter ---
             List<Users> listShippers = udao.getAllShippers();
             List<Users> listStaff = udao.getUsersByRole(2);
             request.setAttribute("listShippers", listShippers);
@@ -281,10 +286,23 @@ public class OrderServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
 
         if (action == null) {
+            int orderID = Integer.parseInt(request.getParameter("orderID"));
+            String newStatus = request.getParameter("newStatus");
+            if (newStatus.equalsIgnoreCase("cancelled")) {
+                OrderDetailDAO oDDAO = new OrderDetailDAO();
+                List<OrderDetails> oDList = oDDAO.getOrderDetailByOrderID(orderID);
+                VariantsDAO vDAO = new VariantsDAO();
+                //If user cancel order, return stock of product
+                for (OrderDetails oD : oDList) {
+                    vDAO.increaseQuantity(oD.getVariantID(), oD.getQuantity());
+                }
+            }
+            dao.updateOrderStatus(orderID, newStatus);
             response.sendRedirect("order");
             return;
         }
 
+        // chọn shipper
         if ("assignShipper".equals(action)) {
             if (session == null) {
                 response.sendRedirect("login");
@@ -292,7 +310,6 @@ public class OrderServlet extends HttpServlet {
             }
             Users currentUser = (Users) session.getAttribute("user");
 
-            // Cần xem xét nếu Admin (Role 4) cũng được phép assign shipper
             if (currentUser == null || (currentUser.getRole() != 2 && currentUser.getRole() != 4)) {
                 response.sendRedirect("login");
                 return;
@@ -305,23 +322,25 @@ public class OrderServlet extends HttpServlet {
                 boolean assignSuccess = dao.assignShipperAndStaff(orderID, currentUser.getUserId(), shipperID);
 
                 if (assignSuccess) {
-                    session.setAttribute("message", "Shipper assigned successfully!");
+                    session.setAttribute("message", "Shipper assigned successfully! Stock has been reduced.");
                 } else {
-                    session.setAttribute("error", "Cannot assign shipper, Order must be Pending!");
+                    session.setAttribute("error", "Cannot assign shipper. Order must be Pending!");
                 }
             } catch (NumberFormatException e) {
-                System.err.println("lỗi shipper: " + e.getMessage());
-                session.setAttribute("error", "lỗi shipper");
+                System.err.println("Error assigning shipper: " + e.getMessage());
+                session.setAttribute("error", "Invalid shipper assignment data.");
             }
 
-            // Điều hướng dựa trên Role
             if (currentUser.getRole() == 4) {
                 response.sendRedirect("order?action=manageOrderAdmin");
             } else {
                 response.sendRedirect("order?action=manageOrder");
             }
             return;
-        } else if ("cancelOrder".equals(action)) {
+        }
+        //của thịnh cấm đụng
+        // hủy đơn
+        else if ("cancelOrder".equals(action)) {
             if (session == null) {
                 response.sendRedirect("login");
                 return;
@@ -339,23 +358,24 @@ public class OrderServlet extends HttpServlet {
                 boolean cancelSuccess = dao.cancelOrderByStaff(orderID, currentUser.getUserId());
 
                 if (cancelSuccess) {
-                    session.setAttribute("message", "Order cancel successful!");
+                    session.setAttribute("message", "Order cancelled successfully!");
                 } else {
-                    session.setAttribute("error", "Order cannot cancel. Order must be Pending!");
+                    session.setAttribute("error", "Cannot cancel order. Order must be Pending!");
                 }
             } catch (NumberFormatException e) {
-                System.err.println("lỗi cancel: " + e.getMessage());
-                session.setAttribute("error", "lỗi cancel.");
+                System.err.println("Error cancelling order: " + e.getMessage());
+                session.setAttribute("error", "Invalid order cancellation data.");
             }
 
-            // Điều hướng dựa trên Role
             if (currentUser.getRole() == 4) {
                 response.sendRedirect("order?action=manageOrderAdmin");
             } else {
                 response.sendRedirect("order?action=manageOrder");
             }
             return;
-        } else if ("updateStatus".equals(action)) {
+        }
+// --- UPDATE STATUS (Shipper only) ---
+        else if ("updateStatus".equals(action)) {
             if (session == null) {
                 response.sendRedirect("login");
                 return;
@@ -381,25 +401,24 @@ public class OrderServlet extends HttpServlet {
                 boolean updateSuccess = dao.updateOrderStatusByShipper(orderID, currentUser.getUserId(), newStatus);
 
                 if (updateSuccess) {
-                    session.setAttribute("message", "Status updated successfully!");
+                    session.setAttribute("message", "Order status updated to " + newStatus + " successfully!");
                 } else {
-                    session.setAttribute("error", "Cannot update. Must be In Transit!");
+                    session.setAttribute("error", "Cannot update status. Order must be In Transit and assigned to you!");
                 }
             } catch (NumberFormatException e) {
-                System.err.println("Lỗi cập nhật status: " + e.getMessage());
-                session.setAttribute("error", "Lỗi cập nhật status.");
+                System.err.println("Error updating status: " + e.getMessage());
+                session.setAttribute("error", "Invalid status update data.");
             }
 
             response.sendRedirect("order");
             return;
         }
 
-        // Trường hợp action không hợp lệ
         response.sendRedirect("order");
     }
 
     @Override
     public String getServletInfo() {
-        return "OrderServlet - Handles order management for Staff, Shipper, and Admin";
+        return "OrderServlet - Handles order management for Staff, Shipper, Admin, and Customer";
     }
 }

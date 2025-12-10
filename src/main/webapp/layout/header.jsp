@@ -348,7 +348,7 @@
                                                         for(Notification n : notifications) {
                                             %>
                                             <div class="notification-item" style="border:1px solid #ccc; border-radius:8px; padding:8px; margin-bottom:8px;">
-                                                <p style="margin:0;font-size:14px;"><%= n.getContent() %></p>
+                                                <p style="margin:0;font-size:14px; color: black;"><%= n.getContent() %></p>
                                                 <small style="color:gray;"><%= n.getCreatedAt() %></small>
                                             </div>
                                             <%
@@ -556,4 +556,4 @@
         });
     </script>
 </body>
-</html>
+</html

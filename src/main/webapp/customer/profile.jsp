@@ -23,7 +23,7 @@
     </head>
 
     <body>
-        <section id="billboard" class="bg-light-blue overflow-hidden padding-large" >
+        <section id="billboard" class="bg-light-blue overflow-hidden padding-large" style="margin-top: -60px;" >
             <div class="profile-container">
                 <div class="profile-wrapper">
                     <!-- Sidebar -->

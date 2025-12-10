@@ -12,73 +12,49 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * DBContext class is responsible for establishing a connection
- * to the SQL Server database "PhoneStore".
- *
  * @author Nguyen Quoc Thinh
  * @since 2025-06-05
  */
-
 public class DBContext {
-
-    /**
-     * The Connection object represents the connection to the database.
-     * It is public so that other classes can access the connection directly.
-     */
-
+    
     public Connection conn = null;
-
-    /**
-     * Default constructor for DBContext.
-     */
+    
     public DBContext() {
-        try {
-
-            // Load JDBC driver for SQL Server
+        try {          
             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-
-            // Connection URL to the database
-
+            // kết nối
             String dbURL = "jdbc:sqlserver://localhost:1433;"
                     + "databaseName=PhoneStore;"
                     + "user=sa;"
+<<<<<<< HEAD
                     + "password=1234;"
+=======
+                    + "password=261204;"
+>>>>>>> c80843028cf9648874277785e7b7c677afb557ad
                     + "encrypt=true;trustServerCertificate=true;";
 
             // Establish the connection
+
+
             conn = DriverManager.getConnection(dbURL);
-
-            // If connection is successful, print metadata
+      
             if (conn != null) {
-
                 DatabaseMetaData dm = conn.getMetaData();
                 System.out.println("Driver name: " + dm.getDriverName());
                 System.out.println("Driver version: " + dm.getDriverVersion());
                 System.out.println("Product name: " + dm.getDatabaseProductName());
                 System.out.println("Product version: " + dm.getDatabaseProductVersion());
             }
-
         } catch (SQLException ex) {
-
-            // Handle SQL exceptions
             Logger.getLogger(DBContext.class.getName()).log(Level.SEVERE, null, ex);
             ex.printStackTrace();
-        } catch (ClassNotFoundException ex) {
-            // Handle driver class not found exceptions
-
+        } catch (ClassNotFoundException ex) {         
             Logger.getLogger(DBContext.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
-
-
-    /**
-     * Main method to test the database connection.
-     */
-
-
+//
     public static void main(String[] args) {
-        System.out.println("Checking database connection...");
+        System.out.println("kiem tra ket noi");
         new DBContext();
     }
 }

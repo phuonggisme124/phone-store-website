@@ -9,6 +9,7 @@ import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.annotation.WebListener;
+import jakarta.servlet.http.HttpSession;
 import java.util.List;
 
 /**
@@ -40,7 +41,8 @@ public class AppServletContextListener implements ServletContextListener {
             context.setAttribute("globalVariantsList", variantsList);
             
             System.out.println("tải dữ liệu lên trước");
-
+            
+            
 
         } catch (Exception e) {
             System.err.println("lỗi");

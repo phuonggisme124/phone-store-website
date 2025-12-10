@@ -24,16 +24,14 @@
                 background-color: #f8f9fa;
             }
 
-            /* Wrapper */
             #wrapper {
                 min-height: 100vh;
             }
-
+   /* thu menu */
             #wrapper.toggled .sidebar {
                 margin-left: -250px;
             }
 
-            /* Sidebar Styles */
             .sidebar {
                 width: 250px;
                 min-height: 100vh;
@@ -94,12 +92,10 @@
                 margin-left: 0;
             }
 
-            /* Navbar */
             .navbar {
                 border-bottom: 1px solid #e0e0e0;
             }
 
-            /* Review Container */
             .review-container {
                 display: flex;
                 gap: 30px;
@@ -107,7 +103,6 @@
                 flex-wrap: wrap;
             }
 
-            /* Left Side - Product Images */
             .review-left {
                 flex: 1;
                 min-width: 300px;
@@ -121,12 +116,10 @@
                 color: #333;
             }
 
-            /* Hide radio buttons */
             .review-left input[type="radio"] {
                 display: none;
             }
 
-            /* Main Image Container */
             .main-image {
                 width: 100%;
                 height: 400px;
@@ -146,7 +139,7 @@
                 padding: 10px;
             }
 
-            /* Show selected image */
+            /* ảnh theo check*/
             #img1:checked ~ .main-image .img1,
             #img2:checked ~ .main-image .img2,
             #img3:checked ~ .main-image .img3,
@@ -155,7 +148,6 @@
                 display: block;
             }
 
-            /* Thumbnail List */
             .thumbnail-list {
                 display: flex;
                 gap: 10px;
@@ -183,7 +175,7 @@
                 object-fit: cover;
             }
 
-            /* Active thumbnail */
+            /* viền */
             #img1:checked ~ .thumbnail-list label[for="img1"],
             #img2:checked ~ .thumbnail-list label[for="img2"],
             #img3:checked ~ .thumbnail-list label[for="img3"],
@@ -193,7 +185,6 @@
                 box-shadow: 0 0 8px rgba(13, 110, 253, 0.3);
             }
 
-            /* Right Side - Review Info */
             .review-right {
                 flex: 1;
                 min-width: 300px;
@@ -226,7 +217,7 @@
                 color: #666;
             }
 
-            /* Reply Box */
+            /* tra loi*/
             .reply-box {
                 margin: 15px 0;
             }
@@ -249,7 +240,7 @@
                 box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
             }
 
-            /* Send Button */
+            /* nút */
             .send-btn {
                 background-color: #0d6efd;
                 color: white;
@@ -273,7 +264,6 @@
                 transform: translateY(0);
             }
 
-            /* Responsive */
             @media (max-width: 768px) {
                 .sidebar {
                     margin-left: -250px;
@@ -301,7 +291,6 @@
                 }
             }
 
-            /* Card Styles */
             .card {
                 border-radius: 12px;
             }
@@ -312,7 +301,7 @@
                 padding-bottom: 15px;
             }
         </style>
->>>>>>> origin/main
+
     </head>
     <body>
         <%
@@ -323,19 +312,19 @@
 
         <div class="d-flex" id="wrapper">
 
-            <!-- Sidebar -->
+ 
             <nav class="sidebar bg-white shadow-sm border-end">
                 <div class="sidebar-header p-3">
                     <h4 class="fw-bold text-primary">Mantis</h4>
                 </div>
                 <ul class="list-unstyled ps-3">
-                    <li><a href="staff?action=manageProduct"><i class="bi bi-box me-2"></i>Products</a></li>
-                    <li><a href="staff?action=manageOrder"><i class="bi bi-bag me-2"></i>Orders</a></li>
-                    <li><a href="staff?action=manageReview" class="fw-bold text-primary"><i class="bi bi-chat-left-text me-2"></i>Reviews</a></li>
+                    <li><a href="product?action=manageProduct"><i class="bi bi-box me-2"></i>Products</a></li>
+                    <li><a href="order?action=manageOrder"><i class="bi bi-bag me-2"></i>Orders</a></li>
+                    <li><a href="review?action=manageReview" class="fw-bold text-primary"><i class="bi bi-chat-left-text me-2"></i>Reviews</a></li>
+                    <li><a href="importproduct?action=staff_import"><i class="bi bi-chat-left-text me-2"></i>importProduct</a></li>
                 </ul>
             </nav>
 
-            <!-- Page Content -->
             <div class="page-content flex-grow-1">
                 <!-- Navbar -->
                 <nav class="navbar navbar-light bg-white shadow-sm">
@@ -352,7 +341,7 @@
                         </div>
                     </div>
                 </nav>
-                <!-- Reviews Table -->
+
                 <div class="container-fluid p-4">
                     <div class="card shadow-sm border-0 p-4">
                         <div class="card-body p-0">
@@ -364,14 +353,14 @@
                                 List<String> listImage = rdao.getImages(review.getImage());
                             %>
                             <div class="review-container">
-                                <!-- Left: Product Image -->
+
                                 <%
                                     if (listImage != null && !listImage.isEmpty()) {
                                 %>
                                 <div class="review-left">
                                     <h3 class="product-name"><%= pdao.getNameByID(review.getVariant().getProductID())%> <%= review.getVariant().getStorage()%></h3>
 
-                                    <!-- Radio buttons (ẩn) -->
+
                                     <%
                                         for (int i = 1; i <= listImage.size(); i++) {
                                     %>
@@ -380,7 +369,7 @@
                                         }
                                     %>
 
-                                    <!-- Ảnh chính -->            
+        
                                     <div class="main-image">
                                         <%
                                             for (int i = 1; i <= listImage.size(); i++) {
@@ -391,7 +380,7 @@
                                         %>
                                     </div>
 
-                                    <!-- Thumbnail -->
+            
                                     <div class="thumbnail-list">
                                         <%
                                             for (int i = 1; i <= listImage.size(); i++) {
@@ -406,7 +395,6 @@
                                     }
                                 %>
 
-                                <!-- Right: Review Info -->
                                 <div class="review-right">
                                     <div class="review-info">
                                         <p><strong>User Name:</strong> <%= review.getUser().getFullName()%></p>
@@ -416,7 +404,7 @@
                                         <p class="comment"><%= review.getComment()%></p>
 
 
-                                        <form action="staff?action=replyReview" method="post">
+                                        <form action="review?action=replyReview" method="post">
                                             <p><strong>Reply:</strong></p>
 
                                             <div class="reply-box">

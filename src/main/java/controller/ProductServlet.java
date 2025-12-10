@@ -23,6 +23,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Category;
 import model.Products;
+import model.Profit;
 import model.Promotions;
 import model.Review;
 import model.Specification;
@@ -62,7 +63,6 @@ public class ProductServlet extends HttpServlet {
         PromotionsDAO pmtdao = new PromotionsDAO();
         ProfitDAO pfdao = new ProfitDAO();
 
-        
         HttpSession session = request.getSession();
         model.Users currentUser = (model.Users) session.getAttribute("user");
 
@@ -130,14 +130,11 @@ public class ProductServlet extends HttpServlet {
             request.setAttribute("listVariantRating", listVariantRating);
             request.setAttribute("listReview", listReview);
             request.setAttribute("product", p);
-
+            
             request.getRequestDispatcher("public/productdetail.jsp").forward(request, response);
-        } 
-        
-
-        else if ("selectStorage".equals(action)) {
+        } else if ("selectStorage".equals(action)) {
             int pID = Integer.parseInt(request.getParameter("pID"));
-            int cID = Integer.parseInt(request.getParameter("cID"));
+
             String storage = request.getParameter("storage");
             String color = request.getParameter("color");
 
@@ -159,7 +156,6 @@ public class ProductServlet extends HttpServlet {
 
             request.setAttribute("productID", pID);
             request.setAttribute("rating", rating);
-            request.setAttribute("categoryID", cID);
             request.setAttribute("variants", variants);
             request.setAttribute("listProducts", listProducts);
             request.setAttribute("listVariants", listVariants);
@@ -170,10 +166,7 @@ public class ProductServlet extends HttpServlet {
             request.setAttribute("listCategory", listCategory);
 
             request.getRequestDispatcher("public/productdetail.jsp").forward(request, response);
-        } 
-        
-
-        else if ("category".equals(action)) {
+        } else if ("category".equals(action)) {
             int cID = Integer.parseInt(request.getParameter("cID"));
             String variation = request.getParameter("variation");
             if (variation == null) {
@@ -194,7 +187,6 @@ public class ProductServlet extends HttpServlet {
                 listVariant = vdao.getAllVariantByCategoryAndOrderByPrice(cID, variation);
             }
 
-  
             List<Products> productList1_search = pdao.getAllProduct();
             List<Variants> variantsList_search = new ArrayList<>();
             try {
@@ -211,14 +203,10 @@ public class ProductServlet extends HttpServlet {
             request.setAttribute("listReview", listReview);
 
             request.getRequestDispatcher("public/view_product_by_category.jsp").forward(request, response);
-        } 
-        
-
-        else if (action.equals("productDetail")) {
+        } else if (action.equals("productDetail")) {
             try {
                 List<Products> listProducts = pdao.getAllProduct();
                 List<Variants> listVariants;
-
 
                 // check roel 2,4
                 if (currentUser.getRole() == 2) {
@@ -241,7 +229,6 @@ public class ProductServlet extends HttpServlet {
                         storage = null;
                     }
 
- 
                     if (productId != null && !productId.isEmpty()) {
                         int id = Integer.parseInt(productId);
                         if (color != null || storage != null) {
@@ -274,7 +261,7 @@ public class ProductServlet extends HttpServlet {
                     request.setAttribute("pID", pID);
                     request.setAttribute("listProducts", listProducts);
                     request.setAttribute("listVariants", listVariants);
-
+                    vdao.updateDiscountPrice();
                     request.getRequestDispatcher("admin/admin_manageproduct_detail.jsp").forward(request, response);
                 }
 
@@ -282,10 +269,7 @@ public class ProductServlet extends HttpServlet {
                 e.printStackTrace();
                 response.sendRedirect("error.jsp");
             }
-        } 
-        
-
-        else if (action.equals("updateProduct")) {
+        } else if (action.equals("updateProduct")) {
             if (currentUser.getRole() != 4) {
                 response.sendRedirect("product?action=manageProduct");
                 return;
@@ -303,10 +287,7 @@ public class ProductServlet extends HttpServlet {
             request.setAttribute("product", product);
             request.setAttribute("specification", specification);
             request.getRequestDispatcher("admin/admin_manageproduct_editproduct.jsp").forward(request, response);
-        } 
-        
-
-        else if (action.equals("deleteProduct")) {
+        } else if (action.equals("deleteProduct")) {
             if (currentUser.getRole() != 4) {
                 response.sendRedirect("product?action=manageProduct");
                 return;
@@ -326,10 +307,7 @@ public class ProductServlet extends HttpServlet {
 
             response.sendRedirect("product?action=manageProduct");
 
-        } 
-        
-
-        else if (action.equals("createProduct")) {
+        } else if (action.equals("createProduct")) {
             if (currentUser.getRole() != 4) {
                 response.sendRedirect("product?action=manageProduct");
                 return;
@@ -339,15 +317,11 @@ public class ProductServlet extends HttpServlet {
             request.setAttribute("listSupplier", listSupplier);
             request.setAttribute("listCategories", listCategories);
             request.getRequestDispatcher("admin/admin_manageproduct_create.jsp").forward(request, response);
-        } 
-        
-
-        else if (action.equals("manageProduct")) {
+        } else if (action.equals("manageProduct")) {
             List<Products> listProducts = pdao.getAllProduct();
             List<Category> listCategory = ctdao.getAllCategories();
             List<Suppliers> listSupplier = sldao.getAllSupplier();
 
-  
             for (Products product : listProducts) {
                 List<Variants> listVariant = vdao.getAllVariantByProductID(product.getProductID());
                 if (listVariant == null || listVariant.isEmpty()) {
@@ -361,7 +335,6 @@ public class ProductServlet extends HttpServlet {
             request.setAttribute("currentListProduct", currentListProduct);
             request.setAttribute("listCategory", listCategory);
             request.setAttribute("listSupplier", listSupplier);
-
 
             // check role 2,4
             if (currentUser.getRole() == 2) {
@@ -407,11 +380,11 @@ public class ProductServlet extends HttpServlet {
         String action = request.getParameter("action");
         VariantsDAO vdao = new VariantsDAO();
         ProductDAO pdao = new ProductDAO();
+        ProfitDAO pfdao = new ProfitDAO();
 
         if (action == null) {
             action = "dashboard";
         }
-
 
         model.Users currentUser = (model.Users) session.getAttribute("user");
         if (action.equals("createProduct") || action.equals("updateProduct")) {
@@ -467,9 +440,7 @@ public class ProductServlet extends HttpServlet {
             if (isNameProduct) {
                 session.setAttribute("existName", pName + " already exists!");
 
-
                 response.sendRedirect("product?action=createProduct");
-
 
             } else {
                 pdao.createProduct(categoryID, supplierID, pName, brand, warrantyPeriod);
@@ -505,6 +476,10 @@ public class ProductServlet extends HttpServlet {
             response.sendRedirect("product?action=manageProduct");
         } else if (action.equals("dashboard")) {
             response.sendRedirect("admin");
+        } else if (action.equals("importproduct")) {
+            List<Profit> listImports = pfdao.getAllProfit();
+            request.setAttribute("listImports", listImports);
+            request.getRequestDispatcher("admin/import_history.jsp").forward(request, response);
         }
     }
 

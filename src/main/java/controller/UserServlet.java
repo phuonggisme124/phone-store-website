@@ -242,6 +242,14 @@ public class UserServlet extends HttpServlet {
                 response.sendRedirect("user?action=payInstallment");
             }
 
+        } else if ("cancelOrder".equals(action)) {
+            int orderID = Integer.parseInt(request.getParameter("orderID"));
+            Order o = orderDAO.getOrderById(orderID);
+
+            if (o != null && ("Pending".equals(o.getStatus()) || "In Transit".equals(o.getStatus()))) {
+                orderDAO.updateOrderStatus(orderID, "Cancelled");
+            }
+            response.sendRedirect("user?action=transaction"); 
         } else {
             response.sendRedirect("user?action=view");
         }
@@ -270,8 +278,11 @@ public class UserServlet extends HttpServlet {
     private void updateUserPassword(HttpServletRequest request, HttpServletResponse response, Users user, HttpSession session)
             throws ServletException, IOException {
         String oldPass = request.getParameter("oldPassword");
+        System.out.println(oldPass);
         String newPass = request.getParameter("newPassword");
+        System.out.println(newPass);
         String confirmPass = request.getParameter("confirmPassword");
+        System.out.println(confirmPass);
 
         // REFACTORED: Use the dedicated DAO method for checking password
         if (!usersDAO.checkOldPassword(user.getUserId(), oldPass)) {
@@ -286,9 +297,9 @@ public class UserServlet extends HttpServlet {
             user.setPassword(usersDAO.hashMD5(newPass));
             session.setAttribute("user", user);
 
-            request.setAttribute("message", "Đổi mật khẩu thành công!");
+            session.setAttribute("message", "Đổi mật khẩu thành công!");
         }
-
-        request.getRequestDispatcher("changePassword.jsp").forward(request, response);
+        response.sendRedirect("user?action=changePassword");
+//        request.getRequestDispatcher("customer/changePassword.jsp").forward(request, response);
     }
 }

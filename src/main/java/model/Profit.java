@@ -17,6 +17,10 @@ public class Profit {
     private double sellingPrice;
     private double costPrice;
     private LocalDateTime calculatedDate;
+    private String productName;
+    private String storage;
+    private String color;
+    private String variantImage;
 
     public Profit() {
     }
@@ -76,6 +80,38 @@ public class Profit {
 
     public void setCalculatedDate(LocalDateTime calculatedDate) {
         this.calculatedDate = calculatedDate;
+    }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
+    public String getStorage() {
+        return storage;
+    }
+
+    public void setStorage(String storage) {
+        this.storage = storage;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    public String getVariantImage() {
+        return variantImage;
+    }
+
+    public void setVariantImage(String variantImage) {
+        this.variantImage = variantImage;
     }
     
     

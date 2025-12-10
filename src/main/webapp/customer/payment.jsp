@@ -10,6 +10,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/layout/header.jsp" %>
 
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -80,13 +81,25 @@
                         </div>
                     </div>
 
-                    <%  
-                        List<Carts> cartsCheckout = (List<Carts>) session.getAttribute("cartCheckout");
+                    <%  List<Carts> cartsCheckout = (List<Carts>) session.getAttribute("cartCheckout");
                         ProductDAO pDAO = new ProductDAO();
                         double totalPrice = 0;
+                        boolean hasSpecificAddess = false;
+                        String[] specAddress = null;
+                        String userCity = "";
+                        boolean updateAddressBasedOnAPI = true;
+                        if (user.getAddress() != null && !user.getAddress().isEmpty()) {
+                            specAddress = user.getAddress().split(",");
+                            if (specAddress.length >= 2) {
+                                hasSpecificAddess = true;
+                                updateAddressBasedOnAPI = true;
+                                userCity = specAddress[1].strip();
+                            }
+                        }
+
                     %>
 
-                    <% for (Carts c : cartsCheckout) { %>
+                    <% for (Carts c : cartsCheckout) {%>
                     <div class="bg-white rounded-lg mb-6">
                         <div class="flex items-center space-x-4">
                             <img src="images/<%=c.getVariant().getImageUrl()%>" class="w-20 h-20 object-cover rounded-md border">
@@ -103,7 +116,7 @@
                                 <% totalPrice += c.getVariant().getDiscountPrice() * c.getQuantity(); %>
                         </div>
                     </div>
-                    <% } %>
+                    <% }%>
 
                     <div class="space-y-4">
                         <h3 class="font-bold text-lg text-gray-700">CUSTOMER INFORMATION</h3>
@@ -124,6 +137,8 @@
 
                     <form action="payment" method="get" class="space-y-4 mt-6">
                         <input type="hidden" name="action" value="checkout">
+                        <input type="hidden" name="updateAddressBasedOnAPI" value="<%=updateAddressBasedOnAPI%>">
+
                         <h3 class="font-bold text-lg text-gray-700">SHIPPING INFORMATION</h3>
                         <div class="border rounded-lg p-4 space-y-4 bg-theme-light">
                             <div class="space-y-3">
@@ -134,19 +149,32 @@
 
                                 <div>
                                     <label for="receiverPhone" class="block text-sm font-medium text-gray-700">Phone Number</label>
-                                    <input type="text" id="receiverPhone" name="receiverPhone" value="<%=user.getPhone()%>" placeholder="Enter receiver's phone number" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm sm:text-sm" required>
-                                </div>
-
+                                    <input type="text" 
+                                           id="receiverPhone" 
+                                           name="receiverPhone" 
+                                           value="<%= user.getPhone() != null ? user.getPhone() : ""%>" 
+                                           placeholder="Enter receiver's phone number" 
+                                           class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm sm:text-sm" 
+                                           required>
+                                </div>                
                                 <div>
                                     <label for="city" class="block text-sm font-medium text-gray-700">Province/City</label>
                                     <select id="city" name="city" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm sm:text-sm" required>
+                                        <% if (hasSpecificAddess && !userCity.isEmpty()) {%>
+                                        <option value="<%=userCity%>"><%=userCity%></option>
+                                        <% } else { %>
                                         <option value="">-- Select province/city --</option>
+                                        <% } %>
                                     </select>
                                 </div>
 
                                 <div>
                                     <label for="address" class="block text-sm font-medium text-gray-700">Specific Address</label>
+                                    <% if (hasSpecificAddess && specAddress.length > 0) {%>
+                                    <textarea id="address" name="address" rows="3" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm sm:text-sm"><%=specAddress[0].strip()%></textarea>
+                                    <% } else { %>
                                     <textarea id="address" name="address" rows="3" placeholder="House number, street name, ward/commune, district..." class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm sm:text-sm" required></textarea>
+                                    <% }%>
                                 </div>
                             </div>
 
@@ -163,22 +191,35 @@
         </section>
 
         <script>
+            const userCurrentCity = "<%=userCity%>";
             const citySelect = document.getElementById("city");
-            fetch("http://provinces.open-api.vn/api/p/")
-                .then(res => res.json())
-                .then(provinces => {
-                    citySelect.innerHTML = '<option value="">-- Select province/city --</option>';
-                    provinces.forEach(p => {
-                        const opt = document.createElement("option");
-                        opt.value = p.name;
-                        opt.textContent = p.name;
-                        citySelect.appendChild(opt);
+            let cityExistsInAPI = false;
+
+            fetch("https://provinces.open-api.vn/api/p/")
+                    .then(res => res.json())
+                    .then(provinces => {
+                        citySelect.innerHTML = '<option value="">-- Select province/city --</option>';
+
+                        provinces.forEach(p => {
+                            const opt = document.createElement("option");
+                            opt.value = p.name;
+                            opt.textContent = p.name;
+
+                            if (userCurrentCity && p.name === userCurrentCity) {
+                                opt.selected = true;
+                                cityExistsInAPI = true; 
+                            }
+                            citySelect.appendChild(opt);
+                        });
+
+                        if (cityExistsInAPI) {
+                            document.querySelector('input[name="updateAddressBasedOnAPI"]').value = "false";
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error loading province/city list:", error);
                     });
-                })
-                .catch(error => {
-                    console.error("Error loading province/city list:", error);
-                    citySelect.innerHTML = '<option value="">Error loading data</option>';
-                });
+
         </script>
     </body>
 </html>

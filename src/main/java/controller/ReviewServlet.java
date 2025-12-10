@@ -240,7 +240,7 @@ public class ReviewServlet extends HttpServlet {
                 int productID = variant.getProductID();
                 Products product = pdao.getProductByID(productID);
 
-                if (!hasPurchased) {
+                   if (!hasPurchased) {
                     session.setAttribute("reviewError", "You must purchase this product to rate.");
                     response.sendRedirect("product?action=selectStorage&pID=" + productID + "&cID=" + product.getCategoryID() + "&storage=" + variant.getStorage() + "&color=" + variant.getColor());
                     return;
@@ -263,7 +263,7 @@ public class ReviewServlet extends HttpServlet {
                 String uploadDir = basePath + File.separator + "src" + File.separator + "main" + File.separator + "webapp" + File.separator + "images_review";
                 File uploadFolder = new File(uploadDir);
                 if (!uploadFolder.exists()) uploadFolder.mkdirs();
-
+                
                 String img = "";
                 for (Part part : request.getParts()) {
                     if ("photos".equals(part.getName()) && part.getSize() > 0) {
@@ -280,6 +280,7 @@ public class ReviewServlet extends HttpServlet {
                         Files.copy(srcFileImages.toPath(), targetFile.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
                     }
                 }
+             
 
                 if (!img.isEmpty()) {
                     img = img.substring(0, img.length() - 1);

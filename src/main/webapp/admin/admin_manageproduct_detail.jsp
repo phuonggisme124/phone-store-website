@@ -164,9 +164,7 @@
                                 <i class="bi bi-trash me-2"></i> Delete Product
                             </a>
                         </div>
-                        <a href="admin?action=manageProduct" class="btn btn-outline-secondary">
-                            <i class="bi bi-arrow-left me-2"></i>Back to Products
-                        </a>
+
                     </div>
                 </div>
 
@@ -290,8 +288,17 @@
                                             style="cursor: pointer;">
                                             <td><span class="badge bg-primary">#<%= v.getVariantID()%></span></td>
                                             <td><strong><%= nameProduct%></strong></td>
+                                            
+                                            <%
+                                             String textColor = "white";
+                                             if (v.getColor().equalsIgnoreCase("white") ) {
+                                                    textColor ="black";
+                                                }
+                                            
+                                            %>
                                             <td>
-                                                <span class="badge" style="background-color: <%= v.getColor().toLowerCase()%>; color: white;">
+                                                <span class="badge" style="background-color: <%= v.getColor().toLowerCase()%>;  color: <%= textColor %>;">
+
                                                     <%= v.getColor()%>
                                                 </span>
                                             </td>

@@ -29,8 +29,7 @@
             <!-- Sidebar -->
             <%@ include file="sidebar.jsp" %>
 
-            <%
-                Users currentUser = (Users) session.getAttribute("user");
+            <%                Users currentUser = (Users) session.getAttribute("user");
             %>
 
             <!-- Page Content -->
@@ -45,9 +44,9 @@
                             <!-- Search bar in navbar -->
                             <form action="admin" method="get" class="d-flex position-relative me-3" id="searchForm" autocomplete="off" style="width: 250px;">
                                 <input type="hidden" name="action" value="manageProduct">
-                               
+
                                 <input class="form-control me-2" type="text" id="searchProduct" name="productName"
-                                       
+
                                        oninput="showSuggestions(this.value)">
                                 <button class="btn btn-outline-primary" type="submit">
                                     <i class="bi bi-search"></i>
@@ -59,13 +58,13 @@
                             <!-- Filter Brand -->
                             <form action="admin" method="get" class="dropdown me-3">
                                 <input type="hidden" name="action" value="manageProduct">
-                                
+
 
                                 <button class="btn btn-outline-secondary fw-bold dropdown-toggle"
                                         type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="bi bi-funnel"></i> Brand
                                 </button>
-                                
+
                             </form>
 
                             <a href="logout" class="btn btn-outline-danger btn-sm me-3">Logout</a>
@@ -85,7 +84,7 @@
 
                 %>
                 <!-- Table -->
-                <form action="variants?action=createVariant" method="post" class="w-50 mx-auto bg-light p-4 rounded shadow" enctype="multipart/form-data">
+                <form action="variants?action=createVariant" method="post" class="w-50 mx-auto bg-light p-4 rounded shadow" enctype="multipart/form-data" onsubmit= "return validateForm()">
                     <%                        if (session.getAttribute("existVariant") != null) {
                             String exist = (String) session.getAttribute("existVariant");
                             out.println("<p class='error-message'>" + exist + "</p>");
@@ -96,7 +95,7 @@
                         <input type="hidden" class="form-control" name="pID" value="<%= pID%>">
                     </div>
                     <div class="mb-3">
-                        <input type="hidden" class="form-control" name="ctID" value="<%= product.getCategoryID() %>">
+                        <input type="hidden" class="form-control" name="ctID" value="<%= product.getCategoryID()%>">
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Name</label>
@@ -111,9 +110,11 @@
                         if (product.getCategoryID() == 1 || product.getCategoryID() == 3) {
                     %>
                     <div class="mb-3" >
-                        <label class="form-label">Storage</label>
-                        <input type="text" class="form-control" name="storage" value="">
+                        <label for="storage" class="mt-3">Storage</label>
+                        <input type="text" name="storage" id="storage"  class="form-control"placeholder="Nhập dung lượng, ví dụ: 128GB"  required>
+                        <span id="storageError" class="text-danger"></span>
                     </div>
+
                     <%
                         }
                     %>
@@ -161,113 +162,139 @@
             <!-- Custom JS -->
             <script src="js/dashboard.js"></script>
             <script>
-                document.addEventListener('DOMContentLoaded', function () {
-                    const fileInput = document.getElementById('photo-upload-input');
-                    const previewContainer = document.getElementById('image-preview-container');
-                    const noPhotoMessage = document.getElementById('no-photo-message');
-                    const imagesToDeleteInput = document.getElementById('imagesToDelete');
+                    document.addEventListener('DOMContentLoaded', function () {
+                        const fileInput = document.getElementById('photo-upload-input');
+                        const previewContainer = document.getElementById('image-preview-container');
+                        const noPhotoMessage = document.getElementById('no-photo-message');
+                        const imagesToDeleteInput = document.getElementById('imagesToDelete');
 
-                    // 🧩 Cập nhật thông báo "no images"
-                    function updateNoPhotoMessage() {
-                        const totalImages = previewContainer.querySelectorAll('.image-preview-item').length;
-                        noPhotoMessage.style.display = totalImages === 0 ? 'block' : 'none';
-                    }
+                        //  Cập nhật thông báo "no images"
+                        function updateNoPhotoMessage() {
+                            const totalImages = previewContainer.querySelectorAll('.image-preview-item').length;
+                            noPhotoMessage.style.display = totalImages === 0 ? 'block' : 'none';
+                        }
 
-                    // 🧩 Hiển thị preview ảnh mới
-                    // 🧩 Hiển thị preview ảnh mới (PHIÊN BẢN SỬA LỖI)
-                    function displayImagePreview(file) {
-                        if (!file.type || !file.type.startsWith('image/'))
-                            return;
+                        //  Hiển thị preview ảnh mới
+                        //  Hiển thị preview ảnh mới (PHIÊN BẢN SỬA LỖI)
+                        function displayImagePreview(file) {
+                            if (!file.type || !file.type.startsWith('image/'))
+                                return;
 
-                        const reader = new FileReader();
+                            const reader = new FileReader();
 
-                        reader.onload = function (e) {
-                            const imgURL = e.target.result; // Vẫn lấy link ảnh như cũ
+                            reader.onload = function (e) {
+                                const imgURL = e.target.result; // Vẫn lấy link ảnh như cũ
 
-                            // 1. Tạo div bọc ngoài
-                            const imgWrapper = document.createElement('div');
-                            imgWrapper.classList.add('image-preview-item', 'new-image');
+                                // 1. Tạo div bọc ngoài
+                                const imgWrapper = document.createElement('div');
+                                imgWrapper.classList.add('image-preview-item', 'new-image');
 
-                            // 2. Tạo thẻ <img>
-                            const img = document.createElement('img');
-                            img.src = imgURL; // <--- GÁN TRỰC TIẾP, không qua chuỗi
-                            img.className = "img-thumbnail";
-                            img.alt = "Ảnh thực tế sản phẩm";
-                            img.style.width = "100px";
-                            img.style.height = "100px";
-                            img.style.objectFit = "cover";
+                                // 2. Tạo thẻ <img>
+                                const img = document.createElement('img');
+                                img.src = imgURL; // <--- GÁN TRỰC TIẾP, không qua chuỗi
+                                img.className = "img-thumbnail";
+                                img.alt = "Ảnh thực tế sản phẩm";
+                                img.style.width = "100px";
+                                img.style.height = "100px";
+                                img.style.objectFit = "cover";
 
-                            // 3. Tạo thẻ <button>
-                            const button = document.createElement('button');
-                            button.type = "button";
-                            button.className = "btn btn-danger btn-sm remove-image-btn";
-                            button.innerHTML = '<i class="bi bi-x-circle-fill"></i>';
+                                // 3. Tạo thẻ <button>
+                                const button = document.createElement('button');
+                                button.type = "button";
+                                button.className = "btn btn-danger btn-sm remove-image-btn";
+                                button.innerHTML = '<i class="bi bi-x-circle-fill"></i>';
 
-                            // 4. Gắn img và button vào div bọc ngoài
-                            imgWrapper.appendChild(img);
-                            imgWrapper.appendChild(button);
+                                // 4. Gắn img và button vào div bọc ngoài
+                                imgWrapper.appendChild(img);
+                                imgWrapper.appendChild(button);
 
-                            // 5. Gắn div bọc ngoài vào container
-                            previewContainer.appendChild(imgWrapper);
-                            updateNoPhotoMessage();
-                        };
+                                // 5. Gắn div bọc ngoài vào container
+                                previewContainer.appendChild(imgWrapper);
+                                updateNoPhotoMessage();
+                            };
 
-                        reader.readAsDataURL(file);
-                    }
+                            reader.readAsDataURL(file);
+                        }
 
-                    // 🧩 Render preview cho tất cả file trong input
-                    function renderImagePreviews() {
-                        // Xóa toàn bộ ảnh preview mới (nhưng KHÔNG xóa ảnh cũ từ DB)
-                        previewContainer.querySelectorAll('.image-preview-item.new-image').forEach(item => item.remove());
+                        // Render preview cho tất cả file trong input
+                        function renderImagePreviews() {
+                            // Xóa toàn bộ ảnh preview mới (nhưng KHÔNG xóa ảnh cũ từ DB)
+                            previewContainer.querySelectorAll('.image-preview-item.new-image').forEach(item => item.remove());
 
-                        // Tạo preview cho tất cả file được chọn
-                        Array.from(fileInput.files).forEach(displayImagePreview);
-                    }
+                            // Tạo preview cho tất cả file được chọn
+                            Array.from(fileInput.files).forEach(displayImagePreview);
+                        }
 
-                    // 🧩 Khi chọn ảnh mới
-                    fileInput.addEventListener('change', function () {
-                        console.log('1. Đã chọn file!'); // LOG 1
-                        renderImagePreviews();
-                    });
-
-                    // 🧩 Khi nhấn nút "x" xóa ảnh mới
-                    previewContainer.addEventListener('click', function (e) {
-                        const removeBtn = e.target.closest('.remove-image-btn');
-                        if (!removeBtn)
-                            return;
-
-                        const item = removeBtn.closest('.image-preview-item');
-                        const allNewImages = Array.from(previewContainer.querySelectorAll('.image-preview-item.new-image'));
-                        const indexToRemove = allNewImages.indexOf(item);
-
-                        if (indexToRemove >= 0) {
-                            const dt = new DataTransfer();
-                            Array.from(fileInput.files).forEach((file, i) => {
-                                if (i !== indexToRemove)
-                                    dt.items.add(file);
-                            });
-                            fileInput.files = dt.files;
+                        // Khi chọn ảnh mới
+                        fileInput.addEventListener('change', function () {
+                            console.log('1. Đã chọn file!'); // LOG 1
                             renderImagePreviews();
+                        });
+
+                        // Khi nhấn nút "x" xóa ảnh mới
+                        previewContainer.addEventListener('click', function (e) {
+                            const removeBtn = e.target.closest('.remove-image-btn');
+                            if (!removeBtn)
+                                return;
+
+                            const item = removeBtn.closest('.image-preview-item');
+                            const allNewImages = Array.from(previewContainer.querySelectorAll('.image-preview-item.new-image'));
+                            const indexToRemove = allNewImages.indexOf(item);
+
+                            if (indexToRemove >= 0) {
+                                const dt = new DataTransfer();
+                                Array.from(fileInput.files).forEach((file, i) => {
+                                    if (i !== indexToRemove)
+                                        dt.items.add(file);
+                                });
+                                fileInput.files = dt.files;
+                                renderImagePreviews();
+                            }
+                        });
+
+                        //  Khi nhấn nút "x" xóa ảnh cũ (ảnh đã có trong DB)
+                        previewContainer.addEventListener('click', function (e) {
+                            const removeExistingBtn = e.target.closest('.remove-existing-image-btn');
+                            if (!removeExistingBtn)
+                                return;
+
+                            const imageName = removeExistingBtn.dataset.imageName;
+                            if (imageName) {
+                                let currentValue = imagesToDeleteInput.value.trim();
+                                currentValue += currentValue ? "#" + imageName : imageName;
+                                imagesToDeleteInput.value = currentValue;
+                            }
+
+                            removeExistingBtn.closest('.image-preview-item').remove();
+                            updateNoPhotoMessage();
+                        });
+                    });
+                    // bắt lỗi dung lượng
+                    document.getElementById("storage").addEventListener("input", function () {
+                        const storage = this.value.trim().toUpperCase();
+                        const regex = /^[0-9]+(GB|TB)$/;
+                        if (!regex.test(storage)) {
+                            document.getElementById("storageError").innerText =
+                                    "Invalid capacity! Please enter format: 64GB, 128GB, 1TB.";
+                            this.classList.add("is-invalid");
+                        } else {
+                            document.getElementById("storageError").innerText = "";
+                            this.classList.remove("is-invalid");
+                            this.classList.add("is-valid");
                         }
                     });
 
-                    // 🧩 Khi nhấn nút "x" xóa ảnh cũ (ảnh đã có trong DB)
-                    previewContainer.addEventListener('click', function (e) {
-                        const removeExistingBtn = e.target.closest('.remove-existing-image-btn');
-                        if (!removeExistingBtn)
-                            return;
 
-                        const imageName = removeExistingBtn.dataset.imageName;
-                        if (imageName) {
-                            let currentValue = imagesToDeleteInput.value.trim();
-                            currentValue += currentValue ? "#" + imageName : imageName;
-                            imagesToDeleteInput.value = currentValue;
+                    function validateForm() {
+                        const storage = document.getElementById("storage").value.trim().toUpperCase();
+                        const regex = /^[0-9]+(GB|TB)$/;
+                        if (!regex.test(storage)) {
+                            alert("Invalid capacity! Please enter format: 64GB, 128GB, 1TB...");
+                            return false; // chặn submit
                         }
 
-                        removeExistingBtn.closest('.image-preview-item').remove();
-                        updateNoPhotoMessage();
-                    });
-                });
+                        return true;
+                    }
             </script>
     </body>
 </html>

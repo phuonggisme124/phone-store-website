@@ -110,7 +110,11 @@
                         <label class="form-label">Status</label>
                         <select class="form-select" name="status" id="status">
                             <option value="active" <%= (user.getStatus().equalsIgnoreCase("active") ? "selected" : "")%>>Active</option>
+<<<<<<< HEAD
                             <option value="locked" <%= (user.getStatus().equalsIgnoreCase("locked") ? "selected" : "")%>>Locked</option>
+=======
+                            <option value="block" <%= (user.getStatus().equalsIgnoreCase("block") ? "selected" : "")%>>Block</option>
+>>>>>>> 085e962 (push new version)
                         </select>
                     </div>
                     <div class="d-flex gap-2">

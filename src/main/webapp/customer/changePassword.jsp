@@ -1,3 +1,12 @@
+<<<<<<< HEAD
+=======
+<%-- 
+    Document   : changePassword
+    Created on : Oct 16, 2025, 3:50:10 PM
+    Author     : Hoa Hong Nhung
+--%>
+
+>>>>>>> c80843028cf9648874277785e7b7c677afb557ad
 <%@page import="java.util.List"%>
 <%@page import="model.Products"%>
 <%@page import="model.Category"%>
@@ -11,7 +20,11 @@
         return;
     }
 
+<<<<<<< HEAD
     String message = (String) request.getAttribute("message");
+=======
+    String message = (String) session.getAttribute("message");
+>>>>>>> c80843028cf9648874277785e7b7c677afb557ad
     String error = (String) request.getAttribute("error");
 %>
 
@@ -32,10 +45,18 @@
 
         <style>
             body {
+<<<<<<< HEAD
                 background: white;
                 min-height: 100vh;
                 font-family: 'Jost', sans-serif;
                 padding-top: 80px;
+=======
+                background: #EDF1F3;
+                min-height: 100vh;
+                font-family: 'Jost', sans-serif;
+                margin-top: 120px;
+                padding: 20px;
+>>>>>>> c80843028cf9648874277785e7b7c677afb557ad
             }
 
             .profile-container {
@@ -360,12 +381,23 @@
             <div class="profile-wrapper">
                 <!-- Sidebar -->
                 <aside class="profile-sidebar">
+<<<<<<< HEAD
                     <h3>Hello, <%= user.getFullName() %></h3>
+=======
+                    <h3>Hello, <%= user.getFullName()%></h3>
+>>>>>>> c80843028cf9648874277785e7b7c677afb557ad
 
                     <a href="user?action=transaction" class="sidebar-link">
                         <i class="fas fa-shopping-bag"></i>
                         <span>My Orders</span>
                     </a>
+<<<<<<< HEAD
+=======
+                    <a href="user?action=payInstallment" class="sidebar-link">
+                        <i class="fas fa-receipt"></i>
+                        <span>Installment Paying</span>
+                    </a>
+>>>>>>> c80843028cf9648874277785e7b7c677afb557ad
 
                     <a href="user" class="sidebar-link">
                         <i class="fas fa-user"></i>
@@ -406,13 +438,26 @@
                         <!-- Form Section -->
                         <div class="col-lg-8">
                             <form id="changePasswordForm" action="user" method="post" class="profile-form">
+<<<<<<< HEAD
                                 <input type="hidden" name="action" value="updatePassword">
 
+=======
+                                <input type="hidden" name="action" value="changePassword">
+                                <% 
+                                    
+                                %>
+>>>>>>> c80843028cf9648874277785e7b7c677afb557ad
                                 <% if (message != null) { %>
                                 <div class="alert alert-success">
                                     <i class="fas fa-check-circle"></i>
                                     <%= message %>
                                 </div>
+<<<<<<< HEAD
+=======
+                                <% 
+                                    session.removeAttribute("message");
+                                %>
+>>>>>>> c80843028cf9648874277785e7b7c677afb557ad
                                 <% } else if (error != null) { %>
                                 <div class="alert alert-danger">
                                     <i class="fas fa-exclamation-circle"></i>

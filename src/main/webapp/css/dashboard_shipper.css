@@ -175,3 +175,35 @@ body {
 .btn-logout i {
     font-size: 1.1rem;
 }
+/* ==================== ORDER ITEMS ==================== */
+.order-items-box {
+    background: #fff;
+    border: 1px solid #e3e8f0;
+    border-radius: 10px;
+    padding: 12px;
+}
+
+.order-item {
+    background: #f9fbfd;
+    border: 1px solid #e3e8f0;
+    border-radius: 8px;
+    transition: all 0.25s ease;
+}
+
+.order-item:hover {
+    background: #eef7fc;
+    border-color: #72AEC8;
+}
+
+.order-item-img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border: 1px solid #dcdcdc;
+}
+
+/* Ensure no CSS interference with sidebar */
+.sidebar {
+    position: relative;
+    z-index: 10;
+}

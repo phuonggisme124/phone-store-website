@@ -32,6 +32,12 @@
     <body>
         <section id="billboard" class="bg-light-blue overflow-hidden padding-large">
             <div class="profile-container">
+<<<<<<< HEAD
+=======
+        
+                    <!-- Sidebar -->
+                    
+>>>>>>> c80843028cf9648874277785e7b7c677afb557ad
 
                     
                     <!-- Main Content -->
@@ -80,7 +86,11 @@
                     </main>
 
                 </div>
+<<<<<<< HEAD
 
+=======
+            
+>>>>>>> c80843028cf9648874277785e7b7c677afb557ad
         </section>
 
         <script>

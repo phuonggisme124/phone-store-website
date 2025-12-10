@@ -105,6 +105,7 @@ public class VariantsServlet extends HttpServlet {
             request.setAttribute("pID", pID);
             request.getRequestDispatcher("admin/admin_manageproduct_createvariant.jsp").forward(request, response);
         } else if (action.equals("editVariant")) {
+
             int vid = Integer.parseInt(request.getParameter("vid"));
             int pID = Integer.parseInt(request.getParameter("pID"));
 
@@ -222,6 +223,8 @@ public class VariantsServlet extends HttpServlet {
                         + (v.getStorage() != null ? " " + v.getStorage() : "")
                         + (v.getColor() != null ? " " + v.getColor() : "") + " created successfully!");
                 response.sendRedirect("product?action=productDetail&pID=" + pID);
+
+
             }
 
         } else if (action.equals("updateVariant")) {
@@ -233,10 +236,10 @@ public class VariantsServlet extends HttpServlet {
             String color = request.getParameter("color");
             String storage = request.getParameter("storage");
             double price = Double.parseDouble(request.getParameter("price"));
-            double cost = Double.parseDouble(request.getParameter("cost"));
-            double oldCost = Double.parseDouble(request.getParameter("oldCost"));
+//            double cost = Double.parseDouble(request.getParameter("cost"));
+//            double oldCost = Double.parseDouble(request.getParameter("oldCost"));
             int stock = Integer.parseInt(request.getParameter("stock"));
-            int oldStock = Integer.parseInt(request.getParameter("oldStock"));
+//            int oldStock = Integer.parseInt(request.getParameter("oldStock"));
             String description = request.getParameter("description");
             Variants variant = vdao.getVariantByID(vID);
             Variants updateVariant;
@@ -330,25 +333,22 @@ public class VariantsServlet extends HttpServlet {
 
                 vdao.updateDiscountPrice();
 
-
-
-
-                if (oldStock < stock && oldCost != cost) {
-                    int quantity = stock - oldStock;
-                    pfdao.updateQuantityAndCost(vID, cost, quantity);
-                } else if (oldStock < stock) {
-                    int quantity = stock - oldStock;
-                    pfdao.updateQuantityOfProfit(vID, quantity);
-                } else if (oldCost != cost) {
-                    pfdao.updateCost(vID, cost);
-                }
+//                if (oldStock < stock && oldCost != cost) {
+//                    int quantity = stock - oldStock;
+//                    pfdao.updateQuantityAndCost(vID, cost, quantity);
+//                } else if (oldStock < stock) {
+//                    int quantity = stock - oldStock;
+//                    pfdao.updateQuantityOfProfit(vID, quantity);
+//                } else if (oldCost != cost) {
+//                    pfdao.updateCost(vID, cost);
+//                }
                 pfdao.updateSellPriceByVariantID(vID);
 
                 session.setAttribute("successUpdateProduct", pdao.getNameByID(variant.getProductID())
                         + (variant.getStorage() != null ? " " + variant.getStorage() : "")
                         + (variant.getColor() != null ? " " + variant.getColor() : "") + " update successfully!");
                 response.sendRedirect("product?action=productDetail&pID=" + pID);
-                response.sendRedirect("product?action=productDetail&pID=" + pID);
+                
             } else {
                 session.setAttribute("existVariant", pName + " " + (storage == null ? "" : storage) + " " + color + " already exists");
                 response.sendRedirect("variants?action=editVariant&pID=" + pID + "&vid=" + vID);
@@ -360,12 +360,12 @@ public class VariantsServlet extends HttpServlet {
             pfdao.deleteProfitByVariantID(vID);
             Variants variant = vdao.getVariantByID(vID);
             vdao.deleteVariantByID(vID);
-            
+
             session.setAttribute("successDeleteProduct", pdao.getNameByID(variant.getProductID())
                     + (variant.getStorage() != null ? " " + variant.getStorage() : "")
                     + (variant.getColor() != null ? " " + variant.getColor() : "") + " delete successfully!");
             response.sendRedirect("product?action=productDetail&pID=" + pID);
-           
+
         }
     }
 

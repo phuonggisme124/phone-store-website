@@ -95,14 +95,11 @@ public class CartServlet extends HttpServlet {
             int userID = Integer.parseInt(request.getParameter("userID"));
             int variantID = Integer.parseInt(request.getParameter("variantID"));
             int quantity = Integer.parseInt(request.getParameter("quantity"));
-            if (!cDAO.isAddedInCart(userID, variantID)) {
+            if (!cDAO.isAddedInCart(userID, variantID, quantity)) {
                 cDAO.ensureCartExists(userID);
                 cDAO.addNewProductToCart(userID, variantID, quantity);
                 List<Carts> carts = cDAO.getItemIntoCartByUserID(userID);
                 session.setAttribute("cart", carts);
-                session.setAttribute("res", "Item added to cart successfully");
-            }
-            else {
                 session.setAttribute("res", "Item added to cart successfully");
             }
             response.sendRedirect(request.getHeader("referer"));

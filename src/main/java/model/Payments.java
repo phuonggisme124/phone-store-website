@@ -26,7 +26,7 @@ public class Payments {
     public Payments() {
     }
 
-    // --- Full constructor (all fields except totalMonth and currentMonth) ---
+
     public Payments(int paymentID, Integer orderID, double amount, LocalDateTime paymentDate, String paymentStatus) {
         this.paymentID = paymentID;
         this.orderID = orderID;
@@ -35,7 +35,7 @@ public class Payments {
         this.paymentStatus = paymentStatus;
     }
 
-    // --- Minimal constructor (only required field) ---
+  
     public Payments(int paymentID) {
         this.paymentID = paymentID;
         this.orderID = null;

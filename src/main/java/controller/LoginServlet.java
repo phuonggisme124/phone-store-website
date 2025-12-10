@@ -35,22 +35,16 @@ public class LoginServlet extends HttpServlet {
      * treated as a logout action in this context.
      */
     @Override
+
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
-        // Retrieve the current session (if it exists)
         HttpSession session = request.getSession(false);
         if (session != null) {
-            session.invalidate(); // Destroy the current session to log out the user
+            session.invalidate();
         }
-        // Lấy tham số redirect từ URL (ví dụ: login?redirect=product...)
-        String redirect = request.getParameter("redirect");
-        if (redirect != null) {
-            // Gửi nó sang trang JSP
-            request.setAttribute("redirect", redirect);
-        }
-        // Redirect the user back to the login page after logout
-        request.getRequestDispatcher("login.jsp").forward(request, response);
+        HttpSession newSession = request.getSession(true);
+        newSession.setAttribute("attempts", 0);
+        response.sendRedirect("login.jsp");
     }
 
     /**
@@ -65,11 +59,35 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        //Login with Google
+        HttpSession session = request.getSession();
+        if (session.getAttribute("attempts") == null) {
+            session.setAttribute("attempts", 0);
+        }
 
+        String action = request.getParameter("action");
+        if (action != null && action.equalsIgnoreCase("googleLogin")) {
+            UsersDAO uDAO = new UsersDAO();
+
+            String email = request.getParameter("email");
+            String name = request.getParameter("name");
+            if (email != null && name != null) {
+                uDAO.registerForLoginWithGoogle(name, email, 1);
+                Users u = uDAO.loginWithEmail(email);
+                session.setAttribute("user", u);
+                CartDAO cDAO = new CartDAO();
+                List<Carts> carts = cDAO.getItemIntoCartByUserID(u.getUserId());
+                session.setAttribute("cart", carts);
+                response.sendRedirect("homepage");
+                return;
+            }
+        }
+        //Normal login
         // Get user input from the login form
         String email = request.getParameter("username");
         String password = request.getParameter("password");
         String redirect = request.getParameter("redirect"); // Lấy URL redirect nếu có
+        UsersDAO uDAO = new UsersDAO();
 
         // Validate empty fields
         if (email == null || email.trim().isEmpty() || password == null || password.isEmpty()) {
@@ -82,13 +100,15 @@ public class LoginServlet extends HttpServlet {
         }
 
         // Create a DAO instance to check login credentials in the database
-        UsersDAO dao = new UsersDAO();
-        Users u = dao.login(email, password); // Attempt to authenticate user
-
-        if (u != null) { // Login successful
+        Users u = uDAO.login(email, password); // Attempt to authenticate user
+        if (u != null && u.getStatus().equalsIgnoreCase("block")) {
+            request.setAttribute("error", "Your account has been locked.");
+            request.getRequestDispatcher("login.jsp").forward(request, response);
+            return;
+        } else if (u != null) { // Login successful
             // Create a new session for the logged-in user
-            HttpSession session = request.getSession();
             session.setAttribute("user", u); // Store the user object in the session
+
             // Nếu có redirect URL từ productdetail.jsp, quay lại đó
             if (u.getRole() == 1) {
                 if (redirect != null && !redirect.isEmpty()) {
@@ -103,8 +123,11 @@ public class LoginServlet extends HttpServlet {
                         System.err.println("Error decoding redirect URL: " + e.getMessage());
                     }
                 }
-               
+
             }
+
+            //Set attemps to 0 if login successfully
+            session.setAttribute("attempts", 0);
 
             // Get the user's role (default to "1" if null)
             String roleValue = (u.getRole() != null) ? u.getRole().toString() : "1";
@@ -121,7 +144,7 @@ public class LoginServlet extends HttpServlet {
                     break;
                 case "2":
                     // Role 2: Staff → Redirect to staff page
-                   
+
                     response.sendRedirect("product");
                     break;
                 case "1":
@@ -133,13 +156,24 @@ public class LoginServlet extends HttpServlet {
                     response.sendRedirect("homepage");
                     break;
             }
-
-        } else { // Login failed: invalid email or password
+            // If wrong password but correct email
+        } else if (uDAO.getUserByEmail(email)) {
             // Set error message for invalid credentials
+            int attempts = (int) session.getAttribute("attempts");
+            if (attempts < 5) {
+                int newAttempts = attempts + 1;
+                request.setAttribute("error", "Invalid password.");
+                session.setAttribute("attempts", newAttempts);
+
+            } else {
+                request.setAttribute("error", "You have entered the wrong password more than 5 times. Your account has been locked.");
+                // Update status to block if exceed attempts
+                uDAO.updateUserStatus("block", email);
+            }
+            request.getRequestDispatcher("login.jsp").forward(request, response);
+        } else {
             request.setAttribute("error", "Invalid email or password.");
-            // Forward back to login.jsp to show the error
-            RequestDispatcher dispatcher = request.getRequestDispatcher("login.jsp");
-            dispatcher.forward(request, response);
+            request.getRequestDispatcher("login.jsp").forward(request, response);
         }
     }
 

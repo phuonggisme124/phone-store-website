@@ -4,7 +4,9 @@
  */
 package controller;
 
+import com.google.gson.Gson;
 import dao.CategoryDAO;
+import dao.ImportDAO;
 import dao.OrderDAO;
 import dao.PaymentsDAO;
 import dao.ProductDAO;
@@ -33,6 +35,8 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import model.Category;
+import model.Import;
+import model.ImportDetail;
 import model.InterestRate;
 import model.Order;
 import model.OrderDetails;
@@ -107,7 +111,10 @@ public class AdminServlet extends HttpServlet {
         PaymentsDAO paydao = new PaymentsDAO();
         PromotionsDAO pmtdao = new PromotionsDAO();
         ProfitDAO pfdao = new ProfitDAO();
+        HttpSession session = request.getSession();
+        ImportDAO imdao = new ImportDAO();
 
+        System.out.println("DEBUG: Action nhận được = " + action);
         if (action == null) {
             action = "dashboard";
         }
@@ -130,8 +137,6 @@ public class AdminServlet extends HttpServlet {
             List<Users> listUser = udao.getAllUsers();
             List<Double> monthlyIncome = pfdao.getAllIncomeOfYear(yearSelect);
             List<Integer> monthlyOrder = pfdao.getAllOrderOfYear(yearSelect);
-            System.out.println("tháng đang truy vấn: " + monthSelect);
-            System.out.println("tháng gui về: " + monthSelectStr);
             int importOfMonth = pfdao.getImportByMonthAndYear(monthSelect, yearSelect);
             int soldOfMonth = pfdao.getSoldByMonthAndYear(monthSelect, yearSelect);
             double revenueTargetOfMonth = pfdao.getRevenueTargetByMonthAndYear(monthSelect, yearSelect);
@@ -139,7 +144,6 @@ public class AdminServlet extends HttpServlet {
             double costOfMonth = pfdao.getCostByMonthAndYear(monthSelect, yearSelect);
             double incomeTargetOfMonth = revenueTargetOfMonth - costOfMonth;
             double incomeOfMonth = revenueOfMonth - costOfMonth;
-
             request.setAttribute("yearSelect", yearSelect);
             request.setAttribute("monthSelect", monthSelect);
             request.setAttribute("incomeOfMonth", incomeOfMonth);
@@ -152,26 +156,67 @@ public class AdminServlet extends HttpServlet {
             request.setAttribute("monthlyIncome", monthlyIncome);
             request.setAttribute("monthlyOrder", monthlyOrder);
             request.setAttribute("listUser", listUser);
-
             request.getRequestDispatcher("admin/dashboard_admin.jsp").forward(request, response);
         } else if (action.equals("importproduct")) {
-            // ACTION 1: HIỂN THỊ DANH SÁCH LỊCH SỬ NHẬP KHO (Giống Manage Product)          
-            List<Profit> listImports = pfdao.getAllProfit();
-            request.setAttribute("listImports", listImports);
-            request.getRequestDispatcher("admin/import_history.jsp").forward(request, response);
-        } else if (action.equals("showImportForm")) {
-            List<Products> listProducts = pdao.getAllProduct();
-            request.setAttribute("listProducts", listProducts);
-            request.getRequestDispatcher("admin/importProduct.jsp").forward(request, response);
-        } // Thêm đoạn này vào doGet của AdminServlet
-        else if (action.equals("showCreateProduct")) {
-            List<Category> listCategory = ctdao.getAllCategories();
-            List<Suppliers> listSupplier = sldao.getAllSupplier();
-            // 2. Gửi dữ liệu sang JSP
-            request.setAttribute("listCategories", listCategory);
-            request.setAttribute("listSupplier", listSupplier);
-            // 3. Chuyển hướng đến trang tạo mới
-            request.getRequestDispatcher("admin/admin_manageproduct_create.jsp").forward(request, response);
+            ImportDAO dao = new ImportDAO();
+            List<Import> list = dao.getAllImports();
+            request.setAttribute("listImports", list);
+            // Chuyển sang trang JSP lịch sử
+            request.getRequestDispatcher("admin/admin_import_history.jsp").forward(request, response);
+        }  else if (action.equals("viewDetail")) {
+            try {
+                int id = Integer.parseInt(request.getParameter("id"));
+
+                ImportDAO dao = new ImportDAO();
+                // 1. Lấy danh sách sản phẩm trong phiếu đó
+                List<ImportDetail> listDetails = dao.getDetailsByImportID(id);
+
+                // 2. Gửi sang trang JSP chi tiết
+                request.setAttribute("listDetails", listDetails);
+                request.setAttribute("importID", id); // Gửi ID để hiện lên tiêu đề cho đẹp
+
+                request.getRequestDispatcher("admin/admin_import_detail.jsp").forward(request, response);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else if (action.equals("approve")) {
+            try {
+                String idRaw = request.getParameter("id");
+                if (idRaw == null) {
+                    throw new Exception("ID null");
+                }
+                int id = Integer.parseInt(idRaw);
+
+                boolean result = imdao.approveImport(id); // Gọi hàm duyệt + cộng kho
+
+                if (result) {
+                    session.setAttribute("MESS", "Duyệt đơn thành công! Kho đã cập nhật.");
+                } else {
+                    session.setAttribute("ERROR", "Lỗi khi duyệt đơn (Kiểm tra Log).");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                session.setAttribute("ERROR", "Lỗi hệ thống: " + e.getMessage());
+            }
+            // Quay lại trang danh sách của ADMIN (Load lại dữ liệu mới nhất)
+            response.sendRedirect("admin?action=importproduct");
+        } // 2.4 Từ chối đơn (Reject)
+        else if (action.equals("reject")) {
+            try {
+                String idRaw = request.getParameter("id");
+                if (idRaw == null) {
+                    throw new Exception("ID null");
+                }
+                int id = Integer.parseInt(idRaw);
+
+                imdao.cancelImport(id); // Gọi hàm hủy (Status = 2)
+                session.setAttribute("MESS", "Đã TỪ CHỐI phiếu nhập #" + id);
+            } catch (Exception e) {
+                e.printStackTrace();
+                session.setAttribute("ERROR", "Lỗi khi từ chối: " + e.getMessage());
+            }
+            // Quay lại trang danh sách của ADMIN
+            response.sendRedirect("admin?action=importproduct");
         }
 
     }
@@ -195,7 +240,6 @@ public class AdminServlet extends HttpServlet {
         VariantsDAO vdao = new VariantsDAO();
         PromotionsDAO pmtdao = new PromotionsDAO();
         ReviewDAO rdao = new ReviewDAO();
-        
 
     }
 

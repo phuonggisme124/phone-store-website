@@ -12,9 +12,9 @@
     justify-content: center;
 }
 
-/* ===== Từng Item Ảnh (CHA) ===== */
+/*Từng Item Ảnh (CHA) */
 .image-preview-item {
-    position: relative; /* BẮT BUỘC: để định vị nút xóa */
+    position: relative; /* định vị nút xóa */
     width: 100px;
     height: 100px;
     border-radius: 8px;
@@ -30,7 +30,7 @@
     border-radius: 8px;
 }
 
-/* ===== NÚT XÓA (CON) ===== */
+/*  NÚT XÓA (CON)*/
 .remove-image-btn,
 .remove-existing-image-btn {
     position: absolute;
@@ -51,7 +51,7 @@
     line-height: 1;
     z-index: 10;
     cursor: pointer;
-    /* === THAY ĐỔI THEO YÊU CẦU === */
+    /*  THAY ĐỔI THEO YÊU CẦU */
     /* 1. Mặc định ẩn nút đi */
     opacity: 0;
     pointer-events: none; /* Không cho click khi đang ẩn */
@@ -65,7 +65,7 @@
     line-height: 1;
 }
 
-/* === THÊM MỚI THEO YÊU CẦU === */
+
 /* 2. Khi rê chuột vào ẢNH CHA (.image-preview-item) thì HIỆN NÚT CON */
 .image-preview-item:hover .remove-image-btn,
 .image-preview-item:hover .remove-existing-image-btn {

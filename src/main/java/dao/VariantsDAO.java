@@ -7,6 +7,7 @@ package dao;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import model.Promotions;
@@ -718,12 +719,12 @@ public class VariantsDAO extends DBContext {
         return list;
     }
 
-    public boolean decreaseQuantity(int variantID, int quantityToSubtract) {
-        String sql = "UPDATE Variants SET Stock = Stock - ? WHERE VariantID = ? AND Stock >= ?";
+    public boolean increaseQuantity(int variantID, int quantity) {
+        String sql = "UPDATE Variants SET Stock = Stock + ? WHERE VariantID = ? AND Stock >= ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, quantityToSubtract);
+            ps.setInt(1, quantity);
             ps.setInt(2, variantID);
-            ps.setInt(3, quantityToSubtract); // tránh âm số lượng
+            ps.setInt(3, quantity); // tránh âm số lượng
             int rowsAffected = ps.executeUpdate();
             return rowsAffected > 0;
         } catch (SQLException e) {
@@ -844,37 +845,110 @@ public class VariantsDAO extends DBContext {
         int generatedID = 0;
         // SQL cập nhật thêm cột DiscountPrice (nếu bảng có) để đồng bộ
         String sql = "INSERT INTO Variants (ProductID, Color, Storage, Price, DiscountPrice, Stock, Description, ImageURL) "
-                   + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)"; 
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try {
             // Quan trọng: RETURN_GENERATED_KEYS để lấy ID
             PreparedStatement ps = conn.prepareStatement(sql, java.sql.Statement.RETURN_GENERATED_KEYS);
-            
+
             ps.setInt(1, v.getProductID());
-            ps.setString(2, v.getColor());
-            ps.setString(3, v.getStorage());
+            ps.setString(2, v.getColor().toUpperCase());
+            ps.setString(3, v.getStorage().toUpperCase());
             ps.setDouble(4, v.getPrice());
-            
+
             // Nếu discount price chưa set thì lấy bằng price
             ps.setDouble(5, v.getDiscountPrice() > 0 ? v.getDiscountPrice() : v.getPrice());
-            
+
             ps.setInt(6, v.getStock());
             ps.setString(7, v.getDescription());
-            
+
             // Xử lý ảnh mặc định nếu null
             ps.setString(8, (v.getImageUrl() != null && !v.getImageUrl().isEmpty()) ? v.getImageUrl() : "default.png");
 
             ps.executeUpdate();
-            
+
             // Lấy ID vừa sinh ra
             java.sql.ResultSet rs = ps.getGeneratedKeys();
             if (rs.next()) {
                 generatedID = rs.getInt(1);
             }
-            
+
         } catch (Exception e) {
+
             e.printStackTrace();
         }
         return generatedID;
     }
 
+    public void reduceStock(int variantID, int quantity) {
+        String sql = "UPDATE Variants SET Stock = Stock - ? WHERE VariantID = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, quantity);
+            ps.setInt(2, variantID);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public boolean updateVariant(Variants variant) {
+        // Câu SQL này cập nhật các thông tin quan trọng
+        String sql = "UPDATE Variants SET price = ?, stock = ?, "
+                + "description = ?, imageURL = ? "
+                + "WHERE variantID = ?";
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setDouble(1, variant.getPrice());
+            ps.setInt(2, variant.getStock());
+            ps.setString(3, variant.getDescription());
+            ps.setString(4, variant.getImageUrl());
+            ps.setInt(5, variant.getVariantID());
+
+            int affectedRows = ps.executeUpdate();
+            return affectedRows > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public List<Variants> getAllVariantsWithProductName() {
+        List<Variants> list = new ArrayList<>();
+        // 1. SỬA SQL: Nhớ thêm cột discountPrice vào câu SELECT
+        String sql = "SELECT v.variantID, v.productID, v.color, v.storage, v.stock, "
+                + "       v.price, v.discountPrice, " 
+                + "       p.Name AS ProductName, "
+                + "       p.CategoryID "
+                + "FROM Variants v "
+                + "INNER JOIN Products p ON v.productID = p.productID";
+
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Variants v = new Variants();
+
+                v.setVariantID(rs.getInt("variantID"));
+                v.setProductID(rs.getInt("productID"));
+                v.setColor(rs.getString("color"));
+                v.setStorage(rs.getString("storage"));
+                v.setStock(rs.getInt("stock"));
+
+                // 2. Lấy giá gốc
+                v.setPrice(rs.getDouble("price"));
+
+                // 3. Lấy giá bán (discountPrice)
+   
+                v.setDiscountPrice(rs.getDouble("discountPrice"));
+
+                v.setProductName(rs.getString("ProductName"));
+                v.setCategoryID(rs.getInt("CategoryID"));
+
+                list.add(v);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
 }

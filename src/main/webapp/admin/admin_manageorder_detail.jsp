@@ -64,9 +64,7 @@
                 <div class="container-fluid px-4">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h2 class="text-primary fw-bold">Order Details</h2>
-                        <a href="order?action=manageOrderAdmin" class="btn btn-secondary">
-                            <i class="bi bi-arrow-left me-2"></i>Back to Orders
-                        </a>
+                        
                     </div>
                 </div>
 
@@ -97,7 +95,7 @@
                                         <td><span class="fw-bold"><%= pdao.getNameByID(od.getVariant().getProductID())%></span></td>
                                         <td><%= od.getVariant().getColor()%></td>
                                         <td><%= od.getVariant().getStorage()%></td>
-                                        <td><%= String.format("%,.0f", od.getVariant().getPrice())%> ₫</td>
+                                        <td><%= String.format("%,.0f", od.getUnitPrice())%> ₫</td>
                                         <td><%= od.getQuantity()%></td>
                                         
                                         <% if (isInstalment) { 

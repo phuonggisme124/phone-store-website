@@ -66,9 +66,9 @@ public class RegisterServlet extends HttpServlet {
         String rePassword = request.getParameter("rePassword");
         
         // --- Input validation logic ---
-
+        
         // 1. Check if passwords match and are not empty
-        if (!password.equals(rePassword) || password.isEmpty() || password == null) {
+        if (!password.equals(rePassword) || password.isEmpty() || password == null || !password.matches("^(?=.*[A-Za-z])(?=.*\\d).{8,}$")) {
             request.setAttribute("error", "Passwords do not match or cannot be empty!");
             request.getRequestDispatcher("login.jsp").forward(request, response);
             return; // Stop further processing
