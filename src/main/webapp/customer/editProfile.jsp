@@ -347,34 +347,39 @@
         <div class="profile-container">
             <div class="profile-wrapper">
                 <!-- Sidebar -->
-                <aside class="profile-sidebar">
-                    <h3>Hello, <%= user.getFullName()%></h3>
+                    <aside class="profile-sidebar">
+                        <h3>Hello, <%= user.getFullName()%></h3>
 
-                    <a href="user?action=transaction" class="sidebar-link">
-                        <i class="fas fa-shopping-bag"></i>
-                        <span>My Orders</span>
-                    </a>
-                    <a href="user?action=payInstallment" class="sidebar-link">
-                        <i class="fas fa-receipt"></i>
-                        <span>Installment Paying</span>
-                    </a>
+                        <a href="product?action=viewWishlist" class="sidebar-link">
+                            <i class="fas fa-heart"></i>
+                            <span>My Wishlist</span>
+                        </a>
+                        
+                        <a href="user?action=transaction" class="sidebar-link">
+                            <i class="fas fa-shopping-bag"></i>
+                            <span>My Orders</span>
+                        </a>
+                        <a href="user?action=payInstallment" class="sidebar-link">
+                            <i class="fas fa-receipt"></i>
+                            <span>Installment Paying</span>
+                        </a>
 
-                    <a href="user" class="sidebar-link">
-                        <i class="fas fa-user"></i>
-                        <span>Profile & Address</span>
-                    </a>
+                        <a href="user" class="sidebar-link">
+                            <i class="fas fa-user"></i>
+                            <span>Profile & Address</span>
+                        </a>
 
-                    <a href="user?action=changePassword" class="sidebar-link">
-                        <i class="fas fa-lock"></i>
-                        <span>Change Password</span>
-                    </a>
+                        <a href="user?action=changePassword" class="sidebar-link">
+                            <i class="fas fa-lock"></i>
+                            <span>Change Password</span>
+                        </a>
 
-                    <form action="logout" method="post">
-                        <button type="submit" class="logout-btn">
-                            <i class="fas fa-sign-out-alt"></i> Logout
-                        </button>
-                    </form>
-                </aside>
+                        <form action="logout" method="post">
+                            <button type="submit" class="logout-btn">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </button>
+                        </form>
+                    </aside>
 
                 <!-- Main Content -->
                 <main class="profile-content">

@@ -293,6 +293,16 @@
             <div style="width: 322px; background-color: #fff; padding: 20px;">
                 <h3 style="margin-top: 100px; margin-bottom: 50px; font-size: 1.5rem;">Anh/Chị <%= user.getFullName()%></h3>
 
+                <!-- Nút 0: My Wishlist -->
+                <a href="product?action=viewWishlist"
+                   style="display: flex; align-items: center; background-color: #f2f3f5; color: #333; font-weight: 500;
+                   border-radius: 8px; padding: 10px 15px; text-decoration: none; margin-bottom: 15px;">
+                    <i class="fa fa-heart" style="margin-right: 10px;"></i>
+                    My Wishlist
+                </a>
+
+
+
                 <!-- Nút 1: Đơn hàng đã mua -->
                 <a href="order"
                    style="display: flex; align-items: center; background-color: #f2f3f5; color: #333; font-weight: 500;

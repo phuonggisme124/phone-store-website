@@ -4,6 +4,7 @@
  */
 package dao;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -873,23 +874,22 @@ public class VariantsDAO extends DBContext {
             }
 
         } catch (Exception e) {
-           
+
             e.printStackTrace();
         }
         return generatedID;
     }
-    
-    public void reduceStock(int variantID, int quantity) {
-    String sql = "UPDATE Variants SET Stock = Stock - ? WHERE VariantID = ?";
-    try (PreparedStatement ps = conn.prepareStatement(sql)) {
-        ps.setInt(1, quantity);
-        ps.setInt(2, variantID);
-        ps.executeUpdate();
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
-}
 
+    public void reduceStock(int variantID, int quantity) {
+        String sql = "UPDATE Variants SET Stock = Stock - ? WHERE VariantID = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, quantity);
+            ps.setInt(2, variantID);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     public boolean updateVariant(Variants variant) {
         // Câu SQL này cập nhật các thông tin quan trọng
@@ -913,4 +913,65 @@ public class VariantsDAO extends DBContext {
         }
     }
 
+    public List<Variants> getSuggestedVariantsByVariantID(int variantID) throws SQLException {
+
+        Variants current = getVariantByID(variantID);
+        if (current == null) {
+            return new ArrayList<>();
+        }
+
+        String sql
+                = "SELECT TOP 6 v.* "
+                + "FROM Variants v "
+                + "JOIN Products p ON v.ProductID = p.ProductID "
+                + "WHERE v.VariantID <> ? "
+                + "AND p.CategoryID = ("
+                + "    SELECT p2.CategoryID "
+                + "    FROM Products p2 "
+                + "    JOIN Variants v2 ON p2.ProductID = v2.ProductID "
+                + "    WHERE v2.VariantID = ?"
+                + ") "
+                + "AND ABS(CAST(ISNULL(v.DiscountPrice, v.Price) AS FLOAT) - ?) <= 5000000 "
+                + "ORDER BY NEWID()";
+
+        List<Variants> list = new ArrayList<>();
+
+        double currentPrice = (current.getDiscountPrice() != null)
+                ? current.getDiscountPrice()
+                : current.getPrice();
+
+        try (Connection conn = new utils.DBContext().conn; PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, variantID);
+            ps.setInt(2, variantID);
+            ps.setDouble(3, current.getDiscountPrice() != null ? current.getDiscountPrice() : current.getPrice());
+
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Variants v = new Variants(
+                        rs.getInt("VariantID"),
+                        rs.getInt("ProductID"),
+                        rs.getString("Color"),
+                        rs.getString("Storage"),
+                        rs.getDouble("Price"),
+                        rs.getObject("DiscountPrice") != null ? rs.getDouble("DiscountPrice") : null,
+                        rs.getInt("Stock"),
+                        rs.getString("Description"),
+                        rs.getString("ImageURL")
+                );
+                list.add(v);
+
+                // debug
+                System.out.println("Suggested variant: ID=" + v.getVariantID()
+                        + " | Price=" + (v.getDiscountPrice() != null ? v.getDiscountPrice() : v.getPrice()));
+            }
+        }
+
+        if (list.isEmpty()) {
+            System.out.println("No suggested variants found for VariantID=" + variantID);
+        }
+
+        return list;
+    }
 }
