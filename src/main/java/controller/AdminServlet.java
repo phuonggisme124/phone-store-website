@@ -111,7 +111,10 @@ public class AdminServlet extends HttpServlet {
         PaymentsDAO paydao = new PaymentsDAO();
         PromotionsDAO pmtdao = new PromotionsDAO();
         ProfitDAO pfdao = new ProfitDAO();
+        HttpSession session = request.getSession();
+        ImportDAO imdao = new ImportDAO();
 
+        System.out.println("DEBUG: Action nhận được = " + action);
         if (action == null) {
             action = "dashboard";
         }
@@ -159,23 +162,8 @@ public class AdminServlet extends HttpServlet {
             List<Import> list = dao.getAllImports();
             request.setAttribute("listImports", list);
             // Chuyển sang trang JSP lịch sử
-            request.getRequestDispatcher("admin/import_history.jsp").forward(request, response);
-        } else if (action.equals("showImportForm")) {
-            try {
-                List<Suppliers> listSup = sldao.getAllSupplier();
-                request.setAttribute("listSup", listSup);
-                List<Variants> listVar = vdao.getAllVariantsWithProductName();
-                request.setAttribute("listVar", listVar);
-                List<Products> listProducts = pdao.getAllProduct();
-                request.setAttribute("listProducts", listProducts);
-                CategoryDAO cdao = new CategoryDAO();
-                List<Category> listCategories = cdao.getAllCategories(); // Lấy list danh mục
-                request.setAttribute("listCategories", listCategories);
-                request.getRequestDispatcher("admin/importProduct.jsp").forward(request, response);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } else if (action.equals("viewDetail")) {
+            request.getRequestDispatcher("admin/admin_import_history.jsp").forward(request, response);
+        }  else if (action.equals("viewDetail")) {
             try {
                 int id = Integer.parseInt(request.getParameter("id"));
 
@@ -187,29 +175,48 @@ public class AdminServlet extends HttpServlet {
                 request.setAttribute("listDetails", listDetails);
                 request.setAttribute("importID", id); // Gửi ID để hiện lên tiêu đề cho đẹp
 
-                request.getRequestDispatcher("admin/import_detail.jsp").forward(request, response);
+                request.getRequestDispatcher("admin/admin_import_detail.jsp").forward(request, response);
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        } else if (action.equals("createProductPage")) {
+        } else if (action.equals("approve")) {
             try {
-                // 1. Khởi tạo DAO
-                CategoryDAO cdao = new CategoryDAO();
-                SupplierDAO sdao = new SupplierDAO();
+                String idRaw = request.getParameter("id");
+                if (idRaw == null) {
+                    throw new Exception("ID null");
+                }
+                int id = Integer.parseInt(idRaw);
 
-                // 2. Lấy danh sách Category (Để sửa lỗi NullPointerException ở dòng 94 JSP)
-                List<Category> listCategories = cdao.getAllCategories();
-                request.setAttribute("listCategories", listCategories);
+                boolean result = imdao.approveImport(id); // Gọi hàm duyệt + cộng kho
 
-                // 3. Lấy danh sách Supplier (Để hiện dropdown nhà cung cấp)
-                List<Suppliers> listSupplier = sldao.getAllSupplier();
-                request.setAttribute("listSupplier", listSupplier);
-
-                // 4. Chuyển hướng sang trang JSP tạo mới
-                request.getRequestDispatcher("admin/admin_manageproduct_create.jsp").forward(request, response);
+                if (result) {
+                    session.setAttribute("MESS", "Duyệt đơn thành công! Kho đã cập nhật.");
+                } else {
+                    session.setAttribute("ERROR", "Lỗi khi duyệt đơn (Kiểm tra Log).");
+                }
             } catch (Exception e) {
                 e.printStackTrace();
+                session.setAttribute("ERROR", "Lỗi hệ thống: " + e.getMessage());
             }
+            // Quay lại trang danh sách của ADMIN (Load lại dữ liệu mới nhất)
+            response.sendRedirect("admin?action=importproduct");
+        } // 2.4 Từ chối đơn (Reject)
+        else if (action.equals("reject")) {
+            try {
+                String idRaw = request.getParameter("id");
+                if (idRaw == null) {
+                    throw new Exception("ID null");
+                }
+                int id = Integer.parseInt(idRaw);
+
+                imdao.cancelImport(id); // Gọi hàm hủy (Status = 2)
+                session.setAttribute("MESS", "Đã TỪ CHỐI phiếu nhập #" + id);
+            } catch (Exception e) {
+                e.printStackTrace();
+                session.setAttribute("ERROR", "Lỗi khi từ chối: " + e.getMessage());
+            }
+            // Quay lại trang danh sách của ADMIN
+            response.sendRedirect("admin?action=importproduct");
         }
 
     }

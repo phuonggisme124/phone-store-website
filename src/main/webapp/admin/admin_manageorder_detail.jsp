@@ -95,7 +95,7 @@
                                         <td><span class="fw-bold"><%= pdao.getNameByID(od.getVariant().getProductID())%></span></td>
                                         <td><%= od.getVariant().getColor()%></td>
                                         <td><%= od.getVariant().getStorage()%></td>
-                                        <td><%= String.format("%,.0f", od.getVariant().getPrice())%> ₫</td>
+                                        <td><%= String.format("%,.0f", od.getUnitPrice())%> ₫</td>
                                         <td><%= od.getQuantity()%></td>
                                         
                                         <% if (isInstalment) { 

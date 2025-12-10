@@ -23,7 +23,6 @@
             font-size: 0.85rem;
             letter-spacing: 0.5px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            /* rê chuột đôngj */
             transition: all 0.3s ease;
             display: inline-flex;
             align-items: center;
@@ -34,7 +33,7 @@
             transform: translateY(-2px) scale(1.05);
             box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
         }
- /* màu chuyển,rê chuột */
+
         .status-badge.pending {
             background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
             color: white;
@@ -50,7 +49,7 @@
             color: white;
         }
 
-        .status-badge.delay {
+        .status-badge.delayed {
             background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
             color: white;
         }
@@ -60,17 +59,15 @@
             color: white;
         }
 
-        /* đập */
         .status-badge i {
             animation: pulse 2s infinite;
         }
-  /* icon to */
+
         @keyframes pulse {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.2); }
         }
 
-        /* rê chuột */
         .btn-action {
             border-radius: 10px;
             padding: 8px 16px;
@@ -100,7 +97,6 @@
             border-color: transparent;
         }
 
-        /* shipper */
         .shipper-info {
             background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
             padding: 8px 12px;
@@ -113,7 +109,6 @@
             box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
         }
 
-        /* rê chuột hàng */
         tbody tr {
             transition: all 0.3s ease;
             cursor: pointer;
@@ -144,7 +139,6 @@
             padding-left: 20px;
         }
 
-        /* card  */
         .card {
             border-radius: 16px !important;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08) !important;
@@ -183,7 +177,6 @@
             border-radius: 16px 16px 0 0;
         }
 
-        /* list shipper */
         .list-group-item {
             border: 1px solid rgba(0, 0, 0, 0.05) !important;
             border-radius: 8px !important;
@@ -203,7 +196,6 @@
             border-width: 0.3em;
         }
 
-
         td:nth-child(5) {
             font-weight: 700;
             color: #667eea;
@@ -214,7 +206,6 @@
             font-weight: 600;
         }
 
-        /* thông báo */
         .alert.auto-hide {
             animation: slideDown 0.5s ease-out, fadeOut 0.5s ease-out 2.5s forwards;
         }
@@ -224,6 +215,34 @@
                 opacity: 0;
                 transform: translateY(-20px);
             }
+        }
+
+        /* Order Detail Styles */
+        .order-info-card {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .info-value {
+            color: #333;
         }
     </style>
 </head>
@@ -241,6 +260,70 @@
 
 <script>
     const allPhones = <%= (allPhones != null) ? new Gson().toJson(allPhones) : "[]" %>;
+    
+    // Tạo mảng ordersData từ JSP
+    const ordersData = [
+        <% if (orders != null && !orders.isEmpty()) {
+            for (int i = 0; i < orders.size(); i++) {
+                Order o = orders.get(i);
+                String status = o.getStatus();
+                String statusClass = "";
+                String statusIcon = "";
+                
+                if (status != null) {
+                    String statusLower = status.trim().toLowerCase();
+                    switch(statusLower) {
+                        case "pending":
+                            statusClass = "pending";
+                            statusIcon = "bi-clock-fill";
+                            break;
+                        case "in transit":
+                            statusClass = "in-transit";
+                            statusIcon = "bi-truck";
+                            break;
+                        case "delivered":
+                            statusClass = "delivered";
+                            statusIcon = "bi-check-circle-fill";
+                            break;
+                        case "delayed":
+                            statusClass = "delayed";
+                            statusIcon = "bi-exclamation-triangle-fill";
+                            break;
+                        case "cancelled":
+                            statusClass = "cancelled";
+                            statusIcon = "bi-x-circle-fill";
+                            break;
+                    }
+                }
+                
+                String customerName = "";
+                String phone = "";
+                if (o.getBuyer() != null) {
+                    customerName = o.getBuyer().getFullName() != null ? o.getBuyer().getFullName() : o.getReceiverName();
+                    phone = o.getBuyer().getPhone() != null ? o.getBuyer().getPhone() : o.getReceiverPhone();
+                } else {
+                    customerName = o.getReceiverName();
+                    phone = o.getReceiverPhone();
+                }
+        %>
+        {
+            orderID: <%= o.getOrderID() %>,
+            customerName: "<%= customerName %>",
+            phone: "<%= phone %>",
+            address: "<%= o.getShippingAddress() %>",
+            totalAmount: "<%= currencyFormatter.format(o.getTotalAmount()) %>",
+            orderDate: "<%= o.getOrderDate() %>",
+            status: "<%= status %>",
+            statusBadge: '<span class="status-badge <%= statusClass %>"><i class="bi <%= statusIcon %>"></i> <%= status %></span>',
+            <% if (o.getShippers() != null) { %>
+            shipperName: "<%= o.getShippers().getFullName() %>",
+            shipperPhone: "<%= o.getShippers().getPhone() %>",
+            <% } %>
+            isInstalment: <%= o.getIsInstalment() != null && o.getIsInstalment() %>
+        }<%= (i < orders.size() - 1) ? "," : "" %>
+        <% }
+        } %>
+    ];
 </script>
 
 <div class="d-flex" id="wrapper">
@@ -252,6 +335,7 @@
             <li><a href="product?action=manageProduct"><i class="bi bi-box me-2"></i>Products</a></li>
             <li><a href="order?action=manageOrder" class="fw-bold text-primary"><i class="bi bi-bag me-2"></i>Orders</a></li>
             <li><a href="review?action=manageReview"><i class="bi bi-chat-left-text me-2"></i>Reviews</a></li>
+            <li><a href="importproduct?action=staff_import"><i class="bi bi-chat-left-text me-2"></i>importProduct</a></li>
         </ul>
     </nav>
 
@@ -262,7 +346,6 @@
                     <i class="bi bi-list"></i>
                 </button>
                 <div class="d-flex align-items-center ms-auto">
-                    <!-- search sđt -->
                     <form action="order" method="get" class="d-flex position-relative me-3" id="searchForm" autocomplete="off">
                         <input type="hidden" name="action" value="manageOrder">
                         <input type="hidden" name="status" value="<%= currentStatus %>">
@@ -276,7 +359,6 @@
                              style="top: 100%; z-index: 1000;"></div>
                     </form>
 
-                    <!-- filter status -->
                     <form action="order" method="get" class="dropdown me-3">
                         <input type="hidden" name="action" value="manageOrder">
                         <input type="hidden" name="phone" value="<%= currentPhone %>">
@@ -289,7 +371,7 @@
                             <li><button type="submit" name="status" value="Pending" class="dropdown-item">Pending</button></li>
                             <li><button type="submit" name="status" value="In Transit" class="dropdown-item">In Transit</button></li>
                             <li><button type="submit" name="status" value="Delivered" class="dropdown-item">Delivered</button></li>
-                            <li><button type="submit" name="status" value="Delay" class="dropdown-item">Delay</button></li>
+                            <li><button type="submit" name="status" value="Delayed" class="dropdown-item">Delayed</button></li>
                             <li><button type="submit" name="status" value="Cancelled" class="dropdown-item">Cancelled</button></li>
                         </ul>
                     </form>
@@ -304,7 +386,6 @@
         </nav>
 
         <div class="container-fluid p-4">
-            <!-- thông báo -->
             <%
                 String message = (String) session.getAttribute("message");
                 if (message != null) {
@@ -369,8 +450,8 @@
                                             statusClass = "delivered";
                                             statusIcon = "bi-check-circle-fill";
                                             break;
-                                        case "delay":
-                                            statusClass = "delay";
+                                        case "delayed":
+                                            statusClass = "delayed";
                                             statusIcon = "bi-exclamation-triangle-fill";
                                             break;
                                         case "cancelled":
@@ -380,11 +461,9 @@
                                     }
                                 }
                             %>
-                             <!-- orderdetail  -->
                             <tr onclick="viewOrderDetail(<%= o.getOrderID()%>, <%= o.getIsInstalment() != null && o.getIsInstalment() %>)">
                                 <td><span class="badge bg-primary">#<%= o.getOrderID()%></span></td>
                                 <td>
-                                    <!-- ng mua ko có => người nhận  -->
                                     <strong>
                                     <% if (o.getBuyer() != null) { %>
                                         <%= o.getBuyer().getFullName() != null ? o.getBuyer().getFullName() : o.getReceiverName() %>
@@ -409,7 +488,6 @@
                                         <%= status%>
                                     </span>
                                 </td>
-                                <!-- assign, cancle ko đè lên orderdetail  -->
                                 <td onclick="event.stopPropagation();">
                                     <%
                                         boolean isPending = status != null && "pending".equalsIgnoreCase(status.trim());
@@ -481,7 +559,7 @@
             </div>
         </div>
 
-        <!-- modal assgin shipper -->
+        <!-- modal assign shipper -->
         <div class="modal fade" id="shipperModal" tabindex="-1">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
@@ -571,8 +649,6 @@
         orderDetailModal = new bootstrap.Modal(document.getElementById('orderDetailModal'));
         cancelModal = new bootstrap.Modal(document.getElementById('cancelModal'));
         
-        // tắt thông báo 
-        // 3s
         setTimeout(() => {
             document.querySelectorAll('.alert.auto-hide').forEach(alert => {
                 const bsAlert = bootstrap.Alert.getOrCreateInstance(alert);
@@ -600,40 +676,116 @@
     function viewOrderDetail(orderID, isInstalment) {
         orderDetailModal.show();
         
+        // Tìm order từ danh sách orders đã có
+        const orderData = ordersData.find(o => o.orderID === orderID);
+        
+        if (!orderData) {
+            document.getElementById('orderDetailContent').innerHTML = 
+                '<div class="alert alert-danger m-3">' +
+                '<i class="bi bi-exclamation-triangle me-2"></i>Order not found.' +
+                '</div>';
+            return;
+        }
+        
+        // Hiển thị loading
+        let content = '<div class="container-fluid">';
+        
+        // Thông tin đơn hàng
+        content += '<div class="order-info-card">';
+        content += '<h5 class="fw-bold text-primary mb-3"><i class="bi bi-info-circle me-2"></i>Order Information</h5>';
+        content += '<div class="row">';
+        content += '<div class="col-md-6">';
+        content += '<div class="info-row"><span class="info-label">Order ID:</span><span class="info-value">#' + orderData.orderID + '</span></div>';
+        content += '<div class="info-row"><span class="info-label">Customer:</span><span class="info-value">' + orderData.customerName + '</span></div>';
+        content += '<div class="info-row"><span class="info-label">Phone:</span><span class="info-value">' + orderData.phone + '</span></div>';
+        content += '<div class="info-row"><span class="info-label">Order Date:</span><span class="info-value">' + orderData.orderDate + '</span></div>';
+        content += '</div>';
+        content += '<div class="col-md-6">';
+        content += '<div class="info-row"><span class="info-label">Shipping Address:</span><span class="info-value">' + orderData.address + '</span></div>';
+        content += '<div class="info-row"><span class="info-label">Total Amount:</span><span class="info-value fw-bold text-primary">' + orderData.totalAmount + '</span></div>';
+        content += '<div class="info-row"><span class="info-label">Status:</span><span class="info-value">' + orderData.statusBadge + '</span></div>';
+        if (orderData.shipperName) {
+            content += '<div class="info-row"><span class="info-label">Shipper:</span><span class="info-value">' + orderData.shipperName + ' (' + orderData.shipperPhone + ')</span></div>';
+        }
+        content += '</div>';
+        content += '</div>';
+        content += '</div>';
+        
+        // Hiển thị loading cho phần sản phẩm
+        content += '<div id="productSection">';
+        content += '<div class="text-center py-4">';
+        content += '<div class="spinner-border text-primary" role="status">';
+        content += '<span class="visually-hidden">Loading...</span>';
+        content += '</div>';
+        content += '<p class="mt-3 text-muted">Loading products...</p>';
+        content += '</div>';
+        content += '</div>';
+        
+        content += '</div>';
+        
+        document.getElementById('orderDetailContent').innerHTML = content;
+        
+        // Fetch thông tin sản phẩm
         fetch('order?action=orderDetail&id=' + orderID + '&isIntalment=' + isInstalment)
             .then(response => response.text())
             .then(html => {
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(html, 'text/html');
                 
-                let content = '<div class="container-fluid">';
+                let productContent = '';
                 
+                // Hiển thị bảng sản phẩm
                 const productsCard = doc.querySelector('.card');
                 if (productsCard) {
-                    content += '<div class="mb-4">';
-                    content += '<h5 class="fw-bold text-secondary mb-3"><i class="bi bi-cart-check me-2"></i>Products in Order</h5>';
-                    content += productsCard.querySelector('.table-responsive, table').outerHTML;
-                    content += '</div>';
+                    productContent += '<div class="mb-4">';
+                    productContent += '<h5 class="fw-bold text-secondary mb-3"><i class="bi bi-cart-check me-2"></i>Products in Order</h5>';
+                    const tableContainer = productsCard.querySelector('.table-responsive');
+                    if (tableContainer) {
+                        productContent += tableContainer.outerHTML;
+                    } else {
+                        const table = productsCard.querySelector('table');
+                        if (table) {
+                            productContent += '<div class="table-responsive">' + table.outerHTML + '</div>';
+                        }
+                    }
+                    productContent += '</div>';
                 }
                 
+                // Hiển thị lịch thanh toán nếu là đơn trả góp
                 const allCards = doc.querySelectorAll('.card');
-                if (allCards.length > 1) {
-                    content += '<div class="mb-4">';
-                    content += '<h5 class="fw-bold text-secondary mb-3"><i class="bi bi-calendar-check me-2"></i>Payment Schedule</h5>';
-                    content += allCards[1].querySelector('.table-responsive, table').outerHTML;
-                    content += '</div>';
+                if (allCards.length > 1 && isInstalment) {
+                    productContent += '<div class="mb-4">';
+                    productContent += '<h5 class="fw-bold text-secondary mb-3"><i class="bi bi-calendar-check me-2"></i>Payment Schedule</h5>';
+                    const paymentTable = allCards[1].querySelector('.table-responsive');
+                    if (paymentTable) {
+                        productContent += paymentTable.outerHTML;
+                    } else {
+                        const table = allCards[1].querySelector('table');
+                        if (table) {
+                            productContent += '<div class="table-responsive">' + table.outerHTML + '</div>';
+                        }
+                    }
+                    productContent += '</div>';
                 }
                 
-                content += '</div>';
-                document.getElementById('orderDetailContent').innerHTML = content;
+                if (productContent) {
+                    document.getElementById('productSection').innerHTML = productContent;
+                } else {
+                    document.getElementById('productSection').innerHTML = 
+                        '<div class="alert alert-warning m-3">' +
+                        '<i class="bi bi-exclamation-triangle me-2"></i>No product details available.' +
+                        '</div>';
+                }
             })
             .catch(error => {
-                document.getElementById('orderDetailContent').innerHTML = 
+                console.error('Error loading product details:', error);
+                document.getElementById('productSection').innerHTML = 
                     '<div class="alert alert-danger m-3">' +
-                    '<i class="bi bi-exclamation-triangle me-2"></i>Failed to load order details.' +
+                    '<i class="bi bi-exclamation-triangle me-2"></i>Failed to load product details.' +
                     '</div>';
             });
     }
+
 
     // gợi í sđt
     var debounceTimer;

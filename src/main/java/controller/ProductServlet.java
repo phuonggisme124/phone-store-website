@@ -130,7 +130,7 @@ public class ProductServlet extends HttpServlet {
             request.setAttribute("listVariantRating", listVariantRating);
             request.setAttribute("listReview", listReview);
             request.setAttribute("product", p);
-
+            
             request.getRequestDispatcher("public/productdetail.jsp").forward(request, response);
         } else if ("selectStorage".equals(action)) {
             int pID = Integer.parseInt(request.getParameter("pID"));
@@ -261,7 +261,7 @@ public class ProductServlet extends HttpServlet {
                     request.setAttribute("pID", pID);
                     request.setAttribute("listProducts", listProducts);
                     request.setAttribute("listVariants", listVariants);
-
+                    vdao.updateDiscountPrice();
                     request.getRequestDispatcher("admin/admin_manageproduct_detail.jsp").forward(request, response);
                 }
 

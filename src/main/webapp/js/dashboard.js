@@ -58,13 +58,13 @@ function updateMonthlyChart(year) {
 
     orderChart.updateOptions({
         series: [{name: "Order", data: orderData}],
-        xaxis: {categories: months+1},
+        xaxis: {categories: months},
         title: {text: `Order by Month (${year})`}
     });
 
     incomeChart.updateOptions({
         series: [{name: "Income", data: incomeData}],
-        xaxis: {categories: months+1},
+        xaxis: {categories: months},
         title: {text: `Income by Month (${year})`}
     });
 }

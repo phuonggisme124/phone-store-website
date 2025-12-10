@@ -1,3 +1,4 @@
+<%@page import="dao.ProductDAO"%>
 <%@page import="dao.VariantsDAO"%>
 <%@page import="model.Variants"%>
 <%@page import="java.util.HashMap"%>
@@ -129,6 +130,7 @@
                                     <h6 class="fw-bold mb-2 text-primary"><i class="bi bi-box-seam"></i> Order Items</h6>
 
                                     <%
+                                        ProductDAO pdao = new ProductDAO();
                                         List<OrderDetails> odList = orderDetailList.get(o.getOrderID());
                                         if (odList != null) {
                                             for (OrderDetails d : odList) {
@@ -140,7 +142,7 @@
                                              class="order-item-img rounded me-3">
 
                                         <div class="flex-grow-1">
-                                            <div class="text-muted small"><%= v.getColor()%> • <%= v.getStorage()%></div>
+                                            <div class="text-muted small"><%= pdao.getNameByID(v.getProductID()) + "-" +  v.getColor()%> • <%= v.getStorage()%></div>
                                             <div class="small">Price: <strong><%= vn.format(d.getUnitPrice())%></strong></div>
                                             <div class="small">Qty: <strong><%= d.getQuantity()%></strong></div>
                                         </div>

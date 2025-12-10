@@ -914,10 +914,12 @@ public class VariantsDAO extends DBContext {
 
     public List<Variants> getAllVariantsWithProductName() {
         List<Variants> list = new ArrayList<>();
-        String sql = "SELECT v.variantID, v.productID, v.color, v.storage, v.stock, v.price, "
-                + " p.Name AS ProductName, "
-                + " p.CategoryID "
-                + " FROM Variants v "
+        // 1. SỬA SQL: Nhớ thêm cột discountPrice vào câu SELECT
+        String sql = "SELECT v.variantID, v.productID, v.color, v.storage, v.stock, "
+                + "       v.price, v.discountPrice, " 
+                + "       p.Name AS ProductName, "
+                + "       p.CategoryID "
+                + "FROM Variants v "
                 + "INNER JOIN Products p ON v.productID = p.productID";
 
         try {
@@ -926,13 +928,19 @@ public class VariantsDAO extends DBContext {
             while (rs.next()) {
                 Variants v = new Variants();
 
-                // 1. Map các thông tin cơ bản của Variant
                 v.setVariantID(rs.getInt("variantID"));
                 v.setProductID(rs.getInt("productID"));
                 v.setColor(rs.getString("color"));
                 v.setStorage(rs.getString("storage"));
                 v.setStock(rs.getInt("stock"));
+
+                // 2. Lấy giá gốc
                 v.setPrice(rs.getDouble("price"));
+
+                // 3. Lấy giá bán (discountPrice)
+   
+                v.setDiscountPrice(rs.getDouble("discountPrice"));
+
                 v.setProductName(rs.getString("ProductName"));
                 v.setCategoryID(rs.getInt("CategoryID"));
 
@@ -941,8 +949,6 @@ public class VariantsDAO extends DBContext {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return list;
     }
-
 }
