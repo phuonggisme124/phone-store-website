@@ -5,7 +5,9 @@ import utils.DBContext;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import model.InterestRate;
 import model.Products;
 import model.Specification;
@@ -59,7 +61,7 @@ public class ProductDAO extends DBContext {
         }
 
         return list;
-    }   
+    }
 
     /**
      * Retrieve the 5 newest products, ordered by creation date (descending).
@@ -532,6 +534,19 @@ public class ProductDAO extends DBContext {
         }
     }
 
-   
+//    public List<Products> getRelatedProducts(int productID, int categoryID, int limit) {
+//        List<Products> allProducts = getAllProduct(); // lấy tất cả sản phẩm
+//        // lọc cùng category nhưng khác product hiện tại
+//        List<Products> related = allProducts.stream()
+//                .filter(p -> p.getProductID() != productID && p.getCategoryID() == categoryID)
+//                .collect(Collectors.toList());
+//        // random hóa
+//        Collections.shuffle(related);
+//        // giới hạn số lượng
+//        if (related.size() > limit) {
+//            return related.subList(0, limit);
+//        }
+//        return related;
+//    }
 
 }
