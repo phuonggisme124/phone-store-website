@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@page import="dao.ProductDAO"%>
 <%@page import="java.text.NumberFormat"%>
 <%@page import="java.util.Locale"%>
@@ -8,8 +9,14 @@
 <%@page import="java.util.List"%>
 <%@page import="java.util.Map" %>
 <%@page import="java.util.HashMap" %>
+<%@page import="model.Users"%>
+<%@page import="dao.WishlistDAO"%>
+
 <%@ include file="/layout/header.jsp" %>
 <link rel="stylesheet" type="text/css" href="css/home.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+
 
 
 <style>
@@ -465,6 +472,50 @@
                                             <%=p.getVariants().get(0).getStorage()%></a>
                                     </h3>
 
+                                    <div class="wishlist-wrap">
+                                        <%
+                                            Users u = (Users) session.getAttribute("user");
+                                            boolean logged = (u != null);
+                                            boolean liked = false;
+
+                                            int variantID = -1;
+                                            int productID = p.getProductID();
+
+                                            if (p.getVariants() != null && !p.getVariants().isEmpty()) {
+                                                variantID = p.getVariants().get(0).getVariantID();
+                                            }
+
+                                            if (logged && variantID > 0) {
+                                                try {
+                                                    WishlistDAO wdao = new WishlistDAO();
+                                                    liked = wdao.isExist(u.getUserId(), productID, variantID);
+                                                } catch (Exception e) {
+                                                    e.printStackTrace();
+                                                }
+                                            }
+                                        %>
+
+                                        <% if (variantID > 0) { %>
+                                        <% if (logged) { %>
+                                        <form action="<%=request.getContextPath()%>/product" method="post" style="display:inline;">
+                                            <input type="hidden" name="action" value="wishlist">
+                                            <input type="hidden" name="productId" value="<%= productID %>">
+                                            <input type="hidden" name="variantId" value="<%= variantID %>">
+                                            <input type="hidden" name="redirect" value="<%= request.getRequestURI() + (request.getQueryString() != null ? "?" + request.getQueryString() : "") %>">
+                                            <button type="submit" class="wishlist-btn" style="background:none; border:none; padding:0;">
+                                                <i class="<%= liked ? "fas fa-heart" : "far fa-heart" %>" style="<%= liked ? "color:#e53e3e;" : "" %>"></i>
+                                            </button>
+                                        </form>
+                                        <% } else { %>
+                                        <a href="login.jsp" class="wishlist-btn">
+                                            <i class="far fa-heart"></i>
+                                        </a>
+                                        <% } %>
+                                        <% } %>
+                                    </div>
+
+
+
                                     <span class="item-price text-primary"><%= vnFormat.format(p.getVariants().get(0).getDiscountPrice())%></span>
                                 </div>
                             </div>
@@ -515,6 +566,48 @@
                                             <%=p.getVariants().get(0).getStorage()%></a>
                                     </h3>
 
+                                    <div class="wishlist-wrap">
+                                        <%
+                                            Users u = (Users) session.getAttribute("user");
+                                            boolean logged = (u != null);
+                                            boolean liked = false;
+
+                                            int variantID = -1;
+                                            int productID = p.getProductID();
+
+                                            if (p.getVariants() != null && !p.getVariants().isEmpty()) {
+                                                variantID = p.getVariants().get(0).getVariantID();
+                                            }
+
+                                            if (logged && variantID > 0) {
+                                                try {
+                                                    WishlistDAO wdao = new WishlistDAO();
+                                                    liked = wdao.isExist(u.getUserId(), productID, variantID);
+                                                } catch (Exception e) {
+                                                    e.printStackTrace();
+                                                }
+                                            }
+                                        %>
+
+                                        <% if (variantID > 0) { %>
+                                        <% if (logged) { %>
+                                        <form action="<%=request.getContextPath()%>/product" method="post" style="display:inline;">
+                                            <input type="hidden" name="action" value="wishlist">
+                                            <input type="hidden" name="productId" value="<%= productID %>">
+                                            <input type="hidden" name="variantId" value="<%= variantID %>">
+                                            <input type="hidden" name="redirect" value="<%= request.getRequestURI() + (request.getQueryString() != null ? "?" + request.getQueryString() : "") %>">
+                                            <button type="submit" class="wishlist-btn" style="background:none; border:none; padding:0;">
+                                                <i class="<%= liked ? "fas fa-heart" : "far fa-heart" %>" style="<%= liked ? "color:#e53e3e;" : "" %>"></i>
+                                            </button>
+                                        </form>
+                                        <% } else { %>
+                                        <a href="login.jsp" class="wishlist-btn">
+                                            <i class="far fa-heart"></i>
+                                        </a>
+                                        <% } %>
+                                        <% } %>
+                                    </div>
+
                                     <span class="item-price text-primary"><%= vnFormat.format(p.getVariants().get(0).getPrice())%></span>
                                 </div>
                             </div>
@@ -563,6 +656,48 @@
                                             <%=p.getVariants().get(0).getColor()%>
                                             <%=p.getVariants().get(0).getStorage()%></a>
                                     </h3>
+
+                                    <div class="wishlist-wrap">
+                                        <%
+                                            Users u = (Users) session.getAttribute("user");
+                                            boolean logged = (u != null);
+                                            boolean liked = false;
+
+                                            int variantID = -1;
+                                            int productID = p.getProductID();
+
+                                            if (p.getVariants() != null && !p.getVariants().isEmpty()) {
+                                                variantID = p.getVariants().get(0).getVariantID();
+                                            }
+
+                                            if (logged && variantID > 0) {
+                                                try {
+                                                    WishlistDAO wdao = new WishlistDAO();
+                                                    liked = wdao.isExist(u.getUserId(), productID, variantID);
+                                                } catch (Exception e) {
+                                                    e.printStackTrace();
+                                                }
+                                            }
+                                        %>
+
+                                        <% if (variantID > 0) { %>
+                                        <% if (logged) { %>
+                                        <form action="<%=request.getContextPath()%>/product" method="post" style="display:inline;">
+                                            <input type="hidden" name="action" value="wishlist">
+                                            <input type="hidden" name="productId" value="<%= productID %>">
+                                            <input type="hidden" name="variantId" value="<%= variantID %>">
+                                            <input type="hidden" name="redirect" value="<%= request.getRequestURI() + (request.getQueryString() != null ? "?" + request.getQueryString() : "") %>">
+                                            <button type="submit" class="wishlist-btn" style="background:none; border:none; padding:0;">
+                                                <i class="<%= liked ? "fas fa-heart" : "far fa-heart" %>" style="<%= liked ? "color:#e53e3e;" : "" %>"></i>
+                                            </button>
+                                        </form>
+                                        <% } else { %>
+                                        <a href="login.jsp" class="wishlist-btn">
+                                            <i class="far fa-heart"></i>
+                                        </a>
+                                        <% } %>
+                                        <% } %>
+                                    </div>
 
                                     <span class="item-price text-primary"><%= vnFormat.format(p.getVariants().get(0).getPrice())%></span>
                                 </div>
