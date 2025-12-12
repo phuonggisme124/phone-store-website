@@ -19,7 +19,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import model.Users;
+import model.Customer;
 
 /**
  *
@@ -117,11 +117,11 @@ public class AuthFilter implements Filter {
         String uri = req.getRequestURI();
         String context = req.getContextPath();
 
-        Users u = null;
+        Customer u = null;
         int role = 0; // guest mặc định
 
         if (session != null) {
-            u = (Users) session.getAttribute("user");
+            u = (Customer) session.getAttribute("user");
             if (u != null) {
                 role = u.getRole();
             }

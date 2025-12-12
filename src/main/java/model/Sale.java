@@ -17,11 +17,11 @@ public class Sale {
     // The Order object associated with this sale
     private Order order;
     
-    // The Users object representing the assigned shipper
-    private Users shipper;  
+    // The Customer object representing the assigned shipper
+    private Customer shipper;  
     
-    // The Users object representing the assigned shipper
-    private Users staff;  
+    // The Customer object representing the assigned shipper
+    private Customer staff;  
     
     // Shipper ID (foreign key)
     private int shipperID;
@@ -36,14 +36,14 @@ public class Sale {
     private LocalDateTime createAt;
 
     /**
-     * Constructor using full objects (Order and Users).
+     * Constructor using full objects (Order and Customer).
      * Typically useful when loading joined data with objects.
      * 
      * @param saleID the sale record ID
      * @param order the order object
      * @param shipper the shipper (user) object
      */
-    public Sale(int saleID, Order order, Users shipper) {
+    public Sale(int saleID, Order order, Customer shipper) {
         this.saleID = saleID;
         this.order = order;
         this.shipper = shipper;
@@ -67,7 +67,7 @@ public class Sale {
         this.createAt = createAt;
     }
 
-    public Sale(int saleID, Users shipper, Users staff, int orderID, LocalDateTime createAt) {
+    public Sale(int saleID, Customer shipper, Customer staff, int orderID, LocalDateTime createAt) {
         this.saleID = saleID;
         this.shipper = shipper;
         this.staff = staff;
@@ -78,11 +78,11 @@ public class Sale {
     
     
 
-    public Users getStaff() {
+    public Customer getStaff() {
         return staff;
     }
 
-    public void setStaff(Users staff) {
+    public void setStaff(Customer staff) {
         this.staff = staff;
     }
     
@@ -143,11 +143,11 @@ public class Sale {
     }
 
     // Getter and Setter for shipper object
-    public Users getShipper() {
+    public Customer getShipper() {
         return shipper;
     }
 
-    public void setShipper(Users shipper) {
+    public void setShipper(Customer shipper) {
         this.shipper = shipper;
     }
 }

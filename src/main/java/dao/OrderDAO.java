@@ -10,7 +10,7 @@ import java.util.List;
 import model.Order;
 import model.OrderDetails;
 import model.Payments;
-import model.Users;
+import model.Customer;
 import model.Variants;
 import utils.DBContext;
 
@@ -26,14 +26,14 @@ public class OrderDAO extends DBContext {
         super();
     }
 
-    private Order mapResultSetToOrderWithUsers(ResultSet rs) throws SQLException {
+    private Order mapResultSetToOrderWithCustomer(ResultSet rs) throws SQLException {
 
         Order order = new Order();
         // Buyer information
         String name = rs.getString("ReceiverName");
         String phone = rs.getString("ReceiverPhone");
         String address = rs.getString("ShippingAddress");
-        Users buyer = new Users(name, phone);
+        Customer buyer = new Customer(name, phone);
 
         order.setOrderID(rs.getInt("OrderID"));
         order.setTotalAmount(rs.getDouble("TotalAmount"));
@@ -60,16 +60,16 @@ public class OrderDAO extends DBContext {
         order.setReceiverPhone(rs.getString("ReceiverPhone"));
 
         if (hasColumn(rs, "BuyerID") && rs.getObject("BuyerID") != null) {
-            buyer = new Users();
-            buyer.setUserId(rs.getInt("BuyerID"));
+            buyer = new Customer();
+            buyer.setCustomerID(rs.getInt("BuyerID"));
             buyer.setFullName(rs.getString("BuyerName"));
             buyer.setPhone(rs.getString("BuyerPhone"));
             order.setBuyer(buyer);
         }
 
         if (hasColumn(rs, "ShipperID_Alias") && rs.getObject("ShipperID_Alias") != null) {
-            Users shipper = new Users();
-            shipper.setUserId(rs.getInt("ShipperID_Alias"));
+            Customer shipper = new Customer();
+            shipper.setCustomerID(rs.getInt("ShipperID_Alias"));
             shipper.setFullName(rs.getString("ShipperName"));
             shipper.setPhone(rs.getString("ShipperPhone"));
             order.setShippers(shipper);
@@ -90,7 +90,7 @@ public class OrderDAO extends DBContext {
     public Order getOrderById(int orderId) {
         String sql = "SELECT o.*, u.FullName AS BuyerName "
                 + "FROM [Orders] o "
-                + "LEFT JOIN Users u ON o.UserID = u.UserID "
+                + "LEFT JOIN Customer u ON o.UserID = u.UserID "
                 + "WHERE o.OrderID = ?";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -113,8 +113,8 @@ public class OrderDAO extends DBContext {
                 o.setShipperID((Integer) rs.getObject("ShipperID"));
 
                 if (o.getUserID() != null) {
-                    Users buyer = new Users();
-                    buyer.setUserId(o.getUserID());
+                    Customer buyer = new Customer();
+                    buyer.setCustomerID(orderId); 
                     buyer.setFullName(rs.getString("BuyerName"));
                     o.setBuyer(buyer);
                 }
@@ -139,7 +139,7 @@ public class OrderDAO extends DBContext {
                 + "    o.Status\n"
                 + "FROM Orders o\n"
                 + "JOIN Shippers s ON s.ShipperID = o.ShipperID\n"
-                + "JOIN Users u on s.ShipperID = u.UserID\n"
+                + "JOIN Customer u on s.ShipperID = u.UserID\n"
                 + "WHERE s.ShipperID = ? and u.Role = 3 and o.Status <> 'Pending'";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -149,7 +149,7 @@ public class OrderDAO extends DBContext {
                 Order o = new Order();
                 String name = rs.getString("ReceiverName");
                 String phone = rs.getString("ReceiverPhone");
-                Users buyer = new Users(name, phone);
+                Customer buyer = new Customer(name, phone);
                 o.setBuyer(buyer);
                 o.setOrderID(rs.getInt("OrderID"));
                 o.setReceiverName(rs.getString("ReceiverName"));
@@ -175,15 +175,15 @@ public class OrderDAO extends DBContext {
                 + "b.UserID AS BuyerID, b.FullName AS BuyerName, b.Phone AS BuyerPhone, "
                 + "s.UserID AS ShipperID_Alias, s.FullName AS ShipperName, s.Phone AS ShipperPhone "
                 + "FROM Orders o "
-                + "LEFT JOIN Users b ON o.UserID = b.UserID "
-                + "LEFT JOIN Users s ON o.ShipperID = s.UserID "
+                + "LEFT JOIN Customer b ON o.UserID = b.UserID "
+                + "LEFT JOIN Customer s ON o.ShipperID = s.UserID "
                 + "WHERE o.ShipperID = ? AND o.Status = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, shipperId);
             stmt.setString(2, status);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                orders.add(mapResultSetToOrderWithUsers(rs));
+                orders.add(mapResultSetToOrderWithCustomer(rs));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -197,15 +197,15 @@ public class OrderDAO extends DBContext {
                 + "b.UserID AS BuyerID, b.FullName AS BuyerName, b.Phone AS BuyerPhone, "
                 + "s.UserID AS ShipperID_Alias, s.FullName AS ShipperName, s.Phone AS ShipperPhone "
                 + "FROM Orders o "
-                + "LEFT JOIN Users b ON o.UserID = b.UserID "
-                + "LEFT JOIN Users s ON o.ShipperID = s.UserID "
+                + "LEFT JOIN Customer b ON o.UserID = b.UserID "
+                + "LEFT JOIN Customer s ON o.ShipperID = s.UserID "
                 + "WHERE o.ReceiverPhone LIKE ?";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, "%" + phone + "%");
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    list.add(mapResultSetToOrderWithUsers(rs));
+                    list.add(mapResultSetToOrderWithCustomer(rs));
                 }
             }
         } catch (SQLException e) {
@@ -220,8 +220,8 @@ public class OrderDAO extends DBContext {
                 + "b.UserID AS BuyerID, b.FullName AS BuyerName, b.Phone AS BuyerPhone, "
                 + "s.UserID AS ShipperID_Alias, s.FullName AS ShipperName, s.Phone AS ShipperPhone "
                 + "FROM Orders o "
-                + "LEFT JOIN Users b ON o.UserID = b.UserID "
-                + "LEFT JOIN Users s ON o.ShipperID = s.UserID "
+                + "LEFT JOIN Customer b ON o.UserID = b.UserID "
+                + "LEFT JOIN Customer s ON o.ShipperID = s.UserID "
                 + "WHERE o.UserID = ? "
                 + "ORDER BY o.OrderDate DESC";
 
@@ -229,7 +229,7 @@ public class OrderDAO extends DBContext {
             stmt.setInt(1, userId);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                orders.add(mapResultSetToOrderWithUsers(rs));
+                orders.add(mapResultSetToOrderWithCustomer(rs));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -280,7 +280,7 @@ public class OrderDAO extends DBContext {
                     o.setOrderDate(ts.toLocalDateTime());
                 }
 
-                Users receiver = new Users();
+                Customer receiver = new Customer();
                 receiver.setFullName(rs.getString("ReceiverName"));
                 receiver.setPhone(rs.getString("ReceiverPhone"));
                 o.setBuyer(receiver);
@@ -406,9 +406,9 @@ public class OrderDAO extends DBContext {
                 + "o.ShippingAddress, o.TotalAmount, o.PaymentMethod, o.Status, o.OrderDate, "
                 + "shippers.UserID AS ShipperID, shippers.FullName AS ShipperName, shippers.Phone AS ShipperPhone "
                 + "FROM Orders o "
-                + "JOIN Users buyer ON o.UserID = buyer.UserID "
+                + "JOIN Customer buyer ON o.UserID = buyer.UserID "
                 + "LEFT JOIN Sales s ON o.OrderID = s.OrderID "
-                + "LEFT JOIN Users shippers ON s.ShipperID = shippers.UserID "
+                + "LEFT JOIN Customer shippers ON s.ShipperID = shippers.UserID "
                 + "WHERE buyer.Phone LIKE ? AND o.Status = ?";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -416,15 +416,15 @@ public class OrderDAO extends DBContext {
             ps.setString(2, status);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    Users buyer = new Users();
+                    Customer buyer = new Customer();
                     buyer.setFullName(rs.getString("BuyerName"));
                     buyer.setPhone(rs.getString("BuyerPhone"));
 
-                    Users shipper = null;
+                    Customer shipper = null;
                     int shipperID = rs.getInt("ShipperID");
                     if (shipperID != 0) {
-                        shipper = new Users();
-                        shipper.setUserId(shipperID);
+                        shipper = new Customer();
+                        shipper.setCustomerID(shipperID); 
                         shipper.setFullName(rs.getString("ShipperName"));
                         shipper.setPhone(rs.getString("ShipperPhone"));
                     }
@@ -884,8 +884,8 @@ public class OrderDAO extends DBContext {
                 + "b.UserID AS BuyerID, b.FullName AS BuyerName, b.Phone AS BuyerPhone, "
                 + "s.UserID AS ShipperID_Alias, s.FullName AS ShipperName, s.Phone AS ShipperPhone "
                 + "FROM [Orders] o "
-                + "LEFT JOIN [Users] b ON o.UserID = b.UserID "
-                + "LEFT JOIN [Users] s ON o.ShipperID = s.UserID "
+                + "LEFT JOIN [Customer] b ON o.UserID = b.UserID "
+                + "LEFT JOIN [Customer] s ON o.ShipperID = s.UserID "
                 + "WHERE o.Status = 'Pending' OR o.StaffID = ? "
                 + "ORDER BY o.OrderDate DESC";
 
@@ -894,7 +894,7 @@ public class OrderDAO extends DBContext {
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                orders.add(mapResultSetToOrderWithUsers(rs));
+                orders.add(mapResultSetToOrderWithCustomer(rs));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -910,8 +910,8 @@ public class OrderDAO extends DBContext {
                 + "b.UserID AS BuyerID, b.FullName AS BuyerName, b.Phone AS BuyerPhone, "
                 + "s.UserID AS ShipperID_Alias, s.FullName AS ShipperName, s.Phone AS ShipperPhone "
                 + "FROM [Orders] o "
-                + "LEFT JOIN [Users] b ON o.UserID = b.UserID "
-                + "LEFT JOIN [Users] s ON o.ShipperID = s.UserID ");
+                + "LEFT JOIN [Customer] b ON o.UserID = b.UserID "
+                + "LEFT JOIN [Customer] s ON o.ShipperID = s.UserID ");
 
         if (status.equalsIgnoreCase("Pending")) {
             sql.append("WHERE o.Status = 'Pending'");
@@ -930,7 +930,7 @@ public class OrderDAO extends DBContext {
 
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                orders.add(mapResultSetToOrderWithUsers(rs));
+                orders.add(mapResultSetToOrderWithCustomer(rs));
             }
         } catch (SQLException e) {
             e.printStackTrace();

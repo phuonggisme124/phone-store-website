@@ -16,7 +16,7 @@ public class Review {
     private LocalDateTime reviewDate;   // Ngày review
     private String image;      // Ảnh (nếu có)
     private String reply;      // Reply của staff
-    private Users user;
+    private Customer user;
     private Variants variant;
     // Thêm các trường phụ để hiển thị dễ dàng
     private String userName;    // Tên người dùng
@@ -37,7 +37,7 @@ public class Review {
         this.reply = reply;
     }
 
-    public Review(int reviewID, Users user, Variants variant, int rating, String comment, LocalDateTime reviewDate, String image, String reply) {
+    public Review(int reviewID, Customer user, Variants variant, int rating, String comment, LocalDateTime reviewDate, String image, String reply) {
         this.reviewID = reviewID;
         this.rating = rating;
         this.comment = comment;
@@ -59,11 +59,11 @@ public class Review {
         this.variant = variant;
     }
 
-    public Users getUser() {
+    public Customer getUser() {
         return user;
     }
 
-    public void setUser(Users user) {
+    public void setUser(Customer user) {
         this.user = user;
     }
     
