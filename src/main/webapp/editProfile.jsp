@@ -34,12 +34,19 @@
     </head>
 
     <body data-bs-spy="scroll" data-bs-target="#navbar" data-bs-root-margin="0px 0px -40%" data-bs-smooth-scroll="true" tabindex="0">
-        
+
 
         <div style="display: flex; background-color: #f3f5f9; min-height: 100vh;">
             <!-- Sidebar -->
             <div style="width: 400px; background-color: #fff; padding: 20px;">
                 <h3 style="margin-top: 100px; margin-bottom: 50px; font-size: 1.5rem;">Anh/Chị <%= user.getFullName()%></h3>
+
+                <!-- Nút 0: My Wishlist -->
+                <a href="product?action=viewWishlist" class="sidebar-link">
+                            <i class="fas fa-heart"></i>
+                            <span>My Wishlist</span>
+                        </a>
+
 
                 <!-- Nút 1: Đơn hàng đã mua -->
                 <a href="order"

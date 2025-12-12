@@ -323,8 +323,22 @@
             <div class="profile-container">
                 <div class="profile-wrapper">
                     <!-- Sidebar -->
+                    <%
+    Users user = (Users) session.getAttribute("user");
+    if (user != null) {
+                    %>
                     <aside class="profile-sidebar">
-                        <h3>Hello, <%= user.getFullName()%></h3>
+                        <% if (user != null) { %>
+                        <h3>Hello, <%= user.getFullName() %></h3>
+                        <a href="product?action=viewWishlist" class="sidebar-link">
+                            <i class="fas fa-heart"></i> My Wishlist
+                        </a>
+                        <% } else { %>
+                        <h3>Hello, Guest</h3>
+                        <a href="login.jsp" class="sidebar-link">
+                            <i class="fas fa-heart"></i> My Wishlist
+                        </a>
+                        <% } %>
 
                         <a href="user?action=transaction" class="sidebar-link">
                             <i class="fas fa-shopping-bag"></i>
@@ -347,6 +361,12 @@
                             </button>
                         </form>
                     </aside>
+                    <%
+                        } else {
+                            response.sendRedirect("login.jsp");
+                        }
+                    %>
+
 
                     <!-- Main Content -->
                     <main class="profile-content">
