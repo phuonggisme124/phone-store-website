@@ -492,51 +492,44 @@
                             <% } else { %>
                             <span class="text-gray-500 text-xs">Be the first to review this product.</span>
                             <% } %>
-                            
+
                             <!-- WISHLIST BUTTON -->                        
                             <%
-                                Users u = (Users) session.getAttribute("user");
-                                boolean logged = (u != null);
-                                boolean liked = false;
-
-                                int variantID = v.getVariantID();  
-                                int productID = v.getProductID();  
-
-                                if (logged) {
-                                    try {
-                                        WishlistDAO wdao = new WishlistDAO();
-                                        liked = wdao.isExist(u.getUserId(), productID, variantID);
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
+                                Products p = null;
+                                for (Products prod : listProduct) {
+                                    if (prod.getProductID() == v.getProductID()) {
+                                        p = prod;
+                                        break;
                                     }
                                 }
+
+                                if (p != null) {
+                                    int variantID = v.getVariantID();
+                                    int productID = p.getProductID();
+                                    Users u = (Users) session.getAttribute("user");
+                                    boolean logged = (u != null);
+                                    boolean liked = false;
+                                    if (logged) {
+                                        try {
+                                            WishlistDAO wdao = new WishlistDAO();
+                                            liked = wdao.isExist(u.getUserId(), productID, variantID);
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
                             %>
-
-                            <% if (logged) { %>
-                            <form action="product" method="post" style="display:inline;">
-                                <input type="hidden" name="action" value="<%= liked ? "remove" : "wishlist" %>">
-                                <input type="hidden" name="productId" value="<%= productID %>">
-                                <input type="hidden" name="variantId" value="<%= variantID %>">
-                                <input type="hidden" name="redirect"
-                                       value="product?action=viewDetail&pID=<%= productID %>">
-
-                                <button type="submit" class="wishlist-btn" style="background:none; border:none; padding:0;">
+                            <div class="wishlist-wrap">
+                                <button class="wishlist-btn toggle-wishlist"
+                                        data-productid="<%= productID %>"
+                                        data-variantid="<%= variantID %>"
+                                        style="background:none; border:none; padding:0;">
                                     <i class="<%= liked ? "fas fa-heart" : "far fa-heart" %>"
                                        style="<%= liked ? "color:#e53e3e;" : "" %>"></i>
                                 </button>
-                            </form>
-                            <% } else { %>
-                            <a href="login.jsp" class="wishlist-btn">
-                                <i class="far fa-heart"></i>
-                            </a>
+                            </div>
                             <% } %>
-           
-                            
+
                         </div>
-
-                        
-
-
                     </div>
                 </div>
                 <%
@@ -555,5 +548,43 @@
                 %>
             </div>
         </div>
+
+        <script>
+            document.addEventListener("click", function (e) {
+                let btn = e.target.closest(".toggle-wishlist");
+                if (!btn)
+                    return;
+
+                e.preventDefault();
+                e.stopPropagation();
+
+
+                const productId = btn.dataset.productid;
+                const variantId = btn.dataset.variantid || 0;
+                const icon = btn.querySelector("i");
+
+                fetch("<%= request.getContextPath() %>/product", {
+                    method: "POST",
+                    headers: {"Content-Type": "application/x-www-form-urlencoded"},
+                    body: "action=toggleWishlist&productId=" + productId + "&variantId=" + variantId
+                })
+                        .then(res => res.ok ? res.text() : Promise.reject("Wishlist toggle failed"))
+                        .then(text => {
+                            if (text === "ok") {
+                                if (icon.classList.contains("fas")) {
+                                    icon.classList.remove("fas");
+                                    icon.classList.add("far");
+                                    icon.style.color = "";
+                                } else {
+                                    icon.classList.remove("far");
+                                    icon.classList.add("fas");
+                                    icon.style.color = "#e53e3e";
+                                }
+                            }
+                        })
+                        .catch(err => console.error(err));
+            });
+
+        </script>
     </body>
 </html>

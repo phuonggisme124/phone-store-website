@@ -449,7 +449,7 @@
                                                         <%= rp.getVariants().get(0).getStorage() %>
                                                     </a>
                                                 </h3>
-                                                    
+
                                                 <!-- WISH LIST BUTTON -->
                                                 <div class="wishlist-wrap">
                                                     <%

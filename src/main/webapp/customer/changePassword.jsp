@@ -6,7 +6,6 @@
     Author     : Hoa Hong Nhung
 --%>
 
->>>>>>> c80843028cf9648874277785e7b7c677afb557ad
 <%@page import="java.util.List"%>
 <%@page import="model.Products"%>
 <%@page import="model.Category"%>
@@ -20,11 +19,11 @@
         return;
     }
 
-<<<<<<< HEAD
+
     String message = (String) request.getAttribute("message");
-=======
+
     String message = (String) session.getAttribute("message");
->>>>>>> c80843028cf9648874277785e7b7c677afb557ad
+
     String error = (String) request.getAttribute("error");
 %>
 
@@ -45,18 +44,17 @@
 
         <style>
             body {
-<<<<<<< HEAD
+
                 background: white;
                 min-height: 100vh;
                 font-family: 'Jost', sans-serif;
                 padding-top: 80px;
-=======
+
                 background: #EDF1F3;
                 min-height: 100vh;
                 font-family: 'Jost', sans-serif;
                 margin-top: 120px;
                 padding: 20px;
->>>>>>> c80843028cf9648874277785e7b7c677afb557ad
             }
 
             .profile-container {
