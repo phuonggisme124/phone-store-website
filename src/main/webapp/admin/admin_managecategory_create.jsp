@@ -1,3 +1,4 @@
+<%@page import="model.Staff"%>
 <%@page import="model.Suppliers"%>
 <%@page import="model.Category"%>
 <%@page import="model.Products"%>
@@ -10,105 +11,193 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>Admin Dashboard - Manage Categories</title>
+        <title>Admin Dashboard - Create Category</title>
 
-        <!-- Bootstrap -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-        <!-- Icons -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
-        <!-- Custom CSS -->
         <link rel="stylesheet" href="css/dashboard_admin.css">
-        <link href="css/dashboard_table.css" rel="stylesheet">
+        <link rel="stylesheet" href="css/dashboard_createcategory.css">
+
+        <style>
+            /* --- 1. GENERAL TONE --- */
+            body { background-color: #f5f5f9; font-family: 'Segoe UI', sans-serif; }
+            .text-primary { color: #696cff !important; }
+            
+            /* --- 2. NAVBAR --- */
+            .border-light-purple { border-color: rgba(102, 126, 234, 0.3) !important; }
+
+            /* --- 3. FORM CARD STYLING --- */
+            .form-card {
+                background: #fff;
+                border-radius: 16px;
+                box-shadow: 0 8px 24px rgba(105, 108, 255, 0.1);
+                border: none;
+                transition: transform 0.3s ease;
+            }
+            .form-header {
+                border-bottom: 1px solid #eceef1;
+                padding-bottom: 1.5rem;
+                margin-bottom: 2rem;
+            }
+
+            /* --- 4. INPUTS --- */
+            .form-label {
+                font-weight: 600;
+                color: #566a7f;
+                font-size: 0.85rem;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+            .form-control {
+                border-radius: 8px;
+                border: 1px solid #d9dee3;
+                padding: 0.7rem 1rem;
+                color: #697a8d;
+            }
+            .form-control:focus {
+                border-color: #696cff;
+                box-shadow: 0 0 0 0.25rem rgba(105, 108, 255, 0.25);
+            }
+
+            /* --- 5. BUTTONS --- */
+            .btn-gradient-primary {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                border: none; color: white; transition: all 0.3s ease;
+                font-weight: 600; letter-spacing: 1px;
+                box-shadow: 0 4px 12px rgba(105, 108, 255, 0.4);
+            }
+            .btn-gradient-primary:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 15px rgba(105, 108, 255, 0.6);
+                color: white;
+            }
+
+            /* --- 6. ERROR MESSAGES --- */
+            p.text-danger { 
+                font-size: 0.85rem; margin-top: 5px; display: flex; align-items: center; gap: 5px; 
+            }
+            p.text-danger::before { content: "\F333"; font-family: "bootstrap-icons"; }
+
+            /* Navbar Profile */
+            .hover-danger:hover { background-color: #ffe5e5 !important; color: #dc3545 !important; transform: rotate(90deg); transition: 0.3s; }
+        </style>
     </head>
     <body>
-        <%
-            Users currentUser = (Users) session.getAttribute("user");
-            if (currentUser == null) {
-                response.sendRedirect("login.jsp");
-                return;
-            }
-            if (currentUser.getRole() != 4) {
-                response.sendRedirect("login");
-                return;
-            }
-
-            
-
-        %>
-
         <div class="d-flex" id="wrapper">
-            <!-- Sidebar -->
             <%@ include file="sidebar.jsp" %>
+            <% 
+                Staff currentUser = (Staff) session.getAttribute("user");
+                if (currentUser == null) {
+                    response.sendRedirect("login.jsp");
+                    return;
+                }
+            %>
 
-            <!-- Page Content -->
             <div class="page-content flex-grow-1">
-                <!-- Navbar -->
-                <nav class="navbar navbar-light bg-white shadow-sm">
+                
+                <nav class="navbar navbar-light bg-white shadow-sm px-3 py-2 sticky-top">
                     <div class="container-fluid">
-                        <button class="btn btn-outline-primary" id="menu-toggle">
-                            <i class="bi bi-list"></i>
+                        <button class="btn btn-light text-primary border-0 shadow-sm rounded-circle" id="menu-toggle" style="width: 40px; height: 40px;">
+                            <i class="bi bi-list fs-5"></i>
                         </button>
-                        <div class="d-flex align-items-center ms-auto">
-                            <!-- Search bar in navbar -->
 
-
-                            <a href="logout" class="btn btn-outline-danger btn-sm me-3">Logout</a>
-                            <div class="d-flex align-items-center">
-                                <img src="https://i.pravatar.cc/40" class="rounded-circle me-2" width="35">
-                                <span><%= currentUser.getFullName()%></span>
+                        <div class="d-flex align-items-center ms-auto gap-3">
+                            <div class="vr text-secondary opacity-25 mx-1" style="height: 25px;"></div>
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="position-relative">
+                                        <img src="https://i.pravatar.cc/150?u=<%= currentUser.getStaffID()%>" 
+                                             class="rounded-circle border border-2 border-white shadow-sm" 
+                                             width="40" height="40" alt="Avatar">
+                                        <span class="position-absolute bottom-0 start-100 translate-middle p-1 bg-success border border-light rounded-circle">
+                                            <span class="visually-hidden">Online</span>
+                                        </span>
+                                    </div>
+                                    <div class="d-none d-md-block lh-1">
+                                        <span class="d-block fw-bold text-dark" style="font-size: 0.9rem;"><%= currentUser.getFullName()%></span>
+                                        <span class="d-block text-muted" style="font-size: 0.75rem;">Administrator</span>
+                                    </div>
+                                </div>
+                                <a href="logout" class="btn btn-light text-danger rounded-circle shadow-sm d-flex align-items-center justify-content-center hover-danger" 
+                                   style="width: 38px; height: 38px;" title="Logout">
+                                    <i class="bi bi-box-arrow-right fs-6"></i>
+                                </a>
                             </div>
                         </div>
                     </div>
                 </nav>
 
-                <!-- Create Category Button -->
-
-
-                <!-- Categories Table -->
-                <div class="card shadow-sm border-0 p-4">
-                    <div class="card-body p-0">
-                        <h4 class="fw-bold ps-3 mb-4">Manage Category</h4>
+                <div class="container-fluid p-4">
+                    <form action="category" method="post" id="categoryForm" class="form-card p-5 mx-auto" style="max-width: 600px;">
                         
+                        <div class="form-header text-center">
+                            <h2 class="fw-bold text-primary mb-1">Create New Category</h2>
+                            <p class="text-muted">Add a new product category to the system</p>
+                        </div>
 
-                        <form action="category" method="post" class="w-50 mx-auto bg-light p-4 rounded shadow">
-
-                            <div class="mb-3">
-                                <input type="hidden" class="form-control" name="cateID" value="" readonly>
-                            </div>
-
-
-
-                            <div class="mb-3">
-                                <label class="form-label">Category Name</label>
-                                <input type="text" class="form-control" name="name" value="" required>
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label">Description</label>
-                                <input type="text" class="form-control" name="description" value="">
-                            </div>
-                            <div class="d-flex gap-2">
-                                <button type="submit" name="action" value="createCategory" class="btn btn-primary flex-fill">Create</button>
-                                
-                            </div>
-                        </form>
+                        <div class="mb-4 text-center">
+                            <%
+                                if (session.getAttribute("existName") != null) {
+                                    String exist = (String) session.getAttribute("existName");
+                                    out.println("<div class='alert alert-danger shadow-sm border-0 rounded-3'><i class='bi bi-exclamation-circle-fill me-2'></i>" + exist + "</div>");
+                                }
+                                session.removeAttribute("existName");
+                            %>
+                        </div>
                         
-                    </div>
+                        <input type="hidden" name="cateID" value="">
+
+                        <div class="mb-4">
+                            <label class="form-label">Category Name</label>
+                            <input type="text" class="form-control" name="name" id="name" placeholder="e.g. Smart Watch" required>
+                            <p id="nameError" class="text-danger mt-2" style="display:none;">Please enter category name!</p>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-control" name="description" rows="4" placeholder="Optional description..."></textarea>
+                        </div>
+
+                        <div class="mt-4 pt-2 text-center">
+                            <button type="submit" name="action" value="createCategory" class="btn btn-gradient-primary rounded-pill w-100 py-2">
+                                <i class="bi bi-plus-lg me-2"></i> Create Category
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
 
-        <!-- JS Libraries -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-        <!-- Custom JS -->
         <script src="js/dashboard.js"></script>
 
         <script>
+            // 1. Sidebar Toggle
             document.getElementById("menu-toggle").addEventListener("click", function () {
                 document.getElementById("wrapper").classList.toggle("toggled");
+            });
+
+            // 2. Form Validation
+            document.getElementById("categoryForm").addEventListener("submit", function (e) {
+                const name = document.getElementById("name");
+                const nameError = document.getElementById("nameError");
+                let isValid = true;
+
+                if (name.value.trim() === "") {
+                    nameError.style.display = "block";
+                    name.classList.add("is-invalid");
+                    isValid = false;
+                } else {
+                    nameError.style.display = "none";
+                    name.classList.remove("is-invalid");
+                    name.classList.add("is-valid");
+                }
+
+                if (!isValid) {
+                    e.preventDefault();
+                    name.focus();
+                }
             });
         </script>
     </body>

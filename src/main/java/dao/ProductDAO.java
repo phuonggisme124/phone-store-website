@@ -309,6 +309,8 @@ public class ProductDAO extends DBContext {
         return list;
     }
 
+
+
     // Search theo tên sản phẩm
     public List<Products> getProductsByName(String name) {
         String sql = "SELECT * FROM Products WHERE Name LIKE ?";

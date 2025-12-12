@@ -1,3 +1,4 @@
+<%@page import="model.Staff"%>
 <%@page import="dao.ReviewDAO"%>
 <%@page import="model.Review"%>
 <%@page import="dao.ProductDAO"%>
@@ -11,136 +12,144 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>Admin Dashboard</title>
+        <title>Admin Dashboard - Review Details</title>
 
-        <!-- Bootstrap -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-        <!-- Icons -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
-        <!-- Custom CSS -->
         <link rel="stylesheet" href="css/dashboard_admin.css">
-        <link rel="stylesheet" href="css/dashboard_admin_managereview.css">
-
-        <link href="css/dashboard_table.css" rel="stylesheet">
+        <link rel="stylesheet" href="css/dashboard_reviewdetail.css">
+        
+        
     </head>
     <body>
         <div class="d-flex" id="wrapper">
-            <!-- Sidebar -->
             <%@ include file="sidebar.jsp" %>
+            <% Staff currentUser = (Staff) session.getAttribute("user"); %>
 
-            <!-- Page Content -->
             <div class="page-content flex-grow-1">
-                <!-- Navbar -->
-                <nav class="navbar navbar-light bg-white shadow-sm">
+                
+                <nav class="navbar navbar-light bg-white shadow-sm px-3 py-2 sticky-top">
                     <div class="container-fluid">
-                        <button class="btn btn-outline-primary" id="menu-toggle"><i class="bi bi-list"></i></button>
-                        <form class="d-none d-md-flex ms-3">
-                            <input class="form-control" type="search" placeholder="Ctrl + K" readonly>
-                        </form>
-                        <div class="d-flex align-items-center ms-auto">
-                            <div class="position-relative me-3">
-                                <a href="logout">logout</a>
+                        <button class="btn btn-light text-primary border-0 shadow-sm rounded-circle" id="menu-toggle" style="width: 40px; height: 40px;">
+                            <i class="bi bi-list fs-5"></i>
+                        </button>
+                        <div class="d-flex align-items-center ms-auto gap-3">
+                            <div class="d-flex align-items-center gap-2">
+                                <img src="https://i.pravatar.cc/150?u=<%= currentUser.getStaffID()%>" class="rounded-circle border border-2 border-white shadow-sm" width="40" height="40">
+                                <span class="d-none d-md-block fw-bold text-dark"><%= currentUser.getFullName()%></span>
                             </div>
-                            <i class="bi bi-bell me-3 fs-5"></i>
-                            <div class="position-relative me-3">
-                                <i class="bi bi-github fs-5"></i>
-                            </div>
-                            <div class="d-flex align-items-center">
-                                <img src="https://i.pravatar.cc/40" class="rounded-circle me-2" width="35">
-                                <span>Admin</span>
-                            </div>
+                            <a href="logout" class="btn btn-light text-danger rounded-circle shadow-sm d-flex align-items-center justify-content-center hover-danger" style="width: 38px; height: 38px;">
+                                <i class="bi bi-box-arrow-right fs-6"></i>
+                            </a>
                         </div>
                     </div>
                 </nav>
 
-                <!-- Search bar -->
-                <div class="container-fluid p-4">
-                    <input type="text" class="form-control w-25" placeholder="🔍 Search">
-                </div>
-                <%                    ProductDAO pdao = new ProductDAO();
-
+                <% 
+                    ProductDAO pdao = new ProductDAO();
                     ReviewDAO rdao = new ReviewDAO();
                     Review review = (Review) request.getAttribute("review");
-                    List<String> listImage = rdao.getImages(review.getImage());
+                    List<String> listImage = null;
+                    if(review != null) listImage = rdao.getImages(review.getImage());
                 %>
-                <!-- Table -->
-                <div class="review-container">
 
-                    <!-- Left: Product Info & Images -->
+                <div class="container-fluid p-4">
+                    <div class="mb-3">
+                        <a href="review?action=manageReviews" class="btn btn-outline-secondary rounded-pill btn-sm px-3">
+                            <i class="bi bi-arrow-left me-1"></i> Back to Reviews
+                        </a>
+                    </div>
 
-                    <%
-                        if (listImage != null && !listImage.isEmpty()) {
-                    %>
-                    <div class="review-left">
-                        <div class="product-info">
-                            <h3 class="product-name">
-                                <%= pdao.getNameByID(review.getVariant().getProductID())%>
-                            </h3>
-                            <p class="product-storage"><%= review.getVariant().getStorage()%></p>
-                        </div>
+                    <div class="card review-card p-4">
+                        <div class="row g-5">
+                            
+                            <div class="col-lg-5 border-end">
+                                <div class="mb-4">
+                                    <h3 class="product-name"><%= pdao.getNameByID(review.getVariant().getProductID())%></h3>
+                                    <span class="product-storage"><%= review.getVariant().getStorage()%></span>
+                                </div>
 
-                        <div class="image-section">
-                            <!-- Ảnh chính -->
-                            <div class="main-image">
-                                <img id="main-img" src="images_review/<%= listImage.get(0)%>" alt="Product Image">
-                            </div>
-
-                            <!-- Ảnh phụ -->
-                            <div class="thumbnail-list">
-                                <% for (int i = 0; i < listImage.size(); i++) {%>
-                                <img class="thumb" 
-                                     src="images_review/<%= listImage.get(i)%>" 
-                                     alt="Thumbnail" 
-                                     onclick="changeImage(this)">
+                                <% if (listImage != null && !listImage.isEmpty()) { %>
+                                    <div class="main-image-container shadow-sm">
+                                        <img id="main-img" src="images_review/<%= listImage.get(0)%>" alt="Product Image">
+                                    </div>
+                                    <div class="thumbnail-list">
+                                        <% for (String img : listImage) { %>
+                                            <img class="thumb shadow-sm" src="images_review/<%= img%>" onclick="changeImage(this)">
+                                        <% } %>
+                                    </div>
+                                <% } else { %>
+                                    <div class="alert alert-secondary text-center">No images uploaded by user.</div>
                                 <% } %>
                             </div>
 
-                        </div>
-                    </div>
-                    <%
-                        }
-                    %>
-
-                    <!-- Right: Review Info -->
-                    <div class="review-right">
-                        <div class="review-info">
-                            <p><strong>User Name:</strong> <%= review.getUser().getFullName()%></p>
-
-                            <p><strong>Rating:</strong> 
-                                <span class="stars">
-                                    <% for (int s = 1; s <= 5; s++) {%>
-                                    <i class="bi <%= (s <= review.getRating()) ? "bi-star-fill" : "bi-star"%>"></i>
-                                    <% }%>
-                                </span>
-                            </p>
-
-                            <p><strong>Review Date:</strong> <%= review.getReviewDate()%></p>
-                            <p><strong>Comment:</strong></p>
-                            <p class="comment"><%= review.getComment()%></p>
-
-                            <form action="review?action=replyReview" method="post">
-                                <p><strong>Reply:</strong></p>
-                                <div class="reply-box">
-                                    <textarea name="reply" class="reply-input" placeholder="Your reply..."><%= (review.getReply() != null) ? review.getReply() : ""%></textarea>
+                            <div class="col-lg-7">
+                                <h5 class="text-uppercase text-muted fw-bold mb-4 small ls-1">Customer Review</h5>
+                                
+                                <div class="user-info">
+                                    <div class="user-avatar shadow-sm">
+                                        <%= review.getUser().getFullName().substring(0, 1).toUpperCase() %>
+                                    </div>
+                                    <div>
+                                        <h5 class="fw-bold mb-0 text-dark"><%= review.getUser().getFullName()%></h5>
+                                        <div class="text-muted small review-date">
+                                            <i class="bi bi-clock me-1"></i><%= review.getReviewDate()%>
+                                        </div>
+                                    </div>
+                                    <div class="ms-auto rating-stars">
+                                        <% for (int s = 1; s <= 5; s++) { %>
+                                            <i class="bi <%= (s <= review.getRating()) ? "bi-star-fill" : "bi-star" %>"></i>
+                                        <% } %>
+                                    </div>
                                 </div>
 
-                                <input type="hidden" name="reviewID" value="<%= review.getReviewID()%>">
+                                <div class="comment-box shadow-sm">
+                                    <i class="bi bi-quote fs-3 text-primary opacity-25"></i>
+                                    <%= review.getComment()%>
+                                </div>
 
-                                <button type="submit" class="send-btn">Send Reply</button>
-                            </form>
+                                <div class="reply-section mt-5">
+                                    <h6 class="fw-bold text-primary mb-3"><i class="bi bi-reply-fill me-2"></i>Admin Reply</h6>
+                                    <form action="review?action=replyReview" method="post">
+                                        <input type="hidden" name="reviewID" value="<%= review.getReviewID()%>">
+                                        
+                                        <div class="mb-3">
+                                            <textarea name="reply" class="reply-input shadow-sm" placeholder="Write your response here..."><%= (review.getReply() != null) ? review.getReply() : ""%></textarea>
+                                        </div>
+                                        
+                                        <div class="text-end">
+                                            <button type="submit" class="btn btn-gradient-primary rounded-pill px-4">
+                                                <i class="bi bi-send me-2"></i>Send Reply
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-
-            <!-- JS Libraries -->
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-
-            <!-- Custom JS -->
-            <script src="js/dashboard.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="js/dashboard.js"></script>
+        
+        <script>
+            function changeImage(element) {
+                // Đổi ảnh chính
+                document.getElementById('main-img').src = element.src;
+                
+                // Highlight thumb đang chọn
+                document.querySelectorAll('.thumb').forEach(img => img.classList.remove('active'));
+                element.classList.add('active');
+            }
+            
+            // Sidebar Toggle
+            document.getElementById("menu-toggle").addEventListener("click", function () {
+                document.getElementById("wrapper").classList.toggle("toggled");
+            });
+        </script>
     </body>
 </html>

@@ -1,14 +1,16 @@
+<%@page import="dao.CustomerDAO"%>
+<%@page import="model.Staff"%>
 <%@page import="java.time.LocalDateTime"%>
 <%@page import="java.time.format.DateTimeFormatter"%>
 <%@page import="com.google.gson.Gson"%>
 <%@page import="java.util.ArrayList"%>
-<%@page import="dao.UsersDAO"%>
+
 <%@page import="model.Order"%>
 <%@page import="model.Suppliers"%>
 <%@page import="model.Category"%>
 <%@page import="model.Products"%>
 <%@page import="java.util.List"%>
-<%@page import="model.Users"%>
+
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html lang="en">
@@ -27,7 +29,7 @@
     </head>
     <body>
         <%
-            Users user = (Users) session.getAttribute("user");
+            Staff user = (Staff) session.getAttribute("user");
             String phone = (String) request.getAttribute("phone");
             if (phone == null || phone.isEmpty()) {
                 phone = "";
@@ -105,13 +107,13 @@
 
 
                 <%
-                    UsersDAO udao = new UsersDAO();
+                    CustomerDAO udao = new CustomerDAO();
                     // Lấy danh sách đơn hàng (Servlet đã lọc sẵn đây là đơn trả góp)
                     List<Order> listInstalment = (List<Order>) request.getAttribute("listOrder");
                     
                     // MỚI: Lấy list Staff/Shipper để hiển thị tên
-                    List<Users> listStaff = (List<Users>) request.getAttribute("listStaff");
-                    List<Users> listShippers = (List<Users>) request.getAttribute("listShippers");
+                    List<Staff> listStaff = (List<Staff>) request.getAttribute("listStaff");
+                    List<Staff> listShippers = (List<Staff>) request.getAttribute("listShippers");
                     
                     if(listStaff == null) listStaff = new ArrayList<>();
                     if(listShippers == null) listShippers = new ArrayList<>();
@@ -154,8 +156,8 @@
                                     String staffName = "Not Assigned";
                                     int sID = o.getStaffID(); 
                                     if (sID != 0) {
-                                        for (Users u : listStaff) {
-                                            if (u.getUserId() == sID) {
+                                        for (Staff u : listStaff) {
+                                            if (u.getStaffID()== sID) {
                                                 staffName = u.getFullName();
                                                 break;
                                             }
@@ -165,8 +167,8 @@
                                     String shipperName = "Not Assigned";
                                     int shipID = o.getShipperID();
                                     if (shipID != 0) {
-                                        for (Users u : listShippers) {
-                                            if (u.getUserId() == shipID) {
+                                        for (Staff u : listShippers) {
+                                            if (u.getStaffID()== shipID) {
                                                 shipperName = u.getFullName();
                                                 break;
                                             }
@@ -185,7 +187,7 @@
                                 <tr  onclick="window.location.href = 'order?action=orderDetail&id=<%= o.getOrderID()%>&isInstalment=true'">
                                     <td>#<%= o.getOrderID()%></td>
 
-                                    <td><%= udao.getUserByID(o.getUserID()).getFullName()%></td>
+                                    <td><%= udao.getCustomerByID(o.getUserID()).getFullName()%></td>
                                     <td><%= o.getBuyerPhone()%></td>
                                     <td><%= o.getBuyerName()%></td>
                                     <td><%= o.getShippingAddress()%></td>

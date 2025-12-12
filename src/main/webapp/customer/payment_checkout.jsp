@@ -1,4 +1,3 @@
-<%--<%@page import="model.InterestRate"%>--%>
 <%@page import="model.InterestRate"%>
 <%@page import="java.util.List"%>
 <%@page import="dao.ProductDAO"%>
@@ -6,7 +5,7 @@
 <%@page import="java.util.Locale"%>
 <%@page import="model.Carts"%>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page isELIgnored="true" %>
+<%-- BỎ DÒNG isELIgnored="true" HOẶC DÙNG SCRIPTLET NHƯ BÊN DƯỚI --%>
 <%@ include file="/layout/header.jsp" %>
 <!DOCTYPE html>
 <html lang="en">
@@ -23,8 +22,6 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
-
 
         <style>
             body {
@@ -93,9 +90,12 @@
 
                     <%  List<Carts> cartsCheckout = (List<Carts>) session.getAttribute("cartCheckout");
                         ProductDAO pDAO = new ProductDAO();
+                        // Lấy các attribute từ Servlet gửi sang
                         String receiverName = (String) request.getAttribute("receiverName");
                         String receiverPhone = (String) request.getAttribute("receiverPhone");
                         String specificAddress = (String) request.getAttribute("specificAddress");
+                        String saveAddress = (String) request.getAttribute("saveAddress"); // Lấy biến saveAddress
+
                         double totalPriceBeforeDiscount = 0;
                         double totalPriceAfterDiscount = 0;
                         int totalQuantity = 0;
@@ -155,6 +155,9 @@
                                 <input type="hidden" name="totalAmount" value="<%= totalPriceAfterDiscount%>">
                                 <input type="hidden" name="paymentMethod" id="paymentMethodInput" value="">
                                 <input type="hidden" name="installmentTerm" id="installmentTermInput" value="">
+
+                                <%-- FIX 1: Dùng scriptlet thay vì EL vì page isELIgnored="true" --%>
+                                <input type="hidden" name="saveAddress" value="<%= saveAddress != null ? saveAddress : ""%>">
 
                                 <div class="border-t pt-4">
                                     <h4 class="font-semibold text-gray-800 mb-3">Select a payment method:</h4>
@@ -341,7 +344,7 @@
 
         <script>
             document.addEventListener('DOMContentLoaded', () => {
-                // --- CÁC BIẾN DOM GIỮ NGUYÊN ---
+                // --- CÁC BIẾN DOM ---
                 const productModal = document.getElementById('productModal');
                 const paymentMethodModal = document.getElementById('paymentMethodModal');
                 const installmentModal = document.getElementById('installmentModal');
@@ -362,22 +365,22 @@
                 const selectedPaymentIcon = document.getElementById('selected-payment-icon');
                 let selectedInstallmentTerm = null;
 
-                // --- BIẾN MỚI ĐỂ QUẢN LÝ VÒNG LẶP KIỂM TRA THANH TOÁN ---
+                // --- BIẾN QUẢN LÝ POLLING ---
                 let paymentCheckInterval = null;
-                const paymentForm = document.getElementById('payment-form'); // Lấy form chính
+                const paymentForm = document.getElementById('payment-form');
 
                 const openModal = (modal) => modal.classList.remove('hidden');
 
-                // --- SỬA ĐỔI HÀM closeModal ĐỂ DỪNG KIỂM TRA KHI ĐÓNG MODAL ---
                 const closeModal = (modal) => {
                     modal.classList.add('hidden');
-                    // Nếu modal chuyển khoản bị đóng, dừng việc kiểm tra
+                    // Stop checking payment if transfer modal is closed
                     if (modal.id === 'transferModal' && paymentCheckInterval) {
                         clearInterval(paymentCheckInterval);
                         console.log("Payment check stopped.");
                     }
                 };
 
+                // Close modal listeners
                 document.querySelectorAll('.fixed[id$="Modal"]').forEach(modal => {
                     modal.querySelectorAll('.js-close-modal').forEach(button => {
                         button.addEventListener('click', () => closeModal(modal));
@@ -403,6 +406,7 @@
                     }
                 }
 
+                // --- Modal Navigation Listeners ---
                 openProductListModalBtn.addEventListener('click', (e) => {
                     e.preventDefault();
                     openModal(productModal);
@@ -437,7 +441,7 @@
                     openModal(installmentModal);
                 });
 
-                // --- MODAL CHUYỂN KHOẢN ---
+                // --- QR CODE GENERATION ---
                 openTransferModalBtn.addEventListener('click', (e) => {
                     document.querySelectorAll('.payment-option').forEach(el => el.classList.remove('selected'));
                     e.currentTarget.classList.add('selected');
@@ -446,9 +450,8 @@
 
                     const totalAmount = 2000;
 
-
                     const orderId = 'DH' + Math.floor(Date.now() / 1000);
-                    const transferDescription = 'TT ' + orderId; // Nội dung chuyển khoản gốc
+                    const transferDescription = 'TT ' + orderId;
                     document.getElementById('transferContent').innerText = transferDescription;
 
                     const bankId = "970422";
@@ -464,12 +467,11 @@
                     closeModal(paymentMethodModal);
                     openModal(transferModal);
 
-                    // Dừng bất kỳ vòng lặp kiểm tra cũ nào đang chạy
                     if (paymentCheckInterval) {
                         clearInterval(paymentCheckInterval);
                     }
 
-                    // Set time out = 5s khoảng thời gian mà người mở điện thoại lên và quét QR, và kiểm tra giao dịch mỗi 3s
+                    // Start checking after 5s
                     setTimeout(() => {
                         paymentCheckInterval = setInterval(() => {
                             checkPaid(transferDescription);
@@ -477,7 +479,7 @@
                     }, 5000);
                 });
 
-                // --- HÀM checkPaid ĐƯỢC CẬP NHẬT HOÀN TOÀN ---
+                // --- CHECK PAYMENT STATUS ---
                 async function checkPaid(description) {
                     try {
                         const response = await fetch("https://script.google.com/macros/s/AKfycbwVGFzfs_VMzmWN9kXOcLW2o5HNR407tycQzyyq20NjEOn32MBZw6GSBFVi5uRtWtSwqw/exec");
@@ -485,19 +487,13 @@
                         const lastPaid = data.data[data.data.length - 1];
                         const lastDescription = lastPaid["Mô tả"];
 
-                        // So sánh nội dung chuyển khoản
                         if (lastDescription.includes(description)) {
-                            console.log("Payment successful! Submitting form...");
+                            console.log("Payment successful!");
                             alert("Payment successful!");
-
-                            // 1. Dừng vòng lặp
                             clearInterval(paymentCheckInterval);
 
-                            // 2. Cập nhật các giá trị trong form
                             paymentMethodInput.value = 'TRANSFER';
-                            installmentTermInput.value = ''; // Xóa thông tin trả góp nếu có
-
-                            // 3. Tự động nộp form
+                            installmentTermInput.value = '';
                             paymentForm.submit();
                         } else {
                             console.log("Checking payment... Not yet paid.");
@@ -507,16 +503,7 @@
                     }
                 }
 
-                // --- CÁC HÀM XÁC NHẬN KHÁC GIỮ NGUYÊN ---
-                document.querySelectorAll('.payment-option').forEach(option => {
-                    if (option.id !== 'openInstallmentModalBtn' && option.id !== 'openTransferModalBtn') {
-                        option.addEventListener('click', () => {
-                            document.querySelectorAll('.payment-option').forEach(el => el.classList.remove('selected'));
-                            option.classList.add('selected');
-                        });
-                    }
-                });
-
+                // --- CONFIRM BUTTONS ---
                 confirmPaymentBtn.addEventListener('click', () => {
                     const selectedOption = document.querySelector('.payment-option.selected');
                     if (selectedOption && selectedOption.dataset.value === 'COD') {
@@ -525,7 +512,13 @@
                         installmentTermInput.value = '';
                         closeModal(paymentMethodModal);
                     } else if (selectedOption) {
-                        alert('Please click on the selected method to continue.');
+                        // User selected Transfer or Installment but didn't proceed inside sub-modals
+                        // Trigger appropriate modal opening logic again
+                        if (selectedOption.dataset.value === 'INSTALLMENT') {
+                            openInstallmentModalBtn.click();
+                        } else if (selectedOption.dataset.value === 'TRANSFER') {
+                            openTransferModalBtn.click();
+                        }
                     } else {
                         alert('Please select a payment method.');
                     }
@@ -545,13 +538,12 @@
                     }
                 });
 
-                // Nút này giờ đóng vai trò là phương án thủ công nếu người dùng không muốn chờ
                 confirmTransferBtn.addEventListener('click', () => {
                     const selectedOption = document.querySelector('.payment-option[data-value="TRANSFER"]');
                     updateSelectedPaymentDisplay(selectedOption.dataset.text, selectedOption.dataset.faIconClass);
                     paymentMethodInput.value = selectedOption.dataset.value;
                     installmentTermInput.value = '';
-                    closeModal(transferModal); // Chỉ đóng modal, không submit form
+                    closeModal(transferModal);
                 });
 
                 document.querySelectorAll('.term-column').forEach(column => {
@@ -563,16 +555,32 @@
                     });
                 });
 
-                copyContentBtn.addEventListener('click', () => {
+                copyContentBtn.addEventListener('click', (e) => {
+                    e.preventDefault(); // Prevent form submission if button inside form
                     const content = document.getElementById('transferContent').innerText;
                     navigator.clipboard.writeText(content).then(() => {
                         alert('Copied content: ' + content);
                     }).catch(err => {
                         console.error('Could not copy text: ', err);
-                        alert('Failed to copy!');
                     });
                 });
             });
         </script>
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+
+                // CHỌN PAYMENT METHOD (FIX COD)
+                document.querySelectorAll('.payment-option').forEach(option => {
+                    option.addEventListener('click', () => {
+                        document.querySelectorAll('.payment-option')
+                                .forEach(o => o.classList.remove('selected'));
+
+                        option.classList.add('selected');
+                    });
+                });
+
+            });
+        </script>
+
     </body>
 </html>

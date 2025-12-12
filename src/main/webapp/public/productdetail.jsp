@@ -1,5 +1,4 @@
 <%@page import="model.Specification"%>
-<%@page import="dao.UsersDAO"%>
 <%@page import="model.Review"%>
 <%@page import="dao.ReviewDAO"%>
 <%@page import="dao.ProductDAO"%>
@@ -7,7 +6,6 @@
 <%@page import="model.Variants"%>
 <%@page import="model.Products"%>
 <%@page import="java.util.List"%>
-<%@ page import="model.Users" %>     
 <%@ page import="dao.WishlistDAO" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.net.URLEncoder" %>
@@ -41,7 +39,7 @@
 
     int userID = 0;
     if (isLoggedIn) {
-        userID = user.getUserId();
+        userID = user.getCustomerID();
         displayName = (user.getFullName() != null && !user.getFullName().trim().isEmpty())
                 ? user.getFullName() : user.getEmail();
     }
@@ -379,7 +377,7 @@
                         <div style="background: yellow; color: black;">
 
                         </div>
-                        <% if (isLoggedIn && userID == r.getUser().getUserId()) {%>
+                        <% if (isLoggedIn && userID == r.getUser().getCustomerID()) {%>
                         <form action="review?action=deleteReview" method="post" style="display:inline;">
                             <input type="hidden" name="rID" value="<%= r.getReviewID()%>">
                             <input type="hidden" name="vID" value="<%= r.getVariant().getVariantID()%>">
@@ -402,8 +400,8 @@
 
                 <!-- RELATED PRODUCTS -->
                 <%
-                // Lấy danh sách sản phẩm liên quan do servlet setAttribute
-                List<Products> relatedList = (List<Products>) request.getAttribute("relatedList");
+                    // Lấy danh sách sản phẩm liên quan do servlet setAttribute
+                    List<Products> relatedList = (List<Products>) request.getAttribute("relatedList");
                 %>
                 <section class="related-products position-relative padding-large no-padding-top">
                     <div class="container">
@@ -415,7 +413,7 @@
                             <%
                                 // Import NumberFormat và Locale ở đầu JSP rồi
                                 NumberFormat vnFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
-                
+
                                 // Giới hạn tối đa 10 sản phẩm
                                 List<Products> relatedList10 = new ArrayList<>();
                                 if (relatedList != null) {
@@ -435,25 +433,25 @@
                                         <div class="product-card text-center position-relative">
 
                                             <div class="image-holder position-relative">
-                                                <a href="product?action=viewDetail&pID=<%= rp.getProductID() %>">
-                                                    <img src="images/<%= rp.getVariants().get(0).getImageUrl() %>" 
-                                                         alt="<%= rp.getName() %>" class="img-fluid rounded-3">
+                                                <a href="product?action=viewDetail&pID=<%= rp.getProductID()%>">
+                                                    <img src="images/<%= rp.getVariants().get(0).getImageUrl()%>" 
+                                                         alt="<%= rp.getName()%>" class="img-fluid rounded-3">
                                                 </a>
                                             </div>
 
                                             <div class="card-detail pt-3">
                                                 <h3 class="card-title text-uppercase">
-                                                    <a href="product?action=viewDetail&pID=<%= rp.getProductID() %>">
-                                                        <%= rp.getName() %> 
-                                                        <%= rp.getVariants().get(0).getColor() %> 
-                                                        <%= rp.getVariants().get(0).getStorage() %>
+                                                    <a href="product?action=viewDetail&pID=<%= rp.getProductID()%>">
+                                                        <%= rp.getName()%> 
+                                                        <%= rp.getVariants().get(0).getColor()%> 
+                                                        <%= rp.getVariants().get(0).getStorage()%>
                                                     </a>
                                                 </h3>
-                                                    
+
                                                 <!-- WISH LIST BUTTON -->
                                                 <div class="wishlist-wrap">
                                                     <%
-                                                        Users u = (Users) session.getAttribute("user");
+                                                        Customer u = (Customer) session.getAttribute("user");
                                                         boolean logged = (u != null);
                                                         boolean liked = false;
                                                         int variantID = -1;
@@ -465,7 +463,7 @@
                                                         if (logged && variantID > 0) {
                                                             try {
                                                                 WishlistDAO wdao = new WishlistDAO();
-                                                                liked = wdao.isExist(u.getUserId(), rp.getProductID(), variantID);
+                                                                liked = wdao.isExist(u.getCustomerID(), rp.getProductID(), variantID);
                                                             } catch (Exception e) {
                                                                 e.printStackTrace();
                                                             }
@@ -473,20 +471,20 @@
                                                     %>
 
                                                     <% if (variantID > 0) { %>
-                                                    <% if (logged) { %>
+                                                    <% if (logged) {%>
                                                     <button class="wishlist-btn" 
-                                                            data-productid="<%= rp.getProductID() %>" 
-                                                            data-variantid="<%= variantID %>"
+                                                            data-productid="<%= rp.getProductID()%>" 
+                                                            data-variantid="<%= variantID%>"
                                                             style="background:none; border:none; padding:0;">
-                                                        <i class="<%= liked ? "fas fa-heart" : "far fa-heart" %>" 
-                                                           style="<%= liked ? "color:#e53e3e;" : "" %>"></i>
+                                                        <i class="<%= liked ? "fas fa-heart" : "far fa-heart"%>" 
+                                                           style="<%= liked ? "color:#e53e3e;" : ""%>"></i>
                                                     </button>
                                                     <% } else { %>
                                                     <a href="login.jsp" class="wishlist-btn">
                                                         <i class="far fa-heart"></i>
                                                     </a>
                                                     <% } %>
-                                                    <% } %>
+                                                    <% }%>
                                                 </div>
 
                                                 <script>
@@ -521,7 +519,7 @@
                                                 </script>
 
                                                 <span class="item-price text-primary">
-                                                    <%= vnFormat.format(rp.getVariants().get(0).getDiscountPrice() != null ? rp.getVariants().get(0).getDiscountPrice() : rp.getVariants().get(0).getPrice()) %>
+                                                    <%= vnFormat.format(rp.getVariants().get(0).getDiscountPrice() != null ? rp.getVariants().get(0).getDiscountPrice() : rp.getVariants().get(0).getPrice())%>
 
                                                 </span>
                                             </div>
@@ -575,147 +573,126 @@
     <script src="js/jquery-1.11.0.min.js"></script>
     <script src="js/bootstrap.bundle.min.js"></script>
 
-<<<<<<< HEAD
-<script>
-
-    /* ------------------ REVIEW MODAL ------------------ */
-
-    const modal = document.getElementById("reviewModal");
-    const openModalBtn = document.getElementById("openReviewModal");
-    const closeBtn = document.getElementsByClassName("close-button")[0];
-
-    if (openModalBtn && modal)
-        openModalBtn.onclick = () => modal.style.display = "block";
-
-    if (closeBtn)
-        closeBtn.onclick = () => modal.style.display = "none";
-
-    window.onclick = (e) => {
-        if (e.target === modal)
-            modal.style.display = "none";
-    };
-
-
-    /* ------------------ QUANTITY SELECTOR ------------------ */
-
-    document.addEventListener("DOMContentLoaded", function () {
-
-        const minusBtn = document.querySelector('.minus-btn');
-        const plusBtn = document.querySelector('.plus-btn');
-        const quantityInput = document.getElementById('quantity-display');
-        const stockError = document.getElementById('stock-error');
-
-        const quantitySelector = document.querySelector('.quantity-selector');
-        const stock = quantitySelector ? parseInt(quantitySelector.dataset.stock) : 0;
-
-        const hiddenInputs = document.querySelectorAll('.hiddenQuantityInput');
-
-        function updateHiddenQuantity(val) {
-            hiddenInputs.forEach(input => {
-                input.value = val;
-                input.setAttribute('value', val);
-            });
-        }
-
-        if (minusBtn && plusBtn && quantityInput) {
-
-            quantityInput.value = 1;
-            updateHiddenQuantity(1);
-
-            minusBtn.onclick = () => {
-                let val = parseInt(quantityInput.value);
-                if (isNaN(val)) val = 1;
-
-                if (val > 1) {
-                    val--;
-                    quantityInput.value = val;
-                    updateHiddenQuantity(val);
-                    if (stockError) stockError.style.display = "none";
-=======
     <script>
-                                                    const modal = document.getElementById("reviewModal");
-                                                    const openModalBtn = document.getElementById("openReviewModal");
-                                                    const closeBtn = document.getElementsByClassName("close-button")[0];
+                                                        /* ------------------ REVIEW MODAL ------------------ */
 
-                                                    if (openModalBtn && modal)
-                                                        openModalBtn.onclick = () => modal.style.display = "block";
-                                                    if (closeBtn)
-                                                        closeBtn.onclick = () => modal.style.display = "none";
+                                                        const modal = document.getElementById("reviewModal");
+                                                        const openModalBtn = document.getElementById("openReviewModal");
+                                                        const closeBtn = document.getElementsByClassName("close-button")[0];
 
-                                                    window.onclick = (e) => {
-                                                        if (e.target === modal)
-                                                            modal.style.display = "none";
-                                                    };
+                                                        if (openModalBtn && modal)
+                                                            openModalBtn.onclick = () => modal.style.display = "block";
 
-                                                    // Quantity Logic
-                                                    const minusBtn = document.querySelector('.minus-btn');
-                                                    const plusBtn = document.querySelector('.plus-btn');
-                                                    const quantityInput = document.getElementById('quantity-display');
-                                                    const stockError = document.getElementById('stock-error');
-                                                    const stock = parseInt(document.querySelector('.quantity-selector').dataset.stock);
-                                                    const hiddenInputs = document.querySelectorAll('.hiddenQuantityInput');
+                                                        if (closeBtn)
+                                                            closeBtn.onclick = () => modal.style.display = "none";
 
-                                                    if (minusBtn && plusBtn && quantityInput) {
-                                                        minusBtn.addEventListener('click', () => {
-                                                            let val = parseInt(quantityInput.value);
-                                                            if (val > 1) {
-                                                                val--;
-                                                                quantityInput.value = val;
-                                                                hiddenInputs.forEach(i => i.value = val);
-                                                                stockError.style.display = "none";
+                                                        window.onclick = (e) => {
+                                                            if (e.target === modal)
+                                                                modal.style.display = "none";
+                                                        };
+
+                                                        /* ------------------ QUANTITY SELECTOR ------------------ */
+
+                                                        document.addEventListener("DOMContentLoaded", function () {
+
+                                                            const minusBtn = document.querySelector('.minus-btn');
+                                                            const plusBtn = document.querySelector('.plus-btn');
+                                                            const quantityInput = document.getElementById('quantity-display');
+                                                            const stockError = document.getElementById('stock-error');
+
+                                                            const quantitySelector = document.querySelector('.quantity-selector');
+                                                            const stock = quantitySelector ? parseInt(quantitySelector.dataset.stock) : 0;
+
+                                                            const hiddenInputs = document.querySelectorAll('.hiddenQuantityInput');
+
+                                                            function updateHiddenQuantity(val) {
+                                                                hiddenInputs.forEach(input => {
+                                                                    input.value = val;
+                                                                    input.setAttribute('value', val);
+                                                                });
+                                                            }
+
+                                                            if (minusBtn && plusBtn && quantityInput) {
+
+                                                                quantityInput.value = 1;
+                                                                updateHiddenQuantity(1);
+
+                                                                minusBtn.onclick = () => {
+                                                                    let val = parseInt(quantityInput.value);
+                                                                    if (isNaN(val))
+                                                                        val = 1;
+
+                                                                    if (val > 1) {
+                                                                        val--;
+                                                                        quantityInput.value = val;
+                                                                        updateHiddenQuantity(val);
+                                                                        if (stockError)
+                                                                            stockError.style.display = "none";
+                                                                    }
+                                                                };
+
+                                                                plusBtn.onclick = () => {
+                                                                    let val = parseInt(quantityInput.value);
+                                                                    if (isNaN(val))
+                                                                        val = 1;
+
+                                                                    if (val < stock) {
+                                                                        val++;
+                                                                        quantityInput.value = val;
+                                                                        updateHiddenQuantity(val);
+                                                                        if (stockError)
+                                                                            stockError.style.display = "none";
+                                                                    } else {
+                                                                        if (stockError)
+                                                                            stockError.style.display = "block";
+                                                                    }
+                                                                };
                                                             }
                                                         });
 
-                                                        plusBtn.addEventListener('click', () => {
-                                                            let val = parseInt(quantityInput.value);
-                                                            if (val < stock) {
-                                                                val++;
-                                                                quantityInput.value = val;
-                                                                hiddenInputs.forEach(i => i.value = val);
-                                                                stockError.style.display = "none";
-                                                            } else {
-                                                                stockError.style.display = "block";
-                                                            }
-                                                        });
-                                                    }
+                                                        /* ------------------ CHANGE IMAGE ------------------ */
 
-                                                    function changeImage(thumb) {
-                                                        const mainImg = document.getElementById('displayedImage');
-                                                        const allThumbs = document.querySelectorAll('.thumbnail');
+                                                        function changeImage(thumb) {
+                                                            const mainImg = document.getElementById('displayedImage');
+                                                            const allThumbs = document.querySelectorAll('.thumbnail');
 
-                                                        mainImg.src = thumb.src;
-
-                                                        allThumbs.forEach(t => t.classList.remove('active'));
-                                                        thumb.classList.add('active');
-                                                    }
+                                                            mainImg.src = thumb.src;
+                                                            allThumbs.forEach(t => t.classList.remove('active'));
+                                                            thumb.classList.add('active');
+                                                        }
     </script>
 
     <script src="js/review-filter.js"></script>
 
     <script>
-                                                    document.addEventListener('DOMContentLoaded', function () {
-                                                        const starOptions = document.querySelectorAll('.star-option');
-                                                        const allStars = document.querySelectorAll('.star-icon');
+                                                        /* ------------------ STAR RATING HIGHLIGHT ------------------ */
+                                                        document.addEventListener('DOMContentLoaded', function () {
+                                                            const starOptions = document.querySelectorAll('.star-option');
+                                                            const allStars = document.querySelectorAll('.star-option .star-icon');
 
-                                                        starOptions.forEach(option => {
-                                                            option.addEventListener('click', function () {
-                                                                const ratingValue = parseInt(this.getAttribute('data-rating-value'));
+                                                            starOptions.forEach(option => {
+                                                                option.addEventListener('click', function () {
+                                                                    const ratingValue = parseInt(this.getAttribute('data-rating-value'));
 
-                                                                allStars.forEach(star => star.style.color = '#ccc');
+                                                                    allStars.forEach(star => star.style.color = '#ccc');
 
-                                                                for (let i = 1; i <= ratingValue; i++) {
-                                                                    allStars[i].style.color = '#ffc107';
-                                                                }
+                                                                    let count = 0;
+                                                                    document.querySelectorAll('.star-option').forEach(opt => {
+                                                                        if (++count <= ratingValue) {
+                                                                            opt.querySelector('.star-icon').style.color = '#ffc107';
+                                                                        }
+                                                                    });
 
-                                                                const input = this.querySelector('input[type="radio"]');
-                                                                if (input)
-                                                                    input.checked = true;
+                                                                    const input = this.querySelector('input[type="radio"]');
+                                                                    if (input)
+                                                                        input.checked = true;
+                                                                });
                                                             });
                                                         });
-                                                    });
     </script>
 
     <script>
+        /* ------------------ REVIEW IMAGE PREVIEW ------------------ */
         document.addEventListener("DOMContentLoaded", function () {
             const input = document.getElementById("photo-upload-input");
             const previewContainer = document.getElementById("image-preview-container");
@@ -728,40 +705,25 @@
                     alert("You can only upload up to 3 photos!");
                     this.value = "";
                     return;
->>>>>>> 8bfb7936d9efd70aa440344692a82275c922c3d0
                 }
-            };
 
-            plusBtn.onclick = () => {
-                let val = parseInt(quantityInput.value);
-                if (isNaN(val)) val = 1;
-
-                if (val < stock) {
-                    val++;
-                    quantityInput.value = val;
-                    updateHiddenQuantity(val);
-                    if (stockError) stockError.style.display = "none";
-                } else {
-                    if (stockError) stockError.style.display = "block";
-                }
-            };
-        }
-    });
-
-
-    /* ------------------ CHANGE IMAGE ------------------ */
-
-    function changeImage(thumb) {
-        const mainImg = document.getElementById('displayedImage');
-        const allThumbs = document.querySelectorAll('.thumbnail');
-
-        mainImg.src = thumb.src;
-        allThumbs.forEach(t => t.classList.remove('active'));
-        thumb.classList.add('active');
-    }
-
-</script>
-
-
+                files.forEach(f => {
+                    const img = document.createElement("img");
+                    img.src = URL.createObjectURL(f);
+                    img.classList.add("preview-img");
+                    img.style.width = "90px";
+                    img.style.margin = "5px";
+                    previewContainer.appendChild(img);
+                });
+            });
+        });
+    </script>
 </body>
 </html>
+
+
+
+
+
+
+

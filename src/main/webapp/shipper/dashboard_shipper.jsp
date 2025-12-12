@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-
-=======
 <%@page import="dao.ProductDAO"%>
->>>>>>> 8bfb7936d9efd70aa440344692a82275c922c3d0
 <%@page import="dao.VariantsDAO"%>
 <%@page import="model.Variants"%>
 <%@page import="java.util.HashMap"%>
@@ -28,13 +24,16 @@
 
         <%
             List<Order> orders = (List<Order>) request.getAttribute("orders");
-            HashMap<Integer, List<OrderDetails>> orderDetailList = (HashMap<Integer, List<OrderDetails>>) request.getAttribute("orderDetailList");
+            HashMap<Integer, List<OrderDetails>> orderDetailList
+                    = (HashMap<Integer, List<OrderDetails>>) request.getAttribute("orderDetailList");
+            String shipperName = (String) request.getAttribute("shipperName");
             VariantsDAO vDAO = new VariantsDAO();
+            ProductDAO pdao = new ProductDAO();
         %>
 
         <div class="d-flex" id="wrapper">
 
-            <!-- =============== SIDEBAR =============== -->
+            <!-- SIDEBAR -->
             <nav class="sidebar bg-white shadow-sm border-end">
                 <div class="sidebar-header p-3">
                     <h4 class="fw-bold text-primary">Mini Store</h4>
@@ -44,7 +43,7 @@
                 </ul>
             </nav>
 
-            <!-- =============== MAIN CONTENT =============== -->
+            <!-- MAIN CONTENT -->
             <div class="page-content flex-grow-1">
 
                 <!-- NAVBAR -->
@@ -77,10 +76,10 @@
                             </form>
 
                             <div class="d-flex align-items-center">
-                                <img src="https://i.pravatar.cc/40?u=<%= request.getAttribute("shipperName")%>"
-                                     class="rounded-circle me-2" width="35">
-                                <span><%= request.getAttribute("shipperName")%></span>
+                                <img src="https://i.pravatar.cc/40?u=<%=shipperName%>" class="rounded-circle me-2" width="35">
+                                <span><%= shipperName%></span>
                             </div>
+
                         </div>
                     </div>
                 </nav>
@@ -92,7 +91,7 @@
                     <div class="row g-3" id="orderList">
 
                         <% if (orders != null && !orders.isEmpty()) {
-                                for (Order o : orders) {%>
+                        for (Order o : orders) {%>
 
                         <div class="col-lg-6 order-card-wrapper">
                             <div class="order-card shadow-sm">
@@ -127,24 +126,11 @@
                                     <p><i class="bi bi-calendar3"></i> <strong>Date:</strong> <%= o.getOrderDate()%></p>
                                 </div>
 
-<<<<<<< HEAD
-                                <!-- ORDER ITEMS BUTTON -->
-                                <div class="card-body pt-0">
-                                    <button type="button"
-                                            class="btn btn-sm btn-outline-primary"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#orderItemsModal-<%= o.getOrderID()%>">
-                                        <i class="bi bi-box-seam"></i> View Items
-                                    </button>
-=======
-
-
-                                <!-- ========== ORDER ITEMS ========== -->
+                                <!-- ORDER ITEMS -->
                                 <div class="order-items-box mt-3">
                                     <h6 class="fw-bold mb-2 text-primary"><i class="bi bi-box-seam"></i> Order Items</h6>
 
                                     <%
-                                        ProductDAO pdao = new ProductDAO();
                                         List<OrderDetails> odList = orderDetailList.get(o.getOrderID());
                                         if (odList != null) {
                                             for (OrderDetails d : odList) {
@@ -152,11 +138,10 @@
                                     %>
 
                                     <div class="order-item d-flex align-items-center p-2 mb-2">
-                                        <img src="images/<%= v.getImageList()[0]%>"
-                                             class="order-item-img rounded me-3">
+                                        <img src="images/<%= v.getImageList()[0]%>" class="order-item-img rounded me-3">
 
                                         <div class="flex-grow-1">
-                                            <div class="text-muted small"><%= pdao.getNameByID(v.getProductID()) + "-" +  v.getColor()%> • <%= v.getStorage()%></div>
+                                            <div class="text-muted small"><%= pdao.getNameByID(v.getProductID()) + " - " + v.getColor()%> • <%= v.getStorage()%></div>
                                             <div class="small">Price: <strong><%= vn.format(d.getUnitPrice())%></strong></div>
                                             <div class="small">Qty: <strong><%= d.getQuantity()%></strong></div>
                                         </div>
@@ -166,9 +151,10 @@
                                         </div>
                                     </div>
 
-                                    <% }
-                                        }%>
->>>>>>> 8bfb7936d9efd70aa440344692a82275c922c3d0
+                                    <%      }
+                            } else { %>
+                                    <p class="text-muted">No items found for this order.</p>
+                                    <% }%>
                                 </div>
 
                                 <!-- STATUS UPDATE FOOTER -->
@@ -201,60 +187,18 @@
                                             </select>
                                             <button class="btn btn-sm btn-primary" type="submit">Update</button>
                                         </div>
-                                        <% }%>
+                                        <% } %>
                                     </form>
                                 </div>
 
                             </div>
                         </div>
 
-                        <!-- Modal for this order -->
-                        <div class="modal fade" id="orderItemsModal-<%= o.getOrderID()%>" tabindex="-1" aria-labelledby="orderItemsLabel-<%= o.getOrderID()%>" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered modal-lg">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="orderItemsLabel-<%= o.getOrderID()%>">Order #<%= o.getOrderID()%> — Items</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div class="order-items-box">
-                                            <%
-                                                List<OrderDetails> odList = orderDetailList.get(o.getOrderID());
-                                                if (odList != null) {
-                                                    for (OrderDetails d : odList) {
-                                                        Variants v = vDAO.getVariantByID(d.getVariantID());
-                                            %>
+                        <% } // end for
+                } else { %>
 
-                                            <div class="order-item d-flex align-items-center p-2 mb-2">
-                                                <img src="images/<%= v.getImageList()[0]%>" class="order-item-img rounded me-3">
-
-                                                <div class="flex-grow-1">
-                                                    <div class="text-muted small"><%= v.getColor()%> • <%= v.getStorage()%></div>
-                                                    <div class="small">Price: <strong><%= vn.format(d.getUnitPrice())%></strong></div>
-                                                    <div class="small">Qty: <strong><%= d.getQuantity()%></strong></div>
-                                                </div>
-
-                                                <div class="text-end fw-bold text-success small">
-                                                    <%= vn.format(d.getUnitPrice() * d.getQuantity())%>
-                                                </div>
-                                            </div>
-
-                                            <% }
-                                  } else { %>
-                                            <p class="text-muted">No items found for this order.</p>
-                                            <% } %>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <% }
-                        } else { %>
                         <p class="text-muted">No orders assigned to you.</p>
+
                         <% }%>
 
                     </div>
@@ -264,12 +208,11 @@
         </div>
 
         <script>
-            document.getElementById('menu-toggle').onclick = () =>
-                document.getElementById('wrapper').classList.toggle('toggled');
+            document.getElementById('menu-toggle').onclick =
+                    () => document.getElementById('wrapper').classList.toggle('toggled');
         </script>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     </body>
 </html>
-

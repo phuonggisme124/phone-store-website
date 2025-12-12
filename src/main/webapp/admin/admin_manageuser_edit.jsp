@@ -1,184 +1,261 @@
+<%@page import="model.Customer"%>
+<%@page import="model.Staff"%>
 <%@page import="java.util.List"%>
-<%@page import="model.Users"%>
+
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>Admin Dashboard</title>
+        <title>Admin Dashboard - Update User</title>
 
-        <!-- Bootstrap -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-        <!-- Icons -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
-        <!-- Custom CSS -->
         <link rel="stylesheet" href="css/dashboard_admin.css">
-        <link href="css/dashboard_table.css" rel="stylesheet">
+        <link rel="stylesheet" href="css/dashboard_createuser.css">
+
+        
     </head>
     <body>
         <div class="d-flex" id="wrapper">
-            <!-- Sidebar -->
             <%@ include file="sidebar.jsp" %>
+            <% Staff currentUser = (Staff) session.getAttribute("user"); %>
 
-            <!-- Page Content -->
             <div class="page-content flex-grow-1">
-                <!-- Navbar -->
-                <nav class="navbar navbar-light bg-white shadow-sm">
+                
+                <nav class="navbar navbar-light bg-white shadow-sm px-3 py-2 sticky-top">
                     <div class="container-fluid">
-                        <button class="btn btn-outline-primary" id="menu-toggle"><i class="bi bi-list"></i></button>
-                        <form class="d-none d-md-flex ms-3">
-                            <input class="form-control" type="search" placeholder="Ctrl + K" readonly>
-                        </form>
-                        <div class="d-flex align-items-center ms-auto">
-                            <div class="position-relative me-3">
-                                <a href="logout">logout</a>
-                            </div>
-                            <i class="bi bi-bell me-3 fs-5"></i>
-                            <div class="position-relative me-3">
-                                <i class="bi bi-github fs-5"></i>
-                            </div>
-                            <div class="d-flex align-items-center">
-                                <img src="https://i.pravatar.cc/40" class="rounded-circle me-2" width="35">
-                                <span>Admin</span>
+                        <button class="btn btn-light text-primary border-0 shadow-sm rounded-circle" id="menu-toggle" style="width: 40px; height: 40px;">
+                            <i class="bi bi-list fs-5"></i>
+                        </button>
+
+                        <div class="d-flex align-items-center ms-auto gap-3">
+                            <div class="vr text-secondary opacity-25 mx-1" style="height: 25px;"></div>
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="position-relative">
+                                        <img src="https://i.pravatar.cc/150?u=<%= currentUser.getStaffID()%>" 
+                                             class="rounded-circle border border-2 border-white shadow-sm" 
+                                             width="40" height="40" alt="Avatar">
+                                        <span class="position-absolute bottom-0 start-100 translate-middle p-1 bg-success border border-light rounded-circle">
+                                            <span class="visually-hidden">Online</span>
+                                        </span>
+                                    </div>
+                                    <div class="d-none d-md-block lh-1">
+                                        <span class="d-block fw-bold text-dark" style="font-size: 0.9rem;"><%= currentUser.getFullName()%></span>
+                                        <span class="d-block text-muted" style="font-size: 0.75rem;">Administrator</span>
+                                    </div>
+                                </div>
+                                <a href="logout" class="btn btn-light text-danger rounded-circle shadow-sm d-flex align-items-center justify-content-center hover-danger" 
+                                   style="width: 38px; height: 38px;" title="Logout">
+                                    <i class="bi bi-box-arrow-right fs-6"></i>
+                                </a>
                             </div>
                         </div>
                     </div>
                 </nav>
 
-                <!-- Search bar -->
+                <% Customer user = (Customer) request.getAttribute("currentUser"); %>
+
                 <div class="container-fluid p-4">
-                    <input type="text" class="form-control w-25" placeholder="🔍 Search">
-                </div>
+                    <form action="user" id="userForm" method="post" class="form-card p-5 mx-auto" style="max-width: 800px;">
+                        
+                        <div class="form-header text-center">
+                            <h2 class="fw-bold text-primary mb-1">Update User Profile</h2>
+                            <p class="text-muted">Modify account information and permissions</p>
+                        </div>
 
+                        <div class="mb-4 text-center">
+                            <%
+                                if (session.getAttribute("exist") != null) {
+                                    String exist = (String) session.getAttribute("exist");
+                                    out.println("<div class='alert alert-danger shadow-sm border-0 rounded-3'><i class='bi bi-exclamation-circle-fill me-2'></i>" + exist + "</div>");
+                                }
+                                session.removeAttribute("exist");
+                            %>
+                        </div>
 
-
-                <%                    
-                    Users user = (Users) request.getAttribute("currentUser");
-
-                %>
-                <!-- Table -->
-                <form action="user" method="post" class="w-50 mx-auto bg-light p-4 rounded shadow">
-                    <div class="mb-3" >
-
-                        <%
-
-                            if (session.getAttribute("exist") != null) {
-                                String exist = (String) session.getAttribute("exist");
-                                out.println("<p class='error-message'>" + exist + "</p>");
-                            }
-                            session.removeAttribute("exist");
-                        %>
-                    </div>
-                    <div class="mb-3">
-                        <input type="hidden" class="form-control" name="userId" value="<%= user.getUserId()%>" readonly>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Name</label>
-                        <input type="text" class="form-control" name="name" value="<%= user.getFullName()%>" required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Email</label>
-                        <input type="email" class="form-control" name="email" value="<%= user.getEmail()%>" required>
-
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Phone</label>
-                        <input type="text" class="form-control" name="phone" value="<%= user.getPhone()%>">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Address</label>
-                        <input type="text" class="form-control" name="address" value="<%= user.getAddress()%>">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">CreateAt</label>
-                        <input type="text" class="form-control" name="createAt" value="<%= user.getCreatedAt()%>">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Role</label>
+                        <input type="hidden" name="userId" value="<%= user.getCustomerID()%>">
                         <input type="hidden" name="oldRole" value="<%= user.getRole() %>">
-                        <select class="form-select" name="role" id="role">
-                            <option value="1" <%= (user.getRole().equals(1) ? "selected" : "")%>>Customer</option>
-                            <option value="2" <%= (user.getRole().equals(2) ? "selected" : "")%>>Staff</option>
-                            <option value="3" <%= (user.getRole().equals(3) ? "selected" : "")%>>Shipper</option>               
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Status</label>
-                        <select class="form-select" name="status" id="status">
-                            <option value="active" <%= (user.getStatus().equalsIgnoreCase("active") ? "selected" : "")%>>Active</option>
-<<<<<<< HEAD
-                            <option value="locked" <%= (user.getStatus().equalsIgnoreCase("locked") ? "selected" : "")%>>Locked</option>
-=======
-                            <option value="block" <%= (user.getStatus().equalsIgnoreCase("block") ? "selected" : "")%>>Block</option>
->>>>>>> 085e962 (push new version)
-                        </select>
-                    </div>
-                    <div class="d-flex gap-2">
-                        <button type="submit" name="action" value="updateUserAdmin" class="btn btn-primary flex-fill">Update</button>
-                        <button type="submit" name="action" value="deleteUserAdmin" class="btn btn-danger flex-fill">Delete</button>
-                    </div>
 
-                </form>
+                        <div class="row g-4">
+                            
+                            <div class="col-md-6">
+                                <h5 class="text-secondary border-bottom pb-2 mb-3"><i class="bi bi-shield-lock me-2"></i>Account Info</h5>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Email Address</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light text-muted"><i class="bi bi-envelope"></i></span>
+                                        <input type="email" class="form-control" name="email" id="email" value="<%= user.getEmail()%>" readonly>
+                                    </div>
+                                    <small class="text-muted fst-italic">*Email cannot be changed</small>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Role</label>
+                                    <select class="form-select" name="role" id="role">
+                                        <option value="2" <%= (user.getRole()== 2 ? "selected" : "")%>>Staff</option>
+                                        <option value="3" <%= (user.getRole()== 3 ? "selected" : "")%>>Shipper</option>
+                                    </select>
+                                    <p id="roleError" class="text-danger mt-2" style="display:none;">Select role!</p>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Status</label>
+                                    <select class="form-select" name="status" id="status">
+                                        <option value="active" <%= (user.getStatus().equalsIgnoreCase("active") ? "selected" : "")%>>Active</option>
+                                        <option value="locked" <%= (user.getStatus().equalsIgnoreCase("locked") ? "selected" : "")%>>Locked</option>
+                                        <option value="block" <%= (user.getStatus().equalsIgnoreCase("block") ? "selected" : "")%>>Block</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <h5 class="text-secondary border-bottom pb-2 mb-3"><i class="bi bi-person-vcard me-2"></i>Personal Info</h5>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Full Name</label>
+                                    <input type="text" class="form-control" name="name" id="name" value="<%= user.getFullName()%>" required>
+                                    <p id="nameError" class="text-danger mt-2" style="display:none;">Enter name!</p>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Phone Number</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light text-muted"><i class="bi bi-telephone"></i></span>
+                                        <input type="text" class="form-control" name="phone" id="phone" value="<%= user.getPhone()%>">
+                                    </div>
+                                    <p id="phoneError" class="text-danger mt-2" style="display:none;">Enter phone!</p>
+                                    <p id="phoneFormat" class="text-danger mt-2" style="display:none;">Invalid format!</p>
+                                </div>
+
+                                
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Created At</label>
+                                    <input type="text" class="form-control" value="<%= user.getCreatedAt()%>" readonly>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 pt-3 border-top d-flex gap-3 justify-content-end">
+                            <button type="submit" name="action" value="deleteUserAdmin" class="btn btn-danger-soft px-4 rounded-pill">
+                                <i class="bi bi-trash3 me-2"></i> Delete
+                            </button>
+                            <button type="submit" name="action" value="updateUserAdmin" class="btn btn-gradient-primary px-5 rounded-pill">
+                                <i class="bi bi-check-circle me-2"></i> Update Info
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
+        </div>
 
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="js/dashboard.js"></script>
 
-            <!-- JS Libraries -->
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+        <script>
+            // 1. Sidebar Toggle
+            document.getElementById("menu-toggle").addEventListener("click", function () {
+                document.getElementById("wrapper").classList.toggle("toggled");
+            });
 
-            <!-- Custom JS -->
-            <script src="js/dashboard.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-            <script>
-                document.addEventListener('DOMContentLoaded', function () {
-                    const form = document.querySelector('form[action="user"]');
-                    const deleteBtn = form?.querySelector('button[name="action"][value="deleteUserAdmin"]');
+            // 2. Form Validation
+            document.getElementById("userForm").addEventListener("submit", function (e) {
+                let isValid = true;
+                const reVN = /^(?:\+84|84|0)(?:3|5|7|8|9)\d{8}$/;
+                
+                // Helper Validate
+                function validateField(id, errorId, regex = null, errorMsgRegex = "") {
+                    const field = document.getElementById(id);
+                    const error = document.getElementById(errorId);
+                    if (!field) return true; // Bỏ qua nếu field không tồn tại (ví dụ address optional)
 
-                    if (!deleteBtn) {
-                        console.error("Delete button not found!");
-                        return;
+                    const val = field.value.trim();
+                    let isError = false;
+                    let msg = "This field is required!";
+
+                    // Một số trường có thể optional (như Address), tùy logic đại ca
+                    if (id === "name" && val === "") isError = true;
+                    if (id === "phone" && val !== "" && !reVN.test(val)) {
+                        isError = true; msg = errorMsgRegex;
                     }
 
-                    deleteBtn.addEventListener('click', function (event) {
-                        event.preventDefault(); // Prevent default submit
+                    if (isError) {
+                        if(error) {
+                            error.innerText = msg;
+                            error.style.display = "block";
+                        }
+                        field.classList.add("is-invalid");
+                        return false;
+                    } else {
+                        if(error) error.style.display = "none";
+                        field.classList.remove("is-invalid");
+                        field.classList.add("is-valid");
+                        return true;
+                    }
+                }
 
-                        Swal.fire({
-                            title: 'Are you sure you want to delete this user?',
-                            text: 'This action cannot be undone.',
-                            icon: 'warning',
-                            showCancelButton: true,
-                            confirmButtonColor: '#dc3545',
-                            cancelButtonColor: '#6c757d',
-                            confirmButtonText: 'Delete',
-                            cancelButtonText: 'Cancel',
-                            reverseButtons: true,
-                            background: '#fff',
-                            color: '#333',
-                            customClass: {
-                                popup: 'shadow-lg rounded-4 p-3',
-                                confirmButton: 'px-4 py-2 rounded-3',
-                                cancelButton: 'px-4 py-2 rounded-3'
-                            }
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                // Ensure correct action is sent
-                                let actionInput = form.querySelector('input[name="action"]');
-                                if (!actionInput) {
-                                    actionInput = document.createElement('input');
-                                    actionInput.type = 'hidden';
-                                    actionInput.name = 'action';
-                                    form.appendChild(actionInput);
-                                }
-                                actionInput.value = 'deleteUserAdmin';
-                                form.submit();
-                            }
-                        });
+                // Check Fields
+                if (!validateField("name", "nameError")) isValid = false;
+                
+                // Check Phone (Nếu nhập thì phải đúng format)
+                const phoneField = document.getElementById("phone");
+                const phoneError = document.getElementById("phoneError");
+                const phoneFormat = document.getElementById("phoneFormat");
+                if(phoneField.value.trim() !== "") {
+                     if(!reVN.test(phoneField.value.trim())) {
+                         phoneFormat.style.display = "block";
+                         phoneField.classList.add("is-invalid");
+                         isValid = false;
+                     } else {
+                         phoneFormat.style.display = "none";
+                         phoneField.classList.remove("is-invalid");
+                     }
+                }
+
+                if (!isValid) {
+                    e.preventDefault();
+                    const firstError = document.querySelector(".is-invalid");
+                    if (firstError) {
+                        firstError.scrollIntoView({ behavior: "smooth", block: "center" });
+                        firstError.focus();
+                    }
+                }
+            });
+
+            // 3. Delete Confirmation
+            const form = document.getElementById('userForm');
+            const deleteBtn = form.querySelector('button[value="deleteUserAdmin"]');
+
+            if (deleteBtn) {
+                deleteBtn.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: "This action cannot be undone!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#dc3545',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Yes, delete it!',
+                        background: '#fff',
+                        customClass: { popup: 'rounded-4' }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            const hiddenAction = document.createElement('input');
+                            hiddenAction.type = 'hidden';
+                            hiddenAction.name = 'action';
+                            hiddenAction.value = 'deleteUserAdmin';
+                            form.appendChild(hiddenAction);
+                            form.submit();
+                        }
                     });
                 });
-            </script>
+            }
+        </script>
     </body>
 </html>

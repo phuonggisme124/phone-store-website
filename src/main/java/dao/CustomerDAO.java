@@ -10,6 +10,51 @@ import utils.DBContext;
 
 public class CustomerDAO extends DBContext {
 
+    public Customer getCustomerById(int id) {
+        // SQL lấy từ bảng Customers
+        String sql = "SELECT * FROM Customers WHERE CustomerID = ?";
+
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSetToCustomer(rs);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+// Hàm map dữ liệu từ SQL sang Customer Model
+    private Customer mapResultSetToCustomer(ResultSet rs) throws SQLException {
+        // Lấy dữ liệu từ các cột trong Database
+        // Đảm bảo tên cột trong "..." khớp với Database của bạn
+        int customerID = rs.getInt("CustomerID");
+        String fullName = rs.getString("FullName");
+        String email = rs.getString("Email");
+        String phone = rs.getString("Phone");
+        String password = rs.getString("Password");
+        String address = rs.getString("Address");
+
+        // Model Customer dùng java.sql.Timestamp nên lấy trực tiếp
+        Timestamp createdAt = rs.getTimestamp("CreatedAt");
+
+        // Model Customer khai báo Status là String
+        String status = rs.getString("Status");
+
+        String cccd = rs.getString("CCCD");
+        Date yob = rs.getDate("YOB");
+        int point = rs.getInt("Point");
+
+        // Gọi Full Constructor của Customer
+        return new Customer(customerID, fullName, email, phone, password,
+                address, createdAt, status, cccd, yob, point);
+    }
+
+
     // ============================================================
     // Helper: Convert ResultSet → Customer
     private Customer map(ResultSet rs) throws SQLException {
