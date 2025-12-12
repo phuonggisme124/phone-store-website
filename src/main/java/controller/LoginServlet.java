@@ -1,7 +1,13 @@
+
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
+ */
 package controller;
 
 import dao.CartDAO;
 import dao.CustomerDAO;
+import dao.StaffDAO;
 import jakarta.servlet.RequestDispatcher;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
@@ -15,6 +21,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import model.Carts;
 import model.Customer;
+import model.Staff;
 
 /**
  * Servlet that handles customer login and logout functionality.
@@ -32,7 +39,9 @@ public class LoginServlet extends HttpServlet {
         if (session != null) {
             session.invalidate();
         }
-        // Redirect về trang login, session mới sẽ được tạo khi cần
+        // Tạo session mới để tránh null pointer khi login lại ngay lập tức
+        HttpSession newSession = request.getSession(true);
+        newSession.setAttribute("attempts", 0);
         response.sendRedirect("login.jsp");
     }
 
@@ -40,132 +49,119 @@ public class LoginServlet extends HttpServlet {
      * Handles user login functionality.
      */
     @Override
+
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         HttpSession session = request.getSession();
-        
-        // Khởi tạo attempt nếu chưa có
         if (session.getAttribute("attempts") == null) {
             session.setAttribute("attempts", 0);
         }
 
-        String action = request.getParameter("action");
-        CustomerDAO customerDAO = new CustomerDAO();
-        CartDAO cartDAO = new CartDAO();
-
-        // -----------------------------------------------------
-        // 1. LOGIN WITH GOOGLE
-        // -----------------------------------------------------
-        if (action != null && action.equalsIgnoreCase("googleLogin")) {
-            String email = request.getParameter("email");
-            String name = request.getParameter("name");
-            
-            if (email != null && name != null) {
-                // SỬA LỖI: Gọi phương thức registerForLoginWithGoogle CHỈ VỚI 2 THAM SỐ
-                customerDAO.registerForLoginWithGoogle(name, email); 
-                
-                Customer customer = customerDAO.loginWithEmail(email);
-                
-                if (customer != null) {
-                    session.setAttribute("user", customer);
-                    // Lấy giỏ hàng
-                    List<Carts> carts = cartDAO.getItemIntoCartByUserID(customer.getCustomerID());
-                    session.setAttribute("cart", carts);
-                    
-                    response.sendRedirect("homepage");
-                    return;
-                }
-            }
-        }
-
-        // -----------------------------------------------------
-        // 2. NORMAL LOGIN
-        // -----------------------------------------------------
-        String email = request.getParameter("username"); // Form field name
+        String email = request.getParameter("username");
         String password = request.getParameter("password");
         String redirect = request.getParameter("redirect");
 
+        CustomerDAO customerDAO = new CustomerDAO();
+        CartDAO cartDAO = new CartDAO();
+        StaffDAO staffDAO = new StaffDAO();
+
         // Validate input
-        if (email == null || email.trim().isEmpty() || password == null || password.isEmpty()) {
-            request.setAttribute("error", "Email và mật khẩu không được để trống.");
+        if (email == null || email.isEmpty() || password == null || password.isEmpty()) {
+            request.setAttribute("error", "Email and password cannot be empty.");
             request.getRequestDispatcher("login.jsp").forward(request, response);
             return;
         }
 
-        // Check Login
+        // ===============================
+        // 1. CUSTOMER LOGIN
+        // ===============================
         Customer customer = customerDAO.login(email, password);
 
-        // Case A: Login Success but Account Blocked
-        if (customer != null && "block".equalsIgnoreCase(customer.getStatus())) {
-            request.setAttribute("error", "Tài khoản của bạn đã bị khóa.");
-            request.getRequestDispatcher("login.jsp").forward(request, response);
-            return;
-        }
-        
-        // Case B: Login Success
-        else if (customer != null) {
-            session.setAttribute("user", customer);
-            session.setAttribute("attempts", 0); // Reset attempts
+        if (customer != null) {
 
-            // Lấy giỏ hàng cho tất cả các role có thể có giỏ hàng (khách hàng)
-            // Cập nhật giỏ hàng ngay khi đăng nhập thành công
-            List<Carts> carts = cartDAO.getItemIntoCartByUserID(customer.getCustomerID());
-            session.setAttribute("cart", carts);
-            
-            // Xử lý Redirect URL (chỉ áp dụng cho Customer)
-            if (customer.getRole() == 1 && redirect != null && !redirect.isEmpty()) {
-                try {
-                    String decodedURL = URLDecoder.decode(redirect, StandardCharsets.UTF_8.name());
-                    response.sendRedirect(decodedURL);
-                    return;
-                } catch (Exception e) {
-                    System.err.println("Error decoding redirect URL: " + e.getMessage());
-                }
+            // Check block
+            if ("block".equalsIgnoreCase(customer.getStatus())) {
+                request.setAttribute("error", "Your account has been locked.");
+                request.getRequestDispatcher("login.jsp").forward(request, response);
+                return;
             }
 
-            // Phân quyền chuyển hướng (Role Switching)
-            int role = customer.getRole(); 
+            session.setAttribute("user", customer);
+            session.setAttribute("attempts", 0);
+
+            // Customer ALWAYS has role = 1
+            int role = 1;
+
+            // Handle redirect if exists
+            if (redirect != null && !redirect.isEmpty()) {
+                String decoded = URLDecoder.decode(redirect, StandardCharsets.UTF_8);
+                List<Carts> carts = cartDAO.getItemIntoCartByUserID(customer.getCustomerID());
+                session.setAttribute("cart", carts);
+                response.sendRedirect(decoded);
+                return;
+            }
+
+            // Default redirect for customer
+            List<Carts> carts = cartDAO.getItemIntoCartByUserID(customer.getCustomerID());
+            session.setAttribute("cart", carts);
+            response.sendRedirect("homepage");
+            return;
+        }
+
+        // ===============================
+        // 2. STAFF / ADMIN / SHIPPER LOGIN
+        // ===============================
+        Staff staff = staffDAO.login(email, password);
+
+        if (staff != null) {
+            session.setAttribute("user", staff);  // login object
+            session.setAttribute("attempts", 0);
+
+            int role = staff.getRole();
 
             switch (role) {
                 case 4: // Admin
+                    session.setAttribute("admin", staff);
                     response.sendRedirect("admin");
-                    break;
-                case 3: // Shipper/Manager
-                    response.sendRedirect("order");
-                    break;
-                case 2: // Staff
-                    response.sendRedirect("product");
-                    break;
-                case 1: // Customer
-                default:
-                    response.sendRedirect("homepage");
-                    break;
-            }
+                    return;
 
-        }
-        // Case C: Login Failed (Wrong Password or Email not found)
-        else {
-            // SỬA LỖI: Thay thế getCustomerByEmail bằng emailExists
-            if (customerDAO.emailExists(email)) {
-                int attempts = (int) session.getAttribute("attempts");
-                
-                if (attempts < 5) {
-                    int newAttempts = attempts + 1;
-                    session.setAttribute("attempts", newAttempts);
-                    request.setAttribute("error", "Mật khẩu không hợp lệ. Lần thử: " + newAttempts + "/5");
-                } else {
-                    request.setAttribute("error", "Bạn đã nhập sai mật khẩu quá 5 lần. Tài khoản của bạn đã bị khóa.");
-                    // SỬA LỖI: Gọi phương thức updateStatus (giả định đã thêm vào DAO)
-                    customerDAO.updateStatus("block", email); 
-                    session.removeAttribute("attempts"); // Xóa attempts sau khi khóa
-                }
-            } else {
-                // Email không tồn tại
-                request.setAttribute("error", "Email hoặc mật khẩu không hợp lệ.");
+                case 3: // Shipper
+                    session.setAttribute("shipper", staff);
+                    response.sendRedirect("order");
+                    return;
+
+                case 2: // Staff
+                    session.setAttribute("staff", staff);
+                    response.sendRedirect("product");
+                    return;
+
+                default:
+                    request.setAttribute("error", "Invalid staff role configuration.");
+                    request.getRequestDispatcher("login.jsp").forward(request, response);
+                    return;
             }
-            request.getRequestDispatcher("login.jsp").forward(request, response);
         }
+
+        // ===============================
+        // 3. LOGIN FAILED
+        // ===============================
+        if (customerDAO.emailExists(email)) {
+            int attempts = (int) session.getAttribute("attempts");
+
+            if (attempts < 5) {
+                attempts++;
+                session.setAttribute("attempts", attempts);
+                request.setAttribute("error", "Invalid password. Attempt: " + attempts + "/5");
+            } else {
+                customerDAO.updateCustomerStatus("block", email);
+                request.setAttribute("error", "Account locked due to too many failed attempts.");
+            }
+        } else {
+            request.setAttribute("error", "Invalid email or password.");
+        }
+
+        request.getRequestDispatcher("login.jsp").forward(request, response);
     }
 
     @Override

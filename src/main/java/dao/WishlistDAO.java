@@ -1,6 +1,5 @@
 package dao;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -11,30 +10,27 @@ import model.Products;
 import model.Variants;
 import utils.DBContext;
 
-/**
- *
- * @author Nhung Hoa
- */
 public class WishlistDAO extends DBContext {
 
-    public void addToWishlist(int userId, int productId, int variantId) {
-        String sql = "INSERT INTO Wishlist (userID, productID, variantID, createdAt) VALUES (?, ?, ?, GETDATE())";
+    public void addToWishlist(int customerID, int productId, int variantId) {
+        String sql = "INSERT INTO Wishlist (CustomerID, productID, variantID, createdAt) VALUES (?, ?, ?, GETDATE())";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, userId);
+            ps.setInt(1, customerID);
             ps.setInt(2, productId);
             ps.setInt(3, variantId);
             ps.executeUpdate();
         } catch (Exception e) {
-            e.printStackTrace(); 
+            e.printStackTrace();
         }
     }
 
-    public void removeFromWishlist(int userId, int productId, int variantId) {
-        String sql = "DELETE FROM Wishlist WHERE UserID = ? AND ProductID = ? AND VariantID = ?";
+    public void removeFromWishlist(int customerID, int productId, int variantId) {
+
+        String sql = "DELETE FROM Wishlist WHERE CustomerID = ? AND ProductID = ? AND VariantID = ?";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, userId);
+            ps.setInt(1, customerID);
             ps.setInt(2, productId);
             ps.setInt(3, variantId);
             ps.executeUpdate();
@@ -43,11 +39,11 @@ public class WishlistDAO extends DBContext {
         }
     }
 
-    public boolean isExist(int userId, int productId, int variantId) {
-        String sql = "SELECT 1 FROM Wishlist WHERE UserID = ? AND ProductID = ? AND VariantID = ?";
+    public boolean isExist(int customerID, int productId, int variantId) {
+        String sql = "SELECT 1 FROM Wishlist WHERE CustomerID = ? AND ProductID = ? AND VariantID = ?";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, userId);
+            ps.setInt(1, customerID);
             ps.setInt(2, productId);
             ps.setInt(3, variantId);
             ResultSet rs = ps.executeQuery();
@@ -58,7 +54,7 @@ public class WishlistDAO extends DBContext {
         return false;
     }
 
-    public List<Products> getWishlistByUser(int userId) {
+    public List<Products> getWishlistByCustomer(int customerID) {
         List<Products> list = new ArrayList<>();
 
         String sql
@@ -67,10 +63,10 @@ public class WishlistDAO extends DBContext {
                 + "FROM Wishlist w "
                 + "JOIN Products p ON w.ProductID = p.ProductID "
                 + "LEFT JOIN Variants v ON w.VariantID = v.VariantID "
-                + "WHERE w.UserID = ?";
+                + "WHERE w.CustomerID = ?";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, userId);
+            ps.setInt(1, customerID);
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {

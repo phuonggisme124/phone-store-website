@@ -17,13 +17,12 @@ public class Customer {
     private Date yob;               
     private int point;              
 
-    public Customer() {
-    }
+    public Customer() {}
 
     // Full constructor
     public Customer(int customerID, String fullName, String email, String phone, String password,
-                     String address, Timestamp createdAt, String status, 
-                     String cccd, Date yob, int point) {
+                    String address, Timestamp createdAt, String status, 
+                    String cccd, Date yob, int point) {
         this.customerID = customerID;
         this.fullName = fullName;
         this.email = email;
@@ -37,7 +36,7 @@ public class Customer {
         this.point = point;
     }
 
-    // Constructor dùng khi chỉ cần ID + name + phone (nếu cần dùng cho dropdown chọn khách)
+    // Constructor dùng cho dropdown hoặc select list
     public Customer(int customerID, String fullName, String phone) {
         this.customerID = customerID;
         this.fullName = fullName;
@@ -45,10 +44,12 @@ public class Customer {
     }
 
     public Customer(String name, String phone) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+          this.fullName = name;
+        this.phone = phone;
     }
 
-    // GETTERS & SETTERS
+    // ===================== GETTERS & SETTERS =====================
+
     public int getCustomerID() {
         return customerID;
     }
@@ -69,7 +70,6 @@ public class Customer {
         return email;
     }
 
-    
     public void setEmail(String email) {
         this.email = email;
     }
@@ -138,14 +138,14 @@ public class Customer {
         this.point = point;
     }
 
-    
-     public int getRole() {
+    // Customers luôn mặc định role = 1
+    public int getRole() {
         return 1;
     }
-     
+
     @Override
     public String toString() {
-        return "Customers{"
+        return "Customer{"
                 + "customerID=" + customerID
                 + ", fullName='" + fullName + '\''
                 + ", email='" + email + '\''

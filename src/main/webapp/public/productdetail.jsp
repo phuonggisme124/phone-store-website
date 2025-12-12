@@ -1,5 +1,4 @@
 <%@page import="model.Specification"%>
-<%@page import="dao.UsersDAO"%>
 <%@page import="model.Review"%>
 <%@page import="dao.ReviewDAO"%>
 <%@page import="dao.ProductDAO"%>
@@ -7,7 +6,6 @@
 <%@page import="model.Variants"%>
 <%@page import="model.Products"%>
 <%@page import="java.util.List"%>
-<%@ page import="model.Users" %>     
 <%@ page import="dao.WishlistDAO" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.net.URLEncoder" %>
@@ -16,7 +14,11 @@
 <%@ page import="java.util.Locale" %>
 <%@ include file="/layout/header.jsp" %>
 
-<title>Product Detail</title>
+<link rel="stylesheet" 
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" 
+      integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" 
+      crossorigin="anonymous" 
+      referrerpolicy="no-referrer" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 <link rel="stylesheet" href="css/product_detail.css">
 <link rel="stylesheet" href="css/review_detail.css">
@@ -41,10 +43,14 @@
 
     int userID = 0;
     if (isLoggedIn) {
-        userID = user.getUserId();
+        userID = user.getCustomerID() ;
         displayName = (user.getFullName() != null && !user.getFullName().trim().isEmpty())
                 ? user.getFullName() : user.getEmail();
     }
+%>
+
+<%
+    WishlistDAO wdaoGlobal = new WishlistDAO(); 
 %>
 
 <body>
@@ -379,7 +385,7 @@
                         <div style="background: yellow; color: black;">
 
                         </div>
-                        <% if (isLoggedIn && userID == r.getUser().getUserId()) {%>
+                        <% if (isLoggedIn && userID == r.getUser().getCustomerID() ) {%>
                         <form action="review?action=deleteReview" method="post" style="display:inline;">
                             <input type="hidden" name="rID" value="<%= r.getReviewID()%>">
                             <input type="hidden" name="vID" value="<%= r.getVariant().getVariantID()%>">
@@ -453,32 +459,27 @@
                                                 <!-- WISH LIST BUTTON -->
                                                 <div class="wishlist-wrap">
                                                     <%
-                                                        Users u = (Users) session.getAttribute("user");
-                                                        boolean logged = (u != null);
-                                                        boolean liked = false;
-                                                        int variantID = -1;
+            Customer u = (Customer) session.getAttribute("user");
+            boolean logged = (u != null);
+            boolean liked = false;
+            int variantID = rp.getVariants().get(0).getVariantID(); // variantID chắc chắn > 0
 
-                                                        if (rp.getVariants() != null && !rp.getVariants().isEmpty()) {
-                                                            variantID = rp.getVariants().get(0).getVariantID();
-                                                        }
-
-                                                        if (logged && variantID > 0) {
-                                                            try {
-                                                                WishlistDAO wdao = new WishlistDAO();
-                                                                liked = wdao.isExist(u.getUserId(), rp.getProductID(), variantID);
-                                                            } catch (Exception e) {
-                                                                e.printStackTrace();
-                                                            }
-                                                        }
+            if (logged) {
+                try {
+                    WishlistDAO wdao = new WishlistDAO();
+                    liked = wdao.isExist(u.getCustomerID(), rp.getProductID(), variantID);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
                                                     %>
 
-                                                    <% if (variantID > 0) { %>
                                                     <% if (logged) { %>
-                                                    <button class="wishlist-btn" 
-                                                            data-productid="<%= rp.getProductID() %>" 
+                                                    <button class="wishlist-btn toggle-wishlist"
+                                                            data-productid="<%= rp.getProductID() %>"
                                                             data-variantid="<%= variantID %>"
                                                             style="background:none; border:none; padding:0;">
-                                                        <i class="<%= liked ? "fas fa-heart" : "far fa-heart" %>" 
+                                                        <i class="<%= liked ? "fas fa-heart" : "far fa-heart" %>"
                                                            style="<%= liked ? "color:#e53e3e;" : "" %>"></i>
                                                     </button>
                                                     <% } else { %>
@@ -486,44 +487,16 @@
                                                         <i class="far fa-heart"></i>
                                                     </a>
                                                     <% } %>
-                                                    <% } %>
                                                 </div>
 
-                                                <script>
-                                                    document.querySelectorAll('.wishlist-btn').forEach(btn => {
-                                                        btn.addEventListener('click', function (e) {
-                                                            e.preventDefault(); // chặn reload
-                                                            const productId = this.dataset.productid;
-                                                            const variantId = this.dataset.variantid;
-                                                            const icon = this.querySelector('i');
-
-                                                            fetch('<%=request.getContextPath()%>/product', {
-                                                                method: 'POST',
-                                                                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                                                                body: `action=toggleWishlist&productId=${productId}&variantId=${variantId}`
-                                                            })
-                                                                    .then(response => response.text())
-                                                                    .then(() => {
-                                                                        // đổi icon đỏ / xám
-                                                                        if (icon.classList.contains('far')) {
-                                                                            icon.classList.remove('far');
-                                                                            icon.classList.add('fas');
-                                                                            icon.style.color = '#e53e3e';
-                                                                        } else {
-                                                                            icon.classList.remove('fas');
-                                                                            icon.classList.add('far');
-                                                                            icon.style.color = '';
-                                                                        }
-                                                                    })
-                                                                    .catch(err => console.error(err));
-                                                        });
-                                                    });
-                                                </script>
-
                                                 <span class="item-price text-primary">
-                                                    <%= vnFormat.format(rp.getVariants().get(0).getDiscountPrice() != null ? rp.getVariants().get(0).getDiscountPrice() : rp.getVariants().get(0).getPrice()) %>
-
+                                                    <%= vnFormat.format(
+                                                            rp.getVariants().get(0).getDiscountPrice() != null 
+                                                                ? rp.getVariants().get(0).getDiscountPrice() 
+                                                                : rp.getVariants().get(0).getPrice()
+                                                        ) %>
                                                 </span>
+
                                             </div>
 
                                         </div>
@@ -545,20 +518,20 @@
                 <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
 
                 <script>
-                                                    var swiper = new Swiper('.related-swiper', {
-                                                        slidesPerView: 4,
-                                                        spaceBetween: 20,
-                                                        navigation: {
-                                                            nextEl: '.swiper-button-next',
-                                                            prevEl: '.swiper-button-prev',
-                                                        },
-                                                        breakpoints: {
-                                                            320: {slidesPerView: 1},
-                                                            576: {slidesPerView: 2},
-                                                            768: {slidesPerView: 3},
-                                                            992: {slidesPerView: 4}
-                                                        }
-                                                    });
+                                        var swiper = new Swiper('.related-swiper', {
+                                            slidesPerView: 4,
+                                            spaceBetween: 20,
+                                            navigation: {
+                                                nextEl: '.swiper-button-next',
+                                                prevEl: '.swiper-button-prev',
+                                            },
+                                            breakpoints: {
+                                                320: {slidesPerView: 1},
+                                                576: {slidesPerView: 2},
+                                                768: {slidesPerView: 3},
+                                                992: {slidesPerView: 4}
+                                            }
+                                        });
                 </script>
 
             </div>
@@ -574,118 +547,112 @@
 
     <script src="js/jquery-1.11.0.min.js"></script>
     <script src="js/bootstrap.bundle.min.js"></script>
-
-    <script>
-                                                    const modal = document.getElementById("reviewModal");
-                                                    const openModalBtn = document.getElementById("openReviewModal");
-                                                    const closeBtn = document.getElementsByClassName("close-button")[0];
-
-                                                    if (openModalBtn && modal)
-                                                        openModalBtn.onclick = () => modal.style.display = "block";
-                                                    if (closeBtn)
-                                                        closeBtn.onclick = () => modal.style.display = "none";
-
-                                                    window.onclick = (e) => {
-                                                        if (e.target === modal)
-                                                            modal.style.display = "none";
-                                                    };
-
-                                                    // Quantity Logic
-                                                    const minusBtn = document.querySelector('.minus-btn');
-                                                    const plusBtn = document.querySelector('.plus-btn');
-                                                    const quantityInput = document.getElementById('quantity-display');
-                                                    const stockError = document.getElementById('stock-error');
-                                                    const stock = parseInt(document.querySelector('.quantity-selector').dataset.stock);
-                                                    const hiddenInputs = document.querySelectorAll('.hiddenQuantityInput');
-
-                                                    if (minusBtn && plusBtn && quantityInput) {
-                                                        minusBtn.addEventListener('click', () => {
-                                                            let val = parseInt(quantityInput.value);
-                                                            if (val > 1) {
-                                                                val--;
-                                                                quantityInput.value = val;
-                                                                hiddenInputs.forEach(i => i.value = val);
-                                                                stockError.style.display = "none";
-                                                            }
-                                                        });
-
-                                                        plusBtn.addEventListener('click', () => {
-                                                            let val = parseInt(quantityInput.value);
-                                                            if (val < stock) {
-                                                                val++;
-                                                                quantityInput.value = val;
-                                                                hiddenInputs.forEach(i => i.value = val);
-                                                                stockError.style.display = "none";
-                                                            } else {
-                                                                stockError.style.display = "block";
-                                                            }
-                                                        });
-                                                    }
-
-                                                    function changeImage(thumb) {
-                                                        const mainImg = document.getElementById('displayedImage');
-                                                        const allThumbs = document.querySelectorAll('.thumbnail');
-
-                                                        mainImg.src = thumb.src;
-
-                                                        allThumbs.forEach(t => t.classList.remove('active'));
-                                                        thumb.classList.add('active');
-                                                    }
-    </script>
-
     <script src="js/review-filter.js"></script>
-
     <script>
-                                                    document.addEventListener('DOMContentLoaded', function () {
-                                                        const starOptions = document.querySelectorAll('.star-option');
-                                                        const allStars = document.querySelectorAll('.star-icon');
+                                        document.addEventListener("DOMContentLoaded", function () {
 
-                                                        starOptions.forEach(option => {
-                                                            option.addEventListener('click', function () {
-                                                                const ratingValue = parseInt(this.getAttribute('data-rating-value'));
+                                        /* ------------------ REVIEW MODAL ------------------ */
+                                        const modal = document.getElementById("reviewModal");
+                                                const openModalBtn = document.getElementById("openReviewModal");
+                                                const closeBtn = document.getElementsByClassName("close-button")[0];
+                                                if (openModalBtn && modal)
+                                                openModalBtn.onclick = () => modal.style.display = "block";
+                                                if (closeBtn)
+                                                closeBtn.onclick = () => modal.style.display = "none";
+                                                window.onclick = (e) => {
+                                        if (e.target === modal)
+                                                modal.style.display = "none";
+                                        };
+                                                /* ------------------ QUANTITY SELECTOR ------------------ */
+                                                const minusBtn = document.querySelector('.minus-btn');
+                                                const plusBtn = document.querySelector('.plus-btn');
+                                                const quantityInput = document.getElementById('quantity-display');
+                                                const stockError = document.getElementById('stock-error');
+                                                const quantitySelector = document.querySelector('.quantity-selector');
+                                                const stock = quantitySelector ? parseInt(quantitySelector.dataset.stock) : 0;
+                                                const hiddenInputs = document.querySelectorAll('.hiddenQuantityInput');
+                                                function updateHiddenQuantity(val) {
+                                                hiddenInputs.forEach(input => input.value = val);
+                                                }
 
-                                                                allStars.forEach(star => star.style.color = '#ccc');
+                                        if (minusBtn && plusBtn && quantityInput) {
+                                        quantityInput.value = 1;
+                                                updateHiddenQuantity(1);
+                                                minusBtn.addEventListener('click', () => {
+                                                let val = parseInt(quantityInput.value) || 1;
+                                                        if (val > 1) {
+                                                val--;
+                                                        quantityInput.value = val;
+                                                        updateHiddenQuantity(val);
+                                                        if (stockError)
+                                                        stockError.style.display = "none";
+                                                }
+                                                });
+                                                plusBtn.addEventListener('click', () => {
+                                                let val = parseInt(quantityInput.value) || 1;
+                                                        if (val < stock) {
+                                                val++;
+                                                        quantityInput.value = val;
+                                                        updateHiddenQuantity(val);
+                                                        if (stockError)
+                                                        stockError.style.display = "none";
+                                                } else {
+                                                if (stockError)
+                                                        stockError.style.display = "block";
+                                                }
+                                                });
+                                        }
 
-                                                                for (let i = 1; i <= ratingValue; i++) {
-                                                                    allStars[i].style.color = '#ffc107';
-                                                                }
+                                        /* ------------------ IMAGE THUMBNAILS ------------------ */
+                                        function changeImage(thumb) {
+                                        const mainImg = document.getElementById('displayedImage');
+                                                const allThumbs = document.querySelectorAll('.thumbnail');
+                                                mainImg.src = thumb.src;
+                                                allThumbs.forEach(t => t.classList.remove('active'));
+                                                thumb.classList.add('active');
+                                        }
 
-                                                                const input = this.querySelector('input[type="radio"]');
-                                                                if (input)
-                                                                    input.checked = true;
-                                                            });
-                                                        });
-                                                    });
+                                        /* ------------------ WISHLIST TOGGLE ------------------ */
+                                        document.addEventListener("click", function (e) {
+                                        const btn = e.target.closest(".toggle-wishlist");
+                                                if (!btn)
+                                                return;
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                const productId = btn.dataset.productid;
+                                                const variantId = btn.dataset.variantid || 0;
+                                                const icon = btn.querySelector("i");
+                                                fetch("<%= request.getContextPath() %>/product", {
+                                                method: "POST",
+                                                        headers: {"Content-Type": "application/x-www-form-urlencoded"},
+                                                        body: "action=toggleWishlist&productId=" + productId + "&variantId=" + variantId
+                                                })
+                                                .then(res => {
+                                                if (res.status === 401) {
+                                                // Chuyển hướng nếu chưa login
+                                                window.location.href = 'login.jsp';
+                                                        return Promise.reject("Unauthorized");
+                                                }
+                                                if (!res.ok)
+                                                        return Promise.reject("Wishlist toggle failed");
+                                                        return res.text();
+                                                })
+                                                .then(text => {
+                                                if (text === "ok") {
+                                                if (icon.classList.contains("fas")) {
+                                                icon.classList.remove("fas");
+                                                        icon.classList.add("far");
+                                                        icon.style.color = "";
+                                                } else {
+                                                icon.classList.remove("far");
+                                                        icon.classList.add("fas");
+                                                        icon.style.color = "#e53e3e";
+                                                }
+                                                }
+                                                })
+                                                .catch(err => console.error(err));
+                                        });
     </script>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const input = document.getElementById("photo-upload-input");
-            const previewContainer = document.getElementById("image-preview-container");
-
-            input.addEventListener("change", function () {
-                previewContainer.innerHTML = "";
-
-                const files = Array.from(this.files);
-                if (files.length > 3) {
-                    alert("You can only upload up to 3 photos!");
-                    this.value = "";
-                    return;
-                }
-
-                files.forEach(file => {
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                        const img = document.createElement("img");
-                        img.src = e.target.result;
-                        img.classList.add("preview-image");
-                        previewContainer.appendChild(img);
-                    };
-                    reader.readAsDataURL(file);
-                });
-            });
-        });
-    </script>
-
 </body>
 </html>
+

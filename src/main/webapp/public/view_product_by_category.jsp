@@ -11,9 +11,9 @@
 <%@page import="java.util.List"%>
 <%@page import="java.util.Map" %>
 <%@page import="java.util.HashMap" %>
-
+<%@page import="model.Customer"%>
 <%@page import="dao.WishlistDAO"%>
-<%@page import="model.Users"%>
+
 
 
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
@@ -506,13 +506,13 @@
                                 if (p != null) {
                                     int variantID = v.getVariantID();
                                     int productID = p.getProductID();
-                                    Users u = (Users) session.getAttribute("user");
+                                    Customer u = (Customer) session.getAttribute("user");
                                     boolean logged = (u != null);
                                     boolean liked = false;
                                     if (logged) {
                                         try {
                                             WishlistDAO wdao = new WishlistDAO();
-                                            liked = wdao.isExist(u.getUserId(), productID, variantID);
+                                            liked = wdao.isExist(u.getCustomerID(), productID, variantID);
                                         } catch (Exception e) {
                                             e.printStackTrace();
                                         }
@@ -551,13 +551,12 @@
 
         <script>
             document.addEventListener("click", function (e) {
-                let btn = e.target.closest(".toggle-wishlist");
+                const btn = e.target.closest(".toggle-wishlist");
                 if (!btn)
                     return;
 
                 e.preventDefault();
                 e.stopPropagation();
-
 
                 const productId = btn.dataset.productid;
                 const variantId = btn.dataset.variantid || 0;
@@ -568,7 +567,16 @@
                     headers: {"Content-Type": "application/x-www-form-urlencoded"},
                     body: "action=toggleWishlist&productId=" + productId + "&variantId=" + variantId
                 })
-                        .then(res => res.ok ? res.text() : Promise.reject("Wishlist toggle failed"))
+                        .then(res => {
+                            if (res.status === 401) {
+                                // Chuyển hướng nếu chưa login
+                                window.location.href = 'login.jsp';
+                                return Promise.reject("Unauthorized");
+                            }
+                            if (!res.ok)
+                                return Promise.reject("Wishlist toggle failed");
+                            return res.text();
+                        })
                         .then(text => {
                             if (text === "ok") {
                                 if (icon.classList.contains("fas")) {
@@ -584,7 +592,6 @@
                         })
                         .catch(err => console.error(err));
             });
-
         </script>
     </body>
 </html>

@@ -4,6 +4,11 @@ import java.sql.*;
 import java.util.*;
 import model.Notification;
 
+/**
+ * 
+ * @author Nhung Hoa
+ */
+
 public class NotificationDAO {
 
     private Connection conn;
@@ -12,28 +17,29 @@ public class NotificationDAO {
         this.conn = conn;
     }
 
-    // Thêm thông báo mới
-    public void addNotification(int userId, int orderId, String content) throws SQLException {
-        String sql = "INSERT INTO Notifications (UserID, OrderID, Content, Date, isView) VALUES (?, ?, ?, NOW(), 0)";
+    public void addNotification(int customerId, int orderId, String content) throws SQLException {
+        // SỬA LỖI TẠI ĐÂY: UserID -> CustomerID
+        String sql = "INSERT INTO Notifications (CustomerID, OrderID, Content, Date, isView) VALUES (?, ?, ?, GETDATE(), 0)";
         PreparedStatement ps = conn.prepareStatement(sql);
-        ps.setInt(1, userId);
+        ps.setInt(1, customerId);
         ps.setInt(2, orderId);
         ps.setString(3, content);
         ps.executeUpdate();
     }
 
-    // Lấy danh sách thông báo của 1 user
-    public List<Notification> getNotificationsByUser(int userId) throws SQLException {
+
+    public List<Notification> getNotificationsByUser(int customerId) throws SQLException {
         List<Notification> list = new ArrayList<>();
-        String sql = "SELECT * FROM Notifications WHERE UserID = ? ORDER BY Date DESC";
+
+        String sql = "SELECT * FROM Notifications WHERE CustomerID = ? ORDER BY Date DESC";
         PreparedStatement ps = conn.prepareStatement(sql);
-        ps.setInt(1, userId);
+        ps.setInt(1, customerId);
         ResultSet rs = ps.executeQuery();
 
         while (rs.next()) {
             Notification n = new Notification();
             n.setNotificationID(rs.getInt("NotificationID"));
-            n.setUserID(rs.getInt("UserID"));
+            n.setUserID(rs.getInt("CustomerID")); 
             n.setOrderID(rs.getInt("OrderID"));
             n.setContent(rs.getString("Content"));
             n.setDate(rs.getTimestamp("Date"));
@@ -43,11 +49,11 @@ public class NotificationDAO {
         return list;
     }
 
-    // Đếm số thông báo chưa đọc
-    public int countUnread(int userId) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM Notifications WHERE UserID = ? AND isView = 0";
+
+    public int countUnread(int customerId) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM Notifications WHERE CustomerID = ? AND isView = 0";
         PreparedStatement ps = conn.prepareStatement(sql);
-        ps.setInt(1, userId);
+        ps.setInt(1, customerId);
         ResultSet rs = ps.executeQuery();
         if (rs.next()) {
             return rs.getInt(1);
@@ -55,10 +61,10 @@ public class NotificationDAO {
         return 0;
     }
 
-    public void markAllAsRead(int userId) throws Exception {
-        String sql = "UPDATE Notifications SET isView = 1 WHERE UserID = ? AND isView = 0";
+    public void markAllAsRead(int customerId) throws Exception {
+        String sql = "UPDATE Notifications SET isView = 1 WHERE CustomerID = ? AND isView = 0";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, userId);
+            ps.setInt(1, customerId);
             ps.executeUpdate();
         }
     }
@@ -70,5 +76,4 @@ public class NotificationDAO {
             ps.executeUpdate();
         }
     }
-
 }

@@ -33,7 +33,7 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
         <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script> 
-        <script src="js/bootstrap.min.js"></script>
+<!--        <script src="js/bootstrap.min.js"></script>-->
         <script src="js/modernizr.js"></script>
         <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
         <script src="js/plugins.js"></script>
@@ -379,7 +379,7 @@
                                     </li>
                                     <li class="text-dark fw-bold">
 
-                                        <a href="user?action=view" class="nav-link p-0 text-dark text-uppercase fw-bold"><%= displayName%></a> 
+                                        <a href="customer?action=view" class="nav-link p-0 text-dark text-uppercase fw-bold"><%= displayName%></a> 
 
 
                                     </li>

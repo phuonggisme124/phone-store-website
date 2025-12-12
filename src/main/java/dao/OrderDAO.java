@@ -33,11 +33,12 @@ public class OrderDAO extends DBContext {
         String name = rs.getString("ReceiverName");
         String phone = rs.getString("ReceiverPhone");
         String address = rs.getString("ShippingAddress");
-        Customer buyer = new Customer(name, phone);
+       
 
         order.setOrderID(rs.getInt("OrderID"));
         order.setTotalAmount(rs.getDouble("TotalAmount"));
         order.setUserID((Integer) rs.getObject("UserID"));
+         Customer buyer = new Customer((Integer) rs.getObject("UserID"),name, phone);
         order.setStaffID((Integer) rs.getObject("StaffID"));
         order.setShipperID((Integer) rs.getObject("ShipperID"));
 
@@ -964,3 +965,5 @@ public class OrderDAO extends DBContext {
         }
     }
 }
+
+

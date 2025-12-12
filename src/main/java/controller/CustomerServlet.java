@@ -40,7 +40,7 @@ public class CustomerServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         String action = request.getParameter("action");
         if (action == null || action.isEmpty()) {
             action = "view";
@@ -123,12 +123,11 @@ public class CustomerServlet extends HttpServlet {
     }
 
     // --- CÁC HÀM XỬ LÝ LOGIC CHI TIẾT ---
-
-    private void viewTransaction(HttpServletRequest request, HttpServletResponse response, Customer customer) 
+    private void viewTransaction(HttpServletRequest request, HttpServletResponse response, Customer customer)
             throws ServletException, IOException {
         String status = request.getParameter("status");
         List<Order> oList;
-        
+
         // Lấy danh sách đơn hàng theo trạng thái
         if (status == null || status.equalsIgnoreCase("All")) {
             oList = orderDAO.getOrdersByStatus(customer.getCustomerID(), "All");
@@ -150,11 +149,11 @@ public class CustomerServlet extends HttpServlet {
         request.getRequestDispatcher("customer/customer_transaction.jsp").forward(request, response);
     }
 
-    private void viewInstallment(HttpServletRequest request, HttpServletResponse response, Customer customer) 
+    private void viewInstallment(HttpServletRequest request, HttpServletResponse response, Customer customer)
             throws ServletException, IOException {
         PaymentsDAO pmDAO = new PaymentsDAO();
         List<Order> oList = orderDAO.getInstalmentOrdersByUserId(customer.getCustomerID());
-        
+
         Map<Integer, List<Payments>> allPayments = new HashMap<>();
         if (oList != null) {
             for (Order o : oList) {
@@ -172,15 +171,16 @@ public class CustomerServlet extends HttpServlet {
             throws ServletException, IOException {
         try {
             String fullName = request.getParameter("fullName");
-            String email = request.getParameter("email"); // Lưu ý: Thường ít khi cho đổi email vì liên quan đăng nhập
+            String email = request.getParameter("email");
             String phone = request.getParameter("phone");
             String address = request.getParameter("address");
             String cccd = request.getParameter("cccd");
             String yobStr = request.getParameter("yob");
 
             // Validate sơ bộ
-            if(fullName == null || fullName.trim().isEmpty()) {
+            if (fullName == null || fullName.trim().isEmpty()) {
                 request.setAttribute("error", "Họ tên không được để trống");
+                request.setAttribute("user", customer);
                 request.getRequestDispatcher("customer/editProfile.jsp").forward(request, response);
                 return;
             }
@@ -191,12 +191,11 @@ public class CustomerServlet extends HttpServlet {
                 try {
                     yob = Date.valueOf(yobStr);
                 } catch (IllegalArgumentException e) {
-                    // Log error nếu định dạng ngày sai
                     System.out.println("Invalid date format: " + yobStr);
                 }
             }
 
-            // Set dữ liệu mới vào object
+            // Cập nhật dữ liệu mới trực tiếp vào object 'customer' đang giữ trong session
             customer.setFullName(fullName);
             customer.setEmail(email);
             customer.setPhone(phone);
@@ -205,17 +204,19 @@ public class CustomerServlet extends HttpServlet {
             customer.setYob(yob);
 
             // Gọi DAO update
-            customerDAO.updateCustomerProfile(customer);
-            
-            // Cập nhật lại session để hiển thị thông tin mới ngay lập tức
-            session.setAttribute("user", customer); 
+            customerDAO.updateProfile(customer); // DAO đã được sửa để bỏ qua Password
+
+            // Cập nhật lại session (đã được sửa)
+            session.setAttribute("user", customer);
 
             request.setAttribute("message", "Cập nhật hồ sơ thành công!");
+            request.setAttribute("user", customer);
             request.getRequestDispatcher("customer/editProfile.jsp").forward(request, response);
-            
+
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("error", "Đã xảy ra lỗi khi cập nhật!");
+            request.setAttribute("user", customer);
             request.getRequestDispatcher("customer/editProfile.jsp").forward(request, response);
         }
     }
@@ -231,8 +232,8 @@ public class CustomerServlet extends HttpServlet {
             request.setAttribute("error", "Mật khẩu hiện tại không đúng!");
             request.getRequestDispatcher("customer/changePassword.jsp").forward(request, response);
             return;
-        } 
-        
+        }
+
         // Kiểm tra trùng khớp mật khẩu mới
         if (newPass == null || newPass.isEmpty() || !newPass.equals(confirmPass)) {
             request.setAttribute("error", "Mật khẩu mới và xác nhận mật khẩu không trùng khớp!");
@@ -244,14 +245,14 @@ public class CustomerServlet extends HttpServlet {
         customerDAO.updatePassword(customer.getCustomerID(), newPass);
 
         // Update mật khẩu (đã hash) trong session để đồng bộ
-        customer.setPassword(customerDAO.hashMD5(newPass));
+        customer.setPassword(customerDAO.md5(newPass));
         session.setAttribute("user", customer);
 
         request.setAttribute("message", "Đổi mật khẩu thành công!");
         request.getRequestDispatcher("customer/changePassword.jsp").forward(request, response);
     }
 
-    private void cancelOrder(HttpServletRequest request, HttpServletResponse response) 
+    private void cancelOrder(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         try {
             int orderID = Integer.parseInt(request.getParameter("orderID"));
@@ -267,7 +268,7 @@ public class CustomerServlet extends HttpServlet {
         response.sendRedirect("customer?action=transaction");
     }
 
-    private void processInstallmentPayment(HttpServletRequest request, HttpServletResponse response) 
+    private void processInstallmentPayment(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         try {
             String paymentIDStr = request.getParameter("paymentID");

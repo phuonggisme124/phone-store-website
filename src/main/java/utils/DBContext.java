@@ -16,11 +16,11 @@ import java.util.logging.Logger;
  * @since 2025-06-05
  */
 public class DBContext {
-    
+
     public Connection conn = null;
-    
+
     public DBContext() {
-        try {          
+        try {
             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
             // kết nối
             String dbURL = "jdbc:sqlserver://localhost:1433;"
@@ -30,10 +30,8 @@ public class DBContext {
                     + "encrypt=true;trustServerCertificate=true;";
 
             // Establish the connection
-
-
             conn = DriverManager.getConnection(dbURL);
-      
+
             if (conn != null) {
                 DatabaseMetaData dm = conn.getMetaData();
                 System.out.println("Driver name: " + dm.getDriverName());
@@ -44,11 +42,12 @@ public class DBContext {
         } catch (SQLException ex) {
             Logger.getLogger(DBContext.class.getName()).log(Level.SEVERE, null, ex);
             ex.printStackTrace();
-        } catch (ClassNotFoundException ex) {         
+        } catch (ClassNotFoundException ex) {
             Logger.getLogger(DBContext.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 //
+
     public static void main(String[] args) {
         System.out.println("kiem tra ket noi");
         new DBContext();

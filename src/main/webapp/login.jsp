@@ -131,12 +131,6 @@
 
                         <!-- ERROR MESSAGE -->
                         <% String error = (String) request.getAttribute("error"); %>
-                        <% if (error != null) {%>
-                        <p style="color:red; margin-top: 10px;"><%= error%></p>
-                        <% }%>
-                        <div class="text-end mt-2">
-                            <a href="forgotPassword" class="text-decoration-none" style="font-size: 0.9rem; color: #0d6efd;">Forgot password?</a>
-                        </div>
                         <% if (error != null) { %>
                         <p style="color:red; margin-top: 10px;"><%= error %></p>
                         <% } %>
@@ -192,7 +186,6 @@
                                        required placeholder="Repeat Password">
                                 <i class="bi bi-eye-slash password-icon" id="toggleRegisterRePassword"></i>
                             </div>
-                        </div>                      
                         </div>
 
                         <div class="text-center mt-4">
