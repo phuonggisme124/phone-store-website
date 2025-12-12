@@ -5,6 +5,8 @@ import dao.CategoryDAO;
 import dao.OrderDAO;
 import dao.OrderDetailDAO;
 import dao.PaymentsDAO;
+import dao.UserCustomerDAO;
+import dto.UserCustomerDTO;
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
@@ -71,7 +73,9 @@ public class UserServlet extends HttpServlet {
 
                     request.getRequestDispatcher("admin/admin_manageuser_edit.jsp").forward(request, response);
                 } else {
-                    request.setAttribute("user", user);
+                    UserCustomerDAO uCDAO = new UserCustomerDAO();
+                    UserCustomerDTO uC = uCDAO.getCustomerInfo(user.getUserId());
+                    request.setAttribute("user", uC);
                     request.getRequestDispatcher("customer/editProfile.jsp").forward(request, response);
                 }
 
@@ -139,8 +143,10 @@ public class UserServlet extends HttpServlet {
 
                 break;
 
-            default:
-                request.setAttribute("user", user);
+            case "view":
+                UserCustomerDAO uCDAO = new UserCustomerDAO();
+                UserCustomerDTO uC = uCDAO.getCustomerInfo(user.getUserId());
+                request.setAttribute("customerInfo", uC);
                 request.getRequestDispatcher("customer/profile.jsp").forward(request, response);
                 break;
         }
@@ -212,8 +218,8 @@ public class UserServlet extends HttpServlet {
             String address = request.getParameter("address");
             int role = Integer.parseInt(request.getParameter("role"));
 
-            boolean isRegistered = udao.register(name, email, phone, address, password, role);
-            if (!isRegistered) {
+            int isRegistered = udao.register(name, email, phone, address, password, role);
+            if (isRegistered < 0) {
 
                 session.setAttribute("exist", email + " already exists!");
 
@@ -247,10 +253,10 @@ public class UserServlet extends HttpServlet {
             int orderID = Integer.parseInt(request.getParameter("orderID"));
             Order o = orderDAO.getOrderById(orderID);
 
-            if (o != null && ("Pending".equals(o.getStatus()) || "In Transit".equals(o.getStatus()))) {
+            if (o != null && ("Pending".equals(o.getStatus()))) {
                 orderDAO.updateOrderStatus(orderID, "Cancelled");
             }
-            response.sendRedirect("user?action=transaction"); 
+            response.sendRedirect("user?action=transaction");
         } else {
             response.sendRedirect("user?action=view");
         }

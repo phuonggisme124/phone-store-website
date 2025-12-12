@@ -50,13 +50,13 @@ public class RegisterServlet extends HttpServlet {
     }
 
     /**
-     * Handles HTTP POST requests for user registration.
-     * Validates form data, registers a new user, and automatically logs them in.
+     * Handles HTTP POST requests for user registration. Validates form data,
+     * registers a new user, and automatically logs them in.
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         // Retrieve form data
         String name = request.getParameter("fullname");
         String email = request.getParameter("email");
@@ -64,32 +64,30 @@ public class RegisterServlet extends HttpServlet {
         String address = request.getParameter("address");
         String password = request.getParameter("password");
         String rePassword = request.getParameter("rePassword");
-        
+
         // --- Input validation logic ---
-        
         // 1. Check if passwords match and are not empty
         if (!password.equals(rePassword) || password.isEmpty() || password == null || !password.matches("^(?=.*[A-Za-z])(?=.*\\d).{8,}$")) {
             request.setAttribute("error", "Passwords do not match or cannot be empty!");
             request.getRequestDispatcher("login.jsp").forward(request, response);
             return; // Stop further processing
         }
-        
+
         // 2. Check if all required fields are filled
-        if (name == null || name.isEmpty() || email == null || email.trim().isEmpty() || 
-            numberPhone == null || numberPhone.isEmpty() || address == null || address.isEmpty()) {
+        if (name == null || name.isEmpty() || email == null || email.trim().isEmpty()
+                || numberPhone == null || numberPhone.isEmpty() || address == null || address.isEmpty()) {
             request.setAttribute("error", "You must fill in all required fields to register.");
             RequestDispatcher dispatcher = request.getRequestDispatcher("login.jsp");
             dispatcher.forward(request, response);
             return; // Stop further processing
         }
-        
+
         // --- Registration logic and result handling ---
-        
         UsersDAO dao = new UsersDAO();
-        boolean isRegsitered = false;
+        int isRegsitered = 0;
         try {
             // The register() method is assumed to return a Users object if successful
-             isRegsitered = dao.register(name, email, numberPhone, address, password, 1);
+            isRegsitered = dao.register(name, email, numberPhone, address, password, 1);
         } catch (Exception e) {
             // Common causes: duplicate email or database error
             System.out.println("Registration error: " + e.getMessage());
@@ -98,8 +96,8 @@ public class RegisterServlet extends HttpServlet {
             return;
         }
 
-        if (isRegsitered) { 
-            
+        if (isRegsitered > 0) {
+            dao.insertNewCustomer(isRegsitered);
             response.sendRedirect("login.jsp");
 
         } else {

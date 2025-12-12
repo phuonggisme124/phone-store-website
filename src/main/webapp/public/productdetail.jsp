@@ -3,14 +3,23 @@
 <%@page import="model.Review"%>
 <%@page import="dao.ReviewDAO"%>
 <%@page import="dao.ProductDAO"%>
+<%@page import="dao.VariantsDAO"%>
 <%@page import="model.Variants"%>
 <%@page import="model.Products"%>
 <%@page import="java.util.List"%>
+<%@ page import="model.Users" %>     
+<%@ page import="dao.WishlistDAO" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.net.URLEncoder" %>
+
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="java.text.NumberFormat" %>
+<%@ page import="java.util.Locale" %>
 
 <%@ include file="/layout/header.jsp" %>
 
-<title>Product Detail</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 <link rel="stylesheet" href="css/product_detail.css">
 <link rel="stylesheet" href="css/review_detail.css">
 <link rel="stylesheet" href="css/gallery.css">
@@ -181,7 +190,6 @@
                         <button class="out-of-stock-btn" disabled>OUT OF STOCK</button>
                         <% } %>
                     </div>
-
                 </div>
             </div>
 
@@ -394,8 +402,168 @@
                         }%>
                 </div>
 
+                <!-- RELATED PRODUCTS -->
+                <%
+                // Lấy danh sách sản phẩm liên quan do servlet setAttribute
+                List<Products> relatedList = (List<Products>) request.getAttribute("relatedList");
+                %>
+                <section class="related-products position-relative padding-large no-padding-top">
+                    <div class="container">
+                        <div class="row mb-5">
+                            <div class="display-header d-flex justify-content-between pb-3">
+                                <h2 class="display-7 text-dark text-uppercase">Related Products</h2>
+                            </div>
+
+                            <%
+                                // Import NumberFormat và Locale ở đầu JSP rồi
+                                NumberFormat vnFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
+                
+                                // Giới hạn tối đa 10 sản phẩm
+                                List<Products> relatedList10 = new ArrayList<>();
+                                if (relatedList != null) {
+                                    for (int i = 0; i < relatedList.size() && i < 10; i++) {
+                                        relatedList10.add(relatedList.get(i));
+                                    }
+                                }
+                            %>
+
+                            <div class="swiper related-swiper">
+                                <div class="swiper-wrapper">
+                                    <%
+                                        for (Products rp : relatedList10) {
+                                            if (rp.getVariants() != null && !rp.getVariants().isEmpty()) {
+                                    %>
+                                    <div class="swiper-slide">
+                                        <div class="product-card text-center position-relative">
+
+                                            <div class="image-holder position-relative">
+                                                <a href="product?action=viewDetail&pID=<%= rp.getProductID() %>">
+                                                    <img src="images/<%= rp.getVariants().get(0).getImageUrl() %>" 
+                                                         alt="<%= rp.getName() %>" class="img-fluid rounded-3">
+                                                </a>
+                                            </div>
+
+                                            <div class="card-detail pt-3">
+                                                <h3 class="card-title text-uppercase">
+                                                    <a href="product?action=viewDetail&pID=<%= rp.getProductID() %>">
+                                                        <%= rp.getName() %> 
+                                                        <%= rp.getVariants().get(0).getColor() %> 
+                                                        <%= rp.getVariants().get(0).getStorage() %>
+                                                    </a>
+                                                </h3>
+
+                                                <div class="wishlist-wrap">
+                                                    <%
+                                                        Users u = (Users) session.getAttribute("user");
+                                                        boolean logged = (u != null);
+                                                        boolean liked = false;
+                                                        int variantID = -1;
+
+                                                        if (rp.getVariants() != null && !rp.getVariants().isEmpty()) {
+                                                            variantID = rp.getVariants().get(0).getVariantID();
+                                                        }
+
+                                                        if (logged && variantID > 0) {
+                                                            try {
+                                                                WishlistDAO wdao = new WishlistDAO();
+                                                                liked = wdao.isExist(u.getUserId(), rp.getProductID(), variantID);
+                                                            } catch (Exception e) {
+                                                                e.printStackTrace();
+                                                            }
+                                                        }
+                                                    %>
+
+                                                    <% if (variantID > 0) { %>
+                                                    <% if (logged) { %>
+                                                    <button class="wishlist-btn" 
+                                                            data-productid="<%= rp.getProductID() %>" 
+                                                            data-variantid="<%= variantID %>"
+                                                            style="background:none; border:none; padding:0;">
+                                                        <i class="<%= liked ? "fas fa-heart" : "far fa-heart" %>" 
+                                                           style="<%= liked ? "color:#e53e3e;" : "" %>"></i>
+                                                    </button>
+                                                    <% } else { %>
+                                                    <a href="login.jsp" class="wishlist-btn">
+                                                        <i class="far fa-heart"></i>
+                                                    </a>
+                                                    <% } %>
+                                                    <% } %>
+                                                </div>
+
+                                                <script>
+                                                    document.querySelectorAll('.wishlist-btn').forEach(btn => {
+                                                        btn.addEventListener('click', function (e) {
+                                                            e.preventDefault(); // chặn reload
+                                                            const productId = this.dataset.productid;
+                                                            const variantId = this.dataset.variantid;
+                                                            const icon = this.querySelector('i');
+
+                                                            fetch('<%=request.getContextPath()%>/product', {
+                                                                method: 'POST',
+                                                                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                                                                body: `action=toggleWishlist&productId=${productId}&variantId=${variantId}`
+                                                            })
+                                                                    .then(response => response.text())
+                                                                    .then(() => {
+                                                                        // đổi icon đỏ / xám
+                                                                        if (icon.classList.contains('far')) {
+                                                                            icon.classList.remove('far');
+                                                                            icon.classList.add('fas');
+                                                                            icon.style.color = '#e53e3e';
+                                                                        } else {
+                                                                            icon.classList.remove('fas');
+                                                                            icon.classList.add('far');
+                                                                            icon.style.color = '';
+                                                                        }
+                                                                    })
+                                                                    .catch(err => console.error(err));
+                                                        });
+                                                    });
+                                                </script>
+
+                                                <span class="item-price text-primary">
+                                                    <%= vnFormat.format(rp.getVariants().get(0).getDiscountPrice() != null ? rp.getVariants().get(0).getDiscountPrice() : rp.getVariants().get(0).getPrice()) %>
+
+                                                </span>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                    <%
+                                            }
+                                        }
+                                    %>
+                                </div>
+                                <div class="swiper-button-next"></div>
+                                <div class="swiper-button-prev"></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css"/>
+                <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
+
+                <script>
+                                                   var swiper = new Swiper('.related-swiper', {
+                                                       slidesPerView: 4,
+                                                       spaceBetween: 20,
+                                                       navigation: {
+                                                           nextEl: '.swiper-button-next',
+                                                           prevEl: '.swiper-button-prev',
+                                                       },
+                                                       breakpoints: {
+                                                           320: {slidesPerView: 1},
+                                                           576: {slidesPerView: 2},
+                                                           768: {slidesPerView: 3},
+                                                           992: {slidesPerView: 4}
+                                                       }
+                                                   });
+                </script>
+
             </div>
-        </div>
+
 
     </section>
 
@@ -408,137 +576,94 @@
     <script src="js/jquery-1.11.0.min.js"></script>
     <script src="js/bootstrap.bundle.min.js"></script>
 
-   <script>
+<script>
 
-            const modal = document.getElementById("reviewModal");
-            const openModalBtn = document.getElementById("openReviewModal");
-            const closeBtn = document.getElementsByClassName("close-button")[0];
+    /* ------------------ REVIEW MODAL ------------------ */
 
-            if (openModalBtn && modal)
-                openModalBtn.onclick = () => modal.style.display = "block";
-            if (closeBtn)
-                closeBtn.onclick = () => modal.style.display = "none";
+    const modal = document.getElementById("reviewModal");
+    const openModalBtn = document.getElementById("openReviewModal");
+    const closeBtn = document.getElementsByClassName("close-button")[0];
 
-            window.onclick = (e) => {
-                if (e.target === modal)
-                    modal.style.display = "none";
+    if (openModalBtn && modal)
+        openModalBtn.onclick = () => modal.style.display = "block";
+
+    if (closeBtn)
+        closeBtn.onclick = () => modal.style.display = "none";
+
+    window.onclick = (e) => {
+        if (e.target === modal)
+            modal.style.display = "none";
+    };
+
+
+    /* ------------------ QUANTITY SELECTOR ------------------ */
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const minusBtn = document.querySelector('.minus-btn');
+        const plusBtn = document.querySelector('.plus-btn');
+        const quantityInput = document.getElementById('quantity-display');
+        const stockError = document.getElementById('stock-error');
+
+        const quantitySelector = document.querySelector('.quantity-selector');
+        const stock = quantitySelector ? parseInt(quantitySelector.dataset.stock) : 0;
+
+        const hiddenInputs = document.querySelectorAll('.hiddenQuantityInput');
+
+        function updateHiddenQuantity(val) {
+            hiddenInputs.forEach(input => {
+                input.value = val;
+                input.setAttribute('value', val);
+            });
+        }
+
+        if (minusBtn && plusBtn && quantityInput) {
+
+            quantityInput.value = 1;
+            updateHiddenQuantity(1);
+
+            minusBtn.onclick = () => {
+                let val = parseInt(quantityInput.value);
+                if (isNaN(val)) val = 1;
+
+                if (val > 1) {
+                    val--;
+                    quantityInput.value = val;
+                    updateHiddenQuantity(val);
+                    if (stockError) stockError.style.display = "none";
+                }
             };
 
-         
-            document.addEventListener("DOMContentLoaded", function() {
-                const minusBtn = document.querySelector('.minus-btn');
-                const plusBtn = document.querySelector('.plus-btn');
-                const quantityInput = document.getElementById('quantity-display');
-                const stockError = document.getElementById('stock-error');
+            plusBtn.onclick = () => {
+                let val = parseInt(quantityInput.value);
+                if (isNaN(val)) val = 1;
 
-                const quantitySelector = document.querySelector('.quantity-selector');
-                const stock = quantitySelector ? parseInt(quantitySelector.dataset.stock) : 0;
-
-                function updateHiddenQuantity(val) {
-                    const hiddenInputs = document.querySelectorAll('.hiddenQuantityInput');
-                    hiddenInputs.forEach(input => {
-                        input.value = val;
-                        input.setAttribute('value', val); // Cập nhật attribute HTML để chắc chắn nhận
-                    });
+                if (val < stock) {
+                    val++;
+                    quantityInput.value = val;
+                    updateHiddenQuantity(val);
+                    if (stockError) stockError.style.display = "none";
+                } else {
+                    if (stockError) stockError.style.display = "block";
                 }
+            };
+        }
+    });
 
-                if (minusBtn && plusBtn && quantityInput) {
-                    quantityInput.value = 1;
-                    updateHiddenQuantity(1);
 
-                    minusBtn.addEventListener('click', () => {
-                        let val = parseInt(quantityInput.value);
-                        if (isNaN(val)) val = 1;
-                        
-                        if (val > 1) {
-                            val--;
-                            quantityInput.value = val;
-                            updateHiddenQuantity(val); // Cập nhật form ẩn
-                            if (stockError) stockError.style.display = "none";
-                        }
-                    });
+    /* ------------------ CHANGE IMAGE ------------------ */
 
-                    plusBtn.addEventListener('click', () => {
-                        let val = parseInt(quantityInput.value);
-                        if (isNaN(val)) val = 1;
+    function changeImage(thumb) {
+        const mainImg = document.getElementById('displayedImage');
+        const allThumbs = document.querySelectorAll('.thumbnail');
 
-                        if (val < stock) {
-                            val++;
-                            quantityInput.value = val;
-                            updateHiddenQuantity(val); // Cập nhật form ẩn
-                            if (stockError) stockError.style.display = "none";
-                        } else {
-                            if (stockError) stockError.style.display = "block";
-                        }
-                    });
-                }
-            });
+        mainImg.src = thumb.src;
+        allThumbs.forEach(t => t.classList.remove('active'));
+        thumb.classList.add('active');
+    }
 
-            // --- PHẦN CHANGE IMAGE GIỮ NGUYÊN ---
-            function changeImage(thumb) {
-                const mainImg = document.getElementById('displayedImage');
-                const allThumbs = document.querySelectorAll('.thumbnail');
+</script>
 
-                mainImg.src = thumb.src;
-
-                allThumbs.forEach(t => t.classList.remove('active'));
-                thumb.classList.add('active');
-            }
-    </script>
-
-    <script src="js/review-filter.js"></script>
-
-    <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                const starOptions = document.querySelectorAll('.star-option');
-                const allStars = document.querySelectorAll('.star-icon');
-
-                starOptions.forEach(option => {
-                    option.addEventListener('click', function () {
-                        const ratingValue = parseInt(this.getAttribute('data-rating-value'));
-
-                        allStars.forEach(star => star.style.color = '#ccc');
-
-                        for (let i = 1; i <= ratingValue; i++) {
-                            allStars[i].style.color = '#ffc107';
-                        }
-
-                        const input = this.querySelector('input[type="radio"]');
-                        if (input)
-                            input.checked = true;
-                    });
-                });
-            });
-    </script>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const input = document.getElementById("photo-upload-input");
-            const previewContainer = document.getElementById("image-preview-container");
-
-            input.addEventListener("change", function () {
-                previewContainer.innerHTML = "";
-
-                const files = Array.from(this.files);
-                if (files.length > 3) {
-                    alert("You can only upload up to 3 photos!");
-                    this.value = "";
-                    return;
-                }
-
-                files.forEach(file => {
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                        const img = document.createElement("img");
-                        img.src = e.target.result;
-                        img.classList.add("preview-image");
-                        previewContainer.appendChild(img);
-                    };
-                    reader.readAsDataURL(file);
-                });
-            });
-        });
-    </script>
 
 </body>
 </html>

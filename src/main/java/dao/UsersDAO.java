@@ -4,6 +4,7 @@ import java.security.MessageDigest;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -155,15 +156,20 @@ public class UsersDAO extends DBContext {
     /**
      * Insert a new user with a specified role.
      */
-    public boolean register(String name, String email, String numberPhone, String address, String password, int role) {
+    public int register(String name, String email, String numberPhone, String address, String password, int role) {
         String sqlToCheck = "SELECT * FROM Users WHERE Email = ?";
         try (PreparedStatement psCheck = conn.prepareStatement(sqlToCheck)) {
+
             psCheck.setString(1, email);
+
             try (ResultSet rs = psCheck.executeQuery()) {
                 if (!rs.next()) {
+
                     String sql = "INSERT INTO Users (FullName, Email, Phone, Password, Role, Address, CreatedAt, Status) "
                             + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-                    try (PreparedStatement psInsert = conn.prepareStatement(sql)) {
+
+                    try (PreparedStatement psInsert = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
                         psInsert.setString(1, name);
                         psInsert.setString(2, email);
                         psInsert.setString(3, numberPhone);
@@ -174,17 +180,29 @@ public class UsersDAO extends DBContext {
                         psInsert.setString(8, "active");
 
                         int affectedRows = psInsert.executeUpdate();
-                        return affectedRows > 0;
+
+                        if (affectedRows > 0) {
+                            try (ResultSet generatedKeys = psInsert.getGeneratedKeys()) {
+                                if (generatedKeys.next()) {
+                                    int userId = generatedKeys.getInt(1);
+                                    System.out.println("New User ID = " + userId);
+                                    return userId;
+                                }
+                            }
+                        }
                     }
+
                 } else {
                     System.out.println("Email already exists!");
-                    return false;
+                    return -1;
                 }
             }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return false;
+
+        return -1;
     }
 
     public boolean registerForLoginWithGoogle(String name, String email, int role) {
@@ -529,29 +547,41 @@ public class UsersDAO extends DBContext {
         }
     }
 
-public void insertPhone(int userID, String phone) {
-    String sql = "UPDATE Users SET Phone = ? WHERE UserID = ?";
-    
-    try (PreparedStatement ps = conn.prepareStatement(sql)) {
-        ps.setString(1, phone);  
-        ps.setInt(2, userID);    
-        
-        ps.executeUpdate();
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
-}
+    public void insertPhone(int userID, String phone) {
+        String sql = "UPDATE Users SET Phone = ? WHERE UserID = ?";
 
-public void insertAddress(int userID, String address) {
-    String sql = "UPDATE Users SET Address = ? WHERE UserID = ?";
-    
-    try (PreparedStatement ps = conn.prepareStatement(sql)) {
-        ps.setString(1, address);  
-        ps.setInt(2, userID);    
-        
-        ps.executeUpdate();
-    } catch (Exception e) {
-        e.printStackTrace();
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, phone);
+            ps.setInt(2, userID);
+
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
-}
+
+    public void insertAddress(int userID, String address) {
+        String sql = "UPDATE Users SET Address = ? WHERE UserID = ?";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, address);
+            ps.setInt(2, userID);
+
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void insertNewCustomer(int userID) {
+        String sql = "INSERT INTO Customers (CustomerID, Point) VALUES (?, ?)";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userID);
+            ps.setInt(2, 0);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

@@ -7,6 +7,7 @@ import dao.PromotionsDAO;
 import dao.ReviewDAO;
 import dao.SupplierDAO;
 import dao.VariantsDAO;
+import dao.WishlistDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -16,6 +17,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.net.URLEncoder;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +30,7 @@ import model.Promotions;
 import model.Review;
 import model.Specification;
 import model.Suppliers;
+import model.Users;
 import model.Variants;
 
 @MultipartConfig
@@ -131,7 +134,40 @@ public class ProductServlet extends HttpServlet {
             request.setAttribute("listReview", listReview);
             request.setAttribute("product", p);
 
+            // Recommended related products bằng suggested variants
+            List<Variants> suggestedVariants = new ArrayList<>();
+            if (variants != null) {
+                try {
+                    suggestedVariants = vdao.getSuggestedVariantsByVariantID(variants.getVariantID());
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            List<Products> relatedList = new ArrayList<>();
+            for (Variants v : suggestedVariants) {
+                Products pOther = pdao.getProductByID(v.getProductID());
+                if (pOther != null) {
+                    List<Variants> variantList = new ArrayList<>();
+                    variantList.add(v); // gắn 1 variant gợi ý
+                    pOther.setVariants(variantList);
+                    relatedList.add(pOther);
+                }
+            }
+            request.setAttribute("relatedList", relatedList);
+
+            WishlistDAO wdao = new WishlistDAO();
+            Users u = (Users) request.getSession().getAttribute("user");
+
+            if (u != null) {
+                List<Products> wishlist = wdao.getWishlistByUser(u.getUserId());
+                request.setAttribute("wishlist", wishlist);
+                request.setAttribute("user", currentUser);
+
+            }
+
             request.getRequestDispatcher("public/productdetail.jsp").forward(request, response);
+
         } else if ("selectStorage".equals(action)) {
             int pID = Integer.parseInt(request.getParameter("pID"));
 
@@ -149,6 +185,27 @@ public class ProductServlet extends HttpServlet {
             if (variants == null && !listVariantRating.isEmpty()) {
                 variants = vdao.getVariant(pID, storage, listVariantRating.get(0).getColor());
             }
+
+            List<Variants> suggestedVariants = new ArrayList<>();
+            if (variants != null) {
+                try {
+                    suggestedVariants = vdao.getSuggestedVariantsByVariantID(variants.getVariantID());
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            List<Products> relatedList = new ArrayList<>();
+            for (Variants v : suggestedVariants) {
+                Products pOther = pdao.getProductByID(v.getProductID());
+                if (pOther != null) {
+                    List<Variants> variantList = new ArrayList<>();
+                    variantList.add(v);
+                    pOther.setVariants(variantList);
+                    relatedList.add(pOther);
+                }
+            }
+            request.setAttribute("relatedList", relatedList);
 
             List<Review> listReview = rdao.getAllReviewByListVariant(listVariantRating);
             double rating = rdao.getTotalRating(listVariantRating, listReview);
@@ -369,8 +426,78 @@ public class ProductServlet extends HttpServlet {
                 // admin
                 request.getRequestDispatcher("admin/dashboard_admin_manageproduct.jsp").forward(request, response);
             }
-        }
+        }// ----- WISHLIST HANDLER -----
+        else if ("viewWishlist".equals(action)) {
+            if (currentUser == null) {
+                response.sendRedirect("login.jsp");
+                return;
+            }
 
+            WishlistDAO wdao = new WishlistDAO();
+            List<Products> wishlist = wdao.getWishlistByUser(currentUser.getUserId());
+
+            request.setAttribute("wishlist", wishlist);
+            request.setAttribute("user", currentUser);
+            request.getRequestDispatcher("/public/wishlist.jsp").forward(request, response);
+            return;
+
+        }
+//        else if ("wishlist".equals(action)) {
+//            if (currentUser == null) {
+//                response.sendRedirect("login.jsp");
+//                return;
+//            }
+//
+//            String variantIdStr = request.getParameter("variantId");
+//            if (variantIdStr == null || variantIdStr.isEmpty()) {
+//                response.sendRedirect(request.getHeader("referer"));
+//
+//                return;
+//            }
+//
+//            try {
+//                int variantId = Integer.parseInt(variantIdStr);
+//                WishlistDAO wdao = new WishlistDAO();
+//                // Check tồn tại trước khi thêm
+//                if (!wdao.isExist(currentUser.getUserId(), variantId)) {
+//                    wdao.addToWishlist(currentUser.getUserId(), variantId);
+//                }
+//            } catch (NumberFormatException e) {
+//                e.printStackTrace();
+//                response.sendRedirect(request.getHeader("referer"));
+//
+//                return;
+//            }
+//
+//            // Redirect về trang hiện tại nếu có
+//            String redirectURL = request.getParameter("redirect");
+//            if (redirectURL != null && !redirectURL.isEmpty()) {
+//                response.sendRedirect(redirectURL);
+//            } else {
+//                response.sendRedirect("product?action=viewDetail&pID=" + request.getParameter("pID"));
+//            }
+//        } else if ("remove".equals(action)) {
+//            if (currentUser != null) {
+//                String variantIdStr = request.getParameter("variantId");
+//                if (variantIdStr != null && !variantIdStr.isEmpty()) {
+//                    try {
+//                        int variantId = Integer.parseInt(variantIdStr);
+//                        WishlistDAO wdao = new WishlistDAO();
+//                        wdao.removeFromWishlist(currentUser.getUserId(), variantId);
+//                    } catch (NumberFormatException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }
+//
+//            // Redirect về trang hiện tại nếu có
+//            String redirectURL = request.getParameter("redirect");
+//            if (redirectURL != null && !redirectURL.isEmpty()) {
+//                response.sendRedirect(redirectURL);
+//            } else {
+//                response.sendRedirect("product?action=viewDetail&pID=" + request.getParameter("pID"));
+//            }
+//        }
     }
 
     @Override
@@ -480,6 +607,96 @@ public class ProductServlet extends HttpServlet {
             List<Profit> listImports = pfdao.getAllProfit();
             request.setAttribute("listImports", listImports);
             request.getRequestDispatcher("admin/import_history.jsp").forward(request, response);
+        } // --------- WISHLIST HANDLER ---------
+        else if ("wishlist".equals(action)) {
+            Users u = (Users) request.getSession().getAttribute("user");
+            if (u == null) {
+                response.sendRedirect("login.jsp?redirect=" + URLEncoder.encode(request.getParameter("redirect"), "UTF-8"));
+                return;
+            }
+
+            int productId = Integer.parseInt(request.getParameter("productId"));
+            int variantId = (request.getParameter("variantId") == null || request.getParameter("variantId").isEmpty())
+                    ? 0
+                    : Integer.parseInt(request.getParameter("variantId"));
+
+            WishlistDAO wdao = new WishlistDAO();
+            wdao.addToWishlist(u.getUserId(), productId, variantId);
+
+            String redirect = request.getParameter("redirect");
+            if (redirect != null && !redirect.isEmpty()) {
+                response.sendRedirect(redirect); // quay lại trang hiện tại
+            } else {
+                response.sendRedirect("homepage"); // fallback
+            }
+        } else if ("remove".equals(action)) {
+            Users u = (Users) request.getSession().getAttribute("user");
+            if (u == null) {
+                response.sendRedirect("login.jsp");
+                return;
+            }
+
+            // Lấy productId
+            int productId = Integer.parseInt(request.getParameter("productId"));
+
+            // Lấy variantId, nếu null thì gán = 0
+            String variantParam = request.getParameter("variantId");
+            int variantId = (variantParam == null || variantParam.isEmpty())
+                    ? 0
+                    : Integer.parseInt(variantParam);
+
+            WishlistDAO wdao = new WishlistDAO();
+            wdao.removeFromWishlist(u.getUserId(), productId, variantId);
+
+            String redirect = request.getParameter("redirect");
+            response.sendRedirect(redirect);
+            return;
+
+        } else if ("viewWishlist".equals(action)) {
+            if (currentUser == null) {
+                response.sendRedirect("login.jsp");
+                return;
+            }
+
+            WishlistDAO wdao = new WishlistDAO();
+            List<Products> wishlist = wdao.getWishlistByUser(currentUser.getUserId());
+
+            request.setAttribute("wishlist", wishlist);
+            request.setAttribute("user", currentUser);
+            request.getRequestDispatcher("/public/wishlist.jsp").forward(request, response);
+            return;
+
+        } else if ("toggleWishlist".equals(action)) {
+
+            Users u = (Users) session.getAttribute("user");
+            if (u == null) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
+            }
+
+            int productId = Integer.parseInt(request.getParameter("productId"));
+
+            String var = request.getParameter("variantId");
+            int variantId = (var == null || var.equals("") || var.equals("undefined"))
+                    ? 0
+                    : Integer.parseInt(var);
+
+            WishlistDAO wdao = new WishlistDAO();
+
+            try {
+                if (wdao.isExist(u.getUserId(), productId, variantId)) {
+                    wdao.removeFromWishlist(u.getUserId(), productId, variantId);
+                } else {
+                    wdao.addToWishlist(u.getUserId(), productId, variantId);
+                }
+                response.getWriter().write("ok");
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            }
+
+            return;
         }
     }
 
