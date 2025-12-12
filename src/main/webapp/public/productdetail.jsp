@@ -11,11 +11,9 @@
 <%@ page import="dao.WishlistDAO" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.net.URLEncoder" %>
-
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="java.text.NumberFormat" %>
 <%@ page import="java.util.Locale" %>
-
 <%@ include file="/layout/header.jsp" %>
 
 
@@ -451,7 +449,8 @@
                                                         <%= rp.getVariants().get(0).getStorage() %>
                                                     </a>
                                                 </h3>
-
+                                                    
+                                                <!-- WISH LIST BUTTON -->
                                                 <div class="wishlist-wrap">
                                                     <%
                                                         Users u = (Users) session.getAttribute("user");
@@ -546,20 +545,20 @@
                 <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
 
                 <script>
-                                                   var swiper = new Swiper('.related-swiper', {
-                                                       slidesPerView: 4,
-                                                       spaceBetween: 20,
-                                                       navigation: {
-                                                           nextEl: '.swiper-button-next',
-                                                           prevEl: '.swiper-button-prev',
-                                                       },
-                                                       breakpoints: {
-                                                           320: {slidesPerView: 1},
-                                                           576: {slidesPerView: 2},
-                                                           768: {slidesPerView: 3},
-                                                           992: {slidesPerView: 4}
-                                                       }
-                                                   });
+                                                    var swiper = new Swiper('.related-swiper', {
+                                                        slidesPerView: 4,
+                                                        spaceBetween: 20,
+                                                        navigation: {
+                                                            nextEl: '.swiper-button-next',
+                                                            prevEl: '.swiper-button-prev',
+                                                        },
+                                                        breakpoints: {
+                                                            320: {slidesPerView: 1},
+                                                            576: {slidesPerView: 2},
+                                                            768: {slidesPerView: 3},
+                                                            992: {slidesPerView: 4}
+                                                        }
+                                                    });
                 </script>
 
             </div>
@@ -576,6 +575,7 @@
     <script src="js/jquery-1.11.0.min.js"></script>
     <script src="js/bootstrap.bundle.min.js"></script>
 
+<<<<<<< HEAD
 <script>
 
     /* ------------------ REVIEW MODAL ------------------ */
@@ -631,6 +631,104 @@
                     quantityInput.value = val;
                     updateHiddenQuantity(val);
                     if (stockError) stockError.style.display = "none";
+=======
+    <script>
+                                                    const modal = document.getElementById("reviewModal");
+                                                    const openModalBtn = document.getElementById("openReviewModal");
+                                                    const closeBtn = document.getElementsByClassName("close-button")[0];
+
+                                                    if (openModalBtn && modal)
+                                                        openModalBtn.onclick = () => modal.style.display = "block";
+                                                    if (closeBtn)
+                                                        closeBtn.onclick = () => modal.style.display = "none";
+
+                                                    window.onclick = (e) => {
+                                                        if (e.target === modal)
+                                                            modal.style.display = "none";
+                                                    };
+
+                                                    // Quantity Logic
+                                                    const minusBtn = document.querySelector('.minus-btn');
+                                                    const plusBtn = document.querySelector('.plus-btn');
+                                                    const quantityInput = document.getElementById('quantity-display');
+                                                    const stockError = document.getElementById('stock-error');
+                                                    const stock = parseInt(document.querySelector('.quantity-selector').dataset.stock);
+                                                    const hiddenInputs = document.querySelectorAll('.hiddenQuantityInput');
+
+                                                    if (minusBtn && plusBtn && quantityInput) {
+                                                        minusBtn.addEventListener('click', () => {
+                                                            let val = parseInt(quantityInput.value);
+                                                            if (val > 1) {
+                                                                val--;
+                                                                quantityInput.value = val;
+                                                                hiddenInputs.forEach(i => i.value = val);
+                                                                stockError.style.display = "none";
+                                                            }
+                                                        });
+
+                                                        plusBtn.addEventListener('click', () => {
+                                                            let val = parseInt(quantityInput.value);
+                                                            if (val < stock) {
+                                                                val++;
+                                                                quantityInput.value = val;
+                                                                hiddenInputs.forEach(i => i.value = val);
+                                                                stockError.style.display = "none";
+                                                            } else {
+                                                                stockError.style.display = "block";
+                                                            }
+                                                        });
+                                                    }
+
+                                                    function changeImage(thumb) {
+                                                        const mainImg = document.getElementById('displayedImage');
+                                                        const allThumbs = document.querySelectorAll('.thumbnail');
+
+                                                        mainImg.src = thumb.src;
+
+                                                        allThumbs.forEach(t => t.classList.remove('active'));
+                                                        thumb.classList.add('active');
+                                                    }
+    </script>
+
+    <script src="js/review-filter.js"></script>
+
+    <script>
+                                                    document.addEventListener('DOMContentLoaded', function () {
+                                                        const starOptions = document.querySelectorAll('.star-option');
+                                                        const allStars = document.querySelectorAll('.star-icon');
+
+                                                        starOptions.forEach(option => {
+                                                            option.addEventListener('click', function () {
+                                                                const ratingValue = parseInt(this.getAttribute('data-rating-value'));
+
+                                                                allStars.forEach(star => star.style.color = '#ccc');
+
+                                                                for (let i = 1; i <= ratingValue; i++) {
+                                                                    allStars[i].style.color = '#ffc107';
+                                                                }
+
+                                                                const input = this.querySelector('input[type="radio"]');
+                                                                if (input)
+                                                                    input.checked = true;
+                                                            });
+                                                        });
+                                                    });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const input = document.getElementById("photo-upload-input");
+            const previewContainer = document.getElementById("image-preview-container");
+
+            input.addEventListener("change", function () {
+                previewContainer.innerHTML = "";
+
+                const files = Array.from(this.files);
+                if (files.length > 3) {
+                    alert("You can only upload up to 3 photos!");
+                    this.value = "";
+                    return;
+>>>>>>> 8bfb7936d9efd70aa440344692a82275c922c3d0
                 }
             };
 

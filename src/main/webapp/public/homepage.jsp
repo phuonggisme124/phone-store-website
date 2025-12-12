@@ -9,7 +9,7 @@
 <%@page import="java.util.List"%>
 <%@page import="java.util.Map" %>
 <%@page import="java.util.HashMap" %>
-<%@page import="model.Users"%>
+<%@page import="model.Customer"%>
 <%@page import="dao.WishlistDAO"%>
 
 <%@ include file="/layout/header.jsp" %>
@@ -470,7 +470,7 @@
                                         <!--WISH LIST BUTTON-->
                                         <div class="wishlist-wrap">
                                             <%
-                                                Users u = (Users) session.getAttribute("user");
+                                                Customer u = (Customer) session.getAttribute("user");
                                                 boolean logged = (u != null);
                                                 boolean liked = false;
                                                 int variantID = p.getVariants().get(0).getVariantID();
@@ -478,7 +478,7 @@
 
                                                 if (logged && variantID > 0) {
                                                     WishlistDAO wdao = new WishlistDAO();
-                                                    liked = wdao.isExist(u.getUserId(), productID, variantID);
+                                                    liked = wdao.isExist(u.getCustomerID(), productID, variantID);
                                                 }
                                             %>
 
@@ -545,7 +545,7 @@
                                         <!--WISH LIST BUTTON-->
                                         <div class="wishlist-wrap">
                                             <%
- Users u = (Users) session.getAttribute("user");
+ Customer u = (Customer) session.getAttribute("user");
  boolean logged = (u != null);
  boolean liked = false;
  int variantID = p.getVariants().get(0).getVariantID();
@@ -553,7 +553,7 @@
 
  if (logged && variantID > 0) {
      WishlistDAO wdao = new WishlistDAO();
-     liked = wdao.isExist(u.getUserId(), productID, variantID);
+     liked = wdao.isExist(u.getCustomerID(), productID, variantID);
  }
                                             %>
 
@@ -619,7 +619,7 @@
                                 <!--WISH LIST BUTTON-->
                                 <div class="wishlist-wrap">
                                     <%
-                                        Users u = (Users) session.getAttribute("user");
+                                        Customer u = (Customer) session.getAttribute("user");
                                         boolean logged = (u != null);
                                         boolean liked = false;
                                         int variantID = p.getVariants().get(0).getVariantID();
@@ -627,7 +627,7 @@
 
                                         if (logged && variantID > 0) {
                                             WishlistDAO wdao = new WishlistDAO();
-                                            liked = wdao.isExist(u.getUserId(), productID, variantID);
+                                            liked = wdao.isExist(u.getCustomerID(), productID, variantID);
                                         }
                                     %>
 

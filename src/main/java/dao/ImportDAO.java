@@ -14,51 +14,62 @@ import utils.DBContext;
 public class ImportDAO extends DBContext {
 
     // --- HÀM PUBLIC: Chỉ quản lý luồng Transaction ---
-    public boolean insertImportTransaction(Import imp, List<ImportDetail> details) {
-
-        boolean isSuccess = false;
-        String sqlProfit = "INSERT INTO [Profits] ([VariantID], [Quantity], [SellingPrice], [CostPrice], [CalculatedDate]) VALUES (?, ?, ?, ?, GETDATE())";
+    public boolean insertImportTransaction(Import imp, List<ImportDetail> listDetails) {
+        Connection conn = this.conn;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
         try {
+            conn.setAutoCommit(false); // Bắt đầu Transaction
 
-            conn.setAutoCommit(false); // 1. Bắt đầu Transaction
+            // 1. Insert phiếu nhập với Status = 0 (Chờ duyệt)
+            String sql = "INSERT INTO Imports(staffID, supplierID, importDate, totalCost, note, Status) VALUES(?,?,GETDATE(),?,?,0)";
+            ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            ps.setInt(1, imp.getStaffID());
+            ps.setInt(2, imp.getSupplierID());
+            ps.setDouble(3, imp.getTotalCost());
+            ps.setString(4, imp.getNote());
+            ps.executeUpdate();
 
-            // 2. Gọi hàm con thêm phiếu (trả về ID vừa tạo)
-            int importID = insertHeader(conn, imp);
+            // Lấy ID vừa tạo
+            rs = ps.getGeneratedKeys();
+            int importID = 0;
+            if (rs.next()) {
+                importID = rs.getInt(1);
+            }
 
-            // 3. Gọi hàm con thêm chi tiết (truyền ID vừa có vào)
-            insertDetails(conn, importID, details);
+            // 2. Insert chi tiết phiếu nhập
+            String sqlDetail = "INSERT INTO ImportDetails(importID, variantID, quantity, costPrice) VALUES(?,?,?,?)";
+            PreparedStatement psDetail = conn.prepareStatement(sqlDetail);
 
-            // 4. Gọi hàm con cập nhật kho
-            updateStockAndPrice(conn, details);
-            // 5 goi ham con chèn vào bảng profits
-            insertProfits(conn, details);
+            for (ImportDetail detail : listDetails) {
+                psDetail.setInt(1, importID);
+                psDetail.setInt(2, detail.getVariantID());
+                psDetail.setInt(3, detail.getQuality());
+                psDetail.setDouble(4, detail.getCostPrice());
+
+                psDetail.addBatch();
+            }
+            psDetail.executeBatch();
             conn.commit();
-            isSuccess = true;
+            return true;
         } catch (Exception e) {
-            e.printStackTrace();
             try {
                 if (conn != null) {
                     conn.rollback();
                 }
             } catch (SQLException ex) {
-            } // Lỗi -> Hủy
-        } finally {
-            try {
-                if (conn != null) {
-                    conn.close();
-                }
-            } catch (SQLException ex) {
             }
+            e.printStackTrace();
         }
-        return isSuccess;
+        return false;
     }
 
     // --- CÁC HÀM PRIVATE: Thực hiện SQL cụ thể ---
     // Hàm 1: Insert bảng Imports
     private int insertHeader(Connection conn, Import imp) throws SQLException {
-        String sql = "INSERT INTO Imports (accountID, supplierID, totalCost, note) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO Imports (staffID, supplierID, totalCost, note) VALUES (?, ?, ?, ?)";
         PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-        ps.setInt(1, imp.getAccountID());
+        ps.setInt(1, imp.getStaffID());
         ps.setInt(2, imp.getSupplierID());
         ps.setDouble(3, imp.getTotalCost());
         ps.setString(4, imp.getNote());
@@ -120,12 +131,14 @@ public class ImportDAO extends DBContext {
     public List<Import> getAllImports() {
         List<Import> list = new ArrayList<>();
 
-        // SQL rút gọn: Chỉ lấy thông tin phiếu + Tên nhà cung cấp
-        String sql = "SELECT i.importID, i.totalCost, i.importDate, i.note, "
-                + "       s.name AS SupplierName "
-                + "FROM Imports i "
-                + "JOIN Suppliers s ON i.supplierID = s.supplierID "
-                + "ORDER BY i.importID DESC"; // Mới nhất lên đầu
+        // 1. CẬP NHẬT SQL: Thêm i.status vào câu Select
+        String sql = "SELECT i.importID, u.FullName as staffName , i.totalCost, i.importDate, i.note, i.status, \n"
+                + "  s.name AS SupplierName \n"
+                + "\n"
+                + "  FROM Imports i \n"
+                + "               JOIN Suppliers s ON i.supplierID = s.supplierID \n"
+                + "			   join Users u On i.staffID = u.UserID\n"
+                + "  ORDER BY i.importID DESC";
 
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -134,6 +147,7 @@ public class ImportDAO extends DBContext {
             while (rs.next()) {
                 Import imp = new Import();
                 imp.setImportID(rs.getInt("importID"));
+                imp.setStaffName(rs.getString("staffName"));
                 imp.setTotalCost(rs.getDouble("totalCost"));
 
                 // Xử lý ngày tháng
@@ -143,6 +157,8 @@ public class ImportDAO extends DBContext {
                 }
 
                 imp.setNote(rs.getString("note"));
+
+                imp.setStatus(rs.getInt("status"));
 
                 // Set tên nhà cung cấp để hiển thị
                 imp.setSupplierName(rs.getString("SupplierName"));
@@ -192,24 +208,184 @@ public class ImportDAO extends DBContext {
         return list;
     }
 
-    // Hàm này viết y chang cấu trúc insertDetails của bạn
     private void insertProfits(Connection conn, List<ImportDetail> details) throws SQLException {
+        // Sửa logic MERGE: Thêm điều kiện so sánh giá vào phần ON
+        String sql = "MERGE INTO Profits AS target "
+                + "USING (VALUES (?, ?, ?, ?)) AS source (VarID, AddQty, NewSellPrice, NewCostPrice) "
+                + "ON target.VariantID = source.VarID "
+                + "   AND MONTH(target.CalculatedDate) = MONTH(GETDATE()) "
+                + "   AND YEAR(target.CalculatedDate) = YEAR(GETDATE()) "
+                // --- THÊM 2 DÒNG NÀY ---
+                + "   AND target.CostPrice = source.NewCostPrice " // So sánh giá vốn
+                + "   AND target.SellingPrice = source.NewSellPrice " // So sánh giá bán (nếu cần thiết)
+                // ------------------------
 
-        // Câu lệnh SQL chèn vào bảng Profits (có GETDATE() để lấy ngày hiện tại)
-        String sql = "INSERT INTO Profits (VariantID, Quantity, SellingPrice, CostPrice, CalculatedDate) VALUES (?, ?, ?, ?, GETDATE())";
+                // Nếu khớp tất cả (bao gồm cả giá) -> Chỉ cộng dồn số lượng
+                + "WHEN MATCHED THEN "
+                + "   UPDATE SET "
+                + "       target.Quantity = target.Quantity + source.AddQty, "
+                + "       target.CalculatedDate = GETDATE() "
+                // Lưu ý: Không cần update lại SellingPrice/CostPrice ở đây nữa vì nó đã giống nhau ở điều kiện ON rồi
 
-        // Tạo PreparedStatement từ Connection được truyền vào
+                // Nếu không khớp (do khác giá hoặc chưa có trong tháng) -> Tạo dòng mới
+                + "WHEN NOT MATCHED THEN "
+                + "   INSERT (VariantID, Quantity, SellingPrice, CostPrice, CalculatedDate) "
+                + "   VALUES (source.VarID, source.AddQty, source.NewSellPrice, source.NewCostPrice, GETDATE());";
+
         PreparedStatement ps = conn.prepareStatement(sql);
+
         for (ImportDetail d : details) {
+            // Tham số 1: VariantID
             ps.setInt(1, d.getVariantID());
+
+            // Tham số 2: Số lượng
             ps.setInt(2, d.getQuality());
+
+            // Tham số 3: Giá bán
             ps.setDouble(3, d.getSellingPrice());
+
+            // Tham số 4: Giá vốn
             ps.setDouble(4, d.getCostPrice());
-            ps.addBatch();                        // Gom lệnh lại
+
+            ps.addBatch();
         }
 
-        // Thực thi một lần
         ps.executeBatch();
         ps.close();
+    }
+
+    public boolean approveImport(int importID) {
+        Connection conn = this.conn;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        PreparedStatement psUpdate = null;
+        PreparedStatement psStatus = null;
+
+        List<ImportDetail> listTemp = new ArrayList<>();
+
+        try {
+            conn.setAutoCommit(false);
+
+            // ĐỌC DỮ LIỆU VÀO LIST
+            // Sửa lại câu lệnh SQL ở Bước 1
+            String sqlGetDetails = "SELECT d.variantID, d.quantity, d.costPrice, v.Price SellingPrice "
+                    + "FROM ImportDetails d "
+                    + "JOIN Variants v ON d.variantID = v.variantID "
+                    + "WHERE d.importID = ?";
+            ps = conn.prepareStatement(sqlGetDetails);
+            ps.setInt(1, importID);
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+                ImportDetail d = new ImportDetail();
+                d.setVariantID(rs.getInt("variantID"));
+                d.setQuality(rs.getInt("quantity"));
+                d.setCostPrice(rs.getDouble("costPrice"));
+                d.setSellingPrice(rs.getDouble("SellingPrice"));
+
+                listTemp.add(d);
+            }
+            // Đóng ngay ResultSet và PreparedStatement đọc để giải phóng kết nối
+            rs.close();
+            ps.close();
+
+            // -CẬP NHẬT KHO VÀ GIÁ (Batch Update)
+            if (!listTemp.isEmpty()) {
+                // Chỉ cộng Stock, không sửa giá bán (Price) vì phiếu nhập không có giá bán mới
+                String sqlUpdateVariant = "UPDATE Variants SET stock = stock + ? WHERE variantID = ?";
+                psUpdate = conn.prepareStatement(sqlUpdateVariant);
+
+                for (ImportDetail d : listTemp) {
+                    psUpdate.setInt(1, d.getQuality()); // Chỉ cộng số lượng
+                    psUpdate.setInt(2, d.getVariantID());
+                    psUpdate.addBatch();
+                }
+// Chạy update kho
+                psUpdate.executeBatch();
+
+// Sau đó mới chạy insertProfits
+                insertProfits(conn, listTemp);
+            }
+
+            //  ĐỔI TRẠNG THÁI PHIẾU NHẬP 
+            String sqlUpdateStatus = "UPDATE Imports SET Status = 1 WHERE importID = ?";
+            psStatus = conn.prepareStatement(sqlUpdateStatus);
+            psStatus.setInt(1, importID);
+            int rowEffected = psStatus.executeUpdate();
+
+            conn.commit();
+
+            // Trả về true nếu update status thành công
+            return rowEffected > 0;
+
+        } catch (Exception e) {
+            e.printStackTrace(); // Nhớ xem log này trong Console của NetBeans/Server
+            try {
+                if (conn != null) {
+                    conn.rollback();
+                }
+            } catch (SQLException ex) {
+            }
+        } finally {
+            // Đóng sạch sẽ các resource
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (ps != null) {
+                    ps.close();
+                }
+                if (psUpdate != null) {
+                    psUpdate.close();
+                }
+                if (psStatus != null) {
+                    psStatus.close();
+                }
+                if (conn != null) {
+                    conn.setAutoCommit(true); // Trả lại trạng thái cũ cho connection dùng chung
+                }
+            } catch (Exception e) {
+            }
+        }
+        return false;
+    }
+
+    // Hàm hủy phiếu nhập (Dành cho Admin từ chối hoặc Staff hủy đơn chưa duyệt)
+    public boolean cancelImport(int importID) {
+        Connection conn = this.conn;
+        String sql = "UPDATE Imports SET Status = 2 WHERE importID = ? AND Status = 0";
+        // Giải thích SQL:
+        // Status = 2: Set thành trạng thái "Đã hủy"
+        // AND Status = 0: Điều kiện an toàn, chỉ cho hủy đơn đang "Chờ duyệt". 
+        // Nếu đơn đã duyệt (1) thì lệnh này sẽ không chạy (an toàn cho kho).
+
+        PreparedStatement ps = null;
+
+        try {
+            ps = conn.prepareStatement(sql);
+
+            ps.setInt(1, importID);
+
+            int rowsAffected = ps.executeUpdate();
+
+            // Nếu update thành công ít nhất 1 dòng -> Trả về True
+            return rowsAffected > 0;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            // Đóng kết nối để tránh tràn bộ nhớ
+            try {
+                if (ps != null) {
+                    ps.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
     }
 }

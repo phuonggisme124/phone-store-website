@@ -28,8 +28,8 @@ public class Order {
 
 
     // --- 2. CÁC TRƯỜNG QUAN HỆ (ĐỂ JOIN) ---
-    private Users buyer;    // Đối tượng User (Khách hàng)
-    private Users shippers; // Đối tượng User (Shipper)
+    private Customer buyer;    // Đối tượng User (Khách hàng)
+    private Customer shippers; // Đối tượng User (Shipper)
     
     // --- 3. TRƯỜNG CŨ (BỊ DƯ, TỪ CODE CŨ CỦA BẠN) ---
     // (Chúng ta giữ lại để các constructor cũ không bị lỗi)
@@ -86,7 +86,7 @@ public class Order {
      * SỬA LỖI (Thay thế cho constructor 6 tham số bị lỗi)
      * Dùng cho mapResultSetToProduct
      */
-    public Order(int orderID, Users buyer, String shippingAddress, double totalAmount, String status, LocalDateTime orderDate) {
+    public Order(int orderID, Customer buyer, String shippingAddress, double totalAmount, String status, LocalDateTime orderDate) {
         this.orderID = orderID;
         this.buyer = buyer;
         this.shippingAddress = shippingAddress;
@@ -98,7 +98,7 @@ public class Order {
     /**
      * (Giữ nguyên - Dùng cho Staff)
      */
-    public Order(int orderID, Users buyer, Users shippers, String shippingAddress, double totalAmount, LocalDateTime orderDate, String status) {
+    public Order(int orderID, Customer buyer, Customer shippers, String shippingAddress, double totalAmount, LocalDateTime orderDate, String status) {
         this.orderID = orderID;
         this.buyer = buyer;
         this.shippers = shippers;
@@ -129,7 +129,7 @@ public class Order {
     /**
      * (Giữ nguyên - Dùng cho PaymentServlet)
      */
-    public Order(int userID, String paymentMethod, String shippingAddress, double totalAmount, String status, byte isInstalment, Users buyer) {
+    public Order(int userID, String paymentMethod, String shippingAddress, double totalAmount, String status, byte isInstalment, Customer buyer) {
         this.userID = userID;
         this.paymentMethod = paymentMethod;
         this.shippingAddress = shippingAddress;
@@ -148,7 +148,7 @@ public class Order {
      * SỬA LỖI (Thay thế cho constructor 9 tham số bị lỗi)
      * (Dùng cho Customer DAO cũ - getOrdersByStatus)
      */
-    public Order(int userID, int oderID, String paymentMethod, String shippingAddress, double totalAmount, String status, byte isInstalment, LocalDateTime orderDate, Users buyer) {
+    public Order(int userID, int oderID, String paymentMethod, String shippingAddress, double totalAmount, String status, byte isInstalment, LocalDateTime orderDate, Customer buyer) {
         this.userID = userID;
         this.orderID = oderID;
         this.paymentMethod = paymentMethod;
@@ -268,19 +268,19 @@ public class Order {
 
     // Getters/Setters cho các đối tượng quan hệ
     
-    public Users getBuyer() {
+    public Customer getBuyer() {
         return buyer;
     }
 
-    public void setBuyer(Users buyer) {
+    public void setBuyer(Customer buyer) {
         this.buyer = buyer;
     }
 
-    public Users getShippers() {
+    public Customer getShippers() {
         return shippers;
     }
 
-    public void setShippers(Users shippers) {
+    public void setShippers(Customer shippers) {
         this.shippers = shippers;
     }
     

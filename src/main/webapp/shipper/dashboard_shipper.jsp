@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 
+=======
+<%@page import="dao.ProductDAO"%>
+>>>>>>> 8bfb7936d9efd70aa440344692a82275c922c3d0
 <%@page import="dao.VariantsDAO"%>
 <%@page import="model.Variants"%>
 <%@page import="java.util.HashMap"%>
@@ -123,6 +127,7 @@
                                     <p><i class="bi bi-calendar3"></i> <strong>Date:</strong> <%= o.getOrderDate()%></p>
                                 </div>
 
+<<<<<<< HEAD
                                 <!-- ORDER ITEMS BUTTON -->
                                 <div class="card-body pt-0">
                                     <button type="button"
@@ -131,6 +136,39 @@
                                             data-bs-target="#orderItemsModal-<%= o.getOrderID()%>">
                                         <i class="bi bi-box-seam"></i> View Items
                                     </button>
+=======
+
+
+                                <!-- ========== ORDER ITEMS ========== -->
+                                <div class="order-items-box mt-3">
+                                    <h6 class="fw-bold mb-2 text-primary"><i class="bi bi-box-seam"></i> Order Items</h6>
+
+                                    <%
+                                        ProductDAO pdao = new ProductDAO();
+                                        List<OrderDetails> odList = orderDetailList.get(o.getOrderID());
+                                        if (odList != null) {
+                                            for (OrderDetails d : odList) {
+                                                Variants v = vDAO.getVariantByID(d.getVariantID());
+                                    %>
+
+                                    <div class="order-item d-flex align-items-center p-2 mb-2">
+                                        <img src="images/<%= v.getImageList()[0]%>"
+                                             class="order-item-img rounded me-3">
+
+                                        <div class="flex-grow-1">
+                                            <div class="text-muted small"><%= pdao.getNameByID(v.getProductID()) + "-" +  v.getColor()%> • <%= v.getStorage()%></div>
+                                            <div class="small">Price: <strong><%= vn.format(d.getUnitPrice())%></strong></div>
+                                            <div class="small">Qty: <strong><%= d.getQuantity()%></strong></div>
+                                        </div>
+
+                                        <div class="text-end fw-bold text-success small">
+                                            <%= vn.format(d.getUnitPrice() * d.getQuantity())%>
+                                        </div>
+                                    </div>
+
+                                    <% }
+                                        }%>
+>>>>>>> 8bfb7936d9efd70aa440344692a82275c922c3d0
                                 </div>
 
                                 <!-- STATUS UPDATE FOOTER -->

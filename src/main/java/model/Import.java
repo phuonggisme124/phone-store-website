@@ -14,24 +14,38 @@ import java.time.format.DateTimeFormatter;
 public class Import {
 
     private int importID;
-    private int accountID;
+    private int staffID;
     private int supplierID;
     private LocalDateTime importDate;
     private double totalCost;
     private String note;
     private String supplierName;
+    private String staffName;
+    private int status;
 
     public Import() {
     }
 
-    public Import(int importID, int accountID, int supplierID, LocalDateTime importDate, double totalCost, String note) {
+    public Import(int importID, String staffName, LocalDateTime importDate, double totalCost, String note, String supplierName) {
         this.importID = importID;
-        this.accountID = accountID;
-        this.supplierID = supplierID;
+        this.staffName = staffName;
         this.importDate = importDate;
         this.totalCost = totalCost;
         this.note = note;
+        this.supplierName = supplierName;
     }
+
+    public String getStaffName() {
+        return staffName;
+    }
+
+    public void setStaffName(String staffName) {
+        this.staffName = staffName;
+    }
+
+    
+
+    
 
     public String getSupplierName() {
         return supplierName;
@@ -49,13 +63,15 @@ public class Import {
         this.importID = importID;
     }
 
-    public int getAccountID() {
-        return accountID;
+    public int getStaffID() {
+        return staffID;
     }
 
-    public void setAccountID(int accountID) {
-        this.accountID = accountID;
+    public void setStaffID(int staffID) {
+        this.staffID = staffID;
     }
+
+    
 
     public int getSupplierID() {
         return supplierID;
@@ -97,4 +113,13 @@ public class Import {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
         return this.importDate.format(formatter);
     }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+    
 }

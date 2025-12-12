@@ -1,28 +1,54 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package model;
 
+import java.sql.Timestamp;
 import java.sql.Date;
-import java.time.LocalDateTime;
 
-/**
- *
- * @author ADMIN
- */
 public class Customer {
-    private int customerID;
-    private String cCCD;
-    private int point;
-    private LocalDateTime YOB;
 
-    public Customer(int customerID, String cCCD, int point, LocalDateTime YOB) {
+    private int customerID;         
+    private String fullName;        
+    private String email;           
+    private String phone;           
+    private String password;        
+    private String address;         
+    private Timestamp createdAt;    
+    private String status;          
+    private String cccd;            
+    private Date yob;               
+    private int point;              
+
+    public Customer() {}
+
+    // Full constructor
+    public Customer(int customerID, String fullName, String email, String phone, String password,
+                    String address, Timestamp createdAt, String status, 
+                    String cccd, Date yob, int point) {
         this.customerID = customerID;
-        this.cCCD = cCCD;
+        this.fullName = fullName;
+        this.email = email;
+        this.phone = phone;
+        this.password = password;
+        this.address = address;
+        this.createdAt = createdAt;
+        this.status = status;
+        this.cccd = cccd;
+        this.yob = yob;
         this.point = point;
-        this.YOB = YOB;
     }
+
+    // Constructor dùng cho dropdown hoặc select list
+    public Customer(int customerID, String fullName, String phone) {
+        this.customerID = customerID;
+        this.fullName = fullName;
+        this.phone = phone;
+    }
+
+    public Customer(String name, String phone) {
+          this.fullName = name;
+        this.phone = phone;
+    }
+
+    // ===================== GETTERS & SETTERS =====================
 
     public int getCustomerID() {
         return customerID;
@@ -32,12 +58,76 @@ public class Customer {
         this.customerID = customerID;
     }
 
-    public String getcCCD() {
-        return cCCD;
+    public String getFullName() {
+        return fullName;
     }
 
-    public void setcCCD(String cCCD) {
-        this.cCCD = cCCD;
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public Timestamp getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Timestamp createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getCccd() {
+        return cccd;
+    }
+
+    public void setCccd(String cccd) {
+        this.cccd = cccd;
+    }
+
+    public Date getYob() {
+        return yob;
+    }
+
+    public void setYob(Date yob) {
+        this.yob = yob;
     }
 
     public int getPoint() {
@@ -48,13 +138,25 @@ public class Customer {
         this.point = point;
     }
 
-    public LocalDateTime getYOB() {
-        return YOB;
+    // Customers luôn mặc định role = 1
+    public int getRole() {
+        return 1;
     }
 
-    public void setYOB(LocalDateTime YOB) {
-        this.YOB = YOB;
+    @Override
+    public String toString() {
+        return "Customer{"
+                + "customerID=" + customerID
+                + ", fullName='" + fullName + '\''
+                + ", email='" + email + '\''
+                + ", phone='" + phone + '\''
+                + ", password='***'"
+                + ", address='" + address + '\''
+                + ", createdAt=" + createdAt
+                + ", status='" + status + '\''
+                + ", cccd='" + cccd + '\''
+                + ", yob=" + yob
+                + ", point=" + point
+                + '}';
     }
-
-    
 }

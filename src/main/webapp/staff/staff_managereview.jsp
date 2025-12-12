@@ -265,6 +265,7 @@
                     <li><a href="product?action=manageProduct"><i class="bi bi-box me-2"></i>Products</a></li>
                     <li><a href="order?action=manageOrder"><i class="bi bi-bag me-2"></i>Orders</a></li>
                     <li><a href="review?action=manageReview" class="fw-bold text-primary"><i class="bi bi-chat-left-text me-2"></i>Reviews</a></li>
+                    <li><a href="importproduct?action=staff_import"><i class="bi bi-chat-left-text me-2"></i>importProduct</a></li>
                 </ul>
             </nav>
 

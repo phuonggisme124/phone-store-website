@@ -348,7 +348,7 @@ public class VariantsServlet extends HttpServlet {
                         + (variant.getStorage() != null ? " " + variant.getStorage() : "")
                         + (variant.getColor() != null ? " " + variant.getColor() : "") + " update successfully!");
                 response.sendRedirect("product?action=productDetail&pID=" + pID);
-                response.sendRedirect("product?action=productDetail&pID=" + pID);
+                
             } else {
                 session.setAttribute("existVariant", pName + " " + (storage == null ? "" : storage) + " " + color + " already exists");
                 response.sendRedirect("variants?action=editVariant&pID=" + pID + "&vid=" + vID);
