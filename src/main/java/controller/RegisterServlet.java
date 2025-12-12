@@ -1,6 +1,6 @@
 package controller;
 
-import dao.UsersDAO;
+import dao.CustomerDAO;
 import jakarta.servlet.RequestDispatcher;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -10,7 +10,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession; // Added import for HttpSession
-import model.Users;
+import model.Customer;
 
 /**
  * Servlet that handles user registration and automatic login using session.
@@ -85,10 +85,10 @@ public class RegisterServlet extends HttpServlet {
         
         // --- Registration logic and result handling ---
         
-        UsersDAO dao = new UsersDAO();
+        CustomerDAO dao = new CustomerDAO();
         boolean isRegsitered = false;
         try {
-            // The register() method is assumed to return a Users object if successful
+            // The register() method is assumed to return a Customer object if successful
              isRegsitered = dao.register(name, email, numberPhone, address, password, 1);
         } catch (Exception e) {
             // Common causes: duplicate email or database error

@@ -13,7 +13,7 @@ import java.sql.Date;
 public class SupportTickets {
 
     private int ticketID;          // ID of the support ticket (Primary Key)
-    private Users userID;          // User who created the ticket (FK to Users)
+    private Customer userID;          // User who created the ticket (FK to Customer)
     private String subject;        // Short title or subject of the issue
     private String message;        // Detailed description of the issue
     private Date createdAt;        // Date when the ticket was created
@@ -25,7 +25,7 @@ public class SupportTickets {
     }
 
     // Full-argument constructor
-    public SupportTickets(int ticketID, Users userID, String subject, String message, Date createdAt, String status, int assignedStaffID) {
+    public SupportTickets(int ticketID, Customer userID, String subject, String message, Date createdAt, String status, int assignedStaffID) {
         this.ticketID = ticketID;
         this.userID = userID;
         this.subject = subject;
@@ -43,11 +43,11 @@ public class SupportTickets {
         this.ticketID = ticketID;
     }
 
-    public Users getUserID() {
+    public Customer getUserID() {
         return userID;
     }
 
-    public void setUserID(Users userID) {
+    public void setUserID(Customer userID) {
         this.userID = userID;
     }
 

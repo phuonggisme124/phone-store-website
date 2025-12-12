@@ -10,7 +10,7 @@
 <%@page import="model.Category"%>
 <%@page import="model.Products"%>
 <%@page import="java.util.List"%>
-<%@ page import="model.Users" %>
+<%@ page import="model.Customer" %>
 
 <!DOCTYPE html>
 <html>
@@ -304,7 +304,7 @@
                             <div class="user-items ps-5">
                                 <ul class="d-flex justify-content-end list-unstyled align-items-center">
                                     <%
-                                        model.Users user = (model.Users) session.getAttribute("user");
+                                        model.Customer user = (model.Customer) session.getAttribute("user");
                                         boolean isLoggedIn = (user != null);
                                         String displayName = "";
                                         List<Carts> carts = (List<Carts>) session.getAttribute("cart");
@@ -317,7 +317,7 @@
                                     %>
                                     <li class="pe-3">
                                         <form action="cart" method="get" class="d-inline-block position-relative">
-                                            <input type="hidden" name="userID" value="<%=user.getUserId()%>">
+                                            <input type="hidden" name="userID" value="<%=user.getCustomerID() %>">
                                             <button type="submit" class="position-relative border-0 bg-transparent p-0">
                                                 <i class="bi bi-cart text-dark fs-4"></i>
                                                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"><%=carts.size()%></span>
@@ -339,8 +339,8 @@
                                                 try (Connection conn = new DBContext().conn) {
                                                     NotificationDAO dao = new NotificationDAO(conn);
 
-                                                    Users currentUser = (Users) session.getAttribute("user");
-                                                    int userId = (currentUser != null) ? currentUser.getUserId() : 1;
+                                                    Customer currentUser = (Customer) session.getAttribute("user");
+                                                    int userId = (currentUser != null) ? currentUser.getCustomerID() : 1;
 
                                                     List<Notification> notifications = dao.getNotificationsByUser(userId);
 
