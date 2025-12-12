@@ -1,32 +1,38 @@
 package model;
 
-import java.sql.Date;
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 
 public class Staff {
 
-    private int id;
+    private int staffID;
     private String fullName;
-   private LocalDateTime createdAt;
-    private double rate; 
-    private double totalsalary;
+    private String email;
+    private String phone;
+    private String password;
+    private int role;
+    private String status;
+    private Timestamp createdAt;
 
-    public Staff(int id, String fullName, LocalDateTime createdAt, double rate) {
-        this.id = id;
+    public Staff() {}
+
+    public Staff(int staffID, String fullName, String email, String phone,
+                 String password, int role, String status, Timestamp createdAt) {
+        this.staffID = staffID;
         this.fullName = fullName;
+        this.email = email;
+        this.phone = phone;
+        this.password = password;
+        this.role = role;
+        this.status = status;
         this.createdAt = createdAt;
-        this.rate = rate;
-        this.totalsalary  = 5000000 * rate;
     }
 
-   
-
-    public int getId() {
-        return id;
+    public int getStaffID() {
+        return staffID;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setStaffID(int staffID) {
+        this.staffID = staffID;
     }
 
     public String getFullName() {
@@ -37,30 +43,53 @@ public class Staff {
         this.fullName = fullName;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public int getRole() {
+        return role;
+    }
+
+    public void setRole(int role) {
+        this.role = role;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public Timestamp getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(Timestamp createdAt) {
         this.createdAt = createdAt;
     }
 
-    
-
-    public double getRate() {
-        return rate;
-    }
-
-    public void setRate(double rate) {
-        this.rate = rate;
-    }
-
-    public double getTotalsalary() {
-        return totalsalary;
-    }
-
-    public void setTotalsalary(double totalsalary) {
-        this.totalsalary = totalsalary;
-    }
-
+   
 }
