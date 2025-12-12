@@ -274,72 +274,72 @@ public class ProductServlet extends HttpServlet {
 
             request.getRequestDispatcher("public/view_product_by_category.jsp").forward(request, response);
         } else if (action.equals("productDetail")) {
-            try {
-                List<Products> listProducts = pdao.getAllProduct();
-                List<Variants> listVariants;
+    try {
+        List<Products> listProducts = pdao.getAllProduct();
+        List<Variants> listVariants;
 
-                // check roel 2,4
-                if (currentUser.getRole() == 2) {
-                    // staff
-                    String productId = request.getParameter("productId");
-                    if (productId == null) {
-                        productId = request.getParameter("pID");
-                    }
-                    if (productId == null) {
-                        productId = request.getParameter("id");
-                    }
-
-                    String color = request.getParameter("color");
-                    String storage = request.getParameter("storage");
-
-                    if (color != null && color.trim().isEmpty()) {
-                        color = null;
-                    }
-                    if (storage != null && storage.trim().isEmpty()) {
-                        storage = null;
-                    }
-
-                    if (productId != null && !productId.isEmpty()) {
-                        int id = Integer.parseInt(productId);
-                        if (color != null || storage != null) {
-                            listVariants = vdao.searchVariantsByProductId(id, color, storage);
-                        } else {
-                            listVariants = vdao.getAllVariantByProductID(id);
-                        }
-                    } else {
-                        listVariants = vdao.searchVariants(color, storage);
-                    }
-
-                    request.setAttribute("listVariants", listVariants);
-                    request.setAttribute("listProducts", listProducts);
-                    request.setAttribute("allColors", vdao.getAllColors());
-                    request.setAttribute("allStorages", vdao.getAllStorages());
-                    request.setAttribute("selectedProductId", productId);
-
-                    request.getRequestDispatcher("staff/staff_manageproduct_detail.jsp").forward(request, response);
-
-                } else if (currentUser.getRole() == 4) {
-                    // admin
-                    int pID = Integer.parseInt(request.getParameter("pID"));
-                    listVariants = vdao.getAllVariantByProductID(pID);
-
-                    if (listVariants == null || listVariants.isEmpty()) {
-                        response.sendRedirect("product?action=manageProduct");
-                        return;
-                    }
-
-                    request.setAttribute("pID", pID);
-                    request.setAttribute("listProducts", listProducts);
-                    request.setAttribute("listVariants", listVariants);
-                    vdao.updateDiscountPrice();
-                    request.getRequestDispatcher("admin/admin_manageproduct_detail.jsp").forward(request, response);
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                response.sendRedirect("error.jsp");
+        
+        if (currentStaff != null && currentStaff.getRole() == 2) {
+            // staff logic
+            String productId = request.getParameter("productId");
+            if (productId == null) {
+                productId = request.getParameter("pID");
             }
-        } else if (action.equals("updateProduct")) {
+            if (productId == null) {
+                productId = request.getParameter("id");
+            }
+
+            String color = request.getParameter("color");
+            String storage = request.getParameter("storage");
+
+            if (color != null && color.trim().isEmpty()) {
+                color = null;
+            }
+            if (storage != null && storage.trim().isEmpty()) {
+                storage = null;
+            }
+
+            if (productId != null && !productId.isEmpty()) {
+                int id = Integer.parseInt(productId);
+                if (color != null || storage != null) {
+                    listVariants = vdao.searchVariantsByProductId(id, color, storage);
+                } else {
+                    listVariants = vdao.getAllVariantByProductID(id);
+                }
+            } else {
+                listVariants = vdao.searchVariants(color, storage);
+            }
+
+            request.setAttribute("listVariants", listVariants);
+            request.setAttribute("listProducts", listProducts);
+            request.setAttribute("allColors", vdao.getAllColors());
+            request.setAttribute("allStorages", vdao.getAllStorages());
+            request.setAttribute("selectedProductId", productId);
+
+            request.getRequestDispatcher("staff/staff_manageproduct_detail.jsp").forward(request, response);
+
+        } else if (currentStaff != null && currentStaff.getRole() == 4) {
+            // admin logic
+            int pID = Integer.parseInt(request.getParameter("pID"));
+            listVariants = vdao.getAllVariantByProductID(pID);
+
+            if (listVariants == null || listVariants.isEmpty()) {
+                response.sendRedirect("product?action=manageProduct");
+                return;
+            }
+
+            request.setAttribute("pID", pID);
+            request.setAttribute("listProducts", listProducts);
+            request.setAttribute("listVariants", listVariants);
+            vdao.updateDiscountPrice();
+            request.getRequestDispatcher("admin/admin_manageproduct_detail.jsp").forward(request, response);
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        response.sendRedirect("error.jsp");
+    }
+} else if (action.equals("updateProduct")) {
             if (currentStaff.getRole() != 4) {
                 response.sendRedirect("product?action=manageProduct");
                 return;
