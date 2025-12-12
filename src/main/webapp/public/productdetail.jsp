@@ -1,5 +1,4 @@
 <%@page import="model.Specification"%>
-<%@page import="dao.UsersDAO"%>
 <%@page import="model.Review"%>
 <%@page import="dao.ReviewDAO"%>
 <%@page import="dao.ProductDAO"%>
@@ -7,7 +6,6 @@
 <%@page import="model.Variants"%>
 <%@page import="model.Products"%>
 <%@page import="java.util.List"%>
-<%@ page import="model.Users" %>     
 <%@ page import="dao.WishlistDAO" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.net.URLEncoder" %>
@@ -41,7 +39,7 @@
 
     int userID = 0;
     if (isLoggedIn) {
-        userID = user.getUserId();
+        userID = user.getCustomerID() ;
         displayName = (user.getFullName() != null && !user.getFullName().trim().isEmpty())
                 ? user.getFullName() : user.getEmail();
     }
@@ -379,7 +377,7 @@
                         <div style="background: yellow; color: black;">
 
                         </div>
-                        <% if (isLoggedIn && userID == r.getUser().getUserId()) {%>
+                        <% if (isLoggedIn && userID == r.getUser().getCustomerID() ) {%>
                         <form action="review?action=deleteReview" method="post" style="display:inline;">
                             <input type="hidden" name="rID" value="<%= r.getReviewID()%>">
                             <input type="hidden" name="vID" value="<%= r.getVariant().getVariantID()%>">
@@ -453,7 +451,7 @@
                                                 <!-- WISH LIST BUTTON -->
                                                 <div class="wishlist-wrap">
                                                     <%
-                                                        Users u = (Users) session.getAttribute("user");
+                                                        Customer u = (Customer) session.getAttribute("user");
                                                         boolean logged = (u != null);
                                                         boolean liked = false;
                                                         int variantID = -1;
@@ -465,7 +463,7 @@
                                                         if (logged && variantID > 0) {
                                                             try {
                                                                 WishlistDAO wdao = new WishlistDAO();
-                                                                liked = wdao.isExist(u.getUserId(), rp.getProductID(), variantID);
+                                                                liked = wdao.isExist(u.getCustomerID() , rp.getProductID(), variantID);
                                                             } catch (Exception e) {
                                                                 e.printStackTrace();
                                                             }
@@ -575,7 +573,7 @@
     <script src="js/jquery-1.11.0.min.js"></script>
     <script src="js/bootstrap.bundle.min.js"></script>
 
-<<<<<<< HEAD
+
 <script>
 
     /* ------------------ REVIEW MODAL ------------------ */
@@ -631,7 +629,7 @@
                     quantityInput.value = val;
                     updateHiddenQuantity(val);
                     if (stockError) stockError.style.display = "none";
-=======
+
     <script>
                                                     const modal = document.getElementById("reviewModal");
                                                     const openModalBtn = document.getElementById("openReviewModal");
@@ -728,7 +726,7 @@
                     alert("You can only upload up to 3 photos!");
                     this.value = "";
                     return;
->>>>>>> 8bfb7936d9efd70aa440344692a82275c922c3d0
+
                 }
             };
 

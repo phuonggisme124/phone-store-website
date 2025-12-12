@@ -31,8 +31,8 @@
                ><i class="bi bi-bag me-2"></i>Orders</a></li>
         <li><a href="${pageContext.request.contextPath}/review?action=manageReview" <%= (action.equals("manageReview")) ? "class='active'" : ""%>
                ><i class="bi bi-chat me-2"></i>Reviews</a></li>
-        <li><a href="${pageContext.request.contextPath}/user?action=manageUser" <%= (action.equals("manageUser")) ? "class='active'" : ""%>
-               ><i class="bi bi-people me-2"></i>Users</a></li>
+        <li><a href="${pageContext.request.contextPath}/customer?action=manageUser" <%= (action.equals("manageUser")) ? "class='active'" : ""%>
+               ><i class="bi bi-people me-2"></i>Customer</a></li>
         <li><a href="${pageContext.request.contextPath}/category?action=manageCategory" <%= (action.equals("manageCategory")) ? "class='active'" : ""%>
 
                ><i class="bi bi-grid me-2"></i>Category</a></li>          

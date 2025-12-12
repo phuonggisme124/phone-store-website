@@ -1,4 +1,3 @@
-
 <%@page import="java.time.LocalDateTime"%>
 <%@page import="java.time.format.DateTimeFormatter"%>
 
@@ -8,8 +7,7 @@
 <%@page import="model.Products"%>
 <%@page import="java.util.List"%>
 <%@page import="java.util.ArrayList"%>
-<%@page import="model.Users"%>
-<%@page import="com.google.gson.Gson"%>
+<%@page import="model.Staff"%> <%@page import="com.google.gson.Gson"%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html lang="en">
@@ -17,13 +15,10 @@
         <meta charset="UTF-8">
         <title>Admin Dashboard - Manage Promotions</title>
 
-        <!-- Bootstrap -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-        <!-- Icons -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
-        <!-- Custom CSS -->
         <link rel="stylesheet" href="css/dashboard_admin.css">
         <link href="css/dashboard_table.css" rel="stylesheet">
         <link href="css/dashboard_admin_managepromotion.css" rel="stylesheet">
@@ -31,13 +26,16 @@
     </head>
     <body>
         <%
-            Users currentUser = (Users) session.getAttribute("user");
+            // SỬA: Lấy Staff từ Session
+            Staff currentUser = (Staff) session.getAttribute("user");
+            
             if (currentUser == null) {
                 response.sendRedirect("login.jsp");
                 return;
             }
+            // Check quyền Admin (Role = 4)
             if (currentUser.getRole() != 4) {
-                response.sendRedirect("login");
+                response.sendRedirect("login"); // Hoặc trang báo lỗi quyền
                 return;
             }
 
@@ -63,16 +61,12 @@
 
         <script>
             const allProductNames = <%= new Gson().toJson(allProductNames)%>;
-
         </script>
 
         <div class="d-flex" id="wrapper">
-            <!-- Sidebar -->
             <%@ include file="sidebar.jsp" %>
 
-            <!-- Page Content -->
             <div class="page-content flex-grow-1">
-                <!-- Navbar -->
                 <nav class="navbar navbar-light bg-white shadow-sm">
                     <div class="container-fluid">
                         <button class="btn btn-outline-primary" id="menu-toggle">
@@ -80,14 +74,11 @@
                         </button>
                         <div class="d-flex align-items-center ms-auto">
 
-                            <!-- Search Product -->
                             <form action="admin" method="get" class="d-flex position-relative me-3" id="searchForm" autocomplete="off">
                                 <input type="hidden" name="action" value="managePromotion">
-                                <!-- Giữ lại discountFilter nếu đang filter -->
                                 <input type="hidden" name="discountFilter" value="<%= currentDiscount%>">
                                 <input class="form-control me-2" type="text" id="searchProduct" name="productName"
                                        placeholder="Search Product…" value="<%= currentProductName%>"
-
                                        oninput="showSuggestions(this.value)">
                                 <button class="btn btn-outline-primary" type="submit">
                                     <i class="bi bi-search"></i>
@@ -96,13 +87,9 @@
                                      style="top: 100%; z-index: 1000;"></div>
                             </form>
 
-                            <!-- Filter Discount -->
                             <form action="admin" method="get" class="dropdown me-3">
                                 <input type="hidden" name="action" value="managePromotion">
-                                <!-- Giữ lại productName nếu đang search -->
-
                                 <input type="hidden" name="productName" value="<%= currentProductName%>">
-
 
                                 <button class="btn btn-outline-secondary fw-bold dropdown-toggle"
                                         type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
@@ -111,88 +98,77 @@
                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="filterDropdown">
                                     <li><button type="submit" name="discountFilter" value="All" class="dropdown-item">All Discounts</button></li>
                                     <li><button type="submit" name="discountFilter" value="0-20" class="dropdown-item">
-
                                             <i class="bi bi-tag"></i> 0% - 20%
-                                        </button></li>
+                                    </button></li>
                                     <li><button type="submit" name="discountFilter" value="21-40" class="dropdown-item">
                                             <i class="bi bi-tag"></i> 21% - 40%
-                                        </button></li>
+                                    </button></li>
                                     <li><button type="submit" name="discountFilter" value="41-60" class="dropdown-item">
                                             <i class="bi bi-tag"></i> 41% - 60%
-                                        </button></li>
+                                    </button></li>
                                     <li><button type="submit" name="discountFilter" value="61-80" class="dropdown-item">
                                             <i class="bi bi-tag"></i> 61% - 80%
-                                        </button></li>
+                                    </button></li>
                                     <li><button type="submit" name="discountFilter" value="81-100" class="dropdown-item">
                                             <i class="bi bi-tag-fill"></i> 81% - 100%
-                                        </button></li>
-
+                                    </button></li>
                                 </ul>
                             </form>
 
-                            <a href="logout" class="btn btn-outline-danger btn-sm">Logout</a>
+                            <a href="logout" class="btn btn-outline-danger btn-sm me-3">Logout</a>
                             <div class="d-flex align-items-center ms-3">
                                 <img src="https://i.pravatar.cc/40" class="rounded-circle me-2" width="35">
-
                                 <span><%= currentUser.getFullName()%></span>
-
                             </div>
                         </div>
                     </div>
                 </nav>
 
-                <!-- Promotions Table -->
                 <%
                     String successCreatePromotion = (String) session.getAttribute("successCreatePromotion");
                     String successUpdatePromotion = (String) session.getAttribute("successUpdatePromotion");
                     String successDeletePromotion = (String) session.getAttribute("successDeletePromotion");
+                    
                     if (successCreatePromotion != null) {
                 %>
                 <div class="alert alert-success alert-dismissible fade show w-50 mx-auto mt-3" role="alert">
                     <i class="bi bi-check-circle-fill me-2"></i><%= successCreatePromotion%>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
-
                 <%
                         session.removeAttribute("successCreatePromotion");
                     }
                 %>
                 
-                
                 <%
-                    
-                    
                     if (successUpdatePromotion != null) {
                 %>
                 <div class="alert alert-success alert-dismissible fade show w-50 mx-auto mt-3" role="alert">
                     <i class="bi bi-check-circle-fill me-2"></i><%= successUpdatePromotion%>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
-
                 <%
                         session.removeAttribute("successUpdatePromotion");
                     }
                 %>
+                
                 <%
-                    
-                    
                     if (successDeletePromotion != null) {
                 %>
                 <div class="alert alert-success alert-dismissible fade show w-50 mx-auto mt-3" role="alert">
                     <i class="bi bi-check-circle-fill me-2"></i><%= successDeletePromotion%>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
-
                 <%
                         session.removeAttribute("successDeletePromotion");
                     }
                 %>
+                
                 <div class="card shadow-sm border-0 p-4 m-3">
                     <div class="card-body p-0">
                         <div class="container-fluid p-4 ps-3">
                             <h1 class="fw-bold ps-3 mb-4 fw-bold text-primary">Manage Promotions</h1>
                         </div>
-                        <!-- Create Promotion Button -->
                         <div class="container-fluid p-4">
                             <a class="btn btn-primary px-4 py-2 rounded-pill shadow-sm" href="promotion?action=createPromotion">
                                 <i class="bi bi-tag-fill me-2"></i> Create Promotion
@@ -308,65 +284,58 @@
             </div>
         </div>
 
-        <!-- JS Libraries -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-        <!-- Custom JS -->
         <script src="js/dashboard.js"></script>
         <script>
-                                        // Menu toggle
-                                        document.getElementById("menu-toggle").addEventListener("click", function () {
-                                            document.getElementById("wrapper").classList.toggle("toggled");
-                                        });
-
-                                        // ------------------ Autocomplete ------------------
-                                        var debounceTimer;
-                                        function showSuggestions(str) {
-                                            clearTimeout(debounceTimer);
-                                            debounceTimer = setTimeout(() => {
-                                                var box = document.getElementById("suggestionBox");
-                                                box.innerHTML = "";
-                                                if (str.length < 1)
-                                                    return;
-
-                                                var matches = allProductNames.filter(name =>
-                                                    name.toLowerCase().includes(str.toLowerCase())
-                                                );
-
-                                                if (matches.length > 0) {
-                                                    matches.slice(0, 5).forEach(name => {
-                                                        var item = document.createElement("button");
-                                                        item.type = "button";
-                                                        item.className = "list-group-item list-group-item-action";
-                                                        item.textContent = name;
-                                                        item.onclick = function () {
-                                                            document.getElementById("searchProduct").value = name;
-                                                            box.innerHTML = "";
-                                                            document.getElementById("searchForm").submit();
-                                                        };
-                                                        box.appendChild(item);
-                                                    });
-                                                } else {
-                                                    var item = document.createElement("div");
-                                                    item.className = "list-group-item text-muted small";
-                                                    item.textContent = "No products found.";
-                                                    box.appendChild(item);
-                                                }
-                                            }, 200);
-                                        }
-
-                                        // Ẩn suggestions khi click bên ngoài
-                                        document.addEventListener('click', function (e) {
-                                            var searchInput = document.getElementById('searchProduct');
-                                            var suggestionBox = document.getElementById('suggestionBox');
-                                            if (!searchInput.contains(e.target) && !suggestionBox.contains(e.target)) {
-                                                suggestionBox.innerHTML = "";
-                                            }
-                                        });
-        </script>
-        <script>
+            // Menu toggle
             document.getElementById("menu-toggle").addEventListener("click", function () {
                 document.getElementById("wrapper").classList.toggle("toggled");
+            });
+
+            // Autocomplete
+            var debounceTimer;
+            function showSuggestions(str) {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    var box = document.getElementById("suggestionBox");
+                    box.innerHTML = "";
+                    if (str.length < 1)
+                        return;
+
+                    var matches = allProductNames.filter(name =>
+                        name.toLowerCase().includes(str.toLowerCase())
+                    );
+
+                    if (matches.length > 0) {
+                        matches.slice(0, 5).forEach(name => {
+                            var item = document.createElement("button");
+                            item.type = "button";
+                            item.className = "list-group-item list-group-item-action";
+                            item.textContent = name;
+                            item.onclick = function () {
+                                document.getElementById("searchProduct").value = name;
+                                box.innerHTML = "";
+                                document.getElementById("searchForm").submit();
+                            };
+                            box.appendChild(item);
+                        });
+                    } else {
+                        var item = document.createElement("div");
+                        item.className = "list-group-item text-muted small";
+                        item.textContent = "No products found.";
+                        box.appendChild(item);
+                    }
+                }, 200);
+            }
+
+            // Ẩn suggestions khi click bên ngoài
+            document.addEventListener('click', function (e) {
+                var searchInput = document.getElementById('searchProduct');
+                var suggestionBox = document.getElementById('suggestionBox');
+                if (!searchInput.contains(e.target) && !suggestionBox.contains(e.target)) {
+                    suggestionBox.innerHTML = "";
+                }
             });
         </script>
     </body>

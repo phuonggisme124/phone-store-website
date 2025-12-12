@@ -2,13 +2,15 @@
 <%@page import="java.time.LocalDateTime"%>
 <%@page import="java.time.format.DateTimeFormatter"%>
 <%@page import="com.google.gson.Gson"%>
-<%@page import="dao.UsersDAO"%>
+<%@page import="dao.CustomerDAO"%> 
+<%@page import="dao.StaffDAO"%>    
 <%@page import="model.Order"%>
 <%@page import="model.Suppliers"%>
 <%@page import="model.Category"%>
 <%@page import="model.Products"%>
 <%@page import="java.util.List"%>
-<%@page import="model.Users"%>
+<%@page import="model.Staff"%>     
+<%@page import="model.Customer"%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html lang="en">
@@ -17,7 +19,6 @@
         <title>Admin Dashboard - Manage Order</title>
 
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
         <link rel="stylesheet" href="css/dashboard_admin.css">
@@ -27,7 +28,19 @@
     </head>
     <body>
         <%
-            Users user = (Users) session.getAttribute("user");
+            // 1. FIX: Get Staff from Session (Admin is a Staff)
+            Staff currentUser = (Staff) session.getAttribute("user");
+            
+            if (currentUser == null) {
+                response.sendRedirect("login.jsp");
+                return;
+            }
+            // Check Admin role
+            if (currentUser.getRole() != 4) {
+                response.sendRedirect("login"); 
+                return;
+            }
+
             String phone = (String) request.getAttribute("phone");
             if (phone == null || phone.isEmpty()) {
                 phone = "";
@@ -53,9 +66,7 @@
                         </button>
                         <div class="d-flex align-items-center ms-auto">
 
-
                             <form action="order" method="get" class="d-flex position-relative me-3" id="searchForm" autocomplete="off">
-
                                 <input type="hidden" name="action" value="searchOrder">
                                 <input type="hidden" name="status" value="<%= status%>">
                                 <div class="position-relative" style="width: 300px;">
@@ -72,10 +83,8 @@
                                 </button>
                             </form>
 
-
                             <form action="order" method="get" class="dropdown me-3">
                                 <input type="hidden" name="action" value="filterOrder">
-
                                 <input type="hidden" name="phone" value="<%= phone%>">
 
                                 <button class="btn btn-outline-secondary fw-bold dropdown-toggle" 
@@ -99,19 +108,17 @@
                             <a href="logout" class="btn btn-outline-danger btn-sm">Logout</a>
                             <div class="d-flex align-items-center ms-3">
                                 <img src="https://i.pravatar.cc/40" class="rounded-circle me-2" width="35">
-
-                                <span><%= user != null ? user.getFullName() : "Admin"%></span>
-
+                                <span><%= currentUser.getFullName() %></span>
                             </div>
                         </div>
                     </div>
                 </nav>
 
-
-
-
                 <%
-                    UsersDAO udao = new UsersDAO();
+                    // 3. FIX: Initialize Correct DAOs
+                    CustomerDAO custDAO = new CustomerDAO(); 
+                    StaffDAO staffDAO = new StaffDAO(); 
+                    
                     List<Order> listOrder = (List<Order>) request.getAttribute("listOrder");
                 %>
 
@@ -128,6 +135,7 @@
                                 <i class="bi bi-box-seam me-2"></i> Instalment
                             </a>
                         </div>
+                        <div class="table-responsive">
                         <table class="table table-hover align-middle mb-0">
                             <thead class="table-light">
                                 <tr>
@@ -162,11 +170,16 @@
                                         } else {
                                             statusBadge = "<span class='badge status-red bg-success' style='font-size: 15px'>Cancelled</span>";
                                         }
+                                        
+                                        // 4. FIX: Get Customer Name using CustomerDAO
+                                        String customerName = "Unknown";
+                                        Customer c = custDAO.getCustomerById(o.getUserID());
+                                        if(c != null) customerName = c.getFullName();
                                 %>                              
 
-                                <tr  onclick="window.location.href = 'order?action=orderDetail&id=<%= o.getOrderID()%>&isInstalment=<%= o.getIsInstalment()%>'">
+                                <tr onclick="window.location.href = 'order?action=orderDetail&id=<%= o.getOrderID()%>&isInstalment=<%= o.getIsInstalment()%>'">
                                     <td>#<%= o.getOrderID()%></td>
-                                    <td><%= udao.getUserByID(o.getUserID()).getFullName()%></td>
+                                    <td><%= customerName %></td>
                                     <td><%= o.getBuyerPhone()%></td>
                                     <td><%= o.getBuyerName()%></td>
                                     <td><%= o.getShippingAddress()%></td>
@@ -183,27 +196,30 @@
                                     <td><%= String.format("%,.0f", o.getTotalAmount())%></td>
 
                                     <%
+                                        // 5. FIX: Get Staff/Shipper Name using StaffDAO
                                         String staffName = "";
                                         if (o.getStaffID() != 0) {
-                                            staffName = udao.getUserByID(o.getStaffID()).getFullName();
+                                            Staff s = staffDAO.getStaffByID(o.getStaffID());
+                                            if(s != null) staffName = s.getFullName();
                                         }
+                                        
                                         String shipperName = "";
                                         if (o.getShipperID() != 0) {
-                                            shipperName = udao.getUserByID(o.getShipperID()).getFullName();
+                                            Staff s = staffDAO.getStaffByID(o.getShipperID());
+                                            if(s != null) shipperName = s.getFullName();
                                         }
                                     %>
 
-
                                     <td><%=staffName%></td>   
-
                                     <td><%= shipperName%></td>  
                                     <td><%= statusBadge%></td>
-                                </tr>                          
+                                </tr>                                  
                                 <%
                                     }
                                 %>
                             </tbody>
                         </table>
+                        </div>
                     </div>
                 </div>
                 <%
@@ -222,72 +238,61 @@
         <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
         <script>
-                                    const phoneNumbers = <%= new Gson().toJson(listPhone)%>;
-                                    const searchInput = document.getElementById("searchPhone");
-                                    const suggestionBox = document.getElementById("suggestionBox");
+            const phoneNumbers = <%= new Gson().toJson(listPhone)%>;
+            const searchInput = document.getElementById("searchPhone");
+            const suggestionBox = document.getElementById("suggestionBox");
 
+            function fetchSuggestions(query) {
+                query = query.trim().toLowerCase();
+                suggestionBox.innerHTML = "";
 
-                                    // Hàm hiển thị gợi ý
+                if (!query) {
+                    suggestionBox.style.display = "none";
+                    return;
+                }
 
-                                    function fetchSuggestions(query) {
-                                        query = query.trim().toLowerCase();
-                                        suggestionBox.innerHTML = "";
+                const matches = phoneNumbers.filter(num => num.includes(query));
 
-                                        if (!query) {
-                                            suggestionBox.style.display = "none";
-                                            return;
-                                        }
+                if (matches.length === 0) {
+                    suggestionBox.style.display = "none";
+                    return;
+                }
 
-                                        const matches = phoneNumbers.filter(num => num.includes(query));
+                matches.forEach(num => {
+                    const item = document.createElement("button");
+                    item.type = "button";
+                    item.className = "list-group-item list-group-item-action";
+                    item.innerHTML = highlightMatch(num, query);
 
-                                        if (matches.length === 0) {
-                                            suggestionBox.style.display = "none";
-                                            return;
-                                        }
+                    item.addEventListener("click", () => {
+                        searchInput.value = num;
+                        suggestionBox.style.display = "none";
+                        document.getElementById("searchForm").submit();
+                    });
 
-                                        matches.forEach(num => {
-                                            const item = document.createElement("button");
-                                            item.type = "button";
-                                            item.className = "list-group-item list-group-item-action";
-                                            item.innerHTML = highlightMatch(num, query);
+                    suggestionBox.appendChild(item);
+                });
 
-                                            item.addEventListener("click", () => {
-                                                searchInput.value = num;
-                                                suggestionBox.style.display = "none";
-                                                document.getElementById("searchForm").submit();
-                                            });
+                suggestionBox.style.display = "block";
+            }
 
-                                            suggestionBox.appendChild(item);
-                                        });
+            function highlightMatch(text, keyword) {
+                const regex = new RegExp(`(${keyword})`, "gi");
+                return text.replace(regex, `<strong>$1</strong>`);
+            }
 
-                                        suggestionBox.style.display = "block";
-                                    }
-
-
-                                    // Tô đậm phần khớp
-
-                                    function highlightMatch(text, keyword) {
-                                        const regex = new RegExp(`(${keyword})`, "gi");
-                                        return text.replace(regex, `<strong>$1</strong>`);
-                                    }
-
-
-                                    // Ẩn box khi click ra ngoài
-                                    document.addEventListener("click", (e) => {
-                                        if (!e.target.closest("#searchForm")) {
-                                            suggestionBox.style.display = "none";
-                                        }
-                                    });
-
+            document.addEventListener("click", (e) => {
+                if (!e.target.closest("#searchForm")) {
+                    suggestionBox.style.display = "none";
+                }
+            });
         </script>
 
         <script>
             document.getElementById("menu-toggle").addEventListener("click", function () {
                 document.getElementById("wrapper").classList.toggle("toggled");
             });
-
         </script>
 
     </body>
 </html>
-

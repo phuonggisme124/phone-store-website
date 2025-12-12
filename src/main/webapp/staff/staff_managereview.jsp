@@ -2,7 +2,7 @@
 <%@page import="java.util.List"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="model.Review"%>
-<%@page import="model.Users"%>
+<%@page import="model.Staff"%> <%@page import="model.Customer"%>
 <%@page import="com.google.gson.Gson"%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
@@ -15,7 +15,7 @@
         <link rel="stylesheet" href="css/dashboard_staff.css">
         <link href="css/dashboard_table.css" rel="stylesheet">
         <style>
-           
+            
             /* thông báo */
             .toast-notification {
                 position: fixed;
@@ -25,7 +25,7 @@
                 min-width: 300px;
                 animation: slideInRight 0.3s ease-out;
             }
-            
+             
             @keyframes slideInRight {
                 from {
                     transform: translateX(100%);
@@ -36,11 +36,11 @@
                     opacity: 1;
                 }
             }
-            
+             
             .toast-notification.hiding {
                 animation: slideOutRight 0.3s ease-in;
             }
-            
+             
             @keyframes slideOutRight {
                 from {
                     transform: translateX(0);
@@ -132,7 +132,7 @@
                 box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
             }
 
-            
+             
             #suggestionBox {
                 background: white;
                 border: 1px solid rgba(102, 126, 234, 0.2);
@@ -152,7 +152,7 @@
                 padding-left: 20px;
             }
 
-          
+           
             .comment-preview {
                 max-width: 200px;
                 white-space: nowrap;
@@ -189,7 +189,7 @@
                 }
             }
 
-            
+             
             .card {
                 border-radius: 16px !important;
                 box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08) !important;
@@ -200,7 +200,7 @@
                 box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12) !important;
             }
 
-            
+             
             .btn {
                 border-radius: 10px;
                 transition: all 0.3s ease;
@@ -213,8 +213,16 @@
     </head>
     <body>
         <%
+            // --- SỬA ĐOẠN NÀY ---
+            // Lấy Staff từ session thay vì Users/Customer
+            Staff currentStaff = (Staff) session.getAttribute("user");
+            
+            if (currentStaff == null) {
+                response.sendRedirect("login.jsp");
+                return;
+            }
+
             List<Review> listReview = (List<Review>) request.getAttribute("listReview");
-            Users currentUser = (Users) session.getAttribute("user");
             
             String currentRating = request.getParameter("ratingFilter") != null ? request.getParameter("ratingFilter") : "All";
             String currentProductName = request.getParameter("productName") != null ? request.getParameter("productName") : "";
@@ -256,7 +264,6 @@
         <% } %>
 
         <div class="d-flex" id="wrapper">
-            <!-- Sidebar -->
             <nav class="sidebar bg-white shadow-sm border-end">
                 <div class="sidebar-header p-3">
                     <h4 class="fw-bold text-primary">Mantis</h4>
@@ -271,14 +278,12 @@
 
            
             <div class="page-content flex-grow-1">
-                <!-- Navbar -->
                 <nav class="navbar navbar-light bg-white shadow-sm">
                     <div class="container-fluid">
                         <button class="btn btn-outline-primary" id="menu-toggle">
                             <i class="bi bi-list"></i>
                         </button>
                         <div class="d-flex align-items-center ms-auto">
-                            <!-- Search Product -->
                             <form action="review" method="get" class="d-flex position-relative me-3" id="searchForm" autocomplete="off">
                                 <input type="hidden" name="action" value="manageReview">
                                 <input type="hidden" name="ratingFilter" value="<%= currentRating %>">
@@ -292,7 +297,6 @@
                                      style="top: 100%; z-index: 1000;"></div>
                             </form>
 
-                            <!-- Filter Rating -->
                             <form action="review" method="get" class="dropdown me-3">
                                 <input type="hidden" name="action" value="manageReview">
                                 <input type="hidden" name="productName" value="<%= currentProductName %>">
@@ -323,7 +327,7 @@
                             <a href="logout" class="btn btn-outline-danger btn-sm">Logout</a>
                             <div class="d-flex align-items-center ms-3">
                                 <img src="https://i.pravatar.cc/40" class="rounded-circle me-2" width="35">
-                                <span><%= currentUser != null ? currentUser.getFullName() : "Staff"%></span>
+                                <span><%= currentStaff.getFullName() %></span>
                             </div>
                         </div>
                     </div>
@@ -369,7 +373,6 @@
                                             <td><strong><%= r.getUser().getFullName()%></strong></td>
                                             <td><%= productName%> <%= r.getVariant().getStorage()%></td>
                                             <td>
-                                                <!-- loop só sao -->
                                                 <div class="star-rating">
                                                     <% for (int i = 0; i < r.getRating(); i++) { %>
                                                     <i class="bi bi-star-fill text-warning" style="--star-index: <%= i %>;"></i>
@@ -486,14 +489,6 @@
                     suggestionBox.innerHTML = "";
                 }
             });
-
-            // Add row animation on load
-//            document.addEventListener('DOMContentLoaded', function() {
-//                const rows = document.querySelectorAll('tbody tr');
-//                rows.forEach((row, index) => {
-//                    row.style.animation = `fadeIn 0.5s ease-out ${index * 0.05}s backwards`;
-//                });
-//            });
         </script>
     </body>
 </html>

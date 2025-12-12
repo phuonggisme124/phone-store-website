@@ -1,184 +1,179 @@
-<%@page import="java.util.List"%>
-<%@page import="model.Users"%>
+<%@page import="model.Customer"%> <%@page import="model.Staff"%>    <%@page import="java.util.List"%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>Admin Dashboard</title>
+        <title>Admin Dashboard - Edit User</title>
 
-        <!-- Bootstrap -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-        <!-- Icons -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
-        <!-- Custom CSS -->
         <link rel="stylesheet" href="css/dashboard_admin.css">
         <link href="css/dashboard_table.css" rel="stylesheet">
     </head>
     <body>
+        <%
+            // 1. Lấy thông tin Admin đăng nhập (Staff)
+            Staff currentUser = (Staff) session.getAttribute("user");
+            if (currentUser == null) {
+                response.sendRedirect("login.jsp");
+                return;
+            }
+            if (currentUser.getRole() != 4) {
+                response.sendRedirect("login");
+                return;
+            }
+
+            // 2. Lấy thông tin Customer cần sửa (từ Servlet gửi sang)
+            // Lưu ý: Attribute key phải khớp với Servlet. 
+            // Trong CustomerServlet bạn setAttribute("user", targetUser); => nên dùng "user"
+            // Nếu Servlet bạn gửi là "currentUser" thì giữ nguyên.
+            // Ở đây tôi dùng "user" theo code servlet bạn gửi trước đó.
+            Customer targetUser = (Customer) request.getAttribute("user");
+
+            // Fallback nếu attribute tên là currentUser
+            if (targetUser == null) {
+                targetUser = (Customer) request.getAttribute("currentUser");
+            }
+
+            // Nếu vẫn null thì báo lỗi hoặc redirect
+            if (targetUser == null) {
+        %>
+        <script>alert("User not found!"); window.location.href = "customer?action=manageUser";</script>
+        <%
+                return;
+            }
+        %>
+
         <div class="d-flex" id="wrapper">
-            <!-- Sidebar -->
             <%@ include file="sidebar.jsp" %>
 
-            <!-- Page Content -->
             <div class="page-content flex-grow-1">
-                <!-- Navbar -->
                 <nav class="navbar navbar-light bg-white shadow-sm">
                     <div class="container-fluid">
                         <button class="btn btn-outline-primary" id="menu-toggle"><i class="bi bi-list"></i></button>
-                        <form class="d-none d-md-flex ms-3">
-                            <input class="form-control" type="search" placeholder="Ctrl + K" readonly>
-                        </form>
                         <div class="d-flex align-items-center ms-auto">
-                            <div class="position-relative me-3">
-                                <a href="logout">logout</a>
-                            </div>
-                            <i class="bi bi-bell me-3 fs-5"></i>
-                            <div class="position-relative me-3">
-                                <i class="bi bi-github fs-5"></i>
-                            </div>
+                            <a href="logout" class="btn btn-outline-danger btn-sm me-3">Logout</a>
                             <div class="d-flex align-items-center">
                                 <img src="https://i.pravatar.cc/40" class="rounded-circle me-2" width="35">
-                                <span>Admin</span>
+                                <span><%= currentUser.getFullName()%></span>
                             </div>
                         </div>
                     </div>
                 </nav>
 
-                <!-- Search bar -->
                 <div class="container-fluid p-4">
-                    <input type="text" class="form-control w-25" placeholder="🔍 Search">
-                </div>
+                    <h2 class="text-center mb-4 text-primary fw-bold">Edit Customer Information</h2>
 
-
-
-                <%                    
-                    Users user = (Users) request.getAttribute("currentUser");
-
-                %>
-                <!-- Table -->
-                <form action="user" method="post" class="w-50 mx-auto bg-light p-4 rounded shadow">
-                    <div class="mb-3" >
+                    <form action="user" method="post" class="w-50 mx-auto bg-light p-4 rounded shadow">
 
                         <%
-
-                            if (session.getAttribute("exist") != null) {
-                                String exist = (String) session.getAttribute("exist");
-                                out.println("<p class='error-message'>" + exist + "</p>");
-                            }
-                            session.removeAttribute("exist");
+                            String error = (String) request.getAttribute("error");
+                            String message = (String) request.getAttribute("message");
+                            if (error != null) {
                         %>
-                    </div>
-                    <div class="mb-3">
-                        <input type="hidden" class="form-control" name="userId" value="<%= user.getUserId()%>" readonly>
-                    </div>
+                        <div class="alert alert-danger"><%= error%></div>
+                        <% } else if (message != null) {%>
+                        <div class="alert alert-success"><%= message%></div>
+                        <% }%>
 
-                    <div class="mb-3">
-                        <label class="form-label">Name</label>
-                        <input type="text" class="form-control" name="name" value="<%= user.getFullName()%>" required>
-                    </div>
+                        <div class="mb-3" >
+                            <label class="form-label fw-bold">User ID</label>
+                            <input type="text" class="form-control" name="userId" value="<%= targetUser.getCustomerID()%>" readonly>
+                        </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Email</label>
-                        <input type="email" class="form-control" name="email" value="<%= user.getEmail()%>" required>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Full Name</label>
+                            <input type="text" class="form-control" name="name" value="<%= targetUser.getFullName()%>" required>
+                        </div>
 
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Phone</label>
-                        <input type="text" class="form-control" name="phone" value="<%= user.getPhone()%>">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Address</label>
-                        <input type="text" class="form-control" name="address" value="<%= user.getAddress()%>">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">CreateAt</label>
-                        <input type="text" class="form-control" name="createAt" value="<%= user.getCreatedAt()%>">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Role</label>
-                        <input type="hidden" name="oldRole" value="<%= user.getRole() %>">
-                        <select class="form-select" name="role" id="role">
-                            <option value="1" <%= (user.getRole().equals(1) ? "selected" : "")%>>Customer</option>
-                            <option value="2" <%= (user.getRole().equals(2) ? "selected" : "")%>>Staff</option>
-                            <option value="3" <%= (user.getRole().equals(3) ? "selected" : "")%>>Shipper</option>               
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Status</label>
-                        <select class="form-select" name="status" id="status">
-                            <option value="active" <%= (user.getStatus().equalsIgnoreCase("active") ? "selected" : "")%>>Active</option>
-<<<<<<< HEAD
-                            <option value="locked" <%= (user.getStatus().equalsIgnoreCase("locked") ? "selected" : "")%>>Locked</option>
-=======
-                            <option value="block" <%= (user.getStatus().equalsIgnoreCase("block") ? "selected" : "")%>>Block</option>
->>>>>>> 085e962 (push new version)
-                        </select>
-                    </div>
-                    <div class="d-flex gap-2">
-                        <button type="submit" name="action" value="updateUserAdmin" class="btn btn-primary flex-fill">Update</button>
-                        <button type="submit" name="action" value="deleteUserAdmin" class="btn btn-danger flex-fill">Delete</button>
-                    </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Email</label>
+                            <input type="email" class="form-control" name="email" value="<%= targetUser.getEmail()%>" required>
+                        </div>
 
-                </form>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Phone</label>
+                            <input type="text" class="form-control" name="phone" value="<%= targetUser.getPhone()%>">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Address</label>
+                            <input type="text" class="form-control" name="address" value="<%= targetUser.getAddress()%>">
+                        </div>
+
+<!--                        <div class="mb-3">
+                            <label class="form-label fw-bold">Status</label>
+                            <select class="form-select" name="status" id="status">
+                                <%
+                                    String currentStatus = targetUser.getStatus();
+                                %>
+                                <option value="Active" <%= "Active".equalsIgnoreCase(currentStatus) ? "selected" : ""%>>Active</option>
+
+                                <option value="Block" <%= !"Active".equalsIgnoreCase(currentStatus) ? "selected" : ""%>>Locked/Block</option>
+                            </select>
+                        </div>-->
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Role</label>
+                            <select class="form-select" name="role" disabled>
+                                <option value="1" selected>Customer</option>
+                            </select>
+                            <input type="hidden" name="role" value="1">
+                        </div>
+
+                        <div class="d-flex gap-2 mt-4">
+                            <button type="submit" name="action" value="updateUserAdmin" class="btn btn-primary flex-fill">Update</button>
+                            <button type="button" class="btn btn-danger flex-fill" id="btnDelete">Delete</button>
+                            <input type="hidden" name="action" id="actionInput" value="updateUserAdmin">
+                        </div>
+
+                    </form>
+                </div>
             </div>
+        </div>
 
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-            <!-- JS Libraries -->
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-
-            <!-- Custom JS -->
-            <script src="js/dashboard.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-            <script>
-                document.addEventListener('DOMContentLoaded', function () {
-                    const form = document.querySelector('form[action="user"]');
-                    const deleteBtn = form?.querySelector('button[name="action"][value="deleteUserAdmin"]');
-
-                    if (!deleteBtn) {
-                        console.error("Delete button not found!");
-                        return;
-                    }
-
-                    deleteBtn.addEventListener('click', function (event) {
-                        event.preventDefault(); // Prevent default submit
-
-                        Swal.fire({
-                            title: 'Are you sure you want to delete this user?',
-                            text: 'This action cannot be undone.',
-                            icon: 'warning',
-                            showCancelButton: true,
-                            confirmButtonColor: '#dc3545',
-                            cancelButtonColor: '#6c757d',
-                            confirmButtonText: 'Delete',
-                            cancelButtonText: 'Cancel',
-                            reverseButtons: true,
-                            background: '#fff',
-                            color: '#333',
-                            customClass: {
-                                popup: 'shadow-lg rounded-4 p-3',
-                                confirmButton: 'px-4 py-2 rounded-3',
-                                cancelButton: 'px-4 py-2 rounded-3'
-                            }
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                // Ensure correct action is sent
-                                let actionInput = form.querySelector('input[name="action"]');
-                                if (!actionInput) {
-                                    actionInput = document.createElement('input');
-                                    actionInput.type = 'hidden';
-                                    actionInput.name = 'action';
-                                    form.appendChild(actionInput);
-                                }
-                                actionInput.value = 'deleteUserAdmin';
-                                form.submit();
-                            }
-                        });
-                    });
+        <script>
+                // Toggle Sidebar
+                document.getElementById("menu-toggle").addEventListener("click", function () {
+                    document.getElementById("wrapper").classList.toggle("toggled");
                 });
-            </script>
+
+                // SweetAlert cho nút Delete
+                document.getElementById('btnDelete').addEventListener('click', function () {
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: "You won't be able to revert this!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#dc3545',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Yes, delete it!'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Đổi value của action thành deleteUserAdmin và submit form
+                            const form = document.querySelector('form');
+                            // Tạo input hidden cho action delete (vì button type=button không submit value)
+                            const input = document.createElement('input');
+                            input.type = 'hidden';
+                            input.name = 'action';
+                            input.value = 'deleteUserAdmin';
+                            form.appendChild(input);
+
+                            // Xóa input action cũ nếu có để tránh conflict
+                            const oldInput = document.getElementById('actionInput');
+                            if (oldInput)
+                                oldInput.remove();
+
+                            form.submit();
+                        }
+                    })
+                });
+        </script>
     </body>
 </html>

@@ -1,9 +1,10 @@
+<%@page import="model.Staff"%>
 <%@page import="model.Suppliers"%>
 <%@page import="model.Category"%>
 <%@page import="model.Products"%>
 <%@page import="java.util.List"%>
 <%@page import="java.util.ArrayList"%>
-<%@page import="model.Users"%>
+<%@page import="model.Customer"%>
 <%@page import="com.google.gson.Gson"%>
 <%@page import="java.text.NumberFormat"%>
 <%@page import="java.util.Locale"%>
@@ -314,12 +315,12 @@
 </head>
 <body>
 <%
-    Users currentUser = (Users) session.getAttribute("user");
-    if (currentUser == null) {
+    Staff currentStaff = (Staff) session.getAttribute("user");
+    if (currentStaff == null) {
         response.sendRedirect("login.jsp");
         return;
     }
-    if (currentUser.getRole() != 2) {
+    if (currentStaff.getRole() != 2) {
         response.sendRedirect("login");
         return;
     }
@@ -410,7 +411,7 @@
                     <a href="logout" class="btn btn-outline-danger btn-sm">Logout</a>
                     <div class="d-flex align-items-center ms-3">
                         <img src="https://i.pravatar.cc/40" class="rounded-circle me-2" width="35">
-                        <span><%= currentUser.getFullName() %></span>
+                        <span><%= currentStaff.getFullName() %></span>
                     </div>
                 </div>
             </div>
@@ -494,7 +495,7 @@
                                         catClass = "cat-" + p.getCategoryID();
                                     }
                                 %>
-                                <tr onclick="window.location.href='product?action=productDetail&id=<%= p.getProductID()%>'">
+                                <tr onclick="window.location.href='product?action=productDetail&productId=<%= p.getProductID()%>'">
                                     <td>
                                         <span class="product-id-badge">#<%= p.getProductID() %></span>
                                     </td>

@@ -13,7 +13,7 @@
 <%@page import="java.util.HashMap" %>
 
 <%@page import="dao.WishlistDAO"%>
-<%@page import="model.Users"%>
+
 
 
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
@@ -190,8 +190,7 @@
 
     <body class="bg-gray-100 text-gray-900 font-sans">
 
-        <%  
-            String categoryName = "All Products";
+        <%            String categoryName = "All Products";
 
             if ("1".equals(currentCategoryId)) {
                 categoryName = "Phone";
@@ -240,7 +239,11 @@
                                             String productName = productNameMap_search.get(v.getProductID());
                                             Integer categoryID = productCategoryMap_search.get(v.getProductID());
                                             if (productName != null && categoryID != null) {
-                                                String image = (v.getImageUrl() != null) ? v.getImageUrl().split("#")[0] : "";
+                                                String image = "";
+                                                if (v.getImageList() != null && v.getImageList().length > 0) {
+                                                    String raw = v.getImageList()[0];
+                                                    image = raw.contains("#") ? raw.split("#")[0] : raw;
+                                                }
                                                 String color = (v.getColor() != null) ? v.getColor() : "N/A";
                                                 String storage = (v.getStorage() != null) ? v.getStorage() : "N/A";
                                 %>
@@ -428,6 +431,11 @@
                     if (listVariant != null && !listVariant.isEmpty() && listProduct != null) {
                         for (Variants v : listVariant) {
                             double rating = 0;
+                            String image = "";
+                            if (v.getImageList() != null && v.getImageList().length > 0) {
+                                String raw = v.getImageList()[0];
+                                image = raw.contains("#") ? raw.split("#")[0] : raw;
+                            }
                             String pName = "";
                             for (Products p : listProduct) {
                                 if (p.getProductID() == v.getProductID()) {
@@ -451,13 +459,13 @@
                     <div class="relative">
                         <a href="product?action=viewDetail&vID=<%=v.getVariantID()%>&pID=<%=v.getProductID()%>" class="block w-full aspect-square overflow-hidden">
                             <img class="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
-                                 src="images/<%=v.getImageList()[0] %>"
+                                 src="images/<%=image%>"
                                  alt="<%=pName%>">
                         </a>
 
-                        <% if (pr != null && pr.getDiscountPercent() > 0 && "active".equalsIgnoreCase(pr.getStatus())) { %>
+                        <% if (pr != null && pr.getDiscountPercent() > 0 && "active".equalsIgnoreCase(pr.getStatus())) {%>
                         <div class="discount-tag">Giảm <%=pr.getDiscountPercent()%>%</div>
-                        <% } %>
+                        <% }%>
                     </div>
 
                     <div class="p-4 flex flex-col flex-grow">
@@ -471,11 +479,11 @@
                             <span class="text-red-500 font-bold text-lg">
                                 <%=vnFormat.format(v.getDiscountPrice())%>
                             </span>
-                            <% if (v.getPrice() > v.getDiscountPrice()) { %>
+                            <% if (v.getPrice() > v.getDiscountPrice()) {%>
                             <span class="text-gray-500 line-through text-sm ml-2">
                                 <%=vnFormat.format(v.getPrice())%>
                             </span>
-                            <% } %>
+                            <% }%>
                         </div>
 
                         <div class="flex flex-wrap gap-2 mb-3 text-xs">
@@ -484,7 +492,7 @@
 
 
                         <div class="mt-auto flex justify-between items-center text-sm pt-2">
-                            <% if (rating > 0) { %>
+                            <% if (rating > 0) {%>
                             <div class="flex items-center gap-1 text-yellow-500">
                                 <i class="fa-solid fa-star"></i>
                                 <span class="font-semibold text-gray-800"><%=String.format("%.1f", rating)%></span>
@@ -492,37 +500,37 @@
                             <% } else { %>
                             <span class="text-gray-500 text-xs">Be the first to review this product.</span>
                             <% } %>
-                            
+
                             <!-- WISHLIST BUTTON -->                        
                             <%
-                                Users u = (Users) session.getAttribute("user");
+                                Customer u = (Customer) session.getAttribute("user");
                                 boolean logged = (u != null);
                                 boolean liked = false;
 
-                                int variantID = v.getVariantID();  
-                                int productID = v.getProductID();  
+                                int variantID = v.getVariantID();
+                                int productID = v.getProductID();
 
                                 if (logged) {
                                     try {
                                         WishlistDAO wdao = new WishlistDAO();
-                                        liked = wdao.isExist(u.getUserId(), productID, variantID);
+                                        liked = wdao.isExist(u.getCustomerID(), productID, variantID);
                                     } catch (Exception e) {
                                         e.printStackTrace();
                                     }
                                 }
                             %>
 
-                            <% if (logged) { %>
+                            <% if (logged) {%>
                             <form action="product" method="post" style="display:inline;">
-                                <input type="hidden" name="action" value="<%= liked ? "remove" : "wishlist" %>">
-                                <input type="hidden" name="productId" value="<%= productID %>">
-                                <input type="hidden" name="variantId" value="<%= variantID %>">
+                                <input type="hidden" name="action" value="<%= liked ? "remove" : "wishlist"%>">
+                                <input type="hidden" name="productId" value="<%= productID%>">
+                                <input type="hidden" name="variantId" value="<%= variantID%>">
                                 <input type="hidden" name="redirect"
-                                       value="product?action=viewDetail&pID=<%= productID %>">
+                                       value="product?action=viewDetail&pID=<%= productID%>">
 
                                 <button type="submit" class="wishlist-btn" style="background:none; border:none; padding:0;">
-                                    <i class="<%= liked ? "fas fa-heart" : "far fa-heart" %>"
-                                       style="<%= liked ? "color:#e53e3e;" : "" %>"></i>
+                                    <i class="<%= liked ? "fas fa-heart" : "far fa-heart"%>"
+                                       style="<%= liked ? "color:#e53e3e;" : ""%>"></i>
                                 </button>
                             </form>
                             <% } else { %>
@@ -530,22 +538,22 @@
                                 <i class="far fa-heart"></i>
                             </a>
                             <% } %>
-           
-                            
+
+
                         </div>
 
-                        
+
 
 
                     </div>
                 </div>
                 <%
-                        }
-                    } else {
-                        String message = "No products to display.";
-                        if (isPromotionFilterActive) {
-                            message = "Unfortunately, no products are featured in our HOT PROMOTION right now.";
-                        }
+                    }
+                } else {
+                    String message = "No products to display.";
+                    if (isPromotionFilterActive) {
+                        message = "Unfortunately, no products are featured in our HOT PROMOTION right now.";
+                    }
                 %>
                 <div class="col-span-full text-center py-10 bg-white rounded-xl shadow-lg">
                     <p class="text-xl font-semibold text-gray-700"><%= message%></p>

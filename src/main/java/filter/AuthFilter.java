@@ -31,7 +31,7 @@ import model.Customer;
 // staff    2
 // shipper  3
 // admin    4
-@WebFilter(filterName = "AuthFilter", urlPatterns = {"/*"})
+//@WebFilter(filterName = "AuthFilter", urlPatterns = {"/*"})
 public class AuthFilter implements Filter {
 
     private static final boolean debug = true;

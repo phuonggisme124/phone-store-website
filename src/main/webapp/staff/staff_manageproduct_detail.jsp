@@ -2,7 +2,7 @@
 <%@page import="model.Products"%>
 <%@page import="java.util.List"%>
 <%@page import="java.util.ArrayList"%>
-<%@page import="model.Users"%>
+<%@page import="model.Staff"%>
 <%@page import="com.google.gson.Gson"%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
@@ -17,7 +17,7 @@
     </head>
     <body>
         <%
-            Users currentUser = (Users) session.getAttribute("user");
+            Staff currentUser = (Staff) session.getAttribute("user");
             if (currentUser == null) {
                 response.sendRedirect("login.jsp");
                 return;

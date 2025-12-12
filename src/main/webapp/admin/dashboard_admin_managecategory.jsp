@@ -3,8 +3,7 @@
 <%@page import="model.Products"%>
 <%@page import="java.util.List"%>
 <%@page import="java.util.ArrayList"%>
-<%@page import="model.Users"%>
-<%@page import="com.google.gson.Gson"%>
+<%@page import="model.Staff"%> <%@page import="com.google.gson.Gson"%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html lang="en">
@@ -12,25 +11,25 @@
         <meta charset="UTF-8">
         <title>Admin Dashboard - Manage Categories</title>
 
-        <!-- Bootstrap -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-        <!-- Icons -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
-        <!-- Custom CSS -->
         <link rel="stylesheet" href="css/dashboard_admin.css">
         <link href="css/dashboard_table.css" rel="stylesheet">
     </head>
     <body>
         <%
-            Users currentUser = (Users) session.getAttribute("user");
+            // SỬA: Lấy Staff từ Session
+            Staff currentUser = (Staff) session.getAttribute("user");
+            
             if (currentUser == null) {
                 response.sendRedirect("login.jsp");
                 return;
             }
+            // Check quyền Admin (Role = 4)
             if (currentUser.getRole() != 4) {
-                response.sendRedirect("login");
+                response.sendRedirect("login"); 
                 return;
             }
 
@@ -39,7 +38,7 @@
             // Lấy giá trị search hiện tại từ request
             String currentCategoryName = request.getParameter("categoryName") != null ? request.getParameter("categoryName") : "";
 
-            // Tạo danh sách tên nhà cung cấp để autocomplete
+            // Tạo danh sách tên danh mục để autocomplete
             List<String> allCategoryNames = new ArrayList<>();
             if (listCategory != null) {
                 for (Category c : listCategory) {
@@ -55,24 +54,19 @@
         </script>
 
         <div class="d-flex" id="wrapper">
-            <!-- Sidebar -->
             <%@ include file="sidebar.jsp" %>
 
-            <!-- Page Content -->
             <div class="page-content flex-grow-1">
-                <!-- Navbar -->
                 <nav class="navbar navbar-light bg-white shadow-sm">
                     <div class="container-fluid">
                         <button class="btn btn-outline-primary" id="menu-toggle">
                             <i class="bi bi-list"></i>
                         </button>
                         <div class="d-flex align-items-center ms-auto">
-                            <!-- Search bar in navbar -->
                             <form action="admin" method="get" class="d-flex position-relative me-3" id="searchForm" autocomplete="off" style="width: 250px;">
                                 <input type="hidden" name="action" value="manageCategory">
                                 <input class="form-control me-2" type="text" id="searchCategory" name="categoryName"
-                                     placeholder="Search Categoty" value="<%= currentCategoryName %>"
-
+                                       placeholder="Search Category" value="<%= currentCategoryName %>"
                                        oninput="showSuggestions(this.value)">
                                 <button class="btn btn-outline-primary" type="submit">
                                     <i class="bi bi-search"></i>
@@ -90,18 +84,17 @@
                     </div>
                 </nav>
 
-                <!-- Create Category Button -->
                 <div class="container-fluid p-4 ps-3">
                     <a class="btn btn-primary px-4 py-2 rounded-pill shadow-sm" href="category?action=createCategory">
-
                         <i class="bi bi-box-seam me-2"></i> Create Category
                     </a>
                 </div>
 
-                <!-- Categories Table -->
-                <div class="card shadow-sm border-0 p-4">
+                <div class="card shadow-sm border-0 p-4 m-3">
                     <div class="card-body p-0">
-                        <h4 class="fw-bold ps-3 mb-4">Manage Category</h4>
+                        <div class="container-fluid p-4 ps-3">
+                            <h4 class="fw-bold ps-3 mb-4 text-primary">Manage Category</h4>
+                        </div>
                         <% if (listCategory != null && !listCategory.isEmpty()) { %>
                         <div class="table-responsive">
                             <table class="table table-hover align-middle mb-0">
@@ -120,13 +113,10 @@
                                                 continue;
                                             }
                                     %>
-
                                     <tr onclick="window.location.href = 'category?action=editCategory&id=<%= c.getCategoryId()%>'" style="cursor: pointer;">
-
                                         <td>#<%= c.getCategoryId()%></td>
                                         <td><%= c.getCategoryName() %></td>
                                         <td><%= c.getDescription() %></td>
-                                        
                                     </tr>
                                     <% } %>
                                 </tbody>
@@ -134,7 +124,7 @@
                         </div>
                         <% } else { %>
                         <div class="alert alert-info m-4" role="alert">
-                            <i class="bi bi-info-circle me-2"></i>No Categor available.
+                            <i class="bi bi-info-circle me-2"></i>No Categories available.
                         </div>
                         <% } %>
                     </div>
@@ -142,10 +132,8 @@
             </div>
         </div>
 
-        <!-- JS Libraries -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-        <!-- Custom JS -->
         <script src="js/dashboard.js"></script>
         <script>
             // Menu toggle
@@ -182,7 +170,7 @@
                     } else {
                         var item = document.createElement("div");
                         item.className = "list-group-item text-muted small";
-                        item.textContent = "No suppliers found.";
+                        item.textContent = "No categories found.";
                         box.appendChild(item);
                     }
                 }, 200);
@@ -197,10 +185,5 @@
                 }
             });
         </script>
-        <script>
-    document.getElementById("menu-toggle").addEventListener("click", function () {
-        document.getElementById("wrapper").classList.toggle("toggled");
-    });
-</script>
     </body>
 </html>

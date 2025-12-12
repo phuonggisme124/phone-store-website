@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import model.Customer;
+import model.Staff;
 import utils.DBContext;
 
 public class CustomerDAO extends DBContext {
@@ -34,7 +35,9 @@ public class CustomerDAO extends DBContext {
             MessageDigest m = MessageDigest.getInstance("MD5");
             byte[] digest = m.digest(pass.getBytes());
             StringBuilder sb = new StringBuilder();
-            for (byte b : digest) sb.append(String.format("%02x", b));
+            for (byte b : digest) {
+                sb.append(String.format("%02x", b));
+            }
             return sb.toString();
         } catch (Exception e) {
             return "";
@@ -47,8 +50,7 @@ public class CustomerDAO extends DBContext {
         String sql = "SELECT * FROM Customers";
         List<Customer> list = new ArrayList<>();
 
-        try (PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        try (PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
                 list.add(map(rs));
@@ -71,7 +73,9 @@ public class CustomerDAO extends DBContext {
             ps.setString(2, md5(pass));
 
             try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) return map(rs);
+                if (rs.next()) {
+                    return map(rs);
+                }
             }
 
         } catch (Exception e) {
@@ -90,7 +94,9 @@ public class CustomerDAO extends DBContext {
             ps.setString(1, email);
 
             try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) return map(rs);
+                if (rs.next()) {
+                    return map(rs);
+                }
             }
 
         } catch (Exception e) {
@@ -104,14 +110,16 @@ public class CustomerDAO extends DBContext {
     // REGISTER → return new CustomerID
     public int register(String name, String email, String phone, String address, String password) {
 
-        if (emailExists(email)) return -1;
+        if (emailExists(email)) {
+            return -1;
+        }
 
-        String sql =
-            "INSERT INTO Customers (FullName, Email, Phone, Password, Address, CreatedAt, Status, Point) " +
-            "VALUES (?, ?, ?, ?, ?, GETDATE(), 'active', 0)";
+        String sql
+                = "INSERT INTO Customers (FullName, Email, Phone, Password, Address, CreatedAt, Status, Point) "
+                + "VALUES (?, ?, ?, ?, ?, GETDATE(), 'active', 0)";
 
-        try (PreparedStatement ps =
-                     conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement ps
+                = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             ps.setString(1, name);
             ps.setString(2, email);
@@ -122,7 +130,9 @@ public class CustomerDAO extends DBContext {
             ps.executeUpdate();
 
             ResultSet rs = ps.getGeneratedKeys();
-            if (rs.next()) return rs.getInt(1);
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -134,11 +144,13 @@ public class CustomerDAO extends DBContext {
     // REGISTER Google
     public boolean registerForLoginWithGoogle(String name, String email) {
 
-        if (emailExists(email)) return true;
+        if (emailExists(email)) {
+            return true;
+        }
 
-        String sql =
-            "INSERT INTO Customers (FullName, Email, CreatedAt, Status, Point, Password) " +
-            "VALUES (?, ?, GETDATE(), 'active', 0, '')";
+        String sql
+                = "INSERT INTO Customers (FullName, Email, CreatedAt, Status, Point, Password) "
+                + "VALUES (?, ?, GETDATE(), 'active', 0, '')";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, name);
@@ -179,7 +191,9 @@ public class CustomerDAO extends DBContext {
                 "UPDATE Customers SET FullName=?, Email=?, Phone=?, Address=?, CCCD=?, YOB=?");
 
         boolean hasPassword = c.getPassword() != null && !c.getPassword().isEmpty();
-        if (hasPassword) sql.append(", Password=?");
+        if (hasPassword) {
+            sql.append(", Password=?");
+        }
 
         sql.append(" WHERE CustomerID=?");
 
@@ -193,7 +207,9 @@ public class CustomerDAO extends DBContext {
             ps.setDate(6, c.getYob());
 
             int i = 7;
-            if (hasPassword) ps.setString(i++, md5(c.getPassword()));
+            if (hasPassword) {
+                ps.setString(i++, md5(c.getPassword()));
+            }
 
             ps.setInt(i, c.getCustomerID());
 
@@ -261,17 +277,167 @@ public class CustomerDAO extends DBContext {
             e.printStackTrace();
         }
     }
+
     public boolean updateCustomerStatus(String status, String email) {
-    String sql = "UPDATE Customers SET Status = ? WHERE Email = ?";
-    try (PreparedStatement ps = conn.prepareStatement(sql)) {
-        ps.setString(1, status);
-        ps.setString(2, email);
-        return ps.executeUpdate() > 0;
-    } catch (Exception e) {
-        e.printStackTrace();
+        String sql = "UPDATE Customers SET Status = ? WHERE Email = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, status);
+            ps.setString(2, email);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
-    return false;
-}
 
+    public Customer getCustomerById(int id) {
+        // SQL lấy từ bảng Customers
+        String sql = "SELECT * FROM Customers WHERE CustomerID = ?";
 
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSetToCustomer(rs);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    // Hàm map dữ liệu từ SQL sang Customer Model
+    private Customer mapResultSetToCustomer(ResultSet rs) throws SQLException {
+        // Lấy dữ liệu từ các cột trong Database
+        // Đảm bảo tên cột trong "..." khớp với Database của bạn
+        int customerID = rs.getInt("CustomerID");
+        String fullName = rs.getString("FullName");
+        String email = rs.getString("Email");
+        String phone = rs.getString("Phone");
+        String password = rs.getString("Password");
+        String address = rs.getString("Address");
+
+        // Model Customer dùng java.sql.Timestamp nên lấy trực tiếp
+        Timestamp createdAt = rs.getTimestamp("CreatedAt");
+
+        // Model Customer khai báo Status là String
+        String status = rs.getString("Status");
+
+        String cccd = rs.getString("CCCD");
+        Date yob = rs.getDate("YOB");
+        int point = rs.getInt("Point");
+
+        // Gọi Full Constructor của Customer
+        return new Customer(customerID, fullName, email, phone, password,
+                address, createdAt, status, cccd, yob, point);
+    }
+
+    public void insertPhone(int customerID, String phone) {
+        // Đổi tên bảng thành Customers và cột điều kiện là CustomerID
+        String sql = "UPDATE Customers SET Phone = ? WHERE CustomerID = ?";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, phone);
+            ps.setInt(2, customerID);
+
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void insertAddress(int customerID, String address) {
+        // Bảng Customers có cột Address nên câu lệnh này hợp lệ
+        String sql = "UPDATE Customers SET Address = ? WHERE CustomerID = ?";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, address);
+            ps.setInt(2, customerID);
+
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public List<Staff> getAllShippers() {
+        List<Staff> list = new ArrayList<>();
+
+        String sql = "SELECT * FROM Staff WHERE Role = 3 AND Status = Active";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                list.add(mapResultSetToStaff(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    private Staff mapResultSetToStaff(ResultSet rs) throws SQLException {
+        int id = rs.getInt("StaffID");
+        String fullName = rs.getString("FullName");
+        String email = rs.getString("Email");
+        String phone = rs.getString("Phone");
+        String pass = rs.getString("Password");
+        int role = rs.getInt("Role");
+
+        String status = rs.getString("Status");
+
+        // Xử lý thời gian
+        Timestamp createdAt = rs.getTimestamp("CreatedAt");
+
+        // 2. Truyền trực tiếp vào constructor (không cần đổi sang LocalDateTime)
+        return new Staff(id, fullName, email, phone, pass, role, status, createdAt);
+    }
+    
+    /**
+     * Lấy danh sách nhân viên theo vai trò (Role)
+     * @param role (1: Admin, 2: Staff, 3: Shipper)
+     * @return List<Staff>
+     */
+    public List<Staff> getStaffByRole(int role) {
+        List<Staff> list = new ArrayList<>();
+        
+        // Truy vấn bảng Staff theo cột Role
+        String sql = "SELECT * FROM Staff WHERE Role = ?";
+        
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, role);
+            
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    // Gọi hàm map đã viết trước đó
+                    list.add(mapResultSetToStaff(rs));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+    public List<String> getAllBuyerPhones() {
+        List<String> phones = new ArrayList<>();
+        
+        // SỬA: Join bảng Orders với Customers (thay vì Staff)
+        // Giả sử Orders.UserID liên kết với Customers.CustomerID
+        String sql = "SELECT DISTINCT c.Phone " +
+                     "FROM Orders o " +
+                     "JOIN Customers c ON o.UserID = c.CustomerID " +
+                     "WHERE c.Phone IS NOT NULL AND c.Phone <> ''";
+        
+        try (PreparedStatement ps = conn.prepareStatement(sql); 
+             ResultSet rs = ps.executeQuery()) {
+            
+            while (rs.next()) {
+                phones.add(rs.getString("Phone"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return phones;
+    }
 }

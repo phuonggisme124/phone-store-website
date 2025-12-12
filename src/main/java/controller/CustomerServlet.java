@@ -18,10 +18,10 @@ import model.Category;
 import model.Order;
 import model.OrderDetails;
 import model.Payments;
+import model.Staff; // Import Staff model
 
 /**
- * Servlet Controller dành riêng cho Khách hàng (Role 1).
- * Xử lý: Profile, Edit Profile, Change Password, Transaction (Orders), Installment.
+ * Servlet Controller for Customer (Role 1) and Staff/Admin managing Customers.
  */
 @WebServlet(name = "CustomerServlet", urlPatterns = {"/customer"})
 public class CustomerServlet extends HttpServlet {
@@ -31,7 +31,7 @@ public class CustomerServlet extends HttpServlet {
     private final OrderDAO orderDAO = new OrderDAO();
     private final OrderDetailDAO orderDetailDAO = new OrderDetailDAO();
 
-    // Load các danh mục chung cho Header/Footer (nếu cần)
+    // Load common data for Header/Footer
     private void loadCommonData(HttpServletRequest request) {
         List<Category> listCategory = categoryDAO.getAllCategories();
         request.setAttribute("listCategory", listCategory);
@@ -40,17 +40,26 @@ public class CustomerServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         String action = request.getParameter("action");
         if (action == null || action.isEmpty()) {
             action = "view";
         }
 
-        // Kiểm tra đăng nhập
+        // Check login and determine user type
         HttpSession session = request.getSession();
-        Customer customer = (Customer) session.getAttribute("user");
+        Object userObj = session.getAttribute("user");
 
-        if (customer == null) {
+        Customer customer = null;
+        Staff staff = null;
+
+        if (userObj instanceof Customer) {
+            customer = (Customer) userObj;
+        } else if (userObj instanceof Staff) {
+            staff = (Staff) userObj;
+        }
+
+        if (customer == null && staff == null) {
             response.sendRedirect("login.jsp");
             return;
         }
@@ -58,31 +67,97 @@ public class CustomerServlet extends HttpServlet {
         loadCommonData(request);
 
         switch (action) {
-            // 1. Xem trang sửa hồ sơ
+            // 1. Customer: View/Edit Profile
             case "edit":
-                request.setAttribute("user", customer);
-                request.getRequestDispatcher("customer/editProfile.jsp").forward(request, response);
+                //  ADMIN/STAFF SỬA KHÁCH HÀNG
+                if (staff != null && (staff.getRole() == 2 || staff.getRole() == 4)) {
+                    String idStr = request.getParameter("id");
+                    if (idStr != null && !idStr.isEmpty()) {
+                        try {
+                            int customerID = Integer.parseInt(idStr);
+                         
+                            Customer targetUser = customerDAO.getCustomerById(customerID);
+               
+                            request.getRequestDispatcher("admin/admin_manageuser_edit.jsp").forward(request, response);
+                            return;
+                        } catch (NumberFormatException e) {
+                            System.out.println("ID không hợp lệ: " + idStr);
+                        }
+                    }
+                }
+
+                //  KHÁCH HÀNG TỰ SỬA HỒ SƠ
+                if (customer != null) {
+                   
+                    request.setAttribute("user", customer);
+                    request.getRequestDispatcher("customer/editProfile.jsp").forward(request, response);
+                } else {
+                   
+                    response.sendRedirect("login.jsp");
+                }
                 break;
 
-            // 2. Xem lịch sử giao dịch / Đơn hàng
+            // 2. Customer: Transaction History
             case "transaction":
-                viewTransaction(request, response, customer);
+                if (customer != null) {
+                    viewTransaction(request, response, customer);
+                } else {
+                    response.sendRedirect("login.jsp");
+                }
                 break;
 
-            // 3. Xem trang trả góp
+            // 3. Customer: Installment
             case "payInstallment":
-                viewInstallment(request, response, customer);
+                if (customer != null) {
+                    viewInstallment(request, response, customer);
+                } else {
+                    response.sendRedirect("login.jsp");
+                }
                 break;
 
-            // 4. Xem trang đổi mật khẩu
+            // 4. Customer: Change Password
             case "changePassword":
-                request.getRequestDispatcher("customer/changePassword.jsp").forward(request, response);
+                if (customer != null) {
+                    request.getRequestDispatcher("customer/changePassword.jsp").forward(request, response);
+                } else {
+                    response.sendRedirect("login.jsp");
+                }
                 break;
 
-            // Mặc định: Xem hồ sơ (Profile)
+            // 5. Admin/Staff: Manage Users
+            case "manageUser":
+                // Only allow Staff/Admin to access this
+                if (staff != null && (staff.getRole() == 2 || staff.getRole() == 4)) {
+                    List<Customer> listUsers = customerDAO.getAllCustomers();
+                    request.setAttribute("listUsers", listUsers);
+                    // Ensure the path to the JSP is correct based on your project structure
+                    request.getRequestDispatcher("admin/dashboard_admin_manageuser.jsp").forward(request, response);
+                } else {
+                    // If a customer tries to access manageUser, redirect them home or show error
+                    response.sendRedirect("home");
+                }
+                break;
+            case "createAccount":
+                // Use 'staff' variable here, and check if role is 4 (Admin)
+                if (staff != null && staff.getRole() == 4) {
+                    request.getRequestDispatcher("admin/admin_manageuser_create.jsp").forward(request, response);
+                } else {
+                    // If not admin, redirect or show error
+                    response.sendRedirect("login.jsp");
+                }
+                break;
+
+            // Default: View Profile (Customer only)
             default:
-                request.setAttribute("user", customer);
-                request.getRequestDispatcher("customer/profile.jsp").forward(request, response);
+                if (customer != null) {
+                    request.setAttribute("user", customer);
+                    request.getRequestDispatcher("customer/profile.jsp").forward(request, response);
+                } else if (staff != null) {
+                    // If staff hits /customer with no action, redirect to manageUser
+                    response.sendRedirect("customer?action=manageUser");
+                } else {
+                    response.sendRedirect("login.jsp");
+                }
                 break;
         }
     }
@@ -93,9 +168,16 @@ public class CustomerServlet extends HttpServlet {
 
         String action = request.getParameter("action");
         HttpSession session = request.getSession();
-        Customer customer = (Customer) session.getAttribute("user");
+        Object userObj = session.getAttribute("user");
 
+        Customer customer = null;
+        if (userObj instanceof Customer) {
+            customer = (Customer) userObj;
+        }
+
+        // Most POST actions here seem to be for the Customer. 
         if (customer == null) {
+            // You might want to handle Staff POST actions here if needed
             response.sendRedirect("login.jsp");
             return;
         }
@@ -103,40 +185,33 @@ public class CustomerServlet extends HttpServlet {
         loadCommonData(request);
 
         if ("update".equals(action)) {
-            // Xử lý cập nhật thông tin cá nhân
             updateCustomerProfile(request, response, customer, session);
 
         } else if ("changePassword".equals(action)) {
-            // Xử lý đổi mật khẩu
             updateCustomerPassword(request, response, customer, session);
 
         } else if ("cancelOrder".equals(action)) {
-            // Hủy đơn hàng
             cancelOrder(request, response);
 
         } else if ("paidInstalment".equals(action)) {
-            // Thanh toán trả góp (Giả lập)
             processInstallmentPayment(request, response);
         } else {
             response.sendRedirect("customer?action=view");
         }
     }
 
-    // --- CÁC HÀM XỬ LÝ LOGIC CHI TIẾT ---
-
-    private void viewTransaction(HttpServletRequest request, HttpServletResponse response, Customer customer) 
+    // --- LOGIC HELPER METHODS ---
+    private void viewTransaction(HttpServletRequest request, HttpServletResponse response, Customer customer)
             throws ServletException, IOException {
         String status = request.getParameter("status");
         List<Order> oList;
-        
-        // Lấy danh sách đơn hàng theo trạng thái
+
         if (status == null || status.equalsIgnoreCase("All")) {
             oList = orderDAO.getOrdersByStatus(customer.getCustomerID(), "All");
         } else {
             oList = orderDAO.getOrdersByStatus(customer.getCustomerID(), status);
         }
 
-        // Lấy chi tiết sản phẩm cho từng đơn hàng
         Map<Integer, List<OrderDetails>> allOrderDetails = new HashMap<>();
         if (oList != null) {
             for (Order o : oList) {
@@ -150,11 +225,11 @@ public class CustomerServlet extends HttpServlet {
         request.getRequestDispatcher("customer/customer_transaction.jsp").forward(request, response);
     }
 
-    private void viewInstallment(HttpServletRequest request, HttpServletResponse response, Customer customer) 
+    private void viewInstallment(HttpServletRequest request, HttpServletResponse response, Customer customer)
             throws ServletException, IOException {
         PaymentsDAO pmDAO = new PaymentsDAO();
         List<Order> oList = orderDAO.getInstalmentOrdersByUserId(customer.getCustomerID());
-        
+
         Map<Integer, List<Payments>> allPayments = new HashMap<>();
         if (oList != null) {
             for (Order o : oList) {
@@ -172,31 +247,27 @@ public class CustomerServlet extends HttpServlet {
             throws ServletException, IOException {
         try {
             String fullName = request.getParameter("fullName");
-            String email = request.getParameter("email"); // Lưu ý: Thường ít khi cho đổi email vì liên quan đăng nhập
+            String email = request.getParameter("email");
             String phone = request.getParameter("phone");
             String address = request.getParameter("address");
             String cccd = request.getParameter("cccd");
             String yobStr = request.getParameter("yob");
 
-            // Validate sơ bộ
-            if(fullName == null || fullName.trim().isEmpty()) {
+            if (fullName == null || fullName.trim().isEmpty()) {
                 request.setAttribute("error", "Họ tên không được để trống");
                 request.getRequestDispatcher("customer/editProfile.jsp").forward(request, response);
                 return;
             }
 
-            // Xử lý Date (YOB)
             Date yob = null;
             if (yobStr != null && !yobStr.isEmpty()) {
                 try {
                     yob = Date.valueOf(yobStr);
                 } catch (IllegalArgumentException e) {
-                    // Log error nếu định dạng ngày sai
                     System.out.println("Invalid date format: " + yobStr);
                 }
             }
 
-            // Set dữ liệu mới vào object
             customer.setFullName(fullName);
             customer.setEmail(email);
             customer.setPhone(phone);
@@ -204,15 +275,12 @@ public class CustomerServlet extends HttpServlet {
             customer.setCccd(cccd);
             customer.setYob(yob);
 
-            // Gọi DAO update
             customerDAO.updateProfile(customer);
-            
-            // Cập nhật lại session để hiển thị thông tin mới ngay lập tức
-            session.setAttribute("user", customer); 
+            session.setAttribute("user", customer);
 
             request.setAttribute("message", "Cập nhật hồ sơ thành công!");
             request.getRequestDispatcher("customer/editProfile.jsp").forward(request, response);
-            
+
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("error", "Đã xảy ra lỗi khi cập nhật!");
@@ -226,24 +294,19 @@ public class CustomerServlet extends HttpServlet {
         String newPass = request.getParameter("newPassword");
         String confirmPass = request.getParameter("confirmPassword");
 
-        // Kiểm tra mật khẩu cũ
         if (!customerDAO.checkOldPassword(customer.getCustomerID(), oldPass)) {
             request.setAttribute("error", "Mật khẩu hiện tại không đúng!");
             request.getRequestDispatcher("customer/changePassword.jsp").forward(request, response);
             return;
-        } 
-        
-        // Kiểm tra trùng khớp mật khẩu mới
+        }
+
         if (newPass == null || newPass.isEmpty() || !newPass.equals(confirmPass)) {
             request.setAttribute("error", "Mật khẩu mới và xác nhận mật khẩu không trùng khớp!");
             request.getRequestDispatcher("customer/changePassword.jsp").forward(request, response);
             return;
         }
 
-        // Tiến hành update
         customerDAO.updatePassword(customer.getCustomerID(), newPass);
-
-        // Update mật khẩu (đã hash) trong session để đồng bộ
         customer.setPassword(customerDAO.md5(newPass));
         session.setAttribute("user", customer);
 
@@ -251,13 +314,12 @@ public class CustomerServlet extends HttpServlet {
         request.getRequestDispatcher("customer/changePassword.jsp").forward(request, response);
     }
 
-    private void cancelOrder(HttpServletRequest request, HttpServletResponse response) 
+    private void cancelOrder(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         try {
             int orderID = Integer.parseInt(request.getParameter("orderID"));
             Order o = orderDAO.getOrderById(orderID);
 
-            // Chỉ cho phép hủy nếu đơn hàng đang ở trạng thái 'Pending'
             if (o != null && ("Pending".equalsIgnoreCase(o.getStatus()))) {
                 orderDAO.updateOrderStatus(orderID, "Cancelled");
             }
@@ -267,7 +329,7 @@ public class CustomerServlet extends HttpServlet {
         response.sendRedirect("customer?action=transaction");
     }
 
-    private void processInstallmentPayment(HttpServletRequest request, HttpServletResponse response) 
+    private void processInstallmentPayment(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         try {
             String paymentIDStr = request.getParameter("paymentID");
