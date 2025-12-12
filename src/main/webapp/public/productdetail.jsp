@@ -10,6 +10,7 @@
 <%@ page import="model.Users" %>     
 <%@ page import="dao.WishlistDAO" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.net.URLEncoder" %>
 
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="java.text.NumberFormat" %>
@@ -451,7 +452,6 @@
                                                     </a>
                                                 </h3>
 
-
                                                 <div class="wishlist-wrap">
                                                     <%
                                                         Users u = (Users) session.getAttribute("user");
@@ -490,11 +490,10 @@
                                                     <% } %>
                                                 </div>
 
-
                                                 <script>
                                                     document.querySelectorAll('.wishlist-btn').forEach(btn => {
                                                         btn.addEventListener('click', function (e) {
-                                                            e.preventDefault();
+                                                            e.preventDefault(); // chặn reload
                                                             const productId = this.dataset.productid;
                                                             const variantId = this.dataset.variantid;
                                                             const icon = this.querySelector('i');
@@ -506,6 +505,7 @@
                                                             })
                                                                     .then(response => response.text())
                                                                     .then(() => {
+                                                                        // đổi icon đỏ / xám
                                                                         if (icon.classList.contains('far')) {
                                                                             icon.classList.remove('far');
                                                                             icon.classList.add('fas');
@@ -520,7 +520,6 @@
                                                         });
                                                     });
                                                 </script>
-
 
                                                 <span class="item-price text-primary">
                                                     <%= vnFormat.format(rp.getVariants().get(0).getDiscountPrice() != null ? rp.getVariants().get(0).getDiscountPrice() : rp.getVariants().get(0).getPrice()) %>
@@ -543,25 +542,24 @@
                     </div>
                 </section>
 
-                <!-- Swiper JS (nếu chưa load) -->
                 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css"/>
                 <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
 
                 <script>
-                                                    var swiper = new Swiper('.related-swiper', {
-                                                        slidesPerView: 4,
-                                                        spaceBetween: 20,
-                                                        navigation: {
-                                                            nextEl: '.swiper-button-next',
-                                                            prevEl: '.swiper-button-prev',
-                                                        },
-                                                        breakpoints: {
-                                                            320: {slidesPerView: 1},
-                                                            576: {slidesPerView: 2},
-                                                            768: {slidesPerView: 3},
-                                                            992: {slidesPerView: 4}
-                                                        }
-                                                    });
+                                                   var swiper = new Swiper('.related-swiper', {
+                                                       slidesPerView: 4,
+                                                       spaceBetween: 20,
+                                                       navigation: {
+                                                           nextEl: '.swiper-button-next',
+                                                           prevEl: '.swiper-button-prev',
+                                                       },
+                                                       breakpoints: {
+                                                           320: {slidesPerView: 1},
+                                                           576: {slidesPerView: 2},
+                                                           768: {slidesPerView: 3},
+                                                           992: {slidesPerView: 4}
+                                                       }
+                                                   });
                 </script>
 
             </div>
@@ -579,86 +577,86 @@
     <script src="js/bootstrap.bundle.min.js"></script>
 
     <script>
-                                                    const modal = document.getElementById("reviewModal");
-                                                    const openModalBtn = document.getElementById("openReviewModal");
-                                                    const closeBtn = document.getElementsByClassName("close-button")[0];
+                                                   const modal = document.getElementById("reviewModal");
+                                                   const openModalBtn = document.getElementById("openReviewModal");
+                                                   const closeBtn = document.getElementsByClassName("close-button")[0];
 
-                                                    if (openModalBtn && modal)
-                                                        openModalBtn.onclick = () => modal.style.display = "block";
-                                                    if (closeBtn)
-                                                        closeBtn.onclick = () => modal.style.display = "none";
+                                                   if (openModalBtn && modal)
+                                                       openModalBtn.onclick = () => modal.style.display = "block";
+                                                   if (closeBtn)
+                                                       closeBtn.onclick = () => modal.style.display = "none";
 
-                                                    window.onclick = (e) => {
-                                                        if (e.target === modal)
-                                                            modal.style.display = "none";
-                                                    };
+                                                   window.onclick = (e) => {
+                                                       if (e.target === modal)
+                                                           modal.style.display = "none";
+                                                   };
 
-                                                    // Quantity Logic
-                                                    const minusBtn = document.querySelector('.minus-btn');
-                                                    const plusBtn = document.querySelector('.plus-btn');
-                                                    const quantityInput = document.getElementById('quantity-display');
-                                                    const stockError = document.getElementById('stock-error');
-                                                    const stock = parseInt(document.querySelector('.quantity-selector').dataset.stock);
-                                                    const hiddenInputs = document.querySelectorAll('.hiddenQuantityInput');
+                                                   // Quantity Logic
+                                                   const minusBtn = document.querySelector('.minus-btn');
+                                                   const plusBtn = document.querySelector('.plus-btn');
+                                                   const quantityInput = document.getElementById('quantity-display');
+                                                   const stockError = document.getElementById('stock-error');
+                                                   const stock = parseInt(document.querySelector('.quantity-selector').dataset.stock);
+                                                   const hiddenInputs = document.querySelectorAll('.hiddenQuantityInput');
 
-                                                    if (minusBtn && plusBtn && quantityInput) {
-                                                        minusBtn.addEventListener('click', () => {
-                                                            let val = parseInt(quantityInput.value);
-                                                            if (val > 1) {
-                                                                val--;
-                                                                quantityInput.value = val;
-                                                                hiddenInputs.forEach(i => i.value = val);
-                                                                stockError.style.display = "none";
-                                                            }
-                                                        });
+                                                   if (minusBtn && plusBtn && quantityInput) {
+                                                       minusBtn.addEventListener('click', () => {
+                                                           let val = parseInt(quantityInput.value);
+                                                           if (val > 1) {
+                                                               val--;
+                                                               quantityInput.value = val;
+                                                               hiddenInputs.forEach(i => i.value = val);
+                                                               stockError.style.display = "none";
+                                                           }
+                                                       });
 
-                                                        plusBtn.addEventListener('click', () => {
-                                                            let val = parseInt(quantityInput.value);
-                                                            if (val < stock) {
-                                                                val++;
-                                                                quantityInput.value = val;
-                                                                hiddenInputs.forEach(i => i.value = val);
-                                                                stockError.style.display = "none";
-                                                            } else {
-                                                                stockError.style.display = "block";
-                                                            }
-                                                        });
-                                                    }
+                                                       plusBtn.addEventListener('click', () => {
+                                                           let val = parseInt(quantityInput.value);
+                                                           if (val < stock) {
+                                                               val++;
+                                                               quantityInput.value = val;
+                                                               hiddenInputs.forEach(i => i.value = val);
+                                                               stockError.style.display = "none";
+                                                           } else {
+                                                               stockError.style.display = "block";
+                                                           }
+                                                       });
+                                                   }
 
-                                                    function changeImage(thumb) {
-                                                        const mainImg = document.getElementById('displayedImage');
-                                                        const allThumbs = document.querySelectorAll('.thumbnail');
+                                                   function changeImage(thumb) {
+                                                       const mainImg = document.getElementById('displayedImage');
+                                                       const allThumbs = document.querySelectorAll('.thumbnail');
 
-                                                        mainImg.src = thumb.src;
+                                                       mainImg.src = thumb.src;
 
-                                                        allThumbs.forEach(t => t.classList.remove('active'));
-                                                        thumb.classList.add('active');
-                                                    }
+                                                       allThumbs.forEach(t => t.classList.remove('active'));
+                                                       thumb.classList.add('active');
+                                                   }
     </script>
 
     <script src="js/review-filter.js"></script>
 
     <script>
-                                                    document.addEventListener('DOMContentLoaded', function () {
-                                                        const starOptions = document.querySelectorAll('.star-option');
-                                                        const allStars = document.querySelectorAll('.star-icon');
+                                                   document.addEventListener('DOMContentLoaded', function () {
+                                                       const starOptions = document.querySelectorAll('.star-option');
+                                                       const allStars = document.querySelectorAll('.star-icon');
 
-                                                        starOptions.forEach(option => {
-                                                            option.addEventListener('click', function () {
-                                                                const ratingValue = parseInt(this.getAttribute('data-rating-value'));
+                                                       starOptions.forEach(option => {
+                                                           option.addEventListener('click', function () {
+                                                               const ratingValue = parseInt(this.getAttribute('data-rating-value'));
 
-                                                                allStars.forEach(star => star.style.color = '#ccc');
+                                                               allStars.forEach(star => star.style.color = '#ccc');
 
-                                                                for (let i = 1; i <= ratingValue; i++) {
-                                                                    allStars[i].style.color = '#ffc107';
-                                                                }
+                                                               for (let i = 1; i <= ratingValue; i++) {
+                                                                   allStars[i].style.color = '#ffc107';
+                                                               }
 
-                                                                const input = this.querySelector('input[type="radio"]');
-                                                                if (input)
-                                                                    input.checked = true;
-                                                            });
-                                                        });
-                                                    });
+                                                               const input = this.querySelector('input[type="radio"]');
+                                                               if (input)
+                                                                   input.checked = true;
+                                                           });
+                                                       });
+                                                   });
     </script>
 
     <script>

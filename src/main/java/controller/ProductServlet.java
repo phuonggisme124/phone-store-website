@@ -441,7 +441,7 @@ public class ProductServlet extends HttpServlet {
             request.getRequestDispatcher("/public/wishlist.jsp").forward(request, response);
             return;
 
-        } // Trong doGet
+        }
 //        else if ("wishlist".equals(action)) {
 //            if (currentUser == null) {
 //                response.sendRedirect("login.jsp");
@@ -667,6 +667,7 @@ public class ProductServlet extends HttpServlet {
             return;
 
         } else if ("toggleWishlist".equals(action)) {
+
             Users u = (Users) session.getAttribute("user");
             if (u == null) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -674,21 +675,29 @@ public class ProductServlet extends HttpServlet {
             }
 
             int productId = Integer.parseInt(request.getParameter("productId"));
-            int variantId = Integer.parseInt(request.getParameter("variantId"));
+
+            String var = request.getParameter("variantId");
+            int variantId = (var == null || var.equals("") || var.equals("undefined"))
+                    ? 0
+                    : Integer.parseInt(var);
 
             WishlistDAO wdao = new WishlistDAO();
-            boolean liked = wdao.isExist(u.getUserId(), productId, variantId);
 
-            if (liked) {
-                wdao.removeFromWishlist(u.getUserId(), productId, variantId);
-            } else {
-                wdao.addToWishlist(u.getUserId(), productId, variantId);
+            try {
+                if (wdao.isExist(u.getUserId(), productId, variantId)) {
+                    wdao.removeFromWishlist(u.getUserId(), productId, variantId);
+                } else {
+                    wdao.addToWishlist(u.getUserId(), productId, variantId);
+                }
+                response.getWriter().write("ok");
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             }
 
-            response.getWriter().write("ok");
             return;
         }
-
     }
 
     @Override
