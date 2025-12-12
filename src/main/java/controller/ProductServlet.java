@@ -279,7 +279,7 @@ public class ProductServlet extends HttpServlet {
                 List<Variants> listVariants;
 
                 // check roel 2,4
-                if (currentStaff.getRole() == 2) {
+                if (currentUser.getRole() == 2) {
                     // staff
                     String productId = request.getParameter("productId");
                     if (productId == null) {
@@ -318,7 +318,7 @@ public class ProductServlet extends HttpServlet {
 
                     request.getRequestDispatcher("staff/staff_manageproduct_detail.jsp").forward(request, response);
 
-                } else if (currentStaff.getRole() == 4) {
+                } else if (currentUser.getRole() == 4) {
                     // admin
                     int pID = Integer.parseInt(request.getParameter("pID"));
                     listVariants = vdao.getAllVariantByProductID(pID);
@@ -480,17 +480,8 @@ public class ProductServlet extends HttpServlet {
             action = "dashboard";
         }
 
-        Object userObj = session.getAttribute("user"); // Lấy object chung chung
-        model.Customer currentUser = null;
-        model.Staff currentStaff = null;
-        if (userObj != null) {
-            // Kiểm tra xem userObj là Customer hay Staff để ép kiểu đúng
-            if (userObj instanceof model.Customer) {
-                currentUser = (model.Customer) userObj;
-            } else if (userObj instanceof model.Staff) {
-                currentStaff = (model.Staff) userObj;
-            }
-        }
+        model.Customer currentUser = (model.Customer) session.getAttribute("user");
+        model.Staff currentStaff = (model.Staff) session.getAttribute("user");
         if (action.equals("createProduct") || action.equals("updateProduct")) {
             if (currentStaff == null || currentStaff.getRole() != 4) {
                 response.sendRedirect("login");
@@ -608,44 +599,27 @@ public class ProductServlet extends HttpServlet {
             }
         } else if ("remove".equals(action)) {
             Customer u = (Customer) request.getSession().getAttribute("user");
-            // Kiểm tra login. Nếu chưa login, chuyển hướng đến login.jsp
             if (u == null) {
                 response.sendRedirect("login.jsp");
                 return;
             }
 
-            try {
-                // 1. Lấy và kiểm tra productId
-                // Sử dụng Integer.parseInt có thể ném ra NumberFormatException, nên cần try/catch
-                int productId = Integer.parseInt(request.getParameter("productId"));
+            // Lấy productId
+            int productId = Integer.parseInt(request.getParameter("productId"));
 
-                // 2. Lấy và xử lý variantId (Logic này đã tốt)
-                String variantParam = request.getParameter("variantId");
-                int variantId = (variantParam == null || variantParam.isEmpty())
-                        ? 0
-                        : Integer.parseInt(variantParam);
+            // Lấy variantId, nếu null thì gán = 0
+            String variantParam = request.getParameter("variantId");
+            int variantId = (variantParam == null || variantParam.isEmpty())
+                    ? 0
+                    : Integer.parseInt(variantParam);
 
-                // 3. Thực hiện xóa trong DAO
-                WishlistDAO wdao = new WishlistDAO();
-                wdao.removeFromWishlist(u.getCustomerID(), productId, variantId);
+            WishlistDAO wdao = new WishlistDAO();
+            wdao.removeFromWishlist(u.getCustomerID(), productId, variantId);
 
-                // 4. FIX LỖI: Xử lý chuyển hướng 'redirect'
-                String redirect = request.getParameter("redirect");
-
-                // Nếu 'redirect' là NULL hoặc RỖNG, chuyển hướng về trang Wishlist mặc định
-                if (redirect == null || redirect.isEmpty()) {
-                    redirect = "wishlist.jsp"; // Thay thế bằng trang danh sách Wishlist của bạn
-                }
-
-                response.sendRedirect(redirect);
-
-            } catch (NumberFormatException e) {
-                response.sendRedirect("error.jsp?msg=InvalidProductID");
-            } catch (Exception e) {
-                e.printStackTrace(); 
-                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Lỗi Server khi xóa Wishlist: " + e.getMessage());
-            }
+            String redirect = request.getParameter("redirect");
+            response.sendRedirect(redirect);
             return;
+
         } else if ("viewWishlist".equals(action)) {
             if (currentUser == null) {
                 response.sendRedirect("login.jsp");

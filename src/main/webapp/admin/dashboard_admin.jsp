@@ -1,9 +1,9 @@
+<%@page import="model.Staff"%>
 <%@page import="dao.SupplierDAO"%>
 <%@page import="dao.VariantsDAO"%>
 <%@page import="dao.ProductDAO"%>
 <%@page import="java.util.Calendar"%>
 <%@page import="java.util.List"%>
-<%@page import="model.Users"%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html lang="en">
@@ -28,7 +28,7 @@
 
 
             <!-- Page Content -->
-            <%                Users user = (Users) session.getAttribute("user");
+            <%                Staff user = (Staff) session.getAttribute("user");
                 ProductDAO pdao = new ProductDAO();
                 VariantsDAO vdao = new VariantsDAO();
                 SupplierDAO sldao = new SupplierDAO();
@@ -36,7 +36,7 @@
                 int totalVariant = vdao.getAllVariant().size();
                 int totalProduct = pdao.getAllProduct().size();
 
-                List<Users> listUser = (List<Users>) request.getAttribute("listUser");
+                List<Staff> listUser = (List<Staff>) request.getAttribute("listUser");
                 int importOfMonth = (int) request.getAttribute("importOfMonth");
                 int soldOfMonth = (int) request.getAttribute("soldOfMonth");
                 double revenueOfMonth = (double) request.getAttribute("revenueOfMonth");

@@ -11,7 +11,7 @@
 <%@page import="java.util.List"%>
 <%@page import="java.util.Map" %>
 <%@page import="java.util.HashMap" %>
-<%@page import="model.Customer"%>
+
 <%@page import="dao.WishlistDAO"%>
 
 
@@ -190,8 +190,7 @@
 
     <body class="bg-gray-100 text-gray-900 font-sans">
 
-        <%  
-            String categoryName = "All Products";
+        <%            String categoryName = "All Products";
 
             if ("1".equals(currentCategoryId)) {
                 categoryName = "Phone";
@@ -240,7 +239,11 @@
                                             String productName = productNameMap_search.get(v.getProductID());
                                             Integer categoryID = productCategoryMap_search.get(v.getProductID());
                                             if (productName != null && categoryID != null) {
-                                                String image = (v.getImageUrl() != null) ? v.getImageUrl().split("#")[0] : "";
+                                                String image = "";
+                                                if (v.getImageList() != null && v.getImageList().length > 0) {
+                                                    String raw = v.getImageList()[0];
+                                                    image = raw.contains("#") ? raw.split("#")[0] : raw;
+                                                }
                                                 String color = (v.getColor() != null) ? v.getColor() : "N/A";
                                                 String storage = (v.getStorage() != null) ? v.getStorage() : "N/A";
                                 %>
@@ -428,6 +431,11 @@
                     if (listVariant != null && !listVariant.isEmpty() && listProduct != null) {
                         for (Variants v : listVariant) {
                             double rating = 0;
+                            String image = "";
+                            if (v.getImageList() != null && v.getImageList().length > 0) {
+                                String raw = v.getImageList()[0];
+                                image = raw.contains("#") ? raw.split("#")[0] : raw;
+                            }
                             String pName = "";
                             for (Products p : listProduct) {
                                 if (p.getProductID() == v.getProductID()) {
@@ -451,13 +459,13 @@
                     <div class="relative">
                         <a href="product?action=viewDetail&vID=<%=v.getVariantID()%>&pID=<%=v.getProductID()%>" class="block w-full aspect-square overflow-hidden">
                             <img class="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
-                                 src="images/<%=v.getImageList()[0] %>"
+                                 src="images/<%=image%>"
                                  alt="<%=pName%>">
                         </a>
 
-                        <% if (pr != null && pr.getDiscountPercent() > 0 && "active".equalsIgnoreCase(pr.getStatus())) { %>
+                        <% if (pr != null && pr.getDiscountPercent() > 0 && "active".equalsIgnoreCase(pr.getStatus())) {%>
                         <div class="discount-tag">Giảm <%=pr.getDiscountPercent()%>%</div>
-                        <% } %>
+                        <% }%>
                     </div>
 
                     <div class="p-4 flex flex-col flex-grow">
@@ -471,11 +479,11 @@
                             <span class="text-red-500 font-bold text-lg">
                                 <%=vnFormat.format(v.getDiscountPrice())%>
                             </span>
-                            <% if (v.getPrice() > v.getDiscountPrice()) { %>
+                            <% if (v.getPrice() > v.getDiscountPrice()) {%>
                             <span class="text-gray-500 line-through text-sm ml-2">
                                 <%=vnFormat.format(v.getPrice())%>
                             </span>
-                            <% } %>
+                            <% }%>
                         </div>
 
                         <div class="flex flex-wrap gap-2 mb-3 text-xs">
@@ -484,7 +492,7 @@
 
 
                         <div class="mt-auto flex justify-between items-center text-sm pt-2">
-                            <% if (rating > 0) { %>
+                            <% if (rating > 0) {%>
                             <div class="flex items-center gap-1 text-yellow-500">
                                 <i class="fa-solid fa-star"></i>
                                 <span class="font-semibold text-gray-800"><%=String.format("%.1f", rating)%></span>
@@ -493,52 +501,68 @@
                             <span class="text-gray-500 text-xs">Be the first to review this product.</span>
                             <% } %>
 
-                            <!-- WISHLIST BUTTON -->                        
-                            <%
-                                Products p = null;
-                                for (Products prod : listProduct) {
-                                    if (prod.getProductID() == v.getProductID()) {
-                                        p = prod;
-                                        break;
+                            <div class="wishlist-wrap">
+                                <%
+                                    // 1. Tìm đối tượng Products (rp) tương ứng với Variant v
+                                    Products rp = null;
+                                    for (Products prod : listProduct) {
+                                        if (prod.getProductID() == v.getProductID()) {
+                                            rp = prod;
+                                            break;
+                                        }
                                     }
-                                }
-
-                                if (p != null) {
-                                    int variantID = v.getVariantID();
-                                    int productID = p.getProductID();
+                                    
                                     Customer u = (Customer) session.getAttribute("user");
                                     boolean logged = (u != null);
                                     boolean liked = false;
-                                    if (logged) {
-                                        try {
-                                            WishlistDAO wdao = new WishlistDAO();
-                                            liked = wdao.isExist(u.getCustomerID(), productID, variantID);
-                                        } catch (Exception e) {
-                                            e.printStackTrace();
+                                    int variantID = -1;
+                                    
+                                    
+                                    if (rp != null) {
+                                        variantID = v.getVariantID(); // Lấy VariantID từ đối tượng v hiện tại
+                                        int productID = rp.getProductID(); // Lấy ProductID từ đối tượng rp đã tìm thấy
+
+                                        if (logged && variantID > 0) {
+                                            try {
+                                                WishlistDAO wdao = new WishlistDAO();
+                                                // Sử dụng ProductID của rp và VariantID của v
+                                                liked = wdao.isExist(u.getCustomerID(), productID, variantID); 
+                                            } catch (Exception e) {
+                                                e.printStackTrace();
+                                            }
                                         }
                                     }
-                            %>
-                            <div class="wishlist-wrap">
-                                <button class="wishlist-btn toggle-wishlist"
-                                        data-productid="<%= productID %>"
+                                %>
+                                <% if (variantID > 0) { %>
+                                <% if (logged) { %>
+                                <button class="wishlist-btn" 
+                                        data-productid="<%= rp.getProductID() %>" 
                                         data-variantid="<%= variantID %>"
                                         style="background:none; border:none; padding:0;">
-                                    <i class="<%= liked ? "fas fa-heart" : "far fa-heart" %>"
+                                    <i class="<%= liked ? "fas fa-heart" : "far fa-heart" %>" 
                                        style="<%= liked ? "color:#e53e3e;" : "" %>"></i>
                                 </button>
+                                <% } else { %>
+                                <button class="wishlist-btn" 
+                                        data-productid="<%= rp != null ? rp.getProductID() : 0 %>" 
+                                        data-variantid="<%= variantID %>"
+                                        data-login-required="true"
+                                        style="background:none; border:none; padding:0;">
+                                    <i class="far fa-heart"></i> 
+                                </button>
+                                <% } %>
+                                <% } %>
                             </div>
-                            <% } %>
-
                         </div>
                     </div>
                 </div>
                 <%
-                        }
-                    } else {
-                        String message = "No products to display.";
-                        if (isPromotionFilterActive) {
-                            message = "Unfortunately, no products are featured in our HOT PROMOTION right now.";
-                        }
+                    }
+                } else {
+                    String message = "No products to display.";
+                    if (isPromotionFilterActive) {
+                        message = "Unfortunately, no products are featured in our HOT PROMOTION right now.";
+                    }
                 %>
                 <div class="col-span-full text-center py-10 bg-white rounded-xl shadow-lg">
                     <p class="text-xl font-semibold text-gray-700"><%= message%></p>
@@ -549,49 +573,6 @@
             </div>
         </div>
 
-        <script>
-            document.addEventListener("click", function (e) {
-                const btn = e.target.closest(".toggle-wishlist");
-                if (!btn)
-                    return;
 
-                e.preventDefault();
-                e.stopPropagation();
-
-                const productId = btn.dataset.productid;
-                const variantId = btn.dataset.variantid || 0;
-                const icon = btn.querySelector("i");
-
-                fetch("<%= request.getContextPath() %>/product", {
-                    method: "POST",
-                    headers: {"Content-Type": "application/x-www-form-urlencoded"},
-                    body: "action=toggleWishlist&productId=" + productId + "&variantId=" + variantId
-                })
-                        .then(res => {
-                            if (res.status === 401) {
-                                // Chuyển hướng nếu chưa login
-                                window.location.href = 'login.jsp';
-                                return Promise.reject("Unauthorized");
-                            }
-                            if (!res.ok)
-                                return Promise.reject("Wishlist toggle failed");
-                            return res.text();
-                        })
-                        .then(text => {
-                            if (text === "ok") {
-                                if (icon.classList.contains("fas")) {
-                                    icon.classList.remove("fas");
-                                    icon.classList.add("far");
-                                    icon.style.color = "";
-                                } else {
-                                    icon.classList.remove("far");
-                                    icon.classList.add("fas");
-                                    icon.style.color = "#e53e3e";
-                                }
-                            }
-                        })
-                        .catch(err => console.error(err));
-            });
-        </script>
     </body>
 </html>

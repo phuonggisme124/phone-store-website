@@ -17,6 +17,7 @@ D:\SWP391\phone-store-website\phone-store-website\src\main\java\dao\PaymentsDAO.
 D:\SWP391\phone-store-website\phone-store-website\src\main\java\model\Profit.java
 D:\SWP391\phone-store-website\phone-store-website\src\main\java\dao\PromotionsDAO.java
 D:\SWP391\phone-store-website\phone-store-website\src\main\java\controller\NotificationServlet.java
+D:\SWP391\phone-store-website\phone-store-website\src\main\java\model\Vouchers.java
 D:\SWP391\phone-store-website\phone-store-website\src\main\java\controller\HomepageServlet.java
 D:\SWP391\phone-store-website\phone-store-website\src\main\java\dao\SupplierDAO.java
 D:\SWP391\phone-store-website\phone-store-website\src\main\java\controller\CartServlet.java
@@ -46,6 +47,8 @@ D:\SWP391\phone-store-website\phone-store-website\src\main\java\controller\Impor
 D:\SWP391\phone-store-website\phone-store-website\src\main\java\utils\DBContext.java
 D:\SWP391\phone-store-website\phone-store-website\src\main\java\model\Shipper.java
 D:\SWP391\phone-store-website\phone-store-website\src\main\java\controller\LoginServlet.java
+D:\SWP391\phone-store-website\phone-store-website\src\main\java\controller\VouchersServlet.java
+D:\SWP391\phone-store-website\phone-store-website\src\main\java\dao\VouchersDAO.java
 D:\SWP391\phone-store-website\phone-store-website\src\main\java\dao\ProfitDAO.java
 D:\SWP391\phone-store-website\phone-store-website\src\main\java\controller\LogoutServlet.java
 D:\SWP391\phone-store-website\phone-store-website\src\main\java\model\Promotions.java

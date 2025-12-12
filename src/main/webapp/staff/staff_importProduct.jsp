@@ -1,6 +1,5 @@
-<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@page import="model.Staff"%> <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@page import="model.Users"%>
 
 <!DOCTYPE html>
 <html lang="vi">
@@ -19,36 +18,29 @@
                 background-color: #f8f9fa;
                 overflow-x: hidden;
             }
-
-            /* --- SỬA LỖI LAYOUT Ở ĐÂY --- */
             .d-flex-wrapper {
                 display: flex !important;
                 width: 100%;
                 min-height: 100vh;
                 overflow-x: hidden;
             }
-
-            /* Đổi tên từ .sidebar-container thành .sidebar để khớp với HTML */
             .sidebar {
                 width: 250px !important;
                 min-width: 250px !important;
-                flex-shrink: 0 !important; /* Quan trọng: Ngăn sidebar bị co lại */
+                flex-shrink: 0 !important;
                 background-color: #fff;
                 border-right: 1px solid #dee2e6;
                 min-height: 100vh;
-                position: relative !important; /* Đảm bảo không bị fixed đè lên */
+                position: relative !important;
                 z-index: 100;
             }
-
             .main-content {
                 flex-grow: 1 !important;
-                /* Dùng flex-basis hoặc width auto an toàn hơn calc trong trường hợp này */
                 width: calc(100% - 250px) !important;
                 padding: 0;
                 overflow-x: auto;
                 position: relative;
             }
-
             .card-custom {
                 background: #fff;
                 border: none;
@@ -56,8 +48,6 @@
                 box-shadow: 0 2px 10px rgba(0,0,0,0.05);
                 padding: 25px;
             }
-
-            /* Responsive cho Mobile */
             @media (max-width: 992px) {
                 .d-flex-wrapper {
                     flex-direction: column !important;
@@ -74,7 +64,16 @@
         </style>
     </head>
     <body>
-        <% Users currentUser = (Users) session.getAttribute("user");%>
+        <%
+            // 2. SỬA DÒNG LẤY SESSION: Ép kiểu về Staff
+            Staff currentUser = (Staff) session.getAttribute("user");
+
+            // Kiểm tra null để tránh lỗi (Optional)
+            if (currentUser == null) {
+                response.sendRedirect("login.jsp");
+                return;
+            }
+        %>
 
         <div class="d-flex-wrapper">
             <nav class="sidebar bg-white shadow-sm border-end">
@@ -107,7 +106,7 @@
                             <a href="logout" class="btn btn-outline-danger btn-sm me-3">Logout</a>
                             <div class="d-flex align-items-center">
                                 <img src="https://i.pravatar.cc/40" class="rounded-circle me-2" width="35">
-                                <span class="fw-bold small"><%= currentUser != null ? currentUser.getFullName() : "Staff"%></span>
+                                <span class="fw-bold small"><%= currentUser.getFullName()%></span>
                             </div>
                         </div>
                     </div>
@@ -116,13 +115,10 @@
                 <div class="container-fluid px-4 pb-5">
 
                     <div class="d-flex justify-content-between align-items-center mb-4">
-
                         <h2 class="fw-bold text-primary mb-0">Nhập Sản Phẩm (Import Product)</h2>
-
                         <a href="importproduct?action=staff_import" class="text-decoration-none text-secondary fw-bold small hover-link">
                             <i class="bi bi-arrow-left"></i> Quay lại lịch sử nhập
                         </a>
-
                     </div>
 
                     <c:if test="${not empty ERROR}">
@@ -338,13 +334,16 @@
                         function updatePriceInfo() {
                             var selectBox = document.getElementById("selectVariant");
                             var selectedOption = selectBox.options[selectBox.selectedIndex];
-                            var currentSellingPrice = parseFloat(selectedOption.getAttribute("data-price")) || 0;
-                            var inputSelling = document.getElementById("inputSellingPrice");
+                            // Kiểm tra xem có option nào được chọn không để tránh lỗi
+                            if (selectedOption) {
+                                var currentSellingPrice = parseFloat(selectedOption.getAttribute("data-price")) || 0;
+                                var inputSelling = document.getElementById("inputSellingPrice");
 
-                            if (currentSellingPrice > 0) {
-                                inputSelling.value = formatCurrency(currentSellingPrice);
-                            } else {
-                                inputSelling.value = "";
+                                if (currentSellingPrice > 0) {
+                                    inputSelling.value = formatCurrency(currentSellingPrice);
+                                } else {
+                                    inputSelling.value = "";
+                                }
                             }
                         }
 
@@ -352,6 +351,7 @@
                             document.getElementById("displayTotal").innerText = formatCurrency(totalAmount);
                         }
 
+                       
                         // 4. HÀM THÊM DÒNG (LOGIC CỘNG DỒN)
                         function addRow() {
                             var selectBox = document.getElementById("selectVariant");
@@ -375,40 +375,35 @@
                             }
 
                             if (costPrice > sellingPrice && sellingPrice > 0) {
-                                // Cảnh báo nhẹ nhưng vẫn cho nhập (tuỳ nghiệp vụ)
                                 if (!confirm("Cảnh báo: Giá nhập (" + formatCurrency(costPrice) + ") đang CAO HƠN giá bán (" + formatCurrency(sellingPrice) + ")! Bạn có chắc chắn muốn nhập?")) {
                                     document.getElementById("inputPrice").focus();
                                     return;
                                 }
                             }
 
-                            // LOGIC CỘNG DỒN
-                            var rowId = "row-" + variantID;
+                            // LOGIC CỘNG DỒN: ID dòng bây giờ kết hợp cả variantID và giá nhập
+                            // Ví dụ: row-101-5000000 (Variant 101, giá nhập 5tr)
+                            var rowId = "row-" + variantID + "-" + costPrice;
                             var existingRow = document.getElementById(rowId);
 
                             if (existingRow) {
-                                // Update dòng cũ
+                                // Update dòng cũ (Chỉ khi cùng Variant VÀ cùng Giá nhập)
                                 var qtyInput = existingRow.querySelector("input[name='quantity']");
-                                var costInput = existingRow.querySelector("input[name='costPrice']"); // Lấy input hidden
+                                // Giá nhập không đổi vì đã check trùng giá rồi
 
                                 var oldQty = parseInt(qtyInput.value);
-                                var oldCost = parseFloat(costInput.value); // Giá cũ
 
-                                // Tính toán lại tổng tiền cũ để trừ ra
-                                var oldSubTotal = oldQty * oldCost;
-
+                                var oldSubTotal = oldQty * costPrice;
                                 var newQty = oldQty + qty;
-                                // Nghiệp vụ: Lấy giá nhập MỚI NHẤT cho toàn bộ số lượng (hoặc tính trung bình tuỳ bạn, ở đây tôi lấy giá mới)
                                 var newSubTotal = newQty * costPrice;
 
                                 totalAmount = totalAmount - oldSubTotal + newSubTotal;
 
-                                // Update hiển thị
-                                existingRow.cells[1].innerHTML = formatCurrency(costPrice) + "<input type='hidden' name='costPrice' value='" + costPrice + "'>";
+                                // Cập nhật lại số lượng và thành tiền
                                 existingRow.cells[2].innerHTML = newQty + "<input type='hidden' name='quantity' value='" + newQty + "'>";
                                 existingRow.cells[3].innerText = formatCurrency(newSubTotal);
                             } else {
-                                // Tạo dòng mới
+                                // Tạo dòng mới (Khác Variant HOẶC Khác Giá)
                                 var subTotal = costPrice * qty;
                                 totalAmount += subTotal;
 
@@ -432,19 +427,14 @@
                             }
 
                             updateTotalDisplay();
-                            // Reset form nhập số lượng để nhập tiếp
-                            document.getElementById("inputQty").value = "1";
-                        }
 
-                        function removeRow(btn) {
-                            var row = btn.parentNode.parentNode;
-                            var qty = parseInt(row.querySelector("input[name='quantity']").value);
-                            var cost = parseFloat(row.querySelector("input[name='costPrice']").value);
-                            var currentSubTotal = qty * cost;
-
-                            row.parentNode.removeChild(row);
-                            totalAmount -= currentSubTotal;
-                            updateTotalDisplay();
+                            // --- PHẦN SỬA ĐỔI ĐỂ RESET FORM ---
+                            resetInputs();
+                            var variantSelect = document.getElementById("selectVariant");
+                            variantSelect.innerHTML = '<option value="" data-price="0">-- Màu / DL --</option>';
+                            variantSelect.value = "";
+                            document.getElementById("selectProductName").value = "";
+                            // -----------------------------------
                         }
         </script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

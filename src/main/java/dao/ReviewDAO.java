@@ -56,7 +56,7 @@ public class ReviewDAO extends DBContext {
         List<Review> list = new ArrayList<>();
         String sql = "SELECT r.*, u.FullName AS UserName "
                 + "FROM Reviews r "
-                + "LEFT JOIN Customers u ON r.CustomerID = u.CustomerID "
+                + "LEFT JOIN Customers u ON r.UserID = u.UserID "
                 + "WHERE r.ProductID = ? "
                 + "ORDER BY r.ReviewDate DESC";
         try {

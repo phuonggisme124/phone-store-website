@@ -3,8 +3,7 @@
 <%@page import="model.Products"%>
 <%@page import="java.util.List"%>
 <%@page import="java.util.ArrayList"%>
-<%@page import="model.Users"%>
-<%@page import="com.google.gson.Gson"%>
+<%@page import="model.Staff"%> <%@page import="com.google.gson.Gson"%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html lang="en">
@@ -12,25 +11,26 @@
         <meta charset="UTF-8">
         <title>Admin Dashboard - Manage Suppliers</title>
 
-        <!-- Bootstrap -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-        <!-- Icons -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
-        <!-- Custom CSS -->
         <link rel="stylesheet" href="css/dashboard_admin.css">
         <link href="css/dashboard_table.css" rel="stylesheet">
     </head>
     <body>
         <%
-            Users currentUser = (Users) session.getAttribute("user");
+            // SỬA: Lấy Staff từ Session
+            Staff currentUser = (Staff) session.getAttribute("user");
+
             if (currentUser == null) {
                 response.sendRedirect("login.jsp");
                 return;
             }
+
+            // Check quyền Admin (Role = 4)
             if (currentUser.getRole() != 4) {
-                response.sendRedirect("login");
+                response.sendRedirect("login"); // Hoặc trang báo lỗi quyền
                 return;
             }
 
@@ -51,28 +51,22 @@
 
         <script>
             const allSupplierNames = <%= new Gson().toJson(allSupplierNames)%>;
-
         </script>
 
         <div class="d-flex" id="wrapper">
-            <!-- Sidebar -->
             <%@ include file="sidebar.jsp" %>
 
-            <!-- Page Content -->
             <div class="page-content flex-grow-1">
-                <!-- Navbar -->
                 <nav class="navbar navbar-light bg-white shadow-sm">
                     <div class="container-fluid">
                         <button class="btn btn-outline-primary" id="menu-toggle">
                             <i class="bi bi-list"></i>
                         </button>
                         <div class="d-flex align-items-center ms-auto">
-                            <!-- Search bar in navbar -->
                             <form action="admin" method="get" class="d-flex position-relative me-3" id="searchForm" autocomplete="off" style="width: 250px;">
                                 <input type="hidden" name="action" value="manageSupplier">
                                 <input class="form-control me-2" type="text" id="searchSupplier" name="supplierName"
                                        placeholder="Search Supplier" value="<%= currentSupplierName%>"
-
                                        oninput="showSuggestions(this.value)">
                                 <button class="btn btn-outline-primary" type="submit">
                                     <i class="bi bi-search"></i>
@@ -85,60 +79,53 @@
                             <div class="d-flex align-items-center">
                                 <img src="https://i.pravatar.cc/40" class="rounded-circle me-2" width="35">
                                 <span><%= currentUser.getFullName()%></span>
-
                             </div>
                         </div>
                     </div>
                 </nav>
-                <!-- Suppliers Table -->
+
                 <%
                     String successCreateSupplier = (String) session.getAttribute("successCreateSupplier");
                     String successUpdateSupplier = (String) session.getAttribute("successUpdateSupplier");
                     String successDeleteSupplier = (String) session.getAttribute("successDeleteSupplier");
+
                     if (successCreateSupplier != null) {
                 %>
                 <div class="alert alert-success alert-dismissible fade show w-50 mx-auto mt-3" role="alert">
                     <i class="bi bi-check-circle-fill me-2"></i><%= successCreateSupplier%>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
-
                 <%
                         session.removeAttribute("successCreateSupplier");
                     }
                 %>
-                
-                
+
                 <%
-                    
-                    
                     if (successUpdateSupplier != null) {
                 %>
                 <div class="alert alert-success alert-dismissible fade show w-50 mx-auto mt-3" role="alert">
                     <i class="bi bi-check-circle-fill me-2"></i><%= successUpdateSupplier%>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
-
                 <%
                         session.removeAttribute("successUpdateSupplier");
                     }
                 %>
+
                 <%
-                    
-                    
                     if (successDeleteSupplier != null) {
                 %>
                 <div class="alert alert-success alert-dismissible fade show w-50 mx-auto mt-3" role="alert">
                     <i class="bi bi-check-circle-fill me-2"></i><%= successDeleteSupplier%>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
-
                 <%
                         session.removeAttribute("successDeleteSupplier");
                     }
                 %>
+
                 <div class="card shadow-sm border-0 p-4 m-3">
                     <div class="card-body p-0">
-                        <!-- Create Supplier Button -->
                         <div class="container-fluid p-4 ps-3">
                             <h1 class="fw-bold ps-3 mb-4 fw-bold text-primary">Manage Supplier</h1>
                         </div>
@@ -190,10 +177,8 @@
             </div>
         </div>
 
-        <!-- JS Libraries -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-        <!-- Custom JS -->
         <script src="js/dashboard.js"></script>
         <script>
                                         // Menu toggle
@@ -245,11 +230,6 @@
                                                 suggestionBox.innerHTML = "";
                                             }
                                         });
-        </script>
-        <script>
-            document.getElementById("menu-toggle").addEventListener("click", function () {
-                document.getElementById("wrapper").classList.toggle("toggled");
-            });
         </script>
         <script>
             setTimeout(() => {
