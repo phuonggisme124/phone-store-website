@@ -17,6 +17,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.net.URLEncoder;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -185,6 +186,27 @@ public class ProductServlet extends HttpServlet {
             if (variants == null && !listVariantRating.isEmpty()) {
                 variants = vdao.getVariant(pID, storage, listVariantRating.get(0).getColor());
             }
+
+            List<Variants> suggestedVariants = new ArrayList<>();
+            if (variants != null) {
+                try {
+                    suggestedVariants = vdao.getSuggestedVariantsByVariantID(variants.getVariantID());
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            List<Products> relatedList = new ArrayList<>();
+            for (Variants v : suggestedVariants) {
+                Products pOther = pdao.getProductByID(v.getProductID());
+                if (pOther != null) {
+                    List<Variants> variantList = new ArrayList<>();
+                    variantList.add(v);
+                    pOther.setVariants(variantList);
+                    relatedList.add(pOther);
+                }
+            }
+            request.setAttribute("relatedList", relatedList);
 
             List<Review> listReview = rdao.getAllReviewByListVariant(listVariantRating);
             double rating = rdao.getTotalRating(listVariantRating, listReview);
@@ -420,7 +442,7 @@ public class ProductServlet extends HttpServlet {
             request.getRequestDispatcher("/public/wishlist.jsp").forward(request, response);
             return;
 
-        } // Trong doGet
+        }
 //        else if ("wishlist".equals(action)) {
 //            if (currentUser == null) {
 //                response.sendRedirect("login.jsp");
@@ -590,26 +612,24 @@ public class ProductServlet extends HttpServlet {
         else if ("wishlist".equals(action)) {
             Users u = (Users) request.getSession().getAttribute("user");
             if (u == null) {
-                response.sendRedirect("login.jsp");
+                response.sendRedirect("login.jsp?redirect=" + URLEncoder.encode(request.getParameter("redirect"), "UTF-8"));
                 return;
             }
 
-            // Lấy productId
             int productId = Integer.parseInt(request.getParameter("productId"));
-
-            // Lấy variantId (nếu không có thì gán = 0)
-            String variantParam = request.getParameter("variantId");
-            int variantId = (variantParam == null || variantParam.isEmpty())
+            int variantId = (request.getParameter("variantId") == null || request.getParameter("variantId").isEmpty())
                     ? 0
-                    : Integer.parseInt(variantParam);
+                    : Integer.parseInt(request.getParameter("variantId"));
 
             WishlistDAO wdao = new WishlistDAO();
             wdao.addToWishlist(u.getUserId(), productId, variantId);
 
             String redirect = request.getParameter("redirect");
-            response.sendRedirect(redirect);
-            return;
-
+            if (redirect != null && !redirect.isEmpty()) {
+                response.sendRedirect(redirect); // quay lại trang hiện tại
+            } else {
+                response.sendRedirect("homepage"); // fallback
+            }
         } else if ("remove".equals(action)) {
             Users u = (Users) request.getSession().getAttribute("user");
             if (u == null) {
@@ -647,6 +667,37 @@ public class ProductServlet extends HttpServlet {
             request.getRequestDispatcher("/public/wishlist.jsp").forward(request, response);
             return;
 
+        } else if ("toggleWishlist".equals(action)) {
+
+            Users u = (Users) session.getAttribute("user");
+            if (u == null) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
+            }
+
+            int productId = Integer.parseInt(request.getParameter("productId"));
+
+            String var = request.getParameter("variantId");
+            int variantId = (var == null || var.equals("") || var.equals("undefined"))
+                    ? 0
+                    : Integer.parseInt(var);
+
+            WishlistDAO wdao = new WishlistDAO();
+
+            try {
+                if (wdao.isExist(u.getUserId(), productId, variantId)) {
+                    wdao.removeFromWishlist(u.getUserId(), productId, variantId);
+                } else {
+                    wdao.addToWishlist(u.getUserId(), productId, variantId);
+                }
+                response.getWriter().write("ok");
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            }
+
+            return;
         }
     }
 
