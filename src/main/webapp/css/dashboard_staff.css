@@ -1,0 +1,43 @@
+body {
+    background-color: #f8f9fc;
+    font-family: 'Poppins', sans-serif;
+}
+
+.sidebar {
+    width: 250px;
+    min-height: 100vh;
+    position: fixed;
+    transition: all 0.3s;
+}
+
+.sidebar ul li a {
+    display: block;
+    padding: 12px 20px;
+    color: #6c757d;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: background-color 0.2s;
+}
+
+.sidebar ul li a.active, .sidebar ul li a:hover {
+    background-color: #e8f0ff;
+    color: #0d6efd;
+}
+
+.page-content {
+    margin-left: 250px;
+    transition: all 0.3s;
+}
+
+#wrapper.toggled .sidebar {
+    margin-left: -250px;
+}
+
+#wrapper.toggled .page-content {
+    margin-left: 0;
+}
+
+.card h6 {
+    color: #6c757d;
+    font-size: 0.9rem;
+}

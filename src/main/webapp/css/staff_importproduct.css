@@ -1,0 +1,227 @@
+/* =========================================
+   1. RESET & LAYOUT (Thay thế style inline)
+   ========================================= */
+body {
+    background-color: #f3f6f9; /* Màu nền xám xanh nhạt dịu mắt */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: #5E5873;
+}
+
+.d-flex-wrapper {
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* Sidebar cố định đẹp hơn */
+.sidebar {
+    width: 260px;
+    min-width: 260px;
+    background-color: #ffffff;
+    border-right: 1px solid #ebedf3;
+    z-index: 100;
+}
+
+.sidebar-header {
+    height: 70px;
+    display: flex;
+    align-items: center;
+    padding: 0 25px;
+    border-bottom: 1px solid #f3f6f9;
+}
+
+.sidebar ul li a {
+    display: block;
+    padding: 12px 25px;
+    color: #7e8299;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: all 0.3s;
+    text-decoration: none;
+    border-radius: 4px;
+    margin: 4px 10px;
+}
+
+.sidebar ul li a:hover,
+.sidebar ul li a.text-primary {
+    color: #3699ff !important;
+    background-color: #e1f0ff;
+}
+
+.main-content {
+    flex-grow: 1;
+    width: calc(100% - 260px);
+    background-color: #f3f6f9;
+}
+
+/* =========================================
+   2. CARD & TITLE STYLE
+   ========================================= */
+.page-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #181c32;
+}
+
+.card-custom {
+    background: #ffffff;
+    border: none;
+    border-radius: 12px; /* Bo góc mềm mại */
+    box-shadow: 0 0 20px 0 rgba(76, 87, 125, 0.02); /* Đổ bóng siêu nhẹ */
+    margin-bottom: 20px;
+}
+
+/* =========================================
+   3. TABLE STYLING (Trọng tâm)
+   ========================================= */
+.table-responsive {
+    border-radius: 12px;
+}
+
+.table {
+    margin-bottom: 0;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+/* Header của bảng */
+table.table thead tr th {
+
+    font-family: 'Inter', sans-serif !important;
+
+
+    color: #667EEA !important;
+
+ 
+    background-color: #F3F0FF !important;
+
+  
+    font-size: 13.6px !important;
+    padding: 16px 12px !important;
+
+    font-weight: 600 !important; 
+    text-transform: uppercase;   
+    letter-spacing: 0.5px;      
+    border-bottom: 1px solid #E0D4FC !important; 
+    white-space: nowrap;         
+    vertical-align: middle;
+}
+
+/* Dòng dữ liệu */
+.table tbody tr td {
+    padding: 1.25rem 1.5rem;
+    vertical-align: middle;
+    border-bottom: 1px solid #ebedf3;
+    color: #3f4254;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.table tbody tr:last-child td {
+    border-bottom: none; /* Bỏ gạch chân dòng cuối */
+}
+
+.table tbody tr:hover {
+    background-color: #fbfbfd; /* Hover đổi màu nhẹ */
+}
+
+/* Các cột đặc biệt */
+.table td.text-primary {
+    color: #3699ff !important; /* Xanh dương của Mantis */
+}
+
+.table td .text-secondary {
+    color: #7e8299 !important;
+}
+
+/* 
+   4. BADGES (Nút trạng thái đẹp)
+   */
+.badge {
+    padding: 0.5em 0.8em;
+    font-size: 0.85em;
+    font-weight: 600;
+    border-radius: 6px;
+}
+
+/* Status: Successful -> Xanh lá nhạt */
+.bg-success {
+    background-color: #c9f7f5 !important;
+    color: #1bc5bd !important;
+}
+
+/* Status: Pending -> Cam nhạt */
+.bg-warning {
+    background-color: #fff4de !important;
+    color: #ffa800 !important;
+}
+
+/* Status: Cancel -> Đỏ nhạt */
+.bg-danger {
+    background-color: #ffe2e5 !important;
+    color: #f64e60 !important;
+}
+
+/* Nút Staff Name */
+.badge.bg-secondary {
+    background-color: #f3f6f9 !important;
+    color: #7e8299 !important;
+    border: none !important;
+    font-weight: 500;
+}
+
+/* 
+   5. BUTTON ACTIONS
+   */
+.btn-light.hover-shadow {
+    background-color: #f3f6f9;
+    border-color: transparent;
+    color: #7e8299;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.btn-light.hover-shadow:hover {
+    background-color: #e1f0ff;
+    color: #3699ff;
+    transform: translateY(-2px);
+}
+
+
+    /* 6. RESPONSIVE */
+
+@media (max-width: 992px) {
+    .d-flex-wrapper {
+        flex-direction: column;
+    }
+    .sidebar {
+        width: 100%;
+        min-width: 100%;
+        height: auto;
+    }
+    .main-content {
+        width: 100%;
+    }
+    .page-title {
+        font-size: 1.2rem;
+    }
+  /*  button importproduct*/
+.header-actions-container {
+    position: relative; /* Quan trọng: làm điểm tựa cho nút absolute */
+    display: flex;
+    justify-content: center; /* Giữ tiêu đề nằm giữa trang */
+    align-items: center;
+    margin-bottom: 1.5rem; /* Tương đương mb-4 */
+}
+
+/* Class định vị cho nút Nhập Hàng */
+.btn-import-right {
+    position: absolute; /* Tách khỏi dòng chảy văn bản để không đẩy tiêu đề lệch */
+    right: 0;           /* Neo sát lề phải -> Sẽ nằm thẳng hàng dưới khu vực User/Logout */
+    top: 50%;           /* Canh giữa theo chiều dọc của dòng tiêu đề */
+    transform: translateY(-50%); /* Cân chỉnh lại chính xác tâm giữa */
+    z-index: 10;
+}
+}

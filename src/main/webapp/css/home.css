@@ -1,0 +1,269 @@
+/*  Full-screen video background */
+#billboard {
+    position: relative;
+    z-index: 0; /* 🔹 Đảm bảo video nằm dưới header */
+}
+#billboard video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/*  Text ở góc dưới bên trái */
+.overlay-content {
+    position: absolute;
+    bottom: 50px;  /* cách mép dưới */
+    left: 60px;    /* cách mép trái */
+    color: black;
+    text-align: left;
+}
+.overlay-content h2 {
+    font-size: 1.5rem;
+    letter-spacing: 2px;
+}
+.overlay-content h1 {
+    font-size: 4rem;
+    line-height: 1.2;
+    margin: 15px 0;
+}
+.btn-discover {
+    display: inline-block;
+    padding: 12px 28px;
+    border: 2px solid #fff;
+    color: #000;
+    text-transform: uppercase;
+    font-weight: bold;
+    transition: 0.3s;
+}
+.btn-discover:hover {
+    background-color: #fff;
+    color: #000;
+}
+
+/* ===== HEADER TRONG SUỐT BAN ĐẦU ===== */
+
+header.site-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 10;
+    background: rgba(255, 255, 255, 0) !important; /* Mặc định hoàn toàn trong suốt */
+    backdrop-filter: blur(0px); /* Tắt blur khi trong suốt */
+    transition: background 0.4s ease, backdrop-filter 0.4s ease, box-shadow 0.4s ease;
+}
+
+
+.navbar .nav-link,
+.navbar-brand,
+.user-items a,
+.user-items li {
+    color: black !important;
+    transition: color 0.3s;
+}
+
+/* KHI HOVER (LÚC CHƯA CUỘN) -> Nền trắng mờ, chữ đen */
+header.site-header:not(.header-scrolled):hover {
+    background: rgba(255, 255, 255, 0.85) !important;
+    backdrop-filter: blur(10px);
+}
+
+header.site-header:not(.header-scrolled):hover .navbar .nav-link,
+header.site-header:not(.header-scrolled):hover .navbar-brand,
+header.site-header:not(.header-scrolled):hover .user-items a,
+header.site-header:not(.header-scrolled):hover .user-items li {
+    color: black !important;
+}
+
+/* ===== TRẠNG THÁI KHI CUỘN (JS SẼ THÊM CLASS NÀY) ===== */
+header.site-header.header-scrolled {
+    background: rgba(255, 255, 255, 1) !important; /* 🔹 Nền trắng đục */
+    backdrop-filter: blur(10px); /* Có thể giữ hiệu ứng mờ */
+    /* Thêm bóng mờ cho đẹp khi cuộn */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Chữ đổi sang ĐEN khi cuộn */
+header.site-header.header-scrolled .navbar .nav-link,
+header.site-header.header-scrolled .navbar-brand,
+header.site-header.header-scrolled .user-items a,
+header.site-header.header-scrolled .user-items li {
+    color: black !important; /* 🔹 Chữ đen */
+}
+
+/* ===== ẨN KHI CUỘN XUỐNG / HIỆN KHI CUỘN LÊN (Giữ nguyên) ===== */
+header.site-header.hide {
+    transform: translateY(-100%);
+}
+
+header.site-header.show {
+    transform: translateY(0);
+}
+/*hieu ứng sản phẩm */
+.product-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+
+.product-card:hover {
+    transform: translateY(-10px) scale(1.05);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+.product-card img {
+    transition: transform 0.3s ease;
+}
+
+.product-card:hover img {
+    transform: scale(1.08);
+}
+
+#searchSection {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 40px 0;
+    margin-bottom: 0;
+}
+
+#searchContainer {
+    position: relative;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+#searchInput {
+    width: 100%;
+    padding: 15px 50px 15px 20px;
+    border: none;
+    border-radius: 50px;
+    font-size: 16px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    outline: none;
+}
+
+#searchInput:focus {
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+}
+
+.search-icon-btn {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #667eea;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.search-icon-btn:hover {
+    background: #764ba2;
+    transform: translateY(-50%) scale(1.1);
+}
+
+.search-icon-btn svg {
+    width: 20px;
+    height: 20px;
+    fill: white;
+}
+
+#searchResults {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 0;
+    width: 100%;
+    background-color: #fff;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    z-index: 1000;
+    max-height: 400px;
+    overflow-y: auto;
+    display: none;
+}
+
+#searchResults.show {
+    display: block;
+}
+
+.suggestion-item {
+    padding: 12px 15px;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    border-bottom: 1px solid #f0f0f0;
+    transition: all 0.2s;
+}
+
+.suggestion-item:hover {
+    background-color: #f8f9fa;
+    transform: translateX(5px);
+}
+
+.suggestion-item:last-child {
+    border-bottom: none;
+}
+
+.suggestion-item img {
+    border-radius: 8px;
+    margin-right: 12px;
+}
+
+.search-category-badge {
+    display: inline-block;
+    padding: 5px 15px;
+    background: rgba(255,255,255,0.3);
+    border-radius: 20px;
+    color: white;
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+
+.no-results {
+    padding: 20px;
+    text-align: center;
+    color: #999;
+}
+.product-card .image-holder {
+    position: relative;
+    width: 100%;
+    /* ?ây là k? thu?t t?o t? l? 1:1 (hình vuông) */
+    padding-top: 100%;
+    background-color: #f4f4f4; /* Thêm màu n?n nh?t cho ?? tr?ng */
+    border-radius: 8px; /* Bo góc cho ??p */
+    overflow: hidden; /* ?n ph?n ?nh th?a */
+}
+/* CSS cho s?n ph?m 8*/
+
+.product-card .image-holder img {
+    /* B?t ?nh ph?i l?p ??y div cha */
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* 'cover' ?? l?p ??y, 'contain' ?? v?a v?n */
+
+    /* Gi? l?i hi?u ?ng c?a b?n */
+    transition: transform 0.3s ease;
+}
+
+.product-card:hover img {
+    transform: scale(1.08);
+}
+
+.swiper-slide {
+    height: auto !important;
+}
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : 28 Oct 2025, 11.18.52
+    Author     : admin
+*/
+

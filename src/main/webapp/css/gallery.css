@@ -1,0 +1,103 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+
+ 
+    Created on : Oct 9, 2025, 6:10:26 PM
+    Author     : duynu
+*/
+.gallery {
+  width: 350px; /* Bạn có thể đổi thành 100% để nó vừa với cột */
+  margin: 40px auto;
+  text-align: center;
+  font-family: "Poppins", sans-serif;
+}
+
+/* 1. ẢNH CHÍNH (CẬP NHẬT) */
+.main-image {
+  width: 100%;
+  height: 300px;
+  border-radius: 15px;
+  overflow: hidden;
+  margin-bottom: 12px;
+  /* BẮT BUỘC: Thêm position: relative để chứa banner */
+  position: relative; 
+}
+
+.main-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 0.3s ease;
+}
+
+/* 2. BANNER KHUYẾN MÃI (MỚI) */
+.sale-banner {
+  position: absolute; /* Đặt banner đè lên ảnh */
+  bottom: 10px;       /* Cách đáy 10px */
+  left: 50%;          /* Căn giữa theo chiều ngang */
+  transform: translateX(-50%);
+  width: 95%;         /* Chiều rộng của banner */
+  z-index: 10;        /* Đảm bảo banner nằm trên ảnh */
+}
+
+.sale-banner img {
+  width: 100%; /* Banner tự co giãn theo chiều rộng */
+  height: auto;
+}
+
+
+/* 3. KHU VỰC THUMBNAILS (CẬP NHẬT) */
+.thumbnails {
+  display: flex;
+  /* Thay 'center' thành 'flex-start' để bắt đầu từ bên trái */
+  justify-content: flex-start;
+  gap: 10px;
+  
+  /* MỚI: Thêm cuộn ngang */
+  overflow-x: auto;
+  
+  /* Ẩn thanh cuộn (cho đẹp) */
+  -ms-overflow-style: none;  /* IE và Edge */
+  scrollbar-width: none;     /* Firefox */
+  
+  /* Thêm padding để thumbnail không bị dính sát lề */
+  padding: 5px 2px;
+}
+
+/* Ẩn thanh cuộn cho Chrome, Safari và Opera */
+.thumbnails::-webkit-scrollbar {
+  display: none;
+}
+
+
+/* 4. TỪNG THUMBNAIL (CẬP NHẬT) */
+.thumbnail {
+  width: 65px;
+  height: 65px;
+  border-radius: 10px;
+  cursor: pointer;
+  opacity: 0.6;
+  border: 2px solid transparent; 
+  transition: transform 0.3s, opacity 0.3s, border 0.3s;
+  
+  /* MỚI: Ngăn ảnh bị co lại khi cuộn */
+  flex-shrink: 0; 
+}
+
+.thumbnail:hover {
+  transform: scale(1.1);
+  opacity: 1;
+}
+
+/* Thumbnail được chọn (ĐỔI MÀU VIỀN) */
+.thumbnail.active {
+  /* Đổi màu viền thành màu vàng giống trong ảnh */
+  border: 2px solid #fec802; 
+  opacity: 1;
+}
+
+/* Bạn có thể thêm một class riêng cho nút "Mở hộp" */
+.thumbnail-special {
+  /* ... thêm CSS riêng nếu muốn ... */
+}

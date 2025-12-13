@@ -1,0 +1,235 @@
+
+/* ================================
+   REVIEW DETAIL SECTION
+================================ */
+.review-container {
+    background: #fff;
+    margin-top: 60px;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+}
+
+.review-container h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+/* === Overall rating === */
+.overall-rating {
+    text-align: center;
+    margin-bottom: 20px;
+}
+.score-display {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+}
+.star-icon {
+    font-size: 30px;
+    color: #ffc107;
+}
+.main-score {
+    font-size: 32px;
+    font-weight: bold;
+}
+.stats {
+    color: #777;
+    font-size: 14px;
+}
+
+/* === Rating breakdown === */
+.rating-breakdown {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto 40px;
+}
+.star-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+.progress-bar-wrap {
+    background: #eee;
+    width: 60%;
+    height: 10px;
+    border-radius: 5px;
+    overflow: hidden;
+}
+.progress-bar {
+    background: #007bff;
+    height: 10px;
+}
+.percentage {
+    width: 40px;
+    text-align: right;
+}
+
+/* === Write Review Button === */
+.write-review-button {
+    background: #007bff;
+    color: #fff;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    display: block;
+    margin: 20px auto;
+}
+.write-review-button:hover {
+    background: #0056b3;
+}
+
+/* === Modal === */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 10;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+}
+.modal-content {
+    background: #fff;
+    margin: 80px auto;
+    padding: 30px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 600px;
+    position: relative;
+}
+.close-button {
+    position: absolute;
+    right: 15px;
+    top: 10px;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+/* === Review Form === */
+.review-form-container textarea {
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 10px;
+    margin: 15px 0;
+}
+.submit-button {
+    background: #007bff;
+    border: none;
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.submit-button:hover {
+    background: #0056b3;
+}
+
+/* === User reviews === */
+.user-review {
+    border-top: 1px solid #eee;
+    padding: 20px 0;
+}
+.reviewer-info .name {
+    font-weight: 600;
+}
+.star-rating {
+    color: #ffc107;
+}
+.review-content {
+    margin: 10px 0;
+}
+.review-images-gallery {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+.review-thumbnail {
+    width: 100px;
+    height: 100px;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+/* === Reply === */
+.replies-section {
+    background: #f9f9f9;
+    border-radius: 10px;
+    padding: 15px;
+    margin-top: 10px;
+}
+.seller-tag {
+    background: #007bff;
+    color: #fff;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+}
+
+/* === Responsive === */
+@media (max-width: 900px) {
+    .review-container {
+        padding: 20px;
+    }
+    .review-thumbnail {
+        width: 80px;
+        height: 80px;
+    }
+}
+
+/* ========== REVIEW ERROR POPUP ========== */
+.review-error-box {
+    position: fixed;
+    top: 10px; /* nằm ngay đầu trang */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #fff3f3;
+    color: #d8000c;
+    border: 2px solid #d8000c;
+    border-radius: 12px;
+    padding: 15px 40px;
+    font-weight: bold;
+    font-size: 18px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.25);
+    text-align: center;
+    z-index: 9999;
+    opacity: 1;
+    transition: opacity 1s ease, transform 1s ease; /* dùng transition cho mượt */
+}
+
+/* Hiệu ứng fade-in khi hiển thị */
+@keyframes fade-in {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -3   0%);
+    }
+    100% {
+        opacity: 1;
+        transform: translate(-50%,0);
+    }
+}
+
+/* Hiệu ứng fade-out khi biến mất */
+.fade-out {
+    animation: fade-out 0.6s ease forwards;
+}
+
+@keyframes fade-out {
+    0% {
+        opacity: 1;
+        transform: translate(-50%,0);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -20%);
+    }
+}
+

@@ -1,0 +1,81 @@
+/* Ẩn input gốc */
+.option-list input[type="radio"],
+.color-list input[type="radio"] {
+    display: none;
+}
+
+/* Nút Version */
+.option-label {
+    display: inline-block;
+    border: 2px solid #ccc;
+    border-radius: 12px;
+    padding: 12px 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-right: 10px;
+    font-weight: 500;
+    color: #333;
+    background: white;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Hiệu ứng hover */
+.option-label:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(114, 174, 200, 0.25);
+}
+
+/* Khi được chọn */
+input[type="radio"]:checked + .option-label {
+    border-color: #72AEC8;
+    background: linear-gradient(135deg, #D2E8EF, #E8F6FF);
+    color: #333;
+    box-shadow: 0 6px 15px rgba(114, 174, 200, 0.35);
+    transform: scale(1.05);
+}
+
+/* Hiệu ứng ripple nhẹ */
+.option-label::after {
+    content: "";
+    position: absolute;
+    width: 0;
+    height: 0;
+    top: 50%;
+    left: 50%;
+    background: rgba(114, 174, 200, 0.2);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: all 0.4s ease;
+}
+.option-list input[type="radio"]:checked + .option-label::after {
+    width: 250%;
+    height: 250%;
+    opacity: 0;
+}
+
+/* Ô màu */
+.color-label {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid #ccc;
+    cursor: pointer;
+    display: inline-block;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* Hiệu ứng hover màu */
+.color-label:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 10px rgba(114, 174, 200, 0.3);
+}
+
+/* Khi chọn màu */
+input[type="radio"]:checked + .color-label {
+    border: 3px solid #72AEC8;
+    transform: scale(1.2);
+    box-shadow: 0 6px 12px rgba(114, 174, 200, 0.5);
+}

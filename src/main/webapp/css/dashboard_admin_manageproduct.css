@@ -1,0 +1,19 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : Nov 10, 2025, 8:40:11 AM
+    Author     : 
+*/
+
+
+
+/*BADGE BRAND */
+.badge.bg-info {
+    background: linear-gradient(90deg, #00c6ff 0%, #0072ff 100%);
+    color: #fff;
+    font-weight: 500;
+    border-radius: 8px;
+    padding: 6px 10px;
+}

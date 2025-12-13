@@ -1,0 +1,167 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : Oct 6, 2025, 8:59:41 AM
+    Author     : 
+
+*/
+
+body {
+    background-color: #f8f9fc;
+    font-family: 'Inter', sans-serif;
+}
+
+.table {
+    border-collapse: separate;
+    border-spacing: 0 0.5rem;
+}
+
+.table thead th {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+.table tbody tr {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.table td {
+    vertical-align: middle;
+    font-size: 0.9rem;
+    color: #4a4a4a;
+}
+
+.status-paid {
+    color: #1cc88a;
+    font-weight: 600;
+}
+
+.status-due {
+    color: #f6c23e;
+    font-weight: 600;
+}
+
+.status-canceled {
+    color: #e74a3b;
+    font-weight: 600;
+}
+
+.page-link {
+    border: none;
+    color: #4e73df;
+}
+
+.page-item.active .page-link {
+    background-color: #4e73df;
+    border-radius: 6px;
+}
+
+.card {
+    border-radius: 12px;
+}
+
+.error-message {
+
+    color: red;
+    font-weight: bold;
+    margin: 5px 0;
+}
+
+/*KHUNG TABLE CHUNG */
+.table-responsive {
+    border-radius: 16px;
+    overflow: hidden;
+    background: #fff;
+}
+
+/*TABLE CHÍNH */
+.table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 0.6rem;
+    font-size: 0.95rem;
+    color: #343a40;
+}
+
+/*HEADER TABLE */
+.table thead th {
+    background: #f8f9fc;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    padding: 0.9rem 1rem;
+    border: none;
+    color: #6c757d;
+}
+
+/*CÁC DÒNG DỮ LIỆU */
+.table tbody tr {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    transition: all 0.25s ease;
+}
+
+/*HIỆU ỨNG HOVER */
+.table tbody tr:hover {
+    transform: translateY(-2px);
+    background: #f8faff;
+    box-shadow: 0 3px 10px rgba(0, 91, 234, 0.15);
+}
+
+/*Ô DỮ LIỆU */
+.table td {
+    padding: 0.85rem 1rem;
+    vertical-align: middle;
+    border-top: none;
+}
+
+/*MÃ SẢN PHẨM */
+.table td:first-child {
+    font-weight: 600;
+    color: #0d6efd;
+}
+
+
+/*HÀNG CÁCH NHAU MỘT CHÚT */
+.table tbody tr + tr {
+    margin-top: 10px;
+}
+
+/*BẢNG KHI KHÔNG CÓ DỮ LIỆU */
+.alert.alert-info {
+    background: #eaf2ff;
+    color: #004085;
+    border-radius: 10px;
+    font-weight: 500;
+}
+
+/*SCROLL THANH MƯỢT TRÊN TABLE */
+.table-responsive::-webkit-scrollbar {
+    height: 8px;
+}
+.table-responsive::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.15);
+    border-radius: 10px;
+}
+.table-responsive::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(0, 0, 0, 0.25);
+}
+
+
+/*TIÊU ĐỀ CHÍNH “Manage Products” */
+.container-fluid.p-4.ps-3 h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #0d6efd; /* Màu xanh chủ đạo Bootstrap */
+    letter-spacing: 0.5px;
+    text-shadow: 0 2px 6px rgba(13, 110, 253, 0.2);
+    position: relative;
+}
+
