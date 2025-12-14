@@ -231,10 +231,10 @@
                         <% if (wishlist != null && !wishlist.isEmpty()) { %>
                         <div class="wishlist-grid">
                             <% for (Products p : wishlist) { 
-       Variants v = null;
-       if(p.getVariants() != null && !p.getVariants().isEmpty()){
-           v = p.getVariants().get(0);
-       }
+                                Variants v = null;
+                                if(p.getVariants() != null && !p.getVariants().isEmpty()){
+                                    v = p.getVariants().get(0);
+                                }
                             %>
 
                             <div class="wishlist-card">

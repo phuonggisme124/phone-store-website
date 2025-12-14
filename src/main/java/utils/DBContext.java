@@ -33,6 +33,7 @@ public class DBContext {
             conn = DriverManager.getConnection(dbURL);
 
             if (conn != null) {
+                conn.setAutoCommit(true);
                 DatabaseMetaData dm = conn.getMetaData();
                 System.out.println("Driver name: " + dm.getDriverName());
                 System.out.println("Driver version: " + dm.getDriverVersion());

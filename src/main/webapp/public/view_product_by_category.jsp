@@ -15,7 +15,10 @@
 <%@page import="dao.WishlistDAO"%>
 
 
-
+<%
+    // Lấy Context Path của ứng dụng web
+    String contextPath = request.getContextPath();
+%>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <link rel="stylesheet" href="css/home.css">
 
@@ -553,6 +556,32 @@
                                 <% } %>
                                 <% } %>
                             </div>
+
+                            <%
+     String variantIDStr = String.valueOf(v.getVariantID()); // luôn có giá trị
+     String productIDStr = String.valueOf(v.getProductID());
+
+     // Ảnh mặc định
+     String imageURL = contextPath + "/images/no-image.png";
+     if (v.getImageList() != null && v.getImageList().length > 0) {
+         String raw = v.getImageList()[0];
+         imageURL = raw.contains("#") ? raw.split("#")[0] : raw;
+         imageURL = contextPath + "/images/" + imageURL;
+     }
+
+     String productNameFull = pName + " " + v.getStorage() + " " + v.getColor();
+                            %>
+
+
+                            <button class="compare-btn"
+                                    data-variantid="<%= variantIDStr %>"
+                                    data-productid="<%= productIDStr %>"
+                                    data-image="<%= imageURL %>"
+                                    data-name="<%= productNameFull %>"
+                                    <i class="fa-solid fa-plus fa-xs"></i> So sánh
+                            </button>
+
+
                         </div>
                     </div>
                 </div>
@@ -573,6 +602,236 @@
             </div>
         </div>
 
+        <div id="comparison-tray" class="stickcompare stickcompare_new cp-desktop spaceInDown hidden fixed bottom-0 left-0 right-0 bg-white shadow-2xl p-3 z-50 transition-all duration-300 border-t border-gray-200">
+            <div class="container max-w-7xl mx-auto flex items-center justify-between">
+                <div class="flex items-center space-x-4 flex-grow">
+                    <label id="compare-error-label" class="error text-red-600 font-semibold hidden">Vui lòng xóa bớt sản phẩm để tiếp tục so sánh!</label>
+
+                    <ul id="compare-list" class="listcompare flex space-x-3">
+                    </ul>
+                </div>
+                <div class="closecompare flex items-center space-x-3 ml-4">
+                    <a href="javascript:;" onclick="removeAllCompare()" id="remove-all-btn" class="txtremoveall text-gray-500 hover:text-gray-700 text-sm hidden">Xóa tất cả sản phẩm</a>
+                    <a href="javascript:;" onclick="doCompare()" id="do-compare-btn" class="doss px-6 py-2 bg-custom-accent text-white font-semibold rounded-lg opacity-50 cursor-not-allowed">So sánh ngay</a>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // Khai báo CONTEXT_PATH ở đầu để tất cả các hàm đều sử dụng được
+            const CONTEXT_PATH = '<%= contextPath %>';
+            const MAX_COMPARE = 3;
+            let compareItems = [];
+
+            // --- 1. FUNCTION: TEMPLATE HIỂN THỊ SẢN PHẨM TRONG KHAY SO SÁNH ---
+            const compareItemTemplate = (vID, pID, name, img) => {
+                // Ép kiểu rõ ràng và đảm bảo không phải là '0', 'null', hay 'undefined'
+                const vIDStr = String(vID) === '0' || String(vID) === 'null' ? '' : String(vID);
+                const pIDStr = String(pID) === '0' || String(pID) === 'null' ? '' : String(pID);
+                const safeName = name || '';
+                const safeImg = img || '';
+
+                // *** ĐÃ SỬA LỖI #1 ***: Dùng linkHref tuyệt đối trực tiếp, KHÔNG DÙNG onclick trên thẻ <a>
+                const linkHref = (vIDStr && pIDStr)
+                        ? `${CONTEXT_PATH}/product?action=viewDetail&vID=${vIDStr}&pID=${pIDStr}`
+                                        : 'javascript:;';
+
+                                return `
+<li id="compare-item-${vIDStr}" data-variantid="${vIDStr}" data-productid="${pIDStr}" 
+class="relative bg-gray-50 rounded-lg p-2 flex items-center space-x-2 border border-gray-200 w-32 h-24">
+<a href="${linkHref}" class="flex flex-col items-center">
+   <img src="${safeImg}" alt="${safeName}" class="w-10 h-10 object-contain">
+   <h3 class="text-xs font-medium text-gray-800 line-clamp-2 mt-1">${safeName}</h3>
+</a>
+<span class="remove-ic-compare absolute top-0 right-0 m-1 cursor-pointer text-gray-400 hover:text-red-500" 
+   onclick="removeCompare('${vIDStr}', event)">
+   <i class="fa-solid fa-xmark fa-xs"></i>
+</span>
+</li>
+`;
+                            };
+
+                            // --- 2. FUNCTION: THÊM/XÓA SẢN PHẨM KHỎI MẢNG ---
+                            function toggleCompare(vIDStr, pIDStr, name, img) {
+                                // ... (Logic toggle so sánh giữ nguyên) ...
+                                const vID = parseInt(vIDStr);
+                                const pID = parseInt(pIDStr);
+                                if (isNaN(vID) || isNaN(pID)) {
+                                    console.error("Invalid variantID or productID");
+                                    return;
+                                }
+
+                                const index = compareItems.findIndex(item => item.vID === vID);
+
+                                if (index !== -1) {
+                                    compareItems.splice(index, 1);
+                                } else {
+                                    if (compareItems.length >= MAX_COMPARE) {
+                                        document.getElementById('compare-error-label').classList.remove('hidden');
+                                        return;
+                                    }
+                                    compareItems.push({vID, pID, name, img});
+                                }
+
+                                document.getElementById('compare-error-label').classList.add('hidden'); // Reset lỗi khi có thay đổi
+                                updateCompareTray();
+                            }
+
+                            // --- 3. FUNCTION: XÓA SẢN PHẨM KHỎI KHAY (Khi click nút 'x') ---
+                            function removeCompare(vIDStr, event) {
+                                if (event) {
+                                    // *** RẤT QUAN TRỌNG: NGĂN LAN TRUYỀN *** (Để không bị chuyển trang chi tiết sản phẩm)
+                                    event.stopPropagation();
+                                }
+                                const vID = parseInt(vIDStr);
+                                const index = compareItems.findIndex(item => item.vID === vID);
+
+                                if (index !== -1) {
+                                    compareItems.splice(index, 1);
+                                }
+                                updateCompareTray();
+                            }
+
+                            // --- 4. FUNCTION: XÓA TẤT CẢ SẢN PHẨM TRONG KHAY ---
+                            function removeAllCompare() {
+                                compareItems = [];
+                                document.getElementById('compare-error-label').classList.add('hidden');
+                                updateCompareTray();
+                            }
+
+                            // --- 5. FUNCTION: CHUYỂN HƯỚNG ĐẾN TRANG SO SÁNH (Khi click nút 'So sánh ngay') ---
+                            function doCompare() {
+                                const variantIDs = compareItems.map(item => item.vID);
+
+                                if (variantIDs.length < 2) {
+                                    alert("Vui lòng chọn ít nhất 2 sản phẩm để so sánh.");
+                                    return;
+                                }
+
+                                const compareURL = `${CONTEXT_PATH}/product?action=compare&vIDs=${variantIDs.join(',')}`;
+                                        window.location.href = compareURL;
+                                    }
+
+                                    // --- 6. FUNCTION: CẬP NHẬT TRẠNG THÁI CÁC NÚT SO SÁNH TRÊN SẢN PHẨM ---
+                                    function updateCompareButtons() {
+                                        const compareButtons = document.querySelectorAll('.compare-btn');
+
+                                        compareButtons.forEach(button => {
+                                            const vIDStr = button.getAttribute('data-variantid');
+                                            const vID = parseInt(vIDStr);
+                                            const icon = button.querySelector('i');
+                                            // Lấy Text Node, đảm bảo không lấy Comment Node
+                                            const buttonTextSpan = Array.from(button.childNodes).find(node => node.nodeType === 3);
+
+                                            const isSelected = compareItems.findIndex(item => item.vID === vID) !== -1;
+
+                                            if (isSelected) {
+                                                // Thay đổi sang trạng thái ĐÃ CHỌN (fa-check)
+                                                if (icon) {
+                                                    icon.classList.remove('fa-plus');
+                                                    icon.classList.add('fa-check', 'text-green-500');
+                                                }
+                                                if (buttonTextSpan) {
+                                                    buttonTextSpan.textContent = ' Đã chọn';
+                                                }
+                                                button.classList.add('compare-selected');
+                                            } else {
+                                                // Thay đổi sang trạng thái CHƯA CHỌN (fa-plus)
+                                                if (icon) {
+                                                    icon.classList.remove('fa-check', 'text-green-500');
+                                                    icon.classList.add('fa-plus');
+                                                }
+                                                if (buttonTextSpan) {
+                                                    buttonTextSpan.textContent = ' So sánh';
+                                                }
+                                                button.classList.remove('compare-selected');
+                                            }
+                                        });
+                                    }
+
+                                    // --- 7. FUNCTION: GÁN EVENT LISTENER (KHẮC PHỤC LỖI REFERENCE ERROR) ---
+                                    // *** ĐÃ SỬA LỖI #2 ***: Gắn hàm vào nút bằng JS sau khi DOM tải xong
+                                    function initCompareButtons() {
+                                        // Rất quan trọng: Chỉ gọi hàm này sau khi các phần tử HTML đã có trên DOM.
+                                        const compareButtons = document.querySelectorAll('.compare-btn');
+
+                                        compareButtons.forEach(button => {
+                                            // Đảm bảo không gắn listener nhiều lần
+                                            button.removeEventListener('click', handleCompareClick);
+                                            button.addEventListener('click', handleCompareClick);
+                                        });
+                                    }
+
+                                    function handleCompareClick(event) {
+                                        // Lấy dữ liệu từ data attribute của nút
+                                        const button = event.currentTarget;
+                                        const vIDStr = button.getAttribute('data-variantid');
+                                        const pIDStr = button.getAttribute('data-productid');
+                                        const name = button.getAttribute('data-name');
+                                        const img = button.getAttribute('data-image');
+
+                                        // Gọi hàm logic chính
+                                        toggleCompare(vIDStr, pIDStr, name, img);
+                                    }
+
+                                    // --- 8. FUNCTION: CẬP NHẬT KHAY SO SÁNH (Gộp toàn bộ logic hiển thị) ---
+                                    function updateCompareTray() {
+                                        const tray = document.getElementById('comparison-tray');
+                                        const compareList = document.getElementById('compare-list');
+
+                                        // 1. Luôn Clear nội dung hiện tại
+                                        compareList.innerHTML = '';
+
+                                        // 2. Render item đã chọn
+                                        compareItems.forEach(item => {
+                                            compareList.innerHTML += compareItemTemplate(item.vID, item.pID, item.name, item.img);
+                                        });
+
+                                        // 3. Render các ô trống
+                                        const emptySlots = MAX_COMPARE - compareItems.length;
+                                        for (let i = 1; i <= emptySlots; i++) {
+                                            const slotNumber = compareItems.length + i;
+                                            compareList.innerHTML += `
+<li class="text-xs text-gray-500 p-2 border border-dashed border-gray-300 rounded-lg w-32 text-center h-20 flex items-center justify-center">
+Chọn sản phẩm ${slotNumber}
+</li>`;
+                                        }
+
+                                        // 4. Quản lý trạng thái tray (Hiện/Ẩn)
+                                        tray.classList.toggle('hidden', compareItems.length === 0);
+
+                                        // 5. Cập nhật nút 'So sánh ngay' và 'Xóa tất cả'
+                                        const doCompareBtn = document.getElementById('do-compare-btn');
+                                        const removeAllBtn = document.getElementById('remove-all-btn');
+                                        const minItemsToCompare = 2;
+
+                                        if (compareItems.length >= minItemsToCompare) {
+                                            doCompareBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                                            doCompareBtn.onclick = doCompare;
+                                        } else {
+                                            doCompareBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                                            doCompareBtn.onclick = null; // Loại bỏ onclick khi chưa đủ sản phẩm
+                                        }
+
+                                        removeAllBtn.classList.toggle('hidden', compareItems.length === 0);
+
+                                        // 6. Cập nhật trạng thái các nút 'So sánh' trên sản phẩm
+                                        updateCompareButtons();
+                                    }
+
+
+                                    // --- 9. INITIALIZATION (Khởi tạo khi trang tải xong) ---
+                                    window.addEventListener('DOMContentLoaded', (event) => {
+                                        // Tải trạng thái so sánh từ Local Storage nếu có (Tùy chọn)
+                                        // ...
+
+                                        // Khởi tạo khay so sánh (render 3 ô trống)
+                                        updateCompareTray();
+
+                                        // Khởi tạo Event Listener cho các nút so sánh trên sản phẩm
+                                        initCompareButtons();
+                                    });
+        </script>
 
     </body>
 </html>

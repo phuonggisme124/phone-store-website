@@ -31,6 +31,7 @@ import model.Review;
 import model.Specification;
 import model.Suppliers;
 import model.Customer;
+import model.Staff;
 import model.Variants;
 
 @MultipartConfig
@@ -99,9 +100,34 @@ public class ProductServlet extends HttpServlet {
 
         // public
         if ("viewDetail".equals(action)) {
-            String vID = request.getParameter("vID");
-            int productID = Integer.parseInt(request.getParameter("pID"));
+            String vIDParam = request.getParameter("vID");
+            String pIDParam = request.getParameter("pID");
 
+            int productID = 0;
+            int variantID = 0; // Dùng int để tránh lỗi NumberFormatException
+
+            try {
+                // Kiểm tra pID trước
+                if (pIDParam != null && !pIDParam.isEmpty()) {
+                    productID = Integer.parseInt(pIDParam);
+                } else {
+                    // Nếu pID rỗng, chuyển hướng về danh mục
+                    response.sendRedirect("product?action=category");
+                    return;
+                }
+
+                // Kiểm tra vID
+                if (vIDParam != null && !vIDParam.isEmpty()) {
+                    variantID = Integer.parseInt(vIDParam);
+                }
+            } catch (NumberFormatException e) {
+                Logger.getLogger(ProductServlet.class.getName())
+                        .log(Level.SEVERE, "Number Format Exception for pID/vID", e);
+                response.sendRedirect("product?action=category");
+                return;
+            }
+
+            // Lấy dữ liệu từ database
             List<Category> listCategory = pdao.getAllCategory();
             List<String> listStorage = vdao.getAllStorage(productID);
             Products p = pdao.getProductByID(productID);
@@ -110,20 +136,23 @@ public class ProductServlet extends HttpServlet {
 
             Variants variants = null;
 
-            if (vID != null && !vID.isEmpty()) {
+            // Lấy variant theo variantID nếu có
+            if (variantID > 0) {
                 try {
-                    int variantID = Integer.parseInt(vID);
                     variants = vdao.getVariantByID(variantID);
                 } catch (NumberFormatException e) {
-                    e.printStackTrace();
+                    Logger.getLogger(ProductServlet.class.getName())
+                            .log(Level.SEVERE, "Error getting variant by ID", e);
                 }
             }
 
-            if (variants == null) {
+            // Nếu không tìm thấy variant, lấy variant đầu tiên trong list
+            if (variants == null && !listVariants.isEmpty()) {
+                Variants firstVariant = listVariants.get(0);
                 variants = vdao.getVariant(
                         productID,
-                        listVariants.get(0).getStorage(),
-                        listVariants.get(0).getColor()
+                        firstVariant.getStorage(),
+                        firstVariant.getColor()
                 );
             }
 
@@ -132,10 +161,14 @@ public class ProductServlet extends HttpServlet {
             List<Review> listReview = rdao.getAllReviewByListVariant(listVariantRating);
             double rating = rdao.getTotalRating(listVariantRating, listReview);
 
+// Gán categoryID vào request để JSP sử dụng
             request.setAttribute("categoryID", cID);
-            if (vID != null) {
-                request.setAttribute("vID", vID);
+
+// Gán lại vID bằng vIDParam gốc (chuỗi) nếu có
+            if (vIDParam != null && !vIDParam.isEmpty()) {
+                request.setAttribute("vID", vIDParam);
             }
+
             request.setAttribute("rating", rating);
             request.setAttribute("specification", specification);
             request.setAttribute("productID", productID);
@@ -480,8 +513,17 @@ public class ProductServlet extends HttpServlet {
             action = "dashboard";
         }
 
-        model.Customer currentUser = (model.Customer) session.getAttribute("user");
-        model.Staff currentStaff = (model.Staff) session.getAttribute("user");
+        Customer currentUser = null;
+        Staff currentStaff = null;
+
+        Object acc = session.getAttribute("user");
+
+        if (acc instanceof Customer) {
+            currentUser = (Customer) acc;
+        } else if (acc instanceof Staff) {
+            currentStaff = (Staff) acc;
+        }
+
         if (action.equals("createProduct") || action.equals("updateProduct")) {
             if (currentStaff == null || currentStaff.getRole() != 4) {
                 response.sendRedirect("login");

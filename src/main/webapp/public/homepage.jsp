@@ -470,16 +470,16 @@
                                         <!--WISH LIST BUTTON-->
                                         <div class="wishlist-wrap">
                                             <%
-                                                Customer u = (Customer) session.getAttribute("user");
-                                                boolean logged = (u != null);
-                                                boolean liked = false;
-                                                int variantID = p.getVariants().get(0).getVariantID();
-                                                int productID = p.getProductID();
+ Customer u = (Customer) session.getAttribute("user");
+ boolean logged = (u != null);
+ boolean liked = false;
+ int variantID = p.getVariants().get(0).getVariantID();
+ int productID = p.getProductID();
 
-                                                if (logged && variantID > 0) {
-                                                    WishlistDAO wdao = new WishlistDAO();
-                                                    liked = wdao.isExist(u.getCustomerID(), productID, variantID);
-                                                }
+ if (logged && variantID > 0) {
+     WishlistDAO wdao = new WishlistDAO();
+     liked = wdao.isExist(u.getCustomerID(), productID, variantID);
+ }
                                             %>
 
                                             <button class="wishlist-btn toggle-wishlist"
@@ -491,6 +491,7 @@
                                             </button>
 
                                         </div>
+
 
                                         <span class="item-price text-primary"><%= vnFormat.format(p.getVariants().get(0).getDiscountPrice())%></span>
                                     </div>
@@ -545,16 +546,16 @@
                                         <!--WISH LIST BUTTON-->
                                         <div class="wishlist-wrap">
                                             <%
- Customer u = (Customer) session.getAttribute("user");
- boolean logged = (u != null);
- boolean liked = false;
- int variantID = p.getVariants().get(0).getVariantID();
- int productID = p.getProductID();
+                                                Customer u = (Customer) session.getAttribute("user");
+                                                boolean logged = (u != null);
+                                                boolean liked = false;
+                                                int variantID = p.getVariants().get(0).getVariantID();
+                                                int productID = p.getProductID();
 
- if (logged && variantID > 0) {
-     WishlistDAO wdao = new WishlistDAO();
-     liked = wdao.isExist(u.getCustomerID(), productID, variantID);
- }
+                                                if (logged && variantID > 0) {
+                                                    WishlistDAO wdao = new WishlistDAO();
+                                                    liked = wdao.isExist(u.getCustomerID(), productID, variantID);
+                                                }
                                             %>
 
                                             <button class="wishlist-btn toggle-wishlist"
@@ -593,7 +594,6 @@
                         }
                     %>
 
-                    <!-- Thay thế phần Tablet hiện tại bằng code này -->
                     <div class="swiper product-swiper">
                         <div class="swiper-wrapper">
                             <%
@@ -638,6 +638,7 @@
                                                 <i class="<%= liked ? "fas fa-heart" : "far fa-heart" %>"
                                                    style="<%= liked ? "color:#e53e3e;" : "" %>"></i>
                                             </button>
+
                                         </div>
 
                                         <span class="item-price text-primary"><%= vnFormat.format(p.getVariants().get(0).getPrice())%></span>
@@ -777,8 +778,7 @@
             });
         </script>
 
-
         <script src="${pageContext.request.contextPath}/js/google_login.js?v=10"></script>
         <script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
-        <!--    </body>-->
+            </body>
 </html>

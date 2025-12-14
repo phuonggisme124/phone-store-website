@@ -13,45 +13,66 @@ import utils.DBContext;
 public class WishlistDAO extends DBContext {
 
     public void addToWishlist(int customerID, int productId, int variantId) {
-        String sql = "INSERT INTO Wishlist (CustomerID, productID, variantID, createdAt) VALUES (?, ?, ?, GETDATE())";
+        String sql = "INSERT INTO Wishlist (CustomerID, ProductID, VariantID, createdAt) VALUES (?, ?, ?, GETDATE())";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, customerID);
             ps.setInt(2, productId);
-            ps.setInt(3, variantId);
+
+            if (variantId == 0) {
+                ps.setNull(3, java.sql.Types.INTEGER);
+            } else {
+                ps.setInt(3, variantId);
+            }
+
             ps.executeUpdate();
+
+            if (conn != null) {
+                conn.commit();
+            }
+
         } catch (Exception e) {
+            System.err.println("--- LỖI WISHLIST DAO ---");
+            System.err.println("SQL: " + sql);
+            System.err.println("Params: CustomerID=" + customerID + ", ProductID=" + productId + ", VariantID=" + variantId);
             e.printStackTrace();
-        }
-    }
 
-    public void removeFromWishlist(int customerID, int productId, int variantId) {
-
-        String sql = "DELETE FROM Wishlist WHERE CustomerID = ? AND ProductID = ? AND VariantID = ?";
-
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, customerID);
-            ps.setInt(2, productId);
-            ps.setInt(3, variantId);
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
+            try {
+                if (conn != null) {
+                    conn.rollback();
+                }
+            } catch (SQLException rollbackEx) {
+                rollbackEx.printStackTrace();
+            }
         }
     }
 
     public boolean isExist(int customerID, int productId, int variantId) {
-        String sql = "SELECT 1 FROM Wishlist WHERE CustomerID = ? AND ProductID = ? AND VariantID = ?";
+        String sql = "SELECT 1 FROM Wishlist WHERE CustomerID = ? AND ProductID = ?";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, customerID);
             ps.setInt(2, productId);
-            ps.setInt(3, variantId);
+
             ResultSet rs = ps.executeQuery();
             return rs.next();
         } catch (Exception e) {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public void removeFromWishlist(int customerID, int productId, int variantId) {
+        String sql = "DELETE FROM Wishlist WHERE CustomerID = ? AND ProductID = ?";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, customerID);
+            ps.setInt(2, productId);
+
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public List<Products> getWishlistByCustomer(int customerID) {
