@@ -186,7 +186,11 @@
                     <div class="product-info">
                         <img src="images/<%=c.getVariant().getImageList()[0]%>" class="product-image" alt="Product">
                         <div class="product-details">
+<<<<<<< Updated upstream
                             <p class="product-name"><%= pDAO.getProductByID(c.getVariant().getProductID()).getName().toUpperCase() + " - " + c.getVariant().getColor() + " - " + c.getVariant().getStorage()%></p>
+=======
+                            <p class="product-name"><%= pDAO.getProductByID(c.getVariant().getProductID()).getName().toUpperCase() + " - " + c.getVariant().getColor().toUpperCase() + " - " + c.getVariant().getStorage()%></p>
+>>>>>>> Stashed changes
                             <div class="product-price">
                                 <span class="current-price"><%= String.format("%,.0f", c.getVariant().getDiscountPrice())%> VND</span><span class="original-price"
                                                                                                                                             style="<%= c.getVariant().getDiscountPrice() < c.getVariant().getPrice() ? "" : "display:none;"%>">

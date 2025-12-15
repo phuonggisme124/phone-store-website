@@ -229,7 +229,9 @@ public class PaymentServlet extends HttpServlet {
 
                 o.setOrderID(newOrderID);
                 o.setOrderDate(LocalDateTime.now());
-                pmDAO. insertNewPayment(o, term);
+
+                pmDAO.insertNewPayment(o, term);
+
 
                 OrderDetailDAO oDDAO = new OrderDetailDAO();
                 for (Carts c : carts) {

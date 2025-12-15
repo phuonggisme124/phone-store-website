@@ -1,93 +1,81 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package model;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
 /**
- * The Payments class maps to the Payments table in the database.  
- * Stores information about payments, transaction details, and installment progress.
- * 
+ * Maps to InstallmentDetail table.
+ * Stores installment payment information.
+ *
  * @author Hoa Hong Nhung
  */
 public class InstallmentDetail {
 
-    private int InstallmentDetailID;              // int, NOT NULL (Primary Key)
-    private Integer orderID;            // int, Allow Nulls — reference to the related Order
-    private double amount;              // decimal(15,2), Allow Nulls — payment amount
-    private LocalDateTime paymentDate;  // datetime, Allow Nulls — date and time of the payment
-    private String paymentStatus;       // nvarchar(20), Allow Nulls — payment state (e.g., "Paid", "Pending")
-    private int totalMonth;             // total number of months for installment payments
-    private int currentMonth;           // current month in the installment plan
+    private int installmentDetailID;     // PK
+    private Integer orderID;              // FK -> Order
+    private double amount;
+    private LocalDateTime paymentDate;
+    private String paymentStatus;
+    private int totalMonth;
+    private int currentMonth;
     private int expriedDay;
+
     // --- Default constructor ---
     public InstallmentDetail() {
     }
 
+    // --- Basic constructor ---
+    public InstallmentDetail(int installmentDetailID, Integer orderID,
+                             double amount, LocalDateTime paymentDate,
+                             String paymentStatus) {
+        this.installmentDetailID = installmentDetailID;
+        this.orderID = orderID;
+        this.amount = amount;
+        this.paymentDate = paymentDate;
+        this.paymentStatus = paymentStatus;
+    }
+
+    // --- Minimal constructor ---
+    public InstallmentDetail(int installmentDetailID) {
+        this.installmentDetailID = installmentDetailID;
+    }
+
+    // --- Full constructor ---
+    public InstallmentDetail(int installmentDetailID, Integer orderID,
+                             double amount, LocalDateTime paymentDate,
+                             String paymentStatus, int totalMonth,
+                             int currentMonth, int expriedDay) {
+        this.installmentDetailID = installmentDetailID;
+        this.orderID = orderID;
+        this.amount = amount;
+        this.paymentDate = paymentDate;
+        this.paymentStatus = paymentStatus;
+        this.totalMonth = totalMonth;
+        this.currentMonth = currentMonth;
+        this.expriedDay = expriedDay;
+    }
+
+    /* ================= BUSINESS LOGIC ================= */
+
+    /**
+     * Days from paymentDate to now.
+     * >0 : overdue
+     * =0 : today
+     * <0 : not due yet
+     */
     public int getExpriedDay() {
-            return (int) ChronoUnit.DAYS.between(this.paymentDate, LocalDateTime.now());
-
+        if (paymentDate == null) return 0;
+        return (int) ChronoUnit.DAYS.between(paymentDate, LocalDateTime.now());
     }
 
-    public void setExpriedDay(int expriedDay) {
-        this.expriedDay = expriedDay;
-    }
-
-
-    public InstallmentDetail(int InstallmentDetailID, Integer orderID, double amount, LocalDateTime paymentDate, String paymentStatus) {
-        this.InstallmentDetailID = InstallmentDetailID;
-        this.orderID = orderID;
-        this.amount = amount;
-        this.paymentDate = paymentDate;
-        this.paymentStatus = paymentStatus;
-    }
-
-  
-    public InstallmentDetail(int InstallmentDetailID) {
-        this.InstallmentDetailID = InstallmentDetailID;
-        this.orderID = null;
-        this.amount = 0;
-        this.paymentDate = null;
-        this.paymentStatus = null;
-    }
-
-    // --- Extended constructor including installment fields ---
-    public InstallmentDetail(int InstallmentDetailID, Integer orderID, double amount, LocalDateTime paymentDate, String paymentStatus, int totalMonth, int currentMonth, int expriedDay) {
-        this.InstallmentDetailID = InstallmentDetailID;
-        this.orderID = orderID;
-        this.amount = amount;
-        this.paymentDate = paymentDate;
-        this.paymentStatus = paymentStatus;
-        this.totalMonth = totalMonth;
-        this.currentMonth = currentMonth;
-        this.expriedDay = expriedDay;
-    }
-
-    public int getTotalMonth() {
-        return totalMonth;
-    }
-
-    public void setTotalMonth(int totalMonth) {
-        this.totalMonth = totalMonth;
-    }
-
-    public int getCurrentMonth() {
-        return currentMonth;
-    }
-
-    public void setCurrentMonth(int currentMonth) {
-        this.currentMonth = currentMonth;
-    }
+    /* ================= GETTERS & SETTERS ================= */
 
     public int getInstallmentDetailID() {
-        return InstallmentDetailID;
+        return installmentDetailID;
     }
 
-    public void setInstallmentDetailID(int InstallmentDetailID) {
-        this.InstallmentDetailID = InstallmentDetailID;
+    public void setInstallmentDetailID(int installmentDetailID) {
+        this.installmentDetailID = installmentDetailID;
     }
 
     public Integer getOrderID() {
@@ -122,4 +110,23 @@ public class InstallmentDetail {
         this.paymentStatus = paymentStatus;
     }
 
+    public int getTotalMonth() {
+        return totalMonth;
+    }
+
+    public void setTotalMonth(int totalMonth) {
+        this.totalMonth = totalMonth;
+    }
+
+    public int getCurrentMonth() {
+        return currentMonth;
+    }
+
+    public void setCurrentMonth(int currentMonth) {
+        this.currentMonth = currentMonth;
+    }
+
+    public void setExpriedDay(int expriedDay) {
+        this.expriedDay = expriedDay;
+    }
 }

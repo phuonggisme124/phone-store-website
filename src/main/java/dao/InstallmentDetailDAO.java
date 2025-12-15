@@ -122,7 +122,7 @@ public class InstallmentDetailDAO extends DBContext {
     InstallmentDetailDAO dao = new InstallmentDetailDAO();
 
     Order o = new Order();
-    o.setOrderID(1); // OrderID tồn tạÊi
+    o.setOrderID(1); // OrderID tồn tại
     o.setTotalAmount(12000000); // 12 triệu
     o.setOrderDate(LocalDateTime.now());
 

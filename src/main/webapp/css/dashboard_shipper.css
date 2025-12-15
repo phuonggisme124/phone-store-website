@@ -302,3 +302,34 @@ h1, h2, h3, h4, h5, h6, .card-title {
         height: 56px;
     }
 }
+/* ===== MODAL ORDER DETAIL ===== */
+
+.modal .order-items-box {
+    background: #fff;
+    border: none;
+    padding: 8px;
+}
+
+.modal-body {
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.modal .order-item {
+    background: #f9fbfd;
+    border: 1px solid #e3e8f0;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.modal .order-item:hover {
+    border-color: #72AEC8;
+}
+
+.modal .order-item-img {
+    width: 72px;
+    height: 72px;
+    object-fit: cover;
+    border: 1px solid #dcdcdc;
+    border-radius: 6px;
+}

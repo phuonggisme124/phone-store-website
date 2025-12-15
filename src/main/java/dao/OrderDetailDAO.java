@@ -18,24 +18,18 @@ import utils.DBContext;
 public class OrderDetailDAO extends DBContext {
 
     public void insertNewOrderDetail(OrderDetails oD) {
-        
-
-            String sql = "INSERT INTO OrderDetails (OrderID, VariantID, Quantity, UnitPrice) "
-                    + "VALUES (?, ?, ?, ?)";
-
-            try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                ps.setInt(1, oD.getOrderID());
-                ps.setInt(2, oD.getVariantID());
-                ps.setInt(3, oD.getQuantity());
-                ps.setDouble(4, oD.getUnitPrice());
-                ps.executeUpdate();
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-            }
-
+ String sql = "INSERT INTO OrderDetails (OrderID, VariantID, Quantity, UnitPrice) "
+                + "VALUES (?, ?, ?, ?)";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, oD.getOrderID());
+            ps.setInt(2, oD.getVariantID());
+            ps.setInt(3, oD.getQuantity());
+            ps.setDouble(4, oD.getUnitPrice());
+            ps.executeUpdate();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
-
-
 
     public List<OrderDetails> getOrderDetailByOrderID(int orderID) {
         String sql = "SELECT od.OrderID, od.VariantID, od.UnitPrice, od.Quantity\n"
@@ -49,7 +43,6 @@ public class OrderDetailDAO extends DBContext {
             while (rs.next()) {
                 int variantID = rs.getInt("VariantID");
                 double unitPrice = rs.getDouble("UnitPrice");
-
  
                 int quantity = rs.getInt("Quantity");
                 OrderDetails od = new OrderDetails();
