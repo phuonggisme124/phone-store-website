@@ -1,11 +1,13 @@
 package controller;
 
+import dao.AddressDAO;
 import dao.CartDAO;
 import dao.InterestRateDAO;
 import dao.OrderDAO;
 import dao.OrderDetailDAO;
-import dao.PaymentsDAO;
+import dao.InstallmentDetailDAO;
 import dao.CustomerDAO;
+import dao.InstallmentDetailDAO;
 import dao.VariantsDAO;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
@@ -17,6 +19,7 @@ import jakarta.servlet.http.HttpSession;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import model.Address;
 import model.Carts;
 import model.InterestRate;
 import model.Order;
@@ -30,19 +33,45 @@ public class PaymentServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
         String action = request.getParameter("action");
         HttpSession session = request.getSession();
         Customer u = (Customer) session.getAttribute("user");
 
-        if (action != null && action.equalsIgnoreCase("buyNowFromProductDetail")) {
-            // ... (Giữ nguyên logic buyNowFromProductDetail cũ) ...
+        if (u == null) {
+            response.sendRedirect("login.jsp");
+            return;
+        }
+
+        AddressDAO aDAO = new AddressDAO();
+
+        /* ================= LOAD ADDRESS LIST ================= */
+        List<Address> addresses = aDAO.getAddressList(u.getCustomerID());
+        Address defaultAddress = null;
+        List<Address> otherAddresses = new ArrayList<>();
+
+        if (addresses != null) {
+            for (Address a : addresses) {
+                if (a.isDefault()) {
+                    defaultAddress = a;
+                } else {
+                    otherAddresses.add(a);
+                }
+            }
+        }
+
+        if (defaultAddress == null && !otherAddresses.isEmpty()) {
+            defaultAddress = otherAddresses.remove(0);
+        }
+
+        request.setAttribute("defaultAddress", defaultAddress);
+        request.setAttribute("otherAddresses", otherAddresses);
+
+        /* ================= BUY NOW FROM PRODUCT DETAIL ================= */
+        if ("buyNowFromProductDetail".equalsIgnoreCase(action)) {
             try {
                 session.setAttribute("buyFrom", action);
-                if (u == null) {
-                    response.sendRedirect("login.jsp");
-                    return;
-                }
-                Integer userID = u.getCustomerID();
+
                 int variantID = Integer.parseInt(request.getParameter("variantID"));
                 int quantity = Integer.parseInt(request.getParameter("quantity"));
 
@@ -54,8 +83,9 @@ public class PaymentServlet extends HttpServlet {
                     return;
                 }
 
-                Carts cart = new Carts(userID, variant, quantity);
-                cart.setCartID(userID);
+                Carts cart = new Carts(u.getCustomerID(), variant, quantity);
+                cart.setCartID(u.getCustomerID());
+
                 List<Carts> carts = new ArrayList<>();
                 carts.add(cart);
 
@@ -63,24 +93,24 @@ public class PaymentServlet extends HttpServlet {
                 request.getRequestDispatcher("customer/payment.jsp").forward(request, response);
 
             } catch (NumberFormatException e) {
-                System.err.println("Lỗi NumberFormatException: " + e.getMessage());
                 response.sendRedirect("homepage?error=invalid_parameter");
             }
-            
-        } else if (action != null && action.equalsIgnoreCase("buyNowFromCart")) {
-            // ... (Giữ nguyên logic buyNowFromCart cũ) ...
+
+        /* ================= BUY NOW FROM CART ================= */
+        } else if ("buyNowFromCart".equalsIgnoreCase(action)) {
+
             session.setAttribute("buyFrom", action);
             List<Carts> carts = (List<Carts>) session.getAttribute("cart");
 
             String idsParam = request.getParameter("selectedIds");
             List<Integer> selectedIDInt = new ArrayList<>();
+
             if (idsParam != null && !idsParam.isEmpty()) {
-                String[] selectedIds = idsParam.split(",");
-                for (String id : selectedIds) {
+                for (String id : idsParam.split(",")) {
                     selectedIDInt.add(Integer.valueOf(id));
                 }
             }
-            
+
             List<Carts> cartSelectedItemsList = new ArrayList<>();
             if (carts != null) {
                 for (Carts c : carts) {
@@ -93,36 +123,48 @@ public class PaymentServlet extends HttpServlet {
             session.setAttribute("cartCheckout", cartSelectedItemsList);
             request.getRequestDispatcher("customer/payment.jsp").forward(request, response);
 
-        } else if (action != null && action.equalsIgnoreCase("checkout")) {
-            // --- PHẦN NÀY ĐÃ ĐƯỢC SỬA ---
+        /* ================= CHECKOUT ================= */
+        } else if ("checkout".equalsIgnoreCase(action)) {
+
             List<Carts> carts = (List<Carts>) session.getAttribute("cartCheckout");
 
             String receiverName = request.getParameter("receiverName");
             String receiverPhone = request.getParameter("receiverPhone");
-            String city = request.getParameter("city");
-            String address = request.getParameter("address");
-            // 1. Lấy biến saveAddress từ form
-            String saveAddress = request.getParameter("saveAddress"); 
+            String addressIDRaw = request.getParameter("addressID");
 
             if (receiverPhone == null || receiverPhone.trim().isEmpty()) {
                 request.setAttribute("error", "Phone number is required");
                 request.getRequestDispatcher("customer/payment.jsp").forward(request, response);
                 return;
             }
-            
-            if (city == null || city.trim().isEmpty()) {
-                request.setAttribute("error", "Please select province/city");
+
+            if (addressIDRaw == null || addressIDRaw.isEmpty()) {
+                request.setAttribute("error", "Please select a shipping address");
                 request.getRequestDispatcher("customer/payment.jsp").forward(request, response);
                 return;
             }
-            
-            if (address == null || address.trim().isEmpty()) {
-                request.setAttribute("error", "Specific address is required");
+
+            int addressID = Integer.parseInt(addressIDRaw);
+            Address selectedAddress = aDAO.getAddressByID(addressID);
+
+            if (selectedAddress == null) {
+                request.setAttribute("error", "Invalid address selected");
                 request.getRequestDispatcher("customer/payment.jsp").forward(request, response);
                 return;
             }
-            
-            String specificAddress = address.trim() + ", " + city.trim();
+
+            /* ===== TÁCH ADDRESS & CITY (GIỮ LOGIC CŨ) ===== */
+            String fullAddress = selectedAddress.getAddress(); // "123 Nguyen Trai, Ho Chi Minh"
+            String city = "";
+            String address = fullAddress;
+
+            if (fullAddress.contains(",")) {
+                city = fullAddress.substring(fullAddress.lastIndexOf(",") + 1).trim();
+                address = fullAddress.substring(0, fullAddress.lastIndexOf(",")).trim();
+            }
+
+            String specificAddress = address + ", " + city;
+
             InterestRateDAO iRDAO = new InterestRateDAO();
             List<InterestRate> iRList = iRDAO.getInInterestRate();
 
@@ -131,97 +173,89 @@ public class PaymentServlet extends HttpServlet {
             request.setAttribute("receiverName", receiverName);
             request.setAttribute("receiverPhone", receiverPhone);
             request.setAttribute("specificAddress", specificAddress);
-            // 2. Truyền biến saveAddress sang trang checkout (để giữ trạng thái checkbox)
-            request.setAttribute("saveAddress", saveAddress); 
 
-            request.getRequestDispatcher("customer/payment_checkout.jsp").forward(request, response);
+            request.getRequestDispatcher("customer/payment_checkout.jsp")
+                    .forward(request, response);
         }
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
         String action = request.getParameter("action");
         HttpSession session = request.getSession();
         List<Carts> carts = (List<Carts>) session.getAttribute("cartCheckout");
-        
-        if (action != null && action.equalsIgnoreCase("createOrder")) {
+
+        if ("createOrder".equalsIgnoreCase(action)) {
+
             String receiverName = request.getParameter("receiverName");
             String receiverPhone = request.getParameter("receiverPhone");
             String specificAddress = request.getParameter("specificAddress");
             String totalPriceStr = request.getParameter("totalAmount");
             String paymentMethod = request.getParameter("paymentMethod");
-            // 3. Nhận lại biến saveAddress từ trang checkout (cần input hidden bên JSP)
-            String saveAddress = request.getParameter("saveAddress"); 
 
             if (receiverPhone == null || receiverPhone.trim().isEmpty()) {
                 request.setAttribute("error", "Phone number is required");
                 request.getRequestDispatcher("customer/payment_checkout.jsp").forward(request, response);
                 return;
             }
-            
-            if (specificAddress == null || specificAddress.trim().isEmpty()) {
-                request.setAttribute("error", "Address is required");
-                request.getRequestDispatcher("customer/payment_checkout.jsp").forward(request, response);
-                return;
-            }
 
-            OrderDAO oDAO = new OrderDAO();
             Customer u = (Customer) session.getAttribute("user");
             int userID = u.getCustomerID();
-            
-            // --- XỬ LÝ THANH TOÁN (Giữ nguyên) ---
+            OrderDAO oDAO = new OrderDAO();
+
+            double totalPrice = (totalPriceStr != null && !totalPriceStr.isEmpty())
+                    ? Double.parseDouble(totalPriceStr) : 0;
+
+            /* ================= INSTALLMENT ================= */
             if (paymentMethod != null && paymentMethod.startsWith("INSTALLMENT_")) {
-                String installmentTerm = request.getParameter("installmentTerm");
-                String paymentMethodArr[] = paymentMethod.split("_");
-                int term = Integer.parseInt(installmentTerm);
+
+                int term = Integer.parseInt(request.getParameter("installmentTerm"));
                 byte isInstalment = 1;
-                double totalPrice = 0;
-                
-                if (totalPriceStr != null && !totalPriceStr.isEmpty()) {
-                    totalPrice = Double.parseDouble(totalPriceStr);
-                }
-                
+
                 InterestRateDAO iRDAO = new InterestRateDAO();
                 InterestRate iR = iRDAO.getInterestRatePercentByIstalmentPeriod(term);
 
-                double totalPriceIfInstalment = totalPrice + ((totalPrice * iR.getPercent()) / 100);
-                Order o = new Order(userID, paymentMethodArr[0], specificAddress, totalPriceIfInstalment, "Pending", isInstalment, new Customer(receiverName, receiverPhone));
-                PaymentsDAO pmDAO = new PaymentsDAO();
+                double totalIfInstalment = totalPrice + ((totalPrice * iR.getPercent()) / 100);
 
+                Order o = new Order(userID, paymentMethod.split("_")[0],
+                        specificAddress, totalIfInstalment,
+                        "Pending", isInstalment,
+                        new Customer(receiverName, receiverPhone));
+
+                InstallmentDetailDAO pmDAO = new InstallmentDetailDAO();
                 int newOrderID = oDAO.addNewOrder(o);
 
                 o.setOrderID(newOrderID);
                 o.setOrderDate(LocalDateTime.now());
-                pmDAO.insertNewPayment(o, term);
-                OrderDetailDAO oDDAO = new OrderDetailDAO();
+                pmDAO. insertNewPayment(o, term);
 
+                OrderDetailDAO oDDAO = new OrderDetailDAO();
                 for (Carts c : carts) {
-                    double unitPriceIfInstalment = c.getVariant().getDiscountPrice() + ((c.getVariant().getDiscountPrice() * iR.getPercent()) / 100);
+                    double unitPrice = c.getVariant().getDiscountPrice()
+                            + ((c.getVariant().getDiscountPrice() * iR.getPercent()) / 100);
+
                     OrderDetails oD = new OrderDetails(
                             newOrderID,
                             c.getVariant().getVariantID(),
                             c.getQuantity(),
-                            unitPriceIfInstalment,
-                            iR.getInterestRateID(),
-                            unitPriceIfInstalment / iR.getInstalmentPeriod(),
-                            0,
-                            iR.getPercent()
+                            unitPrice           
                     );
-                    oDDAO.insertNewOrderDetail(oD, isInstalment);
+                    oDDAO.insertNewOrderDetail(oD);
                 }
 
+            /* ================= NORMAL PAYMENT ================= */
             } else {
+
                 byte isInstalment = 0;
-                double totalPrice = 0;
-                
-                if (totalPriceStr != null && !totalPriceStr.isEmpty()) {
-                    totalPrice = Double.parseDouble(totalPriceStr);
-                }
-                
-                Order o = new Order(userID, paymentMethod, specificAddress, totalPrice, "Pending", isInstalment, new Customer(receiverName, receiverPhone));
+
+                Order o = new Order(userID, paymentMethod,
+                        specificAddress, totalPrice,
+                        "Pending", isInstalment,
+                        new Customer(receiverName, receiverPhone));
+
                 int newOrderID = oDAO.addNewOrder(o);
-                o.setOrderID(newOrderID);
 
                 OrderDetailDAO oDDAO = new OrderDetailDAO();
                 for (Carts c : carts) {
@@ -231,70 +265,32 @@ public class PaymentServlet extends HttpServlet {
                             c.getQuantity(),
                             c.getVariant().getDiscountPrice()
                     );
-                    oDDAO.insertNewOrderDetail(oD, isInstalment);
+                    oDDAO.insertNewOrderDetail(oD);
                 }
             }
 
-            // --- XỬ LÝ GIỎ HÀNG (Giữ nguyên) ---
+            /* ================= CLEAR CART ================= */
             CartDAO cartDAO = new CartDAO();
             String buyFrom = (String) session.getAttribute("buyFrom");
 
-            if (buyFrom != null && buyFrom.equalsIgnoreCase("buyNowFromCart")) {
+            if ("buyNowFromCart".equalsIgnoreCase(buyFrom)) {
                 for (Carts c : carts) {
                     cartDAO.removeItem(userID, c.getVariant().getVariantID());
                 }
-                List<Carts> updatedCart = cartDAO.getCartByCustomerID(userID);
-                session.setAttribute("cart", updatedCart);
+                session.setAttribute("cart", cartDAO.getCartByCustomerID(userID));
             }
 
-            // --- XỬ LÝ CẬP NHẬT THÔNG TIN USER (LOGIC MỚI) ---
+            /* ================= UPDATE USER PHONE ================= */
             CustomerDAO uDAO = new CustomerDAO();
-            boolean userInfoUpdated = false;
+            if ((u.getPhone() == null || u.getPhone().isEmpty())
+                    && receiverPhone != null && !receiverPhone.trim().isEmpty()) {
+                uDAO.updatePhone(userID, receiverPhone.trim());
+                u.setPhone(receiverPhone.trim());
+            }
 
-            // TRƯỜNG HỢP 1: Người dùng CHỦ ĐỘNG tick "Lưu địa chỉ"
-            if ("true".equals(saveAddress)) {
-                // Cập nhật địa chỉ (nếu khác địa chỉ cũ)
-                if (specificAddress != null && !specificAddress.trim().isEmpty()) {
-                    if (u.getAddress() == null || !specificAddress.trim().equals(u.getAddress().trim())) {
-                        uDAO.updateAddress(userID, specificAddress.trim());
-                        u.setAddress(specificAddress.trim());
-                        userInfoUpdated = true;
-                    }
-                }
-                // Cập nhật SĐT (nếu khác SĐT cũ)
-                if (receiverPhone != null && !receiverPhone.trim().isEmpty()) {
-                    if (u.getPhone() == null || !receiverPhone.trim().equals(u.getPhone().trim())) {
-                        uDAO.updatePhone(u.getCustomerID(), receiverPhone.trim());
-                        u.setPhone(receiverPhone.trim());
-                        userInfoUpdated = true;
-                    }
-                }
-            } 
-            // TRƯỜNG HỢP 2: Không tick lưu, nhưng hồ sơ đang TRỐNG (cập nhật tự động lần đầu cho tiện)
-            else {
-                // Nếu User chưa có địa chỉ -> Tự động lưu
-                if ((u.getAddress() == null || u.getAddress().isEmpty()) &&
-                    specificAddress != null && !specificAddress.trim().isEmpty()) {
-                    uDAO.updateAddress(userID, specificAddress.trim());
-                    u.setAddress(specificAddress.trim());
-                    userInfoUpdated = true;
-                }
-                
-                // Nếu User chưa có SĐT -> Tự động lưu
-                if ((u.getPhone() == null || u.getPhone().isEmpty()) && 
-                    receiverPhone != null && !receiverPhone.trim().isEmpty()) {
-                    uDAO.updatePhone(u.getCustomerID(), receiverPhone.trim());
-                    u.setPhone(receiverPhone.trim());
-                    userInfoUpdated = true;
-                }
-            }
-            
-            if (userInfoUpdated) {
-                session.setAttribute("user", u);
-            }
-            
             session.removeAttribute("cartCheckout");
             session.removeAttribute("buyFrom");
+
             request.getRequestDispatcher("homepage").forward(request, response);
         }
     }

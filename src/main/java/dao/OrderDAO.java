@@ -9,8 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 import model.Order;
 import model.OrderDetails;
-import model.Payments;
+import model.InstallmentDetail;
 import model.Customer;
+import model.InstallmentDetail;
 import model.Variants;
 import utils.DBContext;
 
@@ -457,12 +458,12 @@ public class OrderDAO extends DBContext {
     }
 
     public List<Order> getAllPendingInstalment(List<Order> listInstalment) {
-        PaymentsDAO pmdao = new PaymentsDAO();
+        InstallmentDetailDAO pmdao = new InstallmentDetailDAO();
         List<Order> list = new ArrayList<>();
         for (Order order : listInstalment) {
-            List<Payments> listPayment = pmdao.getPaymentByOrderID(order.getOrderID());
+            List<InstallmentDetail> listPayment = pmdao.getPaymentByOrderID(order.getOrderID());
             if (listPayment != null && !listPayment.isEmpty()) {
-                for (Payments payment : listPayment) {
+                for (InstallmentDetail payment : listPayment) {
                     if (payment.getPaymentStatus().equals("Pending")) {
                         list.add(order);
                         break;
@@ -474,13 +475,13 @@ public class OrderDAO extends DBContext {
     }
 
     public List<Order> getAllCompletedInstalment(List<Order> listInstalment) {
-        PaymentsDAO pmdao = new PaymentsDAO();
+        InstallmentDetailDAO pmdao = new InstallmentDetailDAO();
         List<Order> list = new ArrayList<>();
         for (Order order : listInstalment) {
             boolean checkPending = false;
-            List<Payments> listPayment = pmdao.getPaymentByOrderID(order.getOrderID());
+            List<InstallmentDetail> listPayment = pmdao.getPaymentByOrderID(order.getOrderID());
             if (listPayment != null && !listPayment.isEmpty()) {
-                for (Payments payment : listPayment) {
+                for (InstallmentDetail payment : listPayment) {
                     if (payment.getPaymentStatus().equals("Pending")) {
                         checkPending = true;
                         break;
@@ -660,13 +661,13 @@ public class OrderDAO extends DBContext {
     }
 
     public List<Order> getAllPendingInstalmentAndPhone(List<Order> listInstalment, String phone) {
-        PaymentsDAO pmdao = new PaymentsDAO();
+        InstallmentDetailDAO pmdao = new InstallmentDetailDAO();
         List<Order> list = new ArrayList<>();
         for (Order order : listInstalment) {
             if (order.getReceiverPhone() != null && order.getReceiverPhone().equals(phone)) {
-                List<Payments> listPayment = pmdao.getPaymentByOrderID(order.getOrderID());
+                List<InstallmentDetail> listPayment = pmdao.getPaymentByOrderID(order.getOrderID());
                 if (listPayment != null && !listPayment.isEmpty()) {
-                    for (Payments payment : listPayment) {
+                    for (InstallmentDetail payment : listPayment) {
                         if (payment.getPaymentStatus().equals("Pending")) {
                             list.add(order);
                             break;
@@ -679,14 +680,14 @@ public class OrderDAO extends DBContext {
     }
 
     public List<Order> getAllCompletedInstalmentAndPhone(List<Order> listInstalment, String phone) {
-        PaymentsDAO pmdao = new PaymentsDAO();
+        InstallmentDetailDAO pmdao = new InstallmentDetailDAO();
         List<Order> list = new ArrayList<>();
         for (Order order : listInstalment) {
             if (order.getReceiverPhone() != null && order.getReceiverPhone().equals(phone)) {
                 boolean checkPending = false;
-                List<Payments> listPayment = pmdao.getPaymentByOrderID(order.getOrderID());
+                List<InstallmentDetail> listPayment = pmdao.getPaymentByOrderID(order.getOrderID());
                 if (listPayment != null && !listPayment.isEmpty()) {
-                    for (Payments payment : listPayment) {
+                    for (InstallmentDetail payment : listPayment) {
                         if (payment.getPaymentStatus().equals("Pending")) {
                             checkPending = true;
                             break;

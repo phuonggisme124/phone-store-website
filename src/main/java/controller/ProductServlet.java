@@ -115,11 +115,11 @@ public class ProductServlet extends HttpServlet {
             request.setAttribute("listCategory", ctdao.getAllCategories());
 
             // Wishlist
-            if (customer != null) {
-                WishlistDAO wdao = new WishlistDAO();
-                request.setAttribute("wishlist",
-                        wdao.getWishlistByUser(customer.getCustomerID()));
-            }
+//            if (customer != null) {
+////                WishlistDAO wdao = new WishlistDAO();
+//                request.setAttribute("wishlist",
+////                        wdao.getWishlistByUser(customer.getCustomerID()));
+//            }
 
             request.getRequestDispatcher("public/productdetail.jsp")
                     .forward(request, response);

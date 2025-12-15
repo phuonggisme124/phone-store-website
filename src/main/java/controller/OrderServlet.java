@@ -2,7 +2,7 @@ package controller;
 
 import dao.CategoryDAO;
 import dao.OrderDAO;
-import dao.PaymentsDAO;
+import dao.InstallmentDetailDAO;
 import dao.ProductDAO;
 import dao.CustomerDAO;
 import dao.OrderDetailDAO;
@@ -20,10 +20,10 @@ import model.Category;
 import model.InterestRate;
 import model.Order;
 import model.OrderDetails;
-import model.Payments;
 import model.Customer;
 import model.Staff;
 import com.google.gson.Gson;
+import model.InstallmentDetail;
 
 /**
  * OrderServlet - Handles order management for Staff, Shipper, Admin, and
@@ -35,7 +35,7 @@ public class OrderServlet extends HttpServlet {
     private final CustomerDAO udao = new CustomerDAO();
     private final ProductDAO pdao = new ProductDAO();
     private final OrderDAO dao = new OrderDAO();
-    private final PaymentsDAO paydao = new PaymentsDAO();
+    private final InstallmentDetailDAO paydao = new InstallmentDetailDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -230,7 +230,7 @@ public class OrderServlet extends HttpServlet {
             boolean isInstalment = (isInstalmentParam != null) ? Boolean.parseBoolean(isInstalmentParam) : false;
 
             List<OrderDetails> listOrderDetails = dao.getAllOrderDetailByOrderID(oid);
-            List<Payments> listPayments = paydao.getPaymentByOrderID(oid);
+            List<InstallmentDetail> listPayments = paydao.getPaymentByOrderID(oid);
             List<InterestRate> listInterestRate = pdao.getAllInterestRate();
 
             request.setAttribute("listOrderDetails", listOrderDetails);
@@ -331,26 +331,6 @@ public class OrderServlet extends HttpServlet {
         Object userObj = (session != null) ? session.getAttribute("user") : null;
         Integer roleObj = (session != null && session.getAttribute("role") != null) ? (Integer) session.getAttribute("role") : null;
         int role = (roleObj != null) ? roleObj : 0;
-
-        if (role == 3 && "updateStatus".equalsIgnoreCase(action)) {
-            Staff shipper = (Staff) userObj;
-            int shipperID = shipper.getStaffID();
-
-            int orderID = Integer.parseInt(request.getParameter("orderID"));
-            String newStatus = request.getParameter("newStatus");
-
-            boolean ok = dao.updateOrderStatusByShipper(orderID, shipperID, newStatus);
-
-            if (ok) {
-                session.setAttribute("message", "Order updated to " + newStatus);
-            } else {
-                session.setAttribute("error", "Cannot update status. Order must be In Transit.");
-            }
-
-            response.sendRedirect("order");
-            return;
-        }
-
         // Assign shipper (Staff/Admin)
         if ("assignShipper".equals(action)) {
             if (session == null || userObj == null || !(role == 2 || role == 4)) {

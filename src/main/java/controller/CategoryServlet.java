@@ -6,13 +6,14 @@ package controller;
 
 import dao.CategoryDAO;
 import dao.OrderDAO;
-import dao.PaymentsDAO;
+
 import dao.ProductDAO;
 import dao.ProfitDAO;
 import dao.PromotionsDAO;
 import dao.ReviewDAO;
 import dao.SupplierDAO;
 import dao.CustomerDAO;
+import dao.InstallmentDetailDAO;
 import dao.VariantsDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -78,7 +79,7 @@ public class CategoryServlet extends HttpServlet {
         VariantsDAO vdao = new VariantsDAO();
         ReviewDAO rdao = new ReviewDAO();
         OrderDAO odao = new OrderDAO();
-        PaymentsDAO paydao = new PaymentsDAO();
+        InstallmentDetailDAO paydao = new InstallmentDetailDAO();
         PromotionsDAO pmtdao = new PromotionsDAO();
         ProfitDAO pfdao = new ProfitDAO();
         if (action == null) {

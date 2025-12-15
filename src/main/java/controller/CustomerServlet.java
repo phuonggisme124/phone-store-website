@@ -2,9 +2,10 @@ package controller;
 
 import dao.CustomerDAO;
 import dao.CategoryDAO;
+import dao.InstallmentDetailDAO;
 import dao.OrderDAO;
 import dao.OrderDetailDAO;
-import dao.PaymentsDAO;
+
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
@@ -15,9 +16,10 @@ import java.util.List;
 import java.util.Map;
 import model.Customer;
 import model.Category;
+import model.InstallmentDetail;
 import model.Order;
 import model.OrderDetails;
-import model.Payments;
+
 
 /**
  * Servlet Controller dành riêng cho Khách hàng (Role 1).
@@ -152,13 +154,13 @@ public class CustomerServlet extends HttpServlet {
 
     private void viewInstallment(HttpServletRequest request, HttpServletResponse response, Customer customer) 
             throws ServletException, IOException {
-        PaymentsDAO pmDAO = new PaymentsDAO();
+        InstallmentDetailDAO pmDAO = new InstallmentDetailDAO();
         List<Order> oList = orderDAO.getInstalmentOrdersByUserId(customer.getCustomerID());
         
-        Map<Integer, List<Payments>> allPayments = new HashMap<>();
+        Map<Integer, List<InstallmentDetail>> allPayments = new HashMap<>();
         if (oList != null) {
             for (Order o : oList) {
-                List<Payments> payments = pmDAO.getPaymentByOrderID(o.getOrderID());
+                List<InstallmentDetail> payments = pmDAO.getPaymentByOrderID(o.getOrderID());
                 allPayments.put(o.getOrderID(), payments);
             }
         }
@@ -273,7 +275,7 @@ public class CustomerServlet extends HttpServlet {
             String paymentIDStr = request.getParameter("paymentID");
             if (paymentIDStr != null) {
                 int paymentID = Integer.parseInt(paymentIDStr);
-                PaymentsDAO pmDAO = new PaymentsDAO();
+                InstallmentDetailDAO pmDAO = new InstallmentDetailDAO();
                 pmDAO.updatePaymentStatusToPaid(paymentID);
             }
         } catch (NumberFormatException e) {
