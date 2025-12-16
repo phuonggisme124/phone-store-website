@@ -501,12 +501,12 @@
                                                     StaffDAO sdao = new StaffDAO();
                                                     Integer shipperID = (Integer) o.getShipperID();
                                                     Staff shipper = null;
-                                                    if(shipperID != null ){
-                                                     shipper = sdao.getStaffByID(o.getShipperID());
+                                                    if (shipperID != null) {
+                                                        shipper = sdao.getStaffByID(o.getShipperID());
                                                     }
-                                                    
+
                                                     boolean isPending = status != null && "pending".equalsIgnoreCase(status.trim());
-                                                    boolean hasShipper = shipper!= null;
+                                                    boolean hasShipper = shipper != null;
                                                     boolean isCancelled = status != null && "cancelled".equalsIgnoreCase(status.trim());
                                                 %>
 
@@ -835,3 +835,6 @@
         </script>
     </body>
 </html>
+
+
+

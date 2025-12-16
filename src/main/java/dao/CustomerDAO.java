@@ -378,5 +378,26 @@ public class CustomerDAO extends DBContext {
 //                address, createdAt, status, cccd, yob, point);
 //    }
 
+    public Customer getCustomerByEmail(String email) {
+        String sql = "SELECT * FROM Customers WHERE Email = ?";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, email);
+            ResultSet rs = ps.executeQuery();
+
+
+            if (rs.next()) return map(rs);
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
 
 }
+
+
+

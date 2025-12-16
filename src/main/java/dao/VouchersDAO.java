@@ -66,13 +66,13 @@ public class VouchersDAO extends DBContext {
                         rs.getString("Status") // Trạng thái gốc trong DB (VD: Active)
                 );
 
-                // --- LOGIC XỬ LÝ TRẠNG THÁI HIỂN THỊ ---
+                //  LOGIC XỬ LÝ TRẠNG THÁI HIỂN THỊ 
                 // 1. Nếu hạn sử dụng < ngày hiện tại -> Hết hạn (Expired)
                 if (v.getEndDay().compareTo(today) < 0) {
                     v.setStatus("Expired");
                 } // 2. Nếu số lượng = 0 và trạng thái đang Active -> Hết hàng (coi như Expired/SoldOut)
                 else if (v.getQuantity() <= 0 && "Active".equalsIgnoreCase(v.getStatus())) {
-                    v.setStatus("Expired"); // Hoặc bạn có thể set là "SoldOut" cho rõ nghĩa hơn
+                    v.setStatus("Expired");
                 }
 
                 list.add(v);
@@ -359,7 +359,7 @@ public class VouchersDAO extends DBContext {
                 try (PreparedStatement ps5 = conn.prepareStatement(sqlUpdateStatus)) {
                     ps5.setInt(1, voucherID);
                     ps5.executeUpdate();
-                    
+
                 }
 
             }
@@ -407,7 +407,16 @@ public class VouchersDAO extends DBContext {
 
     public List<Vouchers> getAvailableVouchers() {
         List<Vouchers> list = new ArrayList<>();
-        String sql = "SELECT * FROM Vouchers WHERE Status = 'Active' AND Quantity > 0 AND EndDay >= GETDATE()";
+
+        // SỬA CÂU SQL NÀY:
+        // Dùng CAST(GETDATE() AS DATE) để lấy đúng ngày hôm nay mà không tính giờ
+        String sql = "SELECT * FROM Vouchers "
+                + "WHERE Status = 'Active' "
+                + "AND Quantity > 0 "
+                + "AND StartDay <= CAST(GETDATE() AS DATE) "
+                + // Đã bắt đầu (quan trọng)
+                "AND EndDay >= CAST(GETDATE() AS DATE)";     // Chưa kết thúc
+
         try (PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 list.add(new Vouchers(

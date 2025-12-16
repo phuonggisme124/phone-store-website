@@ -345,7 +345,7 @@
     </form>
 
     <script>
-        // SCRIPT LOGIC GIá»® NGUYÃN NHÆ¯NG ÄÃ ÄÆ¯á»¢C CHUáº¨N HÃA Vá»I JS HIá»N Äáº I
+        // SCRIPT LOGIC GIá»® NGUYÃN NHÆ¯NG ÄÃ ÄÆ¯á»¢C CHUáº¨N HÃA Vá»I JS HIá»N Äáº I
         document.addEventListener("DOMContentLoaded", function () {
             const headerSearchInput = document.getElementById('headerSearchInput');
             const headerSearchResults = document.getElementById('headerSearchResults');
@@ -469,5 +469,9 @@
         });
 
     </script>
-<!--</body>
-</html>-->
+
+</body>
+</html>
+
+
+

@@ -15,7 +15,9 @@ public class Profit {
     private int variantID;
     private int quantity;
     private double sellingPrice;
-    
+
+    private double costPrice;
+
     private LocalDateTime calculatedDate;
     private String productName;
     private String storage;
@@ -26,11 +28,12 @@ public class Profit {
     }
 
     public Profit(int profitID, int variantID, int quantity, double sellingPrice, LocalDateTime calculatedDate) {
+
         this.profitID = profitID;
         this.variantID = variantID;
         this.quantity = quantity;
         this.sellingPrice = sellingPrice;
-        
+        this.costPrice = costPrice;
         this.calculatedDate = calculatedDate;
     }
 
@@ -66,7 +69,17 @@ public class Profit {
         this.sellingPrice = sellingPrice;
     }
 
+
+    public double getCostPrice() {
+        return costPrice;
+    }
+
+    public void setCostPrice(double costPrice) {
+        this.costPrice = costPrice;
+    }
+
     
+
 
     public LocalDateTime getCalculatedDate() {
         return calculatedDate;
