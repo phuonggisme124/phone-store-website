@@ -2,6 +2,7 @@ package model;
 
 import java.sql.Timestamp;
 
+
 public class Staff {
 
     private int staffID;
@@ -26,6 +27,7 @@ public class Staff {
         this.status = status;
         this.createdAt = createdAt;
     }
+
 
     public int getStaffID() {
         return staffID;
@@ -93,3 +95,4 @@ public class Staff {
 
    
 }
+

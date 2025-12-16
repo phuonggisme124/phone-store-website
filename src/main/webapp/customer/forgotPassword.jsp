@@ -36,8 +36,12 @@
 =======
         
                     <!-- Sidebar -->
+<<<<<<< HEAD
                     
 >>>>>>> c80843028cf9648874277785e7b7c677afb557ad
+=======
+                     <%@ include file="sidebar.jsp" %>
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
 
                     
                     <!-- Main Content -->
@@ -134,3 +138,6 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     </body>
 </html>
+
+
+

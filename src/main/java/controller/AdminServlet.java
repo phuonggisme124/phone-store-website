@@ -138,12 +138,19 @@ public class AdminServlet extends HttpServlet {
             List<Double> monthlyIncome = pfdao.getAllIncomeOfYear(yearSelect);
             List<Integer> monthlyOrder = pfdao.getAllOrderOfYear(yearSelect);
             int importOfMonth = pfdao.getImportByMonthAndYear(monthSelect, yearSelect);
+            System.out.println("so san pham nhap: "+ importOfMonth);
             int soldOfMonth = pfdao.getSoldByMonthAndYear(monthSelect, yearSelect);
+            System.out.println("so san pham ban: "+ soldOfMonth);
             double revenueTargetOfMonth = pfdao.getRevenueTargetByMonthAndYear(monthSelect, yearSelect);
+            System.out.println("Tong doanh thu du kien: " + revenueTargetOfMonth);
             double revenueOfMonth = pfdao.getRevenueByMonthAndYear(monthSelect, yearSelect);
+            System.out.println("Tong doanh thu thuc te: "+ revenueOfMonth);
             double costOfMonth = pfdao.getCostByMonthAndYear(monthSelect, yearSelect);
+            System.out.println("Tong gia nhap hang: " + costOfMonth);
             double incomeTargetOfMonth = revenueTargetOfMonth - costOfMonth;
+            System.out.println("tien loi du kien: "+ incomeTargetOfMonth);
             double incomeOfMonth = revenueOfMonth - costOfMonth;
+            System.out.println("tien loi thuc te: " + incomeOfMonth);
             request.setAttribute("yearSelect", yearSelect);
             request.setAttribute("monthSelect", monthSelect);
             request.setAttribute("incomeOfMonth", incomeOfMonth);
@@ -254,3 +261,7 @@ public class AdminServlet extends HttpServlet {
     }// </editor-fold>
 
 }
+
+
+
+

@@ -1,5 +1,11 @@
+<<<<<<< HEAD
 <%@page import="model.Staff"%> <%@page import="model.Import"%>
 <%@page import="java.util.List"%>
+=======
+<%@page import="dao.StaffDAO"%>
+<%@page import="model.Staff"%>
+
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -50,6 +56,7 @@
         </style>
     </head>
     <body>
+<<<<<<< HEAD
         <% 
             // 2. SỬA: Lấy Staff từ Session
             Staff currentUser = (Staff) session.getAttribute("user");
@@ -59,6 +66,10 @@
                 response.sendRedirect("login.jsp");
                 return;
             }
+=======
+        <% Staff currentUser = (Staff) session.getAttribute("user");
+            StaffDAO udao = new StaffDAO();
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
         %>
 
         <div class="d-flex align-items-center" style="position: absolute; top: 15px; right: 20px; z-index: 1000;">
@@ -167,3 +178,5 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     </body>
 </html>
+
+

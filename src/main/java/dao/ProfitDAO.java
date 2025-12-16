@@ -27,15 +27,15 @@ public class ProfitDAO extends DBContext {
         super();
     }
 
-    public void createProfit(int variantID, double discountPrice, double costPrice, int quantity) {
-        String sql = "INSERT INTO Profits (VariantID, Quantity, SellingPrice, CostPrice, CalculatedDate) "
-                + "VALUES (?, ?, ?, ?, GETDATE())"; // tính ngày tự động
+    public void createProfit(int variantID, double discountPrice, int quantity) {
+        String sql = "INSERT INTO Profits (VariantID, Quantity, SellingPrice, CalculatedDate) "
+                + "VALUES (?, ?, ?, , GETDATE())"; // tính ngày tự động
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, variantID);
             ps.setInt(2, quantity);
             ps.setDouble(3, discountPrice);
-            ps.setDouble(4, costPrice);
+            
 
             ps.executeUpdate();
         } catch (SQLException e) {
@@ -81,7 +81,7 @@ public class ProfitDAO extends DBContext {
             System.out.println("Năm của profit có VariantID = " + currentVariantID + " là: " + yearProfit);
             if (monthProfit == monthValue && yearProfit == yearValue) {
                 if (variant.getDiscountPrice() != profit.getSellingPrice()) {
-                    updateSelling(variant.getDiscountPrice(), variant.getVariantID(), profit.getCalculatedDate(), profit.getQuantity(), profit.getCostPrice(), profitID);
+                    updateSelling(variant.getDiscountPrice(), variant.getVariantID(), profit.getCalculatedDate(), profit.getQuantity(), profitID);
                 }
 
             }
@@ -111,7 +111,7 @@ public class ProfitDAO extends DBContext {
                         ? calculatedDateTimestamp.toLocalDateTime()
                         : null;
 
-                return new Profit(pfID, variantID, quantity, sell, cost, calculatedDate);
+                return new Profit(pfID, variantID, quantity, sell, calculatedDate);
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -119,7 +119,7 @@ public class ProfitDAO extends DBContext {
         return null;
     }
 
-    public void updateSelling(Double discountPrice, int variantID, LocalDateTime calculatedDate, int quantity, double costPrice, int profitID) {
+    public void updateSelling(Double discountPrice, int variantID, LocalDateTime calculatedDate, int quantity, int profitID) {
         int quantitySold = getQuantitySoldOfVariant(variantID, calculatedDate);
         LocalDateTime now = LocalDateTime.now();
         int monthValue = now.getMonthValue();
@@ -148,7 +148,7 @@ public class ProfitDAO extends DBContext {
                     System.out.println(e.getMessage());
                 }
 
-                createProfit(variantID, discountPrice, costPrice, newQuantity);
+                createProfit(variantID, discountPrice, newQuantity);
             } else {
                 String sql = "UPDATE Profits\n"
                         + "SET SellingPrice = ?\n"
@@ -246,21 +246,19 @@ public class ProfitDAO extends DBContext {
 // chi phí vốn 
 
     public double getCostByMonthAndYear(int month, int yearSelect) {
-        String sql = " SELECT \n"
-                + "    SUM(CostPrice * Quantity) AS TotalCostPrice\n"
-                + "FROM \n"
-                + "    Profits\n"
-                + "WHERE \n"
-                + "    YEAR(CalculatedDate) = ?\n"
-                + "    AND MONTH(CalculatedDate) = ?;";
+        String sql = " SELECT ISNULL(SUM(d.quantity * d.costPrice), 0) AS TotalImportCost\n"
+                + "FROM Imports i\n"
+                + "JOIN ImportDetails d ON i.importID = d.importID\n"
+                + "WHERE MONTH(i.importDate) = ? \n"
+                + "  AND YEAR(i.importDate) = ?;";
 
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setInt(1, yearSelect);
-            ps.setInt(2, month);
+            ps.setInt(1, month);
+            ps.setInt(2, yearSelect);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                double cost = rs.getDouble("TotalCostPrice");
+                double cost = rs.getDouble("TotalImportCost");
                 return cost;
             }
         } catch (Exception e) {
@@ -542,13 +540,13 @@ public class ProfitDAO extends DBContext {
 
     //importProuct
     public void addProfit(Profit p) throws SQLException {
-        String sql = "INSERT INTO Profits (VariantID, Quantity, SellingPrice, CostPrice, CalculatedDate) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Profits (VariantID, Quantity, SellingPrice, CalculatedDate) VALUES (?, ?, ?, ?)";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, p.getVariantID());
             ps.setInt(2, p.getQuantity());
             ps.setDouble(3, p.getSellingPrice());
-            ps.setDouble(4, p.getCostPrice());
-            ps.setTimestamp(5, Timestamp.valueOf(p.getCalculatedDate()));
+            
+            ps.setTimestamp(4, Timestamp.valueOf(p.getCalculatedDate()));
             ps.executeUpdate();
         }
     }
@@ -556,14 +554,12 @@ public class ProfitDAO extends DBContext {
     public List<Profit> getAllProfit() {
         List<Profit> list = new ArrayList<>();
 
-   
         String sql = "SELECT p.name, v.storage, v.color, v.imageURL, "
                 + "       pr.* "
-                + 
-                "FROM Profits pr "
+                + "FROM Profits pr "
                 + "JOIN Variants v ON pr.variantID = v.variantID "
                 + "JOIN Products p ON v.productID = p.productID "
-                + "ORDER BY pr.calculatedDate DESC"; 
+                + "ORDER BY pr.calculatedDate DESC";
 
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -576,7 +572,7 @@ public class ProfitDAO extends DBContext {
                 item.setProfitID(rs.getInt("profitID"));
                 item.setVariantID(rs.getInt("variantID"));
                 item.setQuantity(rs.getInt("quantity"));
-                item.setCostPrice(rs.getDouble("costPrice"));       // <-- Cột bạn cần
+                       
                 item.setSellingPrice(rs.getDouble("sellingPrice")); // <-- Cột bạn cần
                 item.setCalculatedDate(rs.getTimestamp("calculatedDate").toLocalDateTime());
                 // (Thêm các cột khác của Profit nếu có)
@@ -596,3 +592,6 @@ public class ProfitDAO extends DBContext {
     }
 
 }
+
+
+

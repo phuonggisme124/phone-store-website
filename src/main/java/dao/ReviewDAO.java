@@ -11,7 +11,7 @@ import model.Customer;
 import model.Variants;
 
 public class ReviewDAO extends DBContext {
-    
+
     public ReviewDAO() {
         super();
     }
@@ -56,7 +56,9 @@ public class ReviewDAO extends DBContext {
         List<Review> list = new ArrayList<>();
         String sql = "SELECT r.*, u.FullName AS UserName "
                 + "FROM Reviews r "
-                + "LEFT JOIN Customers u ON r.UserID = u.UserID "
+
+                + "LEFT JOIN Customer u ON r.UserID = u.UserID "
+
                 + "WHERE r.ProductID = ? "
                 + "ORDER BY r.ReviewDate DESC";
         try {
@@ -65,7 +67,9 @@ public class ReviewDAO extends DBContext {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 int reviewID = rs.getInt("ReviewID");
+
                 int userID = rs.getInt("CustomerID");
+
                 int productID = rs.getInt("ProductID");
                 int rating = rs.getInt("Rating");
                 String comment = rs.getString("Comment");
@@ -76,7 +80,7 @@ public class ReviewDAO extends DBContext {
                 String image = rs.getString("Image");
                 String reply = rs.getString("Reply");
                 String userName = rs.getString("UserName");
-                
+
                 Review r = new Review(reviewID, userID, productID, rating, comment, reviewDate, image, reply);
                 r.setUserName(userName);
                 list.add(r);
@@ -88,7 +92,7 @@ public class ReviewDAO extends DBContext {
         }
         return list;
     }
-    
+
     public List<Review> getAllReview() {
         CustomerDAO udao = new CustomerDAO();
         VariantsDAO vdao = new VariantsDAO();
@@ -99,19 +103,22 @@ public class ReviewDAO extends DBContext {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 int rID = rs.getInt("ReviewID");
+
                 int uID = rs.getInt("CustomerID");
                 Customer user = udao.getCustomerById(uID);
+
                 int variantID = rs.getInt("VariantID");
                 Variants variant = vdao.getVariantByID(variantID);
                 int rating = rs.getInt("Rating");
                 String comment = rs.getString("Comment");
-                
+
                 Timestamp reviewDateTimestamp = rs.getTimestamp("ReviewDate");
                 LocalDateTime reviewDate = (reviewDateTimestamp != null)
                         ? reviewDateTimestamp.toLocalDateTime()
                         : null;
                 String image = rs.getString("Image");
                 String reply = rs.getString("Reply");
+
                 
                 list.add(new Review(rID, user, variant, rating, comment, reviewDate, image, reply));
             }
@@ -123,6 +130,7 @@ public class ReviewDAO extends DBContext {
         return list;
     }
     
+
     public List<Review> getReview() {
         CustomerDAO udao = new CustomerDAO();
         VariantsDAO vdao = new VariantsDAO();
@@ -133,6 +141,7 @@ public class ReviewDAO extends DBContext {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 int rID = rs.getInt("ReviewID");
+
                 int uID = rs.getInt("CustomerID");
                 
                 int variantID = rs.getInt("VariantID");
@@ -140,12 +149,14 @@ public class ReviewDAO extends DBContext {
                 int rating = rs.getInt("Rating");
                 String comment = rs.getString("Comment");
                 
+
                 Timestamp reviewDateTimestamp = rs.getTimestamp("ReviewDate");
                 LocalDateTime reviewDate = (reviewDateTimestamp != null)
                         ? reviewDateTimestamp.toLocalDateTime()
                         : null;
                 String image = rs.getString("Image");
                 String reply = rs.getString("Reply");
+
                 
                 list.add(new Review(rID, uID, variantID, rating, comment, reviewDate, image, reply));
             }
@@ -156,33 +167,35 @@ public class ReviewDAO extends DBContext {
         
         return list;
     }
-    
+
     public Review getReviewByID(int rID) {
         CustomerDAO udao = new CustomerDAO();
         VariantsDAO vdao = new VariantsDAO();
         String sql = "SELECT * FROM Reviews where ReviewID = ?";
-        
+
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setInt(1, rID);
             ResultSet rs = ps.executeQuery();
+
             
             if (rs.next()) {
                 int id = rs.getInt("ReviewID");
                 int uID = rs.getInt("CustomerID");
                 Customer user = udao.getCustomerById(uID) ;
+
                 int variantID = rs.getInt("VariantID");
                 Variants variant = vdao.getVariantByID(variantID);
                 int rating = rs.getInt("Rating");
                 String comment = rs.getString("Comment");
-                
+
                 Timestamp reviewDateTimestamp = rs.getTimestamp("ReviewDate");
                 LocalDateTime reviewDate = (reviewDateTimestamp != null)
                         ? reviewDateTimestamp.toLocalDateTime()
                         : null;
                 String image = rs.getString("Image");
                 String reply = rs.getString("Reply");
-                
+
                 return (new Review(id, user, variant, rating, comment, reviewDate, image, reply));
             }
         } catch (Exception e) {
@@ -190,11 +203,12 @@ public class ReviewDAO extends DBContext {
         }
         return null;
     }
-    
+
     public void updateReview(int rID, String reply) {
         String sql = "UPDATE Reviews\n"
                 + "SET Reply = ?\n"
                 + "WHERE ReviewID = ?;";
+
         
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -203,11 +217,12 @@ public class ReviewDAO extends DBContext {
             ps.setInt(2, rID);
             ps.executeUpdate();
             
+
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
-    
+
     public double getTotalRating(List<Variants> listVariantRating, List<Review> listReview) {
         double totalRating = 0;
         double rating = 0;
@@ -215,6 +230,7 @@ public class ReviewDAO extends DBContext {
         int size = listVariantRating.size();
         for (int i = 0; i < size; i++) {
             int vID = listVariantRating.get(i).getVariantID();
+
             
             for (Review r : listReview) {
                 
@@ -227,15 +243,18 @@ public class ReviewDAO extends DBContext {
             }
         }
         
+
         if (count != 0) {
             return totalRating = rating / count;
         }
         return totalRating;
+
         
     }
     
     public int getTotalReview(List<Variants> listVariantRating, List<Review> listReview) {
         
+
         int count = 0;
         int size = listVariantRating.size();
         for (int i = 0; i < size; i++) {
@@ -243,15 +262,17 @@ public class ReviewDAO extends DBContext {
             for (Review r : listReview) {
                 if (vID == r.getVariant().getVariantID()) {
                     count += 1;
-                    
+
                 }
             }
         }
         return count;
     }
+
     
     public double getPercentRating(List<Variants> listVariantRating, List<Review> listReview, int rating) {
         
+
         int count = 0;
         int countRating = 0;
         int size = listVariantRating.size();
@@ -266,6 +287,7 @@ public class ReviewDAO extends DBContext {
                 }
             }
         }
+
         
         if (count == 0) {
             return 0;
@@ -274,17 +296,21 @@ public class ReviewDAO extends DBContext {
         return ((double) countRating / count) * 100;
     }
     
+
     public List<String> getImages(String img) {
         if (img == null) {
             return null;
         }
+
         
         List<String> list = new ArrayList<>();
         
+
         String part[] = img.split("#");
         for (String p : part) {
             list.add(p);
         }
+
         
         return list;
     }
@@ -298,6 +324,7 @@ public class ReviewDAO extends DBContext {
             PreparedStatement ps = conn.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
             
+
             if (rs.next()) {
                 int id = rs.getInt("ReviewID");
                 return id;
@@ -306,6 +333,7 @@ public class ReviewDAO extends DBContext {
             System.out.println(e.getMessage());
         }
         return 0;
+
         
     }
     
@@ -313,6 +341,7 @@ public class ReviewDAO extends DBContext {
         String sql = "DELETE FROM Reviews\n"
                 + "WHERE ReviewID = ?;";
         
+
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setInt(1, rID);
@@ -322,30 +351,32 @@ public class ReviewDAO extends DBContext {
             System.out.println(e.getMessage());
         }
     }
+
     
     public void createReview(int uID, int vID, int rating, String comment) {
         String sql = "INSERT INTO Reviews (CustomerID, VariantID, Rating, Comment) "
                 + "VALUES (?, ?, ?, ?)";
         
+
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setInt(1, uID);
             ps.setInt(2, vID);
             ps.setInt(3, rating);
             ps.setString(4, comment);
-            
+
             ps.executeUpdate();
             ps.close();
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
-    
+
     public void updateImageReview(int currentReviewID, String img) {
         String sql = "UPDATE Reviews\n"
                 + "SET Image = ?\n"
                 + "Where ReviewID = ?;";
-        
+
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, img);
@@ -356,9 +387,11 @@ public class ReviewDAO extends DBContext {
             System.out.println(e.getMessage());
         }
     }
+
     
     public void addReview(Review r) throws SQLException {
         String sql = "INSERT INTO Reviews (CustomerID, VariantID, Rating, Comment, ReviewDate, Image) "
+
                 + "VALUES (?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, r.getUserID());
@@ -368,24 +401,28 @@ public class ReviewDAO extends DBContext {
             ps.setTimestamp(5, Timestamp.valueOf(r.getReviewDate()));
             ps.setString(6, r.getImage());
             ps.executeUpdate();
+
             
         }
     }
     
     public void deleteReview(int reviewID, int userID) throws SQLException {
         String sql = "DELETE FROM Reviews WHERE ReviewID = ? AND CustomerID = ?";
+
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, reviewID);
             ps.setInt(2, userID);
             ps.executeUpdate();
         }
     }
-    
+
     public List<Review> getReviewsByVariantID(int variantID) throws SQLException {
         List<Review> list = new ArrayList<>();
         String sql = "SELECT r.*, u.FullName "
                 + "FROM Reviews r "
+
                 + "JOIN Customers u ON r.CustomerID = u.CustomerID "
+
                 + "WHERE r.VariantID = ? "
                 + "ORDER BY r.ReviewDate DESC";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -394,7 +431,9 @@ public class ReviewDAO extends DBContext {
                 while (rs.next()) {
                     Review r = new Review();
                     r.setReviewID(rs.getInt("ReviewID"));
+
                     r.setUserID(rs.getInt("Customers"));
+
                     r.setVariantID(rs.getInt("VariantID"));
                     r.setRating(rs.getInt("Rating"));
                     r.setComment(rs.getString("Comment"));
@@ -408,7 +447,7 @@ public class ReviewDAO extends DBContext {
         }
         return list;
     }
-    
+
     public List<Review> getAllReviewByProductName(String productName) {
         CustomerDAO udao = new CustomerDAO();
         VariantsDAO vdao = new VariantsDAO();
@@ -419,19 +458,22 @@ public class ReviewDAO extends DBContext {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 int rID = rs.getInt("ReviewID");
+
                 int uID = rs.getInt("CustomerID");
                 Customer user = udao.getCustomerById(uID);
+
                 int variantID = rs.getInt("VariantID");
                 Variants variant = vdao.getVariantByID(variantID);
                 int rating = rs.getInt("Rating");
                 String comment = rs.getString("Comment");
-                
+
                 Timestamp reviewDateTimestamp = rs.getTimestamp("ReviewDate");
                 LocalDateTime reviewDate = (reviewDateTimestamp != null)
                         ? reviewDateTimestamp.toLocalDateTime()
                         : null;
                 String image = rs.getString("Image");
                 String reply = rs.getString("Reply");
+
                 
                 list.add(new Review(rID, user, variant, rating, comment, reviewDate, image, reply));
             }
@@ -447,7 +489,7 @@ public class ReviewDAO extends DBContext {
         
         List<Review> listReview = new ArrayList<>();
         List<Review> listAllReview = getAllReview();
-        
+
         for (Variants v : listVariant) {
             for (Review r : listAllReview) {
                 if (v.getVariantID() == r.getVariant().getVariantID()) {
@@ -455,6 +497,7 @@ public class ReviewDAO extends DBContext {
                 }
             }
         }
+
         
         return listReview;
     }
@@ -463,6 +506,7 @@ public class ReviewDAO extends DBContext {
         List<Review> listReview = new ArrayList<>();
         List<Review> listAllReview = getAllReview();
         
+
         for (Variants v : listVariant) {
             for (Review r : listAllReview) {
                 if (v.getVariantID() == r.getVariant().getVariantID() && r.getRating() == rating) {
@@ -470,10 +514,11 @@ public class ReviewDAO extends DBContext {
                 }
             }
         }
+
         
         return listReview;
     }
-    
+
     public List<Review> getAllReviewByRating(int ratingFilter) {
         CustomerDAO udao = new CustomerDAO();
         VariantsDAO vdao = new VariantsDAO();
@@ -485,19 +530,22 @@ public class ReviewDAO extends DBContext {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 int rID = rs.getInt("ReviewID");
+
                 int uID = rs.getInt("CustomerID");
                 Customer user = udao.getCustomerById(uID);
+
                 int variantID = rs.getInt("VariantID");
                 Variants variant = vdao.getVariantByID(variantID);
                 int rating = rs.getInt("Rating");
                 String comment = rs.getString("Comment");
-                
+
                 Timestamp reviewDateTimestamp = rs.getTimestamp("ReviewDate");
                 LocalDateTime reviewDate = (reviewDateTimestamp != null)
                         ? reviewDateTimestamp.toLocalDateTime()
                         : null;
                 String image = rs.getString("Image");
                 String reply = rs.getString("Reply");
+
                 
                 list.add(new Review(rID, user, variant, rating, comment, reviewDate, image, reply));
             }
@@ -510,3 +558,5 @@ public class ReviewDAO extends DBContext {
     }
     
 }
+
+

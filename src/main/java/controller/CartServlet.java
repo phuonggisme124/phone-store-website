@@ -69,7 +69,7 @@ public class CartServlet extends HttpServlet {
         CartDAO cDAO = new CartDAO();
         HttpSession session = request.getSession();
         int userID = Integer.parseInt(request.getParameter("userID"));
-        List<Carts> carts = cDAO.getItemIntoCartByUserID(userID);
+        List<Carts> carts = cDAO.getCartByCustomerID(userID);
 
         session.setAttribute("cart", carts);
 
@@ -95,10 +95,9 @@ public class CartServlet extends HttpServlet {
             int userID = Integer.parseInt(request.getParameter("userID"));
             int variantID = Integer.parseInt(request.getParameter("variantID"));
             int quantity = Integer.parseInt(request.getParameter("quantity"));
-            if (!cDAO.isAddedInCart(userID, variantID, quantity)) {
-                cDAO.ensureCartExists(userID);
-                cDAO.addNewProductToCart(userID, variantID, quantity);
-                List<Carts> carts = cDAO.getItemIntoCartByUserID(userID);
+            if (!cDAO.isItemExists(userID, variantID, quantity)) {
+                cDAO.addItemToCart(userID, variantID, quantity);
+                List<Carts> carts = cDAO.getCartByCustomerID(userID);
                 session.setAttribute("cart", carts);
                 session.setAttribute("res", "Item added to cart successfully");
             }
@@ -106,7 +105,7 @@ public class CartServlet extends HttpServlet {
         } else if (action.equals("delete")) {
             int cartID = Integer.parseInt(request.getParameter("cartID"));
             int variantID = Integer.parseInt(request.getParameter("variantID"));
-            cDAO.removeItemFromCart(cartID, variantID);
+            cDAO.removeItem(cartID, variantID);
             session.setAttribute("res", "Item deleted from cart successfully");
             response.sendRedirect("cart?userID=" + cartID);
 
@@ -115,7 +114,7 @@ public class CartServlet extends HttpServlet {
             int cartID = userID;
             int variantID = Integer.parseInt(request.getParameter("variantID"));
             int quantityChange = Integer.parseInt(request.getParameter("quantityChange"));
-            cDAO.updateQuantityByChange(cartID, variantID, quantityChange);
+            cDAO.changeItemQuantity(cartID, variantID, quantityChange);
             session.setAttribute("res", "Item quantity updated successfully");
             response.sendRedirect("cart?userID=" + cartID);
         }

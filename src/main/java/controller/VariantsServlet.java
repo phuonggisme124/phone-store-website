@@ -165,7 +165,7 @@ public class VariantsServlet extends HttpServlet {
             String color = request.getParameter("color");
             String storage = request.getParameter("storage");
             double price = Double.parseDouble(request.getParameter("price"));
-            double cost = Double.parseDouble(request.getParameter("cost"));
+            
             int stock = Integer.parseInt(request.getParameter("stock"));
             String description = request.getParameter("description");
             Variants variant;
@@ -218,7 +218,7 @@ public class VariantsServlet extends HttpServlet {
 
                 vdao.updateDiscountPrice();
                 Variants v = vdao.getVariantByID(currentVariantID);
-                pfdao.createProfit(currentVariantID, v.getDiscountPrice(), cost, stock);
+                pfdao.createProfit(currentVariantID, v.getDiscountPrice(), stock);
                 session.setAttribute("successCreateProduct", pdao.getNameByID(v.getProductID())
                         + (v.getStorage() != null ? " " + v.getStorage() : "")
                         + (v.getColor() != null ? " " + v.getColor() : "") + " created successfully!");
@@ -380,3 +380,6 @@ public class VariantsServlet extends HttpServlet {
     }// </editor-fold>
 
 }
+
+
+

@@ -43,7 +43,11 @@
 
     int userID = 0;
     if (isLoggedIn) {
+<<<<<<< HEAD
         userID = user.getCustomerID() ;
+=======
+        userID = user.getCustomerID();
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
         displayName = (user.getFullName() != null && !user.getFullName().trim().isEmpty())
                 ? user.getFullName() : user.getEmail();
     }
@@ -385,7 +389,11 @@
                         <div style="background: yellow; color: black;">
 
                         </div>
+<<<<<<< HEAD
                         <% if (isLoggedIn && userID == r.getUser().getCustomerID() ) {%>
+=======
+                        <% if (isLoggedIn && userID == r.getUser().getCustomerID()) {%>
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
                         <form action="review?action=deleteReview" method="post" style="display:inline;">
                             <input type="hidden" name="rID" value="<%= r.getReviewID()%>">
                             <input type="hidden" name="vID" value="<%= r.getVariant().getVariantID()%>">
@@ -408,8 +416,8 @@
 
                 <!-- RELATED PRODUCTS -->
                 <%
-                // Lấy danh sách sản phẩm liên quan do servlet setAttribute
-                List<Products> relatedList = (List<Products>) request.getAttribute("relatedList");
+                    // Lấy danh sách sản phẩm liên quan do servlet setAttribute
+                    List<Products> relatedList = (List<Products>) request.getAttribute("relatedList");
                 %>
                 <section class="related-products position-relative padding-large no-padding-top">
                     <div class="container">
@@ -421,7 +429,7 @@
                             <%
                                 // Import NumberFormat và Locale ở đầu JSP rồi
                                 NumberFormat vnFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
-                
+
                                 // Giới hạn tối đa 10 sản phẩm
                                 List<Products> relatedList10 = new ArrayList<>();
                                 if (relatedList != null) {
@@ -441,24 +449,30 @@
                                         <div class="product-card text-center position-relative">
 
                                             <div class="image-holder position-relative">
-                                                <a href="product?action=viewDetail&pID=<%= rp.getProductID() %>">
-                                                    <img src="images/<%= rp.getVariants().get(0).getImageUrl() %>" 
-                                                         alt="<%= rp.getName() %>" class="img-fluid rounded-3">
+                                                <a href="product?action=viewDetail&pID=<%= rp.getProductID()%>">
+                                                    <img src="images/<%= rp.getVariants().get(0).getImageUrl()%>" 
+                                                         alt="<%= rp.getName()%>" class="img-fluid rounded-3">
                                                 </a>
                                             </div>
 
                                             <div class="card-detail pt-3">
                                                 <h3 class="card-title text-uppercase">
-                                                    <a href="product?action=viewDetail&pID=<%= rp.getProductID() %>">
-                                                        <%= rp.getName() %> 
-                                                        <%= rp.getVariants().get(0).getColor() %> 
-                                                        <%= rp.getVariants().get(0).getStorage() %>
+                                                    <a href="product?action=viewDetail&pID=<%= rp.getProductID()%>">
+                                                        <%= rp.getName()%> 
+                                                        <%= rp.getVariants().get(0).getColor()%> 
+                                                        <%= rp.getVariants().get(0).getStorage()%>
                                                     </a>
                                                 </h3>
 
+<<<<<<< HEAD
                                                 <div class="wishlist-wrap">
                                                     <%
                                                         // KHAI BÁO BIẾN
+=======
+                                                <!-- WISH LIST BUTTON -->
+                                                <div class="wishlist-wrap">
+                                                    <%
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
                                                         Customer u = (Customer) session.getAttribute("user");
                                                         boolean logged = (u != null);
                                                         boolean liked = false;
@@ -479,6 +493,7 @@
                                                         }
                                                     %>
 
+<<<<<<< HEAD
                                                     <% if (logged) { %>
                                                     <button class="wishlist-btn toggle-wishlist"
                                                             data-productid="<%= productID %>"
@@ -486,20 +501,39 @@
                                                             style="position:absolute; top:40px; right:10px; background:none; border:none; padding:0; z-index:10;">
                                                         <i class="<%= liked ? "fas fa-heart" : "far fa-heart" %>"
                                                            style="<%= liked ? "color:#e53e3e; font-size:1.5rem;" : "font-size:1.5rem;" %>"></i>
+=======
+                                                    <% if (variantID > 0) { %>
+                                                    <% if (logged) {%>
+                                                    <button class="wishlist-btn" 
+                                                            data-productid="<%= rp.getProductID()%>" 
+                                                            data-variantid="<%= variantID%>"
+                                                            style="background:none; border:none; padding:0;">
+                                                        <i class="<%= liked ? "fas fa-heart" : "far fa-heart"%>" 
+                                                           style="<%= liked ? "color:#e53e3e;" : ""%>"></i>
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
                                                     </button>
                                                     <% } else { %>
                                                     <a href="login.jsp" class="wishlist-btn">
                                                         <i class="far fa-heart"></i>
                                                     </a>
                                                     <% } %>
+<<<<<<< HEAD
+=======
+                                                    <% }%>
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
                                                 </div>
 
                                                 <span class="item-price text-primary">
+<<<<<<< HEAD
                                                     <%= vnFormat.format(
                                                             rp.getVariants().get(0).getDiscountPrice() != null 
                                                                     ? rp.getVariants().get(0).getDiscountPrice() 
                                                                     : rp.getVariants().get(0).getPrice()
                                                         ) %>
+=======
+                                                    <%= vnFormat.format(rp.getVariants().get(0).getDiscountPrice() != null ? rp.getVariants().get(0).getDiscountPrice() : rp.getVariants().get(0).getPrice())%>
+
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
                                                 </span>
 
                                             </div>
@@ -552,8 +586,102 @@
 
     <script src="js/jquery-1.11.0.min.js"></script>
     <script src="js/bootstrap.bundle.min.js"></script>
+<<<<<<< HEAD
+=======
+
+    <script>
+                                                        /* ------------------ REVIEW MODAL ------------------ */
+
+                                                        const modal = document.getElementById("reviewModal");
+                                                        const openModalBtn = document.getElementById("openReviewModal");
+                                                        const closeBtn = document.getElementsByClassName("close-button")[0];
+
+                                                        if (openModalBtn && modal)
+                                                            openModalBtn.onclick = () => modal.style.display = "block";
+
+                                                        if (closeBtn)
+                                                            closeBtn.onclick = () => modal.style.display = "none";
+
+                                                        window.onclick = (e) => {
+                                                            if (e.target === modal)
+                                                                modal.style.display = "none";
+                                                        };
+
+                                                        /* ------------------ QUANTITY SELECTOR ------------------ */
+
+                                                        document.addEventListener("DOMContentLoaded", function () {
+
+                                                            const minusBtn = document.querySelector('.minus-btn');
+                                                            const plusBtn = document.querySelector('.plus-btn');
+                                                            const quantityInput = document.getElementById('quantity-display');
+                                                            const stockError = document.getElementById('stock-error');
+
+                                                            const quantitySelector = document.querySelector('.quantity-selector');
+                                                            const stock = quantitySelector ? parseInt(quantitySelector.dataset.stock) : 0;
+
+                                                            const hiddenInputs = document.querySelectorAll('.hiddenQuantityInput');
+
+                                                            function updateHiddenQuantity(val) {
+                                                                hiddenInputs.forEach(input => {
+                                                                    input.value = val;
+                                                                    input.setAttribute('value', val);
+                                                                });
+                                                            }
+
+                                                            if (minusBtn && plusBtn && quantityInput) {
+
+                                                                quantityInput.value = 1;
+                                                                updateHiddenQuantity(1);
+
+                                                                minusBtn.onclick = () => {
+                                                                    let val = parseInt(quantityInput.value);
+                                                                    if (isNaN(val))
+                                                                        val = 1;
+
+                                                                    if (val > 1) {
+                                                                        val--;
+                                                                        quantityInput.value = val;
+                                                                        updateHiddenQuantity(val);
+                                                                        if (stockError)
+                                                                            stockError.style.display = "none";
+                                                                    }
+                                                                };
+
+                                                                plusBtn.onclick = () => {
+                                                                    let val = parseInt(quantityInput.value);
+                                                                    if (isNaN(val))
+                                                                        val = 1;
+
+                                                                    if (val < stock) {
+                                                                        val++;
+                                                                        quantityInput.value = val;
+                                                                        updateHiddenQuantity(val);
+                                                                        if (stockError)
+                                                                            stockError.style.display = "none";
+                                                                    } else {
+                                                                        if (stockError)
+                                                                            stockError.style.display = "block";
+                                                                    }
+                                                                };
+                                                            }
+                                                        });
+
+                                                        /* ------------------ CHANGE IMAGE ------------------ */
+
+                                                        function changeImage(thumb) {
+                                                            const mainImg = document.getElementById('displayedImage');
+                                                            const allThumbs = document.querySelectorAll('.thumbnail');
+
+                                                            mainImg.src = thumb.src;
+                                                            allThumbs.forEach(t => t.classList.remove('active'));
+                                                            thumb.classList.add('active');
+                                                        }
+    </script>
+
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
     <script src="js/review-filter.js"></script>
     <script>
+<<<<<<< HEAD
                                         document.addEventListener("DOMContentLoaded", function () {
 
                                             /* ------------------ REVIEW MODAL ------------------ */
@@ -714,3 +842,62 @@
 </body>
 </html>
 
+=======
+                                                        /* ------------------ STAR RATING HIGHLIGHT ------------------ */
+                                                        document.addEventListener('DOMContentLoaded', function () {
+                                                            const starOptions = document.querySelectorAll('.star-option');
+                                                            const allStars = document.querySelectorAll('.star-option .star-icon');
+
+                                                            starOptions.forEach(option => {
+                                                                option.addEventListener('click', function () {
+                                                                    const ratingValue = parseInt(this.getAttribute('data-rating-value'));
+
+                                                                    allStars.forEach(star => star.style.color = '#ccc');
+
+                                                                    let count = 0;
+                                                                    document.querySelectorAll('.star-option').forEach(opt => {
+                                                                        if (++count <= ratingValue) {
+                                                                            opt.querySelector('.star-icon').style.color = '#ffc107';
+                                                                        }
+                                                                    });
+
+                                                                    const input = this.querySelector('input[type="radio"]');
+                                                                    if (input)
+                                                                        input.checked = true;
+                                                                });
+                                                            });
+                                                        });
+    </script>
+
+    <script>
+        /* ------------------ REVIEW IMAGE PREVIEW ------------------ */
+        document.addEventListener("DOMContentLoaded", function () {
+            const input = document.getElementById("photo-upload-input");
+            const previewContainer = document.getElementById("image-preview-container");
+
+            input.addEventListener("change", function () {
+                previewContainer.innerHTML = "";
+
+                const files = Array.from(this.files);
+                if (files.length > 3) {
+                    alert("You can only upload up to 3 photos!");
+                    this.value = "";
+                    return;
+                }
+
+                files.forEach(f => {
+                    const img = document.createElement("img");
+                    img.src = URL.createObjectURL(f);
+                    img.classList.add("preview-img");
+                    img.style.width = "90px";
+                    img.style.margin = "5px";
+                    previewContainer.appendChild(img);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+
+
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806

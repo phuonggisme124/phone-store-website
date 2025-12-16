@@ -791,6 +791,7 @@ public class VariantsDAO extends DBContext {
         return list;
     }
 
+
     public List<Variants> getSuggestedVariantsByVariantID(int variantID) throws SQLException {
         Variants current = getVariantByID(variantID);
         if (current == null) {
@@ -845,3 +846,6 @@ public class VariantsDAO extends DBContext {
         return list;
     }
 }
+
+
+

@@ -1,178 +1,197 @@
+<<<<<<< HEAD
 <%@page import="java.util.List"%>
+=======
+<%@page import="model.Staff"%>
+<%@page import="model.Users"%>
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>Admin Dashboard</title>
+        <title>Admin Dashboard - Create Supplier</title>
 
-        <!-- Bootstrap -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-        <!-- Icons -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
-        <!-- Custom CSS -->
         <link rel="stylesheet" href="css/dashboard_admin.css">
-        <link href="css/dashboard_table.css" rel="stylesheet">
+        <link rel="stylesheet" href="css/dashboard_createsupplier.css">
+        
+        
     </head>
     <body>
         <div class="d-flex" id="wrapper">
-            <!-- Sidebar -->
             <%@ include file="sidebar.jsp" %>
+            <% Staff currentUser = (Staff) session.getAttribute("user"); %>
 
-            <!-- Page Content -->
             <div class="page-content flex-grow-1">
-                <!-- Navbar -->
-                <nav class="navbar navbar-light bg-white shadow-sm">
+                
+                <nav class="navbar navbar-light bg-white shadow-sm px-3 py-2 sticky-top">
                     <div class="container-fluid">
-                        <button class="btn btn-outline-primary" id="menu-toggle"><i class="bi bi-list"></i></button>
-                        <div class="d-flex align-items-center ms-auto">
-                            <div class="position-relative me-3">
-                                <a href="logout">logout</a>
-                            </div>
-                            <i class="bi bi-bell me-3 fs-5"></i>
-                            <div class="position-relative me-3">
-                                <i class="bi bi-github fs-5"></i>
-                            </div>
-                            <div class="d-flex align-items-center">
-                                <img src="https://i.pravatar.cc/40" class="rounded-circle me-2" width="35">
-                                <span>Admin</span>
+                        <button class="btn btn-light text-primary border-0 shadow-sm rounded-circle" id="menu-toggle" style="width: 40px; height: 40px;">
+                            <i class="bi bi-list fs-5"></i>
+                        </button>
+
+                        <div class="d-flex align-items-center ms-auto gap-3">
+                            <div class="vr text-secondary opacity-25 mx-1" style="height: 25px;"></div>
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="position-relative">
+                                        <img src="https://i.pravatar.cc/150?u=<%= currentUser.getStaffID()%>" 
+                                             class="rounded-circle border border-2 border-white shadow-sm" 
+                                             width="40" height="40" alt="Avatar">
+                                        <span class="position-absolute bottom-0 start-100 translate-middle p-1 bg-success border border-light rounded-circle">
+                                            <span class="visually-hidden">Online</span>
+                                        </span>
+                                    </div>
+                                    <div class="d-none d-md-block lh-1">
+                                        <span class="d-block fw-bold text-dark" style="font-size: 0.9rem;"><%= currentUser.getFullName()%></span>
+                                        <span class="d-block text-muted" style="font-size: 0.75rem;">Administrator</span>
+                                    </div>
+                                </div>
+                                <a href="logout" class="btn btn-light text-danger rounded-circle shadow-sm d-flex align-items-center justify-content-center hover-danger" 
+                                   style="width: 38px; height: 38px;" title="Logout">
+                                    <i class="bi bi-box-arrow-right fs-6"></i>
+                                </a>
                             </div>
                         </div>
                     </div>
                 </nav>
 
-                <!-- Search bar -->
                 <div class="container-fluid p-4">
-                    <input type="text" class="form-control w-25" placeholder="🔍 Search">
+                    <form action="supplier?action=createSupplier" id="supplierForm" method="post" class="form-card p-5 mx-auto" style="max-width: 800px;">
+                        
+                        <div class="form-header text-center">
+                            <h2 class="fw-bold text-primary mb-1">Add New Supplier</h2>
+                            <p class="text-muted">Enter partner details to add to database</p>
+                        </div>
+
+                        <div class="mb-4 text-center">
+                            <%
+                                if (session.getAttribute("existName") != null) {
+                                    String exist = (String) session.getAttribute("existName");
+                                    out.println("<div class='alert alert-danger shadow-sm border-0 rounded-3'><i class='bi bi-exclamation-circle-fill me-2'></i>" + exist + "</div>");
+                                }
+                                session.removeAttribute("existName");
+                            %>
+                        </div>
+
+                        <div class="row g-4">
+                            
+                            <div class="col-md-6">
+                                <h5 class="text-secondary border-bottom pb-2 mb-3"><i class="bi bi-person-vcard me-2"></i>Contact Info</h5>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Supplier Name</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light text-muted"><i class="bi bi-shop"></i></span>
+                                        <input type="text" class="form-control" name="name" id="name" placeholder="e.g. Samsung Vina">
+                                    </div>
+                                    <p id="nameError" class="text-danger mt-2" style="display:none;">Please enter supplier name!</p>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Phone Number</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light text-muted"><i class="bi bi-telephone"></i></span>
+                                        <input type="text" class="form-control" name="phone" id="phone" placeholder="e.g. 0912345678">
+                                    </div>
+                                    <p id="phoneError" class="text-danger mt-2" style="display:none;">Please enter phone number!</p>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <h5 class="text-secondary border-bottom pb-2 mb-3"><i class="bi bi-geo-alt me-2"></i>Address & Email</h5>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Email Address</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light text-muted"><i class="bi bi-envelope"></i></span>
+                                        <input type="text" class="form-control" name="email" id="email" placeholder="e.g. contact@samsung.com">
+                                    </div>
+                                    <p id="emailError" class="text-danger mt-2" style="display:none;">Please enter email!</p>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Address</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light text-muted"><i class="bi bi-map"></i></span>
+                                        <input type="text" class="form-control" name="address" id="address" placeholder="e.g. 123 Le Loi St, HCMC">
+                                    </div>
+                                    <p id="addressError" class="text-danger mt-2" style="display:none;">Please enter address!</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 pt-3 border-top text-center">
+                            <button type="submit" class="btn btn-gradient-primary rounded-pill w-50">
+                                <i class="bi bi-plus-circle me-2"></i> Create Supplier
+                            </button>
+                        </div>
+                    </form>
                 </div>
-                <!-- Table -->
-                <form action="supplier?action=createSupplier" id="supplierForm" method="post" class="w-50 mx-auto bg-light p-4 rounded shadow">
-
-
-                    <div class="mb-3">
-                        <label class="form-label">Name</label>
-                        <input type="text" class="form-control" name="name" id="name" value="" >
-                        <p id="nameError" class="text-danger mt-2" style="display:none;">Please enter supplier name!</p>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Phone</label>
-                     
-                        <input type="text" class="form-control" name="phone" id="phone" value="">
-                        <p id="phoneError" class="text-danger mt-2" style="display:none;">Please enter phone number!</p>
-                        <p id="phoneFormat" class="text-danger mt-2" style="display:none;">Phone number is not in correct format!</p>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Email</label>
-                        <input type="text" class="form-control" name="email" id="email" value="" >
-                        <p id="emailError" class="text-danger mt-2" style="display:none;">Please enter Email!</p>
-                        <p id="emailFormat" class="text-danger mt-2" style="display:none;">Email is not in correct format!</p>
-                    </div>
-
-
-                    <div class="mb-3">
-                        <label class="form-label">Address</label>
-                        <input type="text" class="form-control" name="address" id="address" value="">
-                        <p id="addressError" class="text-danger mt-2" style="display:none;">Please enter address!</p>
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100">Create</button>
-                </form>
             </div>
+        </div>
 
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="js/dashboard.js"></script>
 
-            <!-- JS Libraries -->
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+        <script>
+            // 1. Sidebar Toggle
+            document.getElementById("menu-toggle").addEventListener("click", function () {
+                document.getElementById("wrapper").classList.toggle("toggled");
+            });
 
-            <!-- Custom JS -->
-            <script src="js/dashboard.js"></script>
-            <script>
-                document.getElementById("supplierForm").addEventListener("submit", function (e) {
-                    const name = document.getElementById("name");
-                    const phone = document.getElementById("phone");
-                    const email = document.getElementById("email");
-                    const address = document.getElementById("address");
+            // 2. Form Validation
+            document.getElementById("supplierForm").addEventListener("submit", function (e) {
+                let isValid = true;
+                const reVN = /^(?:\+84|84|0)(?:3|5|7|8|9)\d{8}$/;
+                const reEmail = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
 
+                // Helper Validate
+                function validateField(id, errorId, regex = null, errorMsgRegex = "") {
+                    const field = document.getElementById(id);
+                    const error = document.getElementById(errorId);
+                    const val = field.value.trim();
+                    let isError = false;
+                    let msg = "This field is required!";
 
-                    const nameError = document.getElementById("nameError");
-                    const phoneError = document.getElementById("phoneError");
-                    const phoneFormat = document.getElementById("phoneFormat");
-                    const emailFormat = document.getElementById("emailFormat");
-                    const emailError = document.getElementById("emailError");
-                    const addressError = document.getElementById("addressError");
+                    if (val === "") {
+                        isError = true;
+                    } else if (regex && !regex.test(val)) {
+                        isError = true;
+                        msg = errorMsgRegex;
+                    }
 
-                    let isValid = true;
-                    const reVN = /^(?:\+84|84|0)(?:3|5|7|8|9)\d{8}$/;
-                    const reEmail = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
-                    // Check Name
-                    if (name.value === "") {
-                        nameError.style.display = "block";
-                        name.classList.add("is-invalid");
-                        isValid = false;
+                    if (isError) {
+                        error.innerText = msg; // Update message text
+                        error.style.display = "block";
+                        field.classList.add("is-invalid");
+                        return false;
                     } else {
-                        nameError.style.display = "none";
-                        name.classList.remove("is-invalid");
+                        error.style.display = "none";
+                        field.classList.remove("is-invalid");
+                        field.classList.add("is-valid");
+                        return true;
                     }
-                    // Check address
-                    if (address.value === "") {
-                        addressError.style.display = "block";
-                        address.classList.add("is-invalid");
-                        isValid = false;
-                    } else {
-                        addressError.style.display = "none";
-                        address.classList.remove("is-invalid");
+                }
+
+                // Check Fields
+                if (!validateField("name", "nameError")) isValid = false;
+                if (!validateField("phone", "phoneError", reVN, "Invalid Phone format! e.g. 09xxxx")) isValid = false;
+                if (!validateField("email", "emailError", reEmail, "Invalid Email format!")) isValid = false;
+                if (!validateField("address", "addressError")) isValid = false;
+
+                if (!isValid) {
+                    e.preventDefault();
+                    // Scroll to first error
+                    const firstError = document.querySelector(".is-invalid");
+                    if (firstError) {
+                        firstError.scrollIntoView({ behavior: "smooth", block: "center" });
+                        firstError.focus();
                     }
-                    // Check Email
-                    if (email.value === "") {
-                        emailError.style.display = "block";
-                        email.classList.add("is-invalid");
-                        isValid = false;
-
-                    } else {
-                        emailError.style.display = "none";
-
-                        if (!reEmail.test(email.value)) {  
-                            emailFormat.style.display = "block";
-                            email.classList.add("is-invalid");
-                            isValid = false;
-                        } else {
-                            emailError.style.display = "none";
-                            emailFormat.style.display = "none";
-                            email.classList.remove("is-invalid");
-                        }
-                    }
-
-                    // Check Phone
-                    if (phone.value === "") {
-                        phoneError.style.display = "block";
-
-                        phone.classList.add("is-invalid");
-                        isValid = false;
-                    } else {
-                        phoneError.style.display = "none";
-                        if (!reVN.test(phone.value)) {
-
-                            phoneFormat.style.display = "block";
-                            phone.classList.add("is-invalid");
-                            isValid = false;
-                        } else {
-                            phoneError.style.display = "none";
-                            phoneFormat.style.display = "none";
-                            phone.classList.remove("is-invalid");
-                        }
-
-                    }
-
-                    // Nếu có lỗi thì chặn submit & cuộn tới ô lỗi đầu tiên
-                    if (!isValid) {
-                        e.preventDefault();
-                        document.querySelector(".is-invalid").scrollIntoView({
-                            behavior: "smooth",
-                            block: "center"
-                        });
-                    }
-                });
-            </script>
+                }
+            });
+        </script>
     </body>
 </html>

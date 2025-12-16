@@ -1,0 +1,147 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : Dec 12, 2025, 7:04:11 PM
+    Author     : 
+*/
+
+/* --- 1. TONE TÍM MỘNG MƠ --- */
+:root {
+    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --purple-light-bg: #f5f5f9;
+    --text-purple: #696cff;
+}
+body {
+    background-color: var(--purple-light-bg);
+}
+
+/* --- 2. NAVBAR --- */
+.navbar {
+    background-color: #fff !important;
+}
+.btn-light {
+    background-color: #fff;
+    border: 1px solid #d9dee3;
+    color: #697a8d;
+}
+.btn-light:hover {
+    background-color: var(--purple-light-bg);
+    color: var(--text-purple);
+    border-color: var(--text-purple);
+}
+
+.text-primary {
+    color: var(--text-purple) !important;
+}
+.border-light-purple {
+    border-color: rgba(102, 126, 234, 0.3) !important;
+}
+.bg-success {
+    background-color: #71dd37 !important;
+} /* Online dot color */
+
+/* --- 3. STAT CARDS (THẺ THỐNG KÊ) --- */
+.card {
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background: #fff;
+}
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px rgba(105, 108, 255, 0.15);
+}
+
+.month-stat-card {
+    padding: 1.5rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border: 1px solid rgba(0,0,0,0.03);
+}
+
+/* Màu sắc riêng cho từng loại thẻ */
+.revenue {
+    border-left: 4px solid #71dd37;
+} /* Xanh lá - Doanh thu */
+.sold {
+    border-left: 4px solid #ffab00;
+}    /* Vàng - Đã bán/User */
+.income {
+    border-left: 4px solid #ff3e1d;
+}  /* Đỏ - Lợi nhuận/Variant */
+.cost {
+    border-left: 4px solid #696cff;
+}    /* Tím - Chi phí/Supplier */
+
+.month-stat-card h6 {
+    color: #566a7f;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.month-stat-card h3 {
+    font-size: 1.75rem;
+    margin-bottom: 0;
+}
+
+/* --- 4. DROPDOWN & INPUTS --- */
+.form-select-sm {
+    border-radius: 8px;
+    border-color: #d9dee3;
+    color: #566a7f;
+    font-weight: 500;
+}
+.form-select-sm:focus {
+    border-color: var(--text-purple);
+    box-shadow: 0 0 0 0.25rem rgba(105, 108, 255, 0.25);
+}
+
+/* --- 5. PROGRESS BARS --- */
+.progress {
+    height: 8px;
+    border-radius: 10px;
+    background-color: #eceef1;
+    margin: 10px 0 5px 0;
+}
+.progress-bar {
+    border-radius: 10px;
+}
+.bg-success {
+    background-color: #71dd37 !important;
+}
+.bg-warning {
+    background-color: #ffab00 !important;
+}
+.bg-danger {
+    background-color: #ff3e1d !important;
+}
+.bg-primary {
+    background-color: #696cff !important;
+}
+
+/* --- 6. SECTION HEADER --- */
+.month-group-header {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #566a7f;
+    margin-bottom: 1rem;
+    padding-left: 0.5rem;
+    border-left: 4px solid var(--text-purple);
+    line-height: 1.2;
+}
+
+/* Logout Button Hover */
+.hover-danger:hover {
+    background-color: #ffe5e5 !important;
+    color: #dc3545 !important;
+    transform: rotate(90deg);
+    transition: all 0.3s;
+}

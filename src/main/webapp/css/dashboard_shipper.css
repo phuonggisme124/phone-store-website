@@ -20,10 +20,10 @@ body {
 
 h1, h2, h3, h4, h5, h6, .card-title {
     font-family: 'Poppins', sans-serif;
-    color: #212529; /* Màu tiêu đề đen đậm, không dùng màu xanh nữa */
+    color: #212529;
 }
 
-/* --- 3. WRAPPER & SIDEBAR (Layout giữ nguyên 200px) --- */
+/* --- 3. WRAPPER & SIDEBAR --- */
 #wrapper {
     display: flex;
     width: 100%;
@@ -52,14 +52,16 @@ h1, h2, h3, h4, h5, h6, .card-title {
     border-bottom: 1px solid #e3e8f0;
     white-space: nowrap;
 }
-/* Logo vẫn giữ màu xanh thương hiệu */
+
 .sidebar-header .text-primary {
     color: #72AEC8 !important;
     font-weight: 700;
 }
+
 .sidebar .list-unstyled {
     padding: 1rem 0.75rem !important;
 }
+
 .sidebar a {
     color: #67748e;
     text-decoration: none;
@@ -72,16 +74,18 @@ h1, h2, h3, h4, h5, h6, .card-title {
     transition: all 0.2s ease;
     white-space: nowrap;
 }
+
 .sidebar a:hover {
     background-color: #f8f9fa;
-    color: #212529; /* Hover màu đen cho rõ */
+    color: #212529;
 }
-/* Menu đang chọn thì giữ màu xanh để biết đang ở đâu */
+
 .sidebar a.active {
     background-color: #72AEC8;
     color: #fff;
     box-shadow: 0 4px 10px rgba(114, 174, 200, 0.3);
 }
+
 .sidebar a i {
     font-size: 1.2rem;
     margin-right: 0.8rem;
@@ -102,21 +106,24 @@ h1, h2, h3, h4, h5, h6, .card-title {
     padding: 0.8rem 1rem;
     box-shadow: 0 2px 5px rgba(0,0,0,0.02);
 }
+
 #menu-toggle {
     border-color: #d1d9e6;
     color: #495057;
     cursor: pointer;
 }
+
 #menu-toggle:hover {
     background-color: #72AEC8;
     color: #fff;
     border-color: #72AEC8;
 }
 
-/* --- 7. ORDER CARD (CHỈNH MÀU HỢP LÝ HƠN) --- */
+/* --- 7. ORDER CARD --- */
 .order-card-wrapper {
     padding-bottom: 1.5rem;
 }
+
 .order-card {
     border: none;
     border-radius: 12px;
@@ -127,22 +134,20 @@ h1, h2, h3, h4, h5, h6, .card-title {
     height: 100%;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
 }
+
 .order-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
-/* Header Card: Mã đơn hàng màu ĐEN/XÁM (Không dùng xanh nữa) */
 .order-card .card-header {
     border-bottom: 1px solid #f2f2f2;
     padding: 1rem 1.25rem;
-    border-top-left-radius: 12px;
-    border-top-right-radius: 12px;
     background: #fff;
 }
-.order-card .card-header h5,
-.order-card .card-header .text-primary {
-    color: #212529 !important; /* Force màu đen cho tiêu đề */
+
+.order-card .card-header h5 {
+    color: #212529;
     font-weight: 600;
 }
 
@@ -150,6 +155,7 @@ h1, h2, h3, h4, h5, h6, .card-title {
     padding: 1.25rem;
     flex-grow: 1;
 }
+
 .order-card .card-body p {
     color: #67748e;
     font-size: 0.95rem;
@@ -157,54 +163,27 @@ h1, h2, h3, h4, h5, h6, .card-title {
     align-items: center;
     margin-bottom: 0.75rem;
 }
-/* Icon giữ màu Xanh để tạo điểm nhấn nhẹ nhàng */
+
 .order-card .card-body p i {
     margin-right: 12px;
     width: 20px;
-    text-align: center;
     color: #72AEC8;
-}
-.order-card .card-body p strong {
-    color: #344767;
-    font-weight: 600;
 }
 
 .order-card .card-footer {
     border-top: 1px solid #f2f2f2;
     padding: 0.75rem 1.25rem;
-    border-bottom-left-radius: 12px;
-    border-bottom-right-radius: 12px;
     background-color: #fff;
 }
-/* Nút Update: Giữ màu xanh vì là hành động chính */
-.order-card .update-form .btn-primary {
-    background-color: #72AEC8;
-    border-color: #72AEC8;
-    box-shadow: 0 3px 5px rgba(114, 174, 200, 0.2);
-}
-.order-card .update-form .btn-primary:hover {
-    background-color: #5f99b1;
-    border-color: #5f99b1;
-}
-/* Badge */
-.order-card .badge {
-    padding: 0.5em 0.9em !important;
-    font-size: 0.8rem !important;
-    font-weight: 600 !important;
-    border-radius: 6px;
-}
 
-/* --- 8. LOGOUT BUTTON (CHUYỂN SANG MÀU ĐỎ) --- */
+/* --- 8. LOGOUT BUTTON --- */
 .btn-logout {
     display: flex;
     align-items: center;
     justify-content: center;
     background-color: transparent;
-
-    /* Màu đỏ: Cảnh báo thoát */
     color: #dc3545;
-    border: 1px solid #f8d7da; /* Viền đỏ nhạt */
-
+    border: 1px solid #f8d7da;
     border-radius: 8px;
     padding: 6px 16px;
     font-weight: 500;
@@ -213,31 +192,25 @@ h1, h2, h3, h4, h5, h6, .card-title {
 }
 
 .btn-logout:hover {
-    background-color: #dc3545; /* Nền đỏ */
+    background-color: #dc3545;
     color: #fff;
     border-color: #dc3545;
-    box-shadow: 0 4px 10px rgba(220, 53, 69, 0.3); /* Bóng đỏ */
+    box-shadow: 0 4px 10px rgba(220, 53, 69, 0.3);
     transform: translateY(-2px);
 }
 
 /* --- 9. ORDER ITEMS --- */
-.order-items-box {
-    background: #f8f9fa;
-    border: 1px solid #e3e8f0;
-    border-radius: 10px;
-    padding: 12px;
-}
 .order-item {
     background: #fff;
     border: 1px solid #e3e8f0;
     border-radius: 8px;
     transition: all 0.25s ease;
-    padding: 0;
 }
+
 .order-item:hover {
-    background: #fff;
-    border-color: #72AEC8; /* Viền xanh khi hover item là ok */
+    border-color: #72AEC8;
 }
+
 .order-item-img {
     width: 60px;
     height: 60px;
@@ -254,51 +227,20 @@ h1, h2, h3, h4, h5, h6, .card-title {
         height: 100%;
         box-shadow: 5px 0 15px rgba(0,0,0,0.1);
     }
+
     #wrapper.toggled .sidebar {
         margin-left: 0;
     }
-    #wrapper.toggled .page-content::before {
-        content: "";
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(33, 37, 41, 0.5);
-        z-index: 999;
-    }
 }
 
-/* Modal */
-.modal .order-items-box {
-    background: #fff;
-    border: none;
-    padding: 8px;
-}
+/* --- MODAL --- */
 .modal-body {
     max-height: 60vh;
     overflow-y: auto;
 }
-.modal .order-item-img {
-    width: 72px;
-    height: 72px;
-    object-fit: cover;
-    border: 1px solid #dcdcdc;
-    border-radius: 6px;
-}
+
 .modal .order-item {
     background: #f9fbfd;
     border: 1px solid #e3e8f0;
     border-radius: 8px;
-    transition: all 0.15s ease;
-}
-@media (max-width: 576px) {
-    .modal-dialog {
-        max-width: 95%;
-        margin: 0 10px;
-    }
-    .modal .order-item-img {
-        width: 56px;
-        height: 56px;
-    }
 }

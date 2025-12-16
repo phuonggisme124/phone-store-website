@@ -1,0 +1,280 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : Dec 11, 2025, 4:11:35 PM
+    Author     : 
+*/
+
+
+/* Container của bảng để bo góc đẹp hơn */
+.table-responsive {
+    border-radius: 16px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+    background: white;
+    overflow: hidden; /* Để bo góc header không bị lòi ra */
+}
+
+/* Header bảng */
+.table thead th {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1)) !important;
+    color: #667eea !important;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid rgba(102, 126, 234, 0.2) !important;
+    vertical-align: middle;
+}
+
+/* Hiệu ứng dòng (Row) */
+.variant-row {
+    transition: all 0.3s ease;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.variant-row:hover {
+    background-color: rgba(102, 126, 234, 0.03) !important;
+    transform: scale(1.005); /* Phóng to cực nhẹ */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    z-index: 10;
+    position: relative;
+}
+
+/* Cột ID */
+.variant-id {
+    color: #764ba2;
+    font-weight: 700;
+    background: rgba(118, 75, 162, 0.1);
+    padding: 5px 10px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+}
+
+/* Hiển thị Màu sắc (Color Dot) */
+.color-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    border: 1px solid #eee;
+    width: fit-content;
+    background: #fff;
+}
+
+.color-dot {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid rgba(0,0,0,0.1);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.color-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: capitalize;
+}
+
+/* Badge tồn kho (Stock) */
+.stock-badge {
+    padding: 6px 12px;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.stock-success {
+    background: rgba(67, 233, 123, 0.15);
+    color: #2da44e;
+    border: 1px solid rgba(67, 233, 123, 0.3);
+}
+
+.stock-warning {
+    background: rgba(254, 225, 64, 0.15);
+    color: #d97706;
+    border: 1px solid rgba(254, 225, 64, 0.3);
+}
+
+.stock-danger {
+    background: rgba(255, 107, 107, 0.1);
+    color: #e03131;
+    border: 1px solid rgba(255, 107, 107, 0.3);
+}
+
+/* Giá tiền */
+.price-original {
+    color: #adb5bd;
+    font-size: 0.85rem;
+    text-decoration: line-through;
+}
+
+.price-final {
+    font-weight: 700;
+    color: #667eea;
+    font-size: 1rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.discount-tag {
+    font-size: 0.7rem;
+    background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-left: 5px;
+    vertical-align: middle;
+}
+
+/* Hình ảnh sản phẩm */
+.variant-img {
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+    border: 1px solid #eee;
+    background: #fff;
+}
+
+.variant-img:hover {
+    transform: scale(2.5); /* Phóng to rõ hơn khi hover */
+    z-index: 100;
+    position: relative;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+/* Container chứa nút */
+.gap-2 {
+    gap: 10px !important;
+}
+
+/* Style chung cho nút hành động */
+.btn-action {
+    border: none;
+    color: white !important;
+    padding: 10px 20px;
+    border-radius: 30px; /* Bo tròn viên thuốc */
+    font-weight: 600;
+    font-size: 0.9rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+}
+
+.btn-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+.btn-action i {
+    font-size: 1.1rem;
+}
+
+/* 1. Nút Thêm Variant (Gradient Tím - Chủ đạo) */
+.btn-create {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+.btn-create:hover {
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+}
+
+/* 2. Nút Sửa (Gradient Cam - Cảnh báo nhẹ) */
+.btn-update {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    /* Hoặc màu Cam Vàng: linear-gradient(135deg, #F2994A 0%, #F2C94C 100%); */
+}
+
+/* 3. Nút Xóa (Gradient Đỏ - Nguy hiểm) */
+.btn-delete {
+    background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+}
+
+/* --- CSS CHO NAVBAR --- */
+
+/* Border màu tím nhạt cho ô input */
+.border-light-purple {
+    border-color: rgba(102, 126, 234, 0.3) !important;
+}
+
+/* Nút tìm kiếm Gradient */
+.btn-gradient-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.btn-gradient-primary:hover {
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    color: white;
+    box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
+}
+
+/* Nút Filter custom */
+.btn-outline-custom {
+    color: #667eea;
+    border: 1px solid rgba(102, 126, 234, 0.3);
+    background: white;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-custom:hover, 
+.btn-outline-custom[aria-expanded="true"] {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-color: transparent;
+    box-shadow: 0 4px 10px rgba(102, 126, 234, 0.2);
+}
+
+/* Dropdown Item hover effect */
+.dropdown-item {
+    padding: 8px 16px;
+    border-radius: 6px;
+    margin: 2px 4px;
+    width: auto;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+}
+
+.dropdown-item:hover {
+    background: rgba(102, 126, 234, 0.1);
+    color: #667eea;
+    transform: translateX(3px);
+}
+
+.dropdown-item i {
+    transition: color 0.2s;
+}
+
+.dropdown-item:hover i {
+    color: #667eea !important;
+}
+
+/* Avatar & User info */
+.hover-danger {
+    transition: all 0.3s ease;
+}
+.hover-danger:hover {
+    background-color: #ffe5e5 !important;
+    color: #dc3545 !important;
+    transform: rotate(90deg); /* Xoay nhẹ icon logout khi hover */
+}
+
+/* Input group focus */
+.input-group:focus-within .input-group-text,
+.input-group:focus-within .form-control {
+    border-color: #667eea !important;
+}
+.input-group:focus-within {
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+    border-radius: 50rem;
+}

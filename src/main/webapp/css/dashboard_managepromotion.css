@@ -1,0 +1,342 @@
+
+/* --- CSS ĐẠI CA GỬI (Đã dọn dẹp & bổ sung) --- */
+
+/* Nhãn */
+.category-badge {
+    padding: 6px 14px;
+    border-radius: 16px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    letter-spacing: 0.3px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+.category-badge:hover {
+    transform: translateY(-1px) scale(1.05);
+    box-shadow: 0 5px 14px rgba(0, 0, 0, 0.15);
+}
+.category-badge.cat-1 {
+    background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+    color: white;
+}
+.category-badge.cat-2 {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+.category-badge.cat-3 {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    color: white;
+}
+.category-badge.cat-4 {
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    color: white;
+}
+.category-badge.cat-5 {
+    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    color: white;
+}
+.category-badge.cat-default {
+    background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+    color: #333;
+}
+
+.brand-badge {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(118, 75, 162, 0.15));
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #667eea;
+    border: 2px solid rgba(102, 126, 234, 0.3);
+    transition: all 0.3s ease;
+    display: inline-block;
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.brand-badge:hover {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-color: transparent;
+    transform: scale(1.05);
+    max-width: none;
+    white-space: normal;
+}
+
+.warranty-badge {
+    background: linear-gradient(135deg, rgba(67, 233, 123, 0.15), rgba(56, 249, 215, 0.15));
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #43e97b;
+    border: 2px solid rgba(67, 233, 123, 0.3);
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.3s ease;
+}
+.warranty-badge:hover {
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    color: white;
+    border-color: transparent;
+    transform: scale(1.05);
+}
+
+.product-id-badge {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    transition: all 0.3s ease;
+}
+.product-id-badge:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+}
+
+/* Table Row Hover */
+tbody tr {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+tbody tr:hover {
+    background: linear-gradient(90deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+    transform: translateX(5px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* Suggestion Box */
+#suggestionBox {
+    background: white;
+    border: 1px solid rgba(102, 126, 234, 0.2);
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    max-height: 300px;
+    overflow-y: auto;
+}
+#suggestionBox .list-group-item {
+    border: none;
+    transition: all 0.3s ease;
+    padding: 12px 16px;
+}
+#suggestionBox .list-group-item:hover {
+    background: linear-gradient(90deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+    transform: translateX(5px);
+    padding-left: 20px;
+}
+
+/* Card */
+.card {
+    border-radius: 16px !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08) !important;
+    transition: all 0.3s ease;
+    border: none !important;
+}
+.card:hover {
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12) !important;
+}
+
+/* Alert */
+.alert {
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    animation: slideDown 0.5s ease-out;
+}
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Form Elements */
+.form-control:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
+}
+.dropdown-menu {
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    padding: 8px;
+}
+.dropdown-item {
+    border-radius: 8px;
+    margin: 2px 0;
+    transition: all 0.3s ease;
+    padding: 10px 16px;
+}
+.dropdown-item:hover {
+    background: linear-gradient(90deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+    transform: translateX(5px);
+    color: #667eea;
+}
+.dropdown-item.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+/* Scrollbar */
+#suggestionBox::-webkit-scrollbar {
+    width: 8px;
+}
+#suggestionBox::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+#suggestionBox::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 10px;
+}
+#suggestionBox::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+}
+
+/* Header Table */
+thead th {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1)) !important;
+    color: #667eea !important;
+    font-weight: 700 !important;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    border: none !important;
+    padding: 16px 12px !important;
+}
+
+/* Icons Hover */
+.bi {
+    transition: all 0.3s ease;
+}
+tr:hover .bi {
+    transform: scale(1.1);
+}
+
+/* Navbar Custom */
+.border-light-purple {
+    border-color: rgba(102, 126, 234, 0.3) !important;
+}
+.btn-gradient-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    transition: all 0.3s ease;
+}
+.btn-gradient-primary:hover {
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    color: white;
+    box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
+}
+
+.btn-outline-custom {
+    color: #667eea;
+    border: 1px solid rgba(102, 126, 234, 0.3);
+    background: white;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+.btn-outline-custom:hover, .btn-outline-custom[aria-expanded="true"] {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-color: transparent;
+    box-shadow: 0 4px 10px rgba(102, 126, 234, 0.2);
+}
+
+.active-gradient {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: white !important;
+}
+.active-gradient i {
+    color: white !important;
+}
+
+/* Filter Chips */
+.filter-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    animation: fadeIn 0.3s ease-in-out;
+}
+.filter-chip:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+.chip-gradient {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+}
+.chip-light {
+    background: white;
+    border: 1px solid rgba(102, 126, 234, 0.3);
+    color: #555;
+}
+.btn-close-chip {
+    margin-left: 8px;
+    text-decoration: none;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    transition: transform 0.2s;
+    color: inherit;
+    cursor: pointer;
+}
+.btn-close-chip:hover {
+    transform: scale(1.2) rotate(90deg);
+}
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.bg-light-purple.bg-opacity-10 {
+    background-color: rgba(105, 108, 255, 0.05) !important;
+}
+.hover-danger:hover {
+    background-color: #ffe5e5 !important;
+    color: #dc3545 !important;
+}
+
+/* Bổ sung các class màu Status Subtle mà file CSS trên chưa có */
+.bg-success-subtle {
+    background-color: #e8fadf !important;
+    color: #71dd37 !important;
+}
+.bg-warning-subtle {
+    background-color: #fff2d6 !important;
+    color: #ffab00 !important;
+}
+.bg-danger-subtle {
+    background-color: #ffe0db !important;
+    color: #ff3e1d !important;
+}
+
+/* Class hỗ trợ căn chỉnh trong bảng */
+.bg-light-purple {
+    background-color: rgba(102, 126, 234, 0.1) !important;
+}

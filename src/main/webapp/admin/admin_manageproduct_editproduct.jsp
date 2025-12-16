@@ -1,216 +1,227 @@
+<%@page import="model.Staff"%>
 <%@page import="model.Specification"%>
 <%@page import="model.Category"%>
 <%@page import="model.Suppliers"%>
 <%@page import="model.Products"%>
 <%@page import="model.Variants"%>
 <%@page import="java.util.List"%>
-<%@page import="model.Users"%>
+
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>Admin Dashboard</title>
+        <title>Admin Dashboard - Update Product</title>
 
-        <!-- Bootstrap -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-        <!-- Icons -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
-        <!-- Custom CSS -->
         <link rel="stylesheet" href="css/dashboard_admin.css">
-        <link href="css/dashboard_table.css" rel="stylesheet">
+        <link rel="stylesheet" href="css/dashboard_createproduct.css">
+        
     </head>
     <body>
         <div class="d-flex" id="wrapper">
-            <!-- Sidebar -->
             <%@ include file="sidebar.jsp" %>
 
-            <!-- Page Content -->
+            <% Staff currentUser = (Staff) session.getAttribute("user"); %>
+
             <div class="page-content flex-grow-1">
-                <!-- Navbar -->
-                <nav class="navbar navbar-light bg-white shadow-sm">
+                
+                <nav class="navbar navbar-light bg-white shadow-sm px-3 py-2 sticky-top">
                     <div class="container-fluid">
-                        <button class="btn btn-outline-primary" id="menu-toggle"><i class="bi bi-list"></i></button>
-                        <form class="d-none d-md-flex ms-3">
-                            <input class="form-control" type="search" placeholder="Ctrl + K" readonly>
-                        </form>
-                        <div class="d-flex align-items-center ms-auto">
-                            <div class="position-relative me-3">
-                                <a href="logout">logout</a>
-                            </div>
-                            <i class="bi bi-bell me-3 fs-5"></i>
-                            <div class="position-relative me-3">
-                                <i class="bi bi-github fs-5"></i>
-                            </div>
-                            <div class="d-flex align-items-center">
-                                <img src="https://i.pravatar.cc/40" class="rounded-circle me-2" width="35">
-                                <span>Admin</span>
+                        <button class="btn btn-light text-primary border-0 shadow-sm rounded-circle" id="menu-toggle" style="width: 40px; height: 40px;">
+                            <i class="bi bi-list fs-5"></i>
+                        </button>
+
+                        <div class="d-flex align-items-center ms-auto gap-3">
+                            <div class="vr text-secondary opacity-25 mx-1" style="height: 25px;"></div>
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="position-relative">
+                                        <img src="https://i.pravatar.cc/150?u=<%= currentUser.getStaffID()%>" 
+                                             class="rounded-circle border border-2 border-white shadow-sm" 
+                                             width="40" height="40" alt="Avatar">
+                                        <span class="position-absolute bottom-0 start-100 translate-middle p-1 bg-success border border-light rounded-circle">
+                                            <span class="visually-hidden">Online</span>
+                                        </span>
+                                    </div>
+                                    <div class="d-none d-md-block lh-1">
+                                        <span class="d-block fw-bold text-dark" style="font-size: 0.9rem;"><%= currentUser.getFullName()%></span>
+                                        <span class="d-block text-muted" style="font-size: 0.75rem;">Administrator</span>
+                                    </div>
+                                </div>
+                                <a href="logout" class="btn btn-light text-danger rounded-circle shadow-sm d-flex align-items-center justify-content-center hover-danger" 
+                                   style="width: 38px; height: 38px;" title="Logout">
+                                    <i class="bi bi-box-arrow-right fs-6"></i>
+                                </a>
                             </div>
                         </div>
                     </div>
                 </nav>
 
-
-                <div class="container-fluid p-4">
-                    <h1 class="w-50 mx-auto bg-light p-4 rounded shadow">Update Product</h1>
-                </div>
-
-
-                <%                    Products product = (Products) request.getAttribute("product");
+                <% 
+                    Products product = (Products) request.getAttribute("product");
                     Specification specification = (Specification) request.getAttribute("specification");
                     List<Suppliers> listSupplier = (List<Suppliers>) request.getAttribute("listSupplier");
                     List<Category> listCategories = (List<Category>) request.getAttribute("listCategories");
                 %>
-                <!-- Table -->
-                <form action="product" method="post" id="variantForm" class="w-50 mx-auto bg-light p-4 rounded shadow">
-                    <div class="mb-3" >
-                        <%
-                            if (session.getAttribute("existName") != null) {
+
+                <div class="container-fluid p-4">
+                    <form action="product" method="post" id="productForm" class="form-card p-5 mx-auto" style="max-width: 900px;">
+                        
+                        <div class="form-header text-center">
+                            <h2 class="fw-bold text-primary mb-1">Update Product</h2>
+                            <p class="text-muted">Edit details for product #<%= product.getProductID() %></p>
+                        </div>
+
+                        <div class="mb-4 text-center">
+                            <% if (session.getAttribute("existName") != null) {
                                 String exist = (String) session.getAttribute("existName");
-                                out.println("<p class='error-message'>" + exist + "</p>");
-                            }
-                            session.removeAttribute("existName");
-                        %>
-                    </div>
+                                out.println("<div class='alert alert-danger shadow-sm border-0 rounded-3'><i class='bi bi-exclamation-circle-fill me-2'></i>" + exist + "</div>");
+                            } session.removeAttribute("existName"); %>
+                        </div>
 
+                        <input type="hidden" name="pID" value="<%= product.getProductID()%>">
+                        <input type="hidden" name="specID" value="<%= specification.getSpecificationID()%>">
 
-                    <div class="mb-3">
-                        <input type="hidden" class="form-control" name="pID" value="<%= product.getProductID()%>" readonly>
-                    </div>
-                    <div class="mb-3">
-                        <input type="hidden" class="form-control" name="specID" value="<%= specification.getSpecificationID()%>" readonly>
-                    </div>
+                        <div class="row g-4">
+                            
+                            <div class="col-md-6">
+                                <h5 class="text-secondary border-bottom pb-2 mb-3"><i class="bi bi-info-circle me-2"></i>Basic Info</h5>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Product Name</label>
+                                    <input type="text" class="form-control" name="pName" value="<%= product.getName()%>" required>
+                                </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Name</label>
-                        <input type="text" class="form-control" name="pName" value="<%= product.getName()%>" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Category</label>
-                        <select class="form-select" name="category" id="category">
+                                <div class="mb-3">
+                                    <label class="form-label">Category</label>
+                                    <select class="form-select" name="category" id="category">
+                                        <% for (Category ct : listCategories) { %>
+                                        <option value="<%= ct.getCategoryId()%>" <%= (product.getCategoryID() == ct.getCategoryId()) ? "selected" : ""%> ><%= ct.getCategoryName()%></option>
+                                        <% } %>              
+                                    </select>
+                                    <p id="categoryError" class="text-danger mt-2" style="display:none; font-size: 0.85rem;"><i class="bi bi-exclamation-circle-fill me-1"></i>Select category!</p>
+                                </div>
 
-                            <%
-                                for (Category ct : listCategories) {
-                            %>
-                            <option value="<%= ct.getCategoryId()%>" <%= (product.getCategoryID() == ct.getCategoryId()) ? "selected" : ""%> ><%= ct.getCategoryName()%></option>
-                            <%
-                                }
-                            %>             
-                        </select>
-                        <p id="categoryError" class="text-danger mt-2" style="display:none;">Please select a category!</p>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Brand</label>
-                        <input type="text" class="form-control" name="brand" value="<%= product.getBrand()%>" required>
-                    </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Supplier</label>
+                                    <select class="form-select" name="supplierID" id="supplierID">
+                                        <% for (Suppliers sl : listSupplier) { %>
+                                        <option value="<%= sl.getSupplierID()%>" <%= product.getSupplierID() == sl.getSupplierID() ? "selected" : ""%>><%= sl.getName()%></option>
+                                        <% } %>              
+                                    </select>
+                                    <p id="supplierError" class="text-danger mt-2" style="display:none; font-size: 0.85rem;"><i class="bi bi-exclamation-circle-fill me-1"></i>Select supplier!</p>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Brand</label>
+                                        <input type="text" class="form-control" name="brand" value="<%= product.getBrand()%>" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Warranty</label>
+                                        <input type="text" class="form-control" name="warrantyPeriod" value="<%= product.getWarrantyPeriod()%>" required>
+                                    </div>
+                                </div>
+                            </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Warranty Period</label>
-                        <input type="text" class="form-control" name="warrantyPeriod" value="<%= product.getWarrantyPeriod()%>" required>
-                    </div>
+                            <div class="col-md-6">
+                                <h5 class="text-secondary border-bottom pb-2 mb-3"><i class="bi bi-cpu me-2"></i>Tech Specs</h5>
 
-                    <div class="mb-3">
-                        <label class="form-label">Supplier</label>
-                        <select class="form-select" name="supplierID" id="supplierID">
+                                <div class="mb-3" id="group-tech">
+                                    <label class="form-label">Operating System (OS)</label>
+                                    <input type="text" class="form-control" name="os" id="os" value="<%= specification.getOs()%>">
+                                </div>
 
-                            <%
-                                for (Suppliers sl : listSupplier) {
-                            %>
-                            <option value="<%= sl.getSupplierID()%>" <%= product.getSupplierID() == sl.getSupplierID() ? "selected" : ""%>><%= sl.getName()%></option>
-                            <%
-                                }
-                            %>             
-                        </select>
-                        <p id="supplierError" class="text-danger mt-2" style="display:none;">Please select a supplier!</p>
-                    </div>
-                    <div class="mb-3" id="group-tech">
-                        <label class="form-label">OS</label>
-                        <input type="text" class="form-control" name="os" value="<%= specification.getOs()%>" required>
-                    </div>
-                    <div class="mb-3" id="group-cpu">
-                        <label class="form-label">CPU</label>
-                        <input type="text" class="form-control" name="cpu" value="<%= specification.getCpu()%>" required>
-                    </div>
-                    <div class="mb-3" id="group-gpu">
-                        <label class="form-label">GPU</label>
-                        <input type="text" class="form-control" name="gpu" value="<%= specification.getGpu()%>" required>
-                    </div>
-                    <div class="mb-3" id="group-ram">
-                        <label class="form-label">RAM</label>
-                        <input type="text" class="form-control" name="ram" value="<%= specification.getRam()%>" required>
-                    </div>
-                    <div class="mb-3" id="group-battery">
-                        <label class="form-label">Battery Capacity</label>
-                        <input type="number" class="form-control" name="batteryCapacity" value="<%= specification.getBatteryCapacity()%>" required>
-                    </div>
-                    <div class="mb-3" id="group-touchscreen">
-                        <label class="form-label">Touchscreen</label>
-                        <input type="text" class="form-control" name="touchscreen" value="<%= specification.getTouchscreen()%>" required>
-                    </div>
-                    <div class="mb-3">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3" id="group-cpu">
+                                        <label class="form-label">CPU</label>
+                                        <input type="text" class="form-control" name="cpu" id="cpu" value="<%= specification.getCpu()%>">
+                                    </div>
+                                    <div class="col-md-6 mb-3" id="group-gpu">
+                                        <label class="form-label">GPU</label>
+                                        <input type="text" class="form-control" name="gpu" id="gpu" value="<%= specification.getGpu()%>">
+                                    </div>
+                                </div>
 
-                        <button type="submit" name="action" value="updateProduct" class="btn btn-primary w-100">Update</button>
-                    </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3" id="group-ram">
+                                        <label class="form-label">RAM</label>
+                                        <input type="text" class="form-control" name="ram" id="ram" value="<%= specification.getRam()%>">
+                                    </div>
+                                    <div class="col-md-6 mb-3" id="group-battery">
+                                        <label class="form-label">Battery (mAh)</label>
+                                        <input type="number" class="form-control" name="batteryCapacity" id="batteryCapacity" value="<%= specification.getBatteryCapacity()%>">
+                                    </div>
+                                </div>
 
+                                <div class="mb-3" id="group-touchscreen">
+                                    <label class="form-label">Touchscreen</label>
+                                    <input type="text" class="form-control" name="touchscreen" id="touchscreen" value="<%= specification.getTouchscreen()%>">
+                                </div>
+                            </div>
+                        </div>
 
-                </form>
+                        <div class="mt-4 pt-3 border-top text-center">
+                            <button type="submit" name="action" value="updateProduct" class="btn btn-gradient-primary rounded-pill w-50">
+                                <i class="bi bi-check-circle me-2"></i> Update Product
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
             </div>
+        </div>
 
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        
+        <script src="js/dashboard.js"></script>
+        <script>
+            // 1. Sidebar Toggle
+            document.getElementById("menu-toggle").addEventListener("click", function () {
+                document.getElementById("wrapper").classList.toggle("toggled");
+            });
 
-            <!-- JS Libraries -->
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+            // 2. Logic ẩn hiện input theo Category & Validation (Tự động set required)
+            const categorySelect = document.getElementById("category");
+            const techGroups = ["group-tech", "group-cpu", "group-gpu", "group-ram", "group-battery", "group-touchscreen"];
+            const tabletGroups = techGroups.filter(id => id !== "group-cpu" && id !== "group-tech" && id !== "group-ram");
 
-            <!-- Custom JS -->
-            <script src="js/dashboard.js"></script>
+            function hideAllGroups() {
+                techGroups.forEach(id => {
+                    const group = document.getElementById(id);
+                    group.style.display = "none";
+                    // Bỏ required khi ẩn
+                    group.querySelectorAll("input").forEach(input => input.removeAttribute("required"));
+                });
+            }
 
-            <script>
-                const categorySelect = document.getElementById("category");
+            function updateFormFields() {
+                const selectedValue = categorySelect.value;
+                hideAllGroups();
 
-                // Gom nhóm input để dễ xử lý
-                const techGroups = [
-                    "group-tech", "group-cpu", "group-gpu", "group-ram",
-                    "group-battery", "group-touchscreen"
-                ];
-
-                const filteredGroups = techGroups.filter(id => id !== "group-cpu" && id !== "group-tech" && id !== "group-ram");
-
-// Ẩn hết nhóm và bỏ required
-                function hideAllGroups() {
+                if (selectedValue === "1" || selectedValue === "3") { // Phone (1) or (3)
                     techGroups.forEach(id => {
                         const group = document.getElementById(id);
-                        group.style.display = "none";
-                        group.querySelectorAll("input").forEach(input => input.removeAttribute("required"));
+                        group.style.display = "block";
+                        group.querySelectorAll("input").forEach(input => input.setAttribute("required", "true"));
+                    });
+                } else if (selectedValue === "2") { // Tablet
+                    tabletGroups.forEach(id => {
+                        const group = document.getElementById(id);
+                        group.style.display = "block";
+                        group.querySelectorAll("input").forEach(input => input.setAttribute("required", "true"));
                     });
                 }
+            }
 
-// Khi chọn Category
-                categorySelect.addEventListener("change", function () {
-                    const selectedValue = this.value;
+            // Lắng nghe sự kiện change
+            categorySelect.addEventListener("change", updateFormFields);
 
-                    hideAllGroups(); // Ẩn hết trước
-
-                    if (selectedValue === "1" || selectedValue === "3") {
-                        techGroups.forEach(id => {
-                            const group = document.getElementById(id);
-                            group.style.display = "block";
-                            group.querySelectorAll("input").forEach(input => input.setAttribute("required", "true"));
-                        });
-                    } else if (selectedValue === "2") {
-                        filteredGroups.forEach(id => {
-                            const group = document.getElementById(id);
-                            group.style.display = "block";
-                            group.querySelectorAll("input").forEach(input => input.setAttribute("required", "true"));
-                        });
-                    } else {
-                        // Phụ kiện: không hiện gì
-                    }
-                });
-
-// Gọi lần đầu khi trang load (hiển thị theo category hiện tại)
-                categorySelect.dispatchEvent(new Event("change"));
-            </script>
+            // Gọi lần đầu khi trang load để hiển thị đúng theo data hiện có
+            updateFormFields();
+        </script>
     </body>
 </html>

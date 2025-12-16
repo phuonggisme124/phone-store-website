@@ -1,0 +1,152 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : Dec 12, 2025, 3:00:46 PM
+    Author     : 
+*/
+/* --- CSS CHO TRANG IMPORT HISTORY --- */
+
+/* 1. Tiêu đề trang */
+.page-title {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* 2. Bảng (Table Styles) */
+.table-responsive {
+    border-radius: 16px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+    background: white;
+    overflow: hidden;
+}
+
+.table thead th {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1)) !important;
+    color: #667eea !important;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+    padding: 16px 12px !important;
+    border-bottom: 2px solid rgba(102, 126, 234, 0.2) !important;
+    vertical-align: middle;
+}
+
+tbody tr {
+    transition: all 0.3s ease;
+}
+
+tbody tr:hover {
+    background-color: rgba(102, 126, 234, 0.03) !important;
+    transform: scale(1.005);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    z-index: 10;
+    position: relative;
+}
+
+/* 3. Cột ID và Tổng tiền */
+.import-id {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    box-shadow: 0 2px 5px rgba(102, 126, 234, 0.3);
+}
+
+.total-cost {
+    font-weight: 700;
+    color: #e03131; /* Màu đỏ cho tiền */
+    font-size: 1rem;
+    display: inline-block;
+    padding: 4px 8px;
+    background: rgba(255, 229, 229, 0.5);
+    border-radius: 6px;
+}
+
+/* 4. Status Badges (Style viên thuốc) */
+.status-badge {
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 0.75rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+/* Đã duyệt - Xanh lá */
+.status-approved {
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    color: white;
+}
+
+/* Chờ duyệt - Vàng/Cam */
+.status-pending {
+    background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+    color: white;
+}
+
+/* Đã hủy - Đỏ */
+.status-rejected {
+    background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+    color: white;
+}
+
+/* 5. Nút bấm hành động (Action Buttons) */
+.btn-action-view {
+    color: #667eea;
+    background: white;
+    border: 1px solid rgba(102, 126, 234, 0.3);
+    transition: all 0.3s;
+}
+.btn-action-view:hover {
+    background: #667eea;
+    color: white;
+}
+
+.btn-action-approve {
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    border: none;
+    color: white;
+    transition: transform 0.2s;
+}
+.btn-action-approve:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(67, 233, 123, 0.4);
+    color: white;
+}
+
+.btn-action-reject {
+    background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+    border: none;
+    color: white;
+    transition: transform 0.2s;
+}
+.btn-action-reject:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(255, 65, 108, 0.4);
+    color: white;
+}
+
+/* Nút Tạo phiếu ngay (Trạng thái Empty) */
+.btn-create-now {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    padding: 10px 25px;
+    border-radius: 30px;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+.btn-create-now:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+}

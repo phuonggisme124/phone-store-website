@@ -9,12 +9,13 @@
 <%@page import="java.util.List"%>
 <%@page import="model.Products"%>
 <%@page import="model.Category"%>
-<%@ page import="model.Users" %>
+
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/layout/header.jsp" %>
 
 <%
-    if (user == null) {
+Customer customer = (Customer) session.getAttribute("user");
+if (customer == null) {
         response.sendRedirect("login.jsp");
         return;
     }
@@ -379,6 +380,7 @@
             <div class="profile-wrapper">
                 <!-- Sidebar -->
 <<<<<<< HEAD
+<<<<<<< HEAD
                 <aside class="profile-sidebar">
 <<<<<<< HEAD
                     <h3>Hello, <%= user.getFullName() %></h3>
@@ -432,6 +434,9 @@
                             </button>
                         </form>
                     </aside>
+=======
+                <%@ include file="sidebar.jsp" %>
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
 
                 <!-- Main Content -->
                 <main class="profile-content">
@@ -447,8 +452,8 @@
                                 <div class="avatar-wrapper">
                                     <img src="images/avatar.png" alt="User Avatar">
                                 </div>
-                                <h5><%= user.getFullName() %></h5>
-                                <span class="user-id">ID: #<%= user.getUserId() %></span>
+                                <h5><%= user.getFullName()%></h5>
+                                <span class="user-id">ID: #<%= customer.getCustomerID()%></span>
                             </div>
                         </div>
 
@@ -460,15 +465,20 @@
 
 =======
                                 <input type="hidden" name="action" value="changePassword">
-                                <% 
-                                    
+                                <%
+
                                 %>
+<<<<<<< HEAD
 >>>>>>> c80843028cf9648874277785e7b7c677afb557ad
                                 <% if (message != null) { %>
+=======
+                                <% if (message != null) {%>
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
                                 <div class="alert alert-success">
                                     <i class="fas fa-check-circle"></i>
-                                    <%= message %>
+                                    <%= message%>
                                 </div>
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
                                 <% 
@@ -476,11 +486,17 @@
                                 %>
 >>>>>>> c80843028cf9648874277785e7b7c677afb557ad
                                 <% } else if (error != null) { %>
+=======
+                                <%
+                                    session.removeAttribute("message");
+                                %>
+                                <% } else if (error != null) {%>
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
                                 <div class="alert alert-danger">
                                     <i class="fas fa-exclamation-circle"></i>
-                                    <%= error %>
+                                    <%= error%>
                                 </div>
-                                <% } %>
+                                <% }%>
 
                                 <div class="form-group">
                                     <label for="oldPassword" class="form-label">
@@ -561,3 +577,6 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     </body>
 </html>
+
+
+

@@ -1,272 +1,250 @@
-<%@page import="model.Promotions"%>
-<%@page import="model.Suppliers"%>
+<%@page import="model.Staff"%>
 <%@page import="model.Products"%>
-<%@page import="model.Variants"%>
 <%@page import="java.util.List"%>
+<<<<<<< HEAD
+=======
+
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>Admin Dashboard</title>
+        <title>Admin Dashboard - Create Promotion</title>
 
-        <!-- Bootstrap -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-        <!-- Icons -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
-        <!-- Custom CSS -->
         <link rel="stylesheet" href="css/dashboard_admin.css">
-        <link href="css/dashboard_table.css" rel="stylesheet">
+        <link rel="stylesheet" href="css/dashboard_createpromotion.css">
+
+        
     </head>
     <body>
         <div class="d-flex" id="wrapper">
-            <!-- Sidebar -->
             <%@ include file="sidebar.jsp" %>
+            <% Staff currentUser = (Staff) session.getAttribute("user"); %>
 
-            <!-- Page Content -->
             <div class="page-content flex-grow-1">
-                <!-- Navbar -->
-                <nav class="navbar navbar-light bg-white shadow-sm">
+                
+                <nav class="navbar navbar-light bg-white shadow-sm px-3 py-2 sticky-top">
                     <div class="container-fluid">
-                        <button class="btn btn-outline-primary" id="menu-toggle"><i class="bi bi-list"></i></button>
-                        <form class="d-none d-md-flex ms-3">
-                            <input class="form-control" type="search" placeholder="Ctrl + K" readonly>
-                        </form>
-                        <div class="d-flex align-items-center ms-auto">
-                            <div class="position-relative me-3">
-                                <a href="logout">logout</a>
-                            </div>
-                            <i class="bi bi-bell me-3 fs-5"></i>
-                            <div class="position-relative me-3">
-                                <i class="bi bi-github fs-5"></i>
-                            </div>
-                            <div class="d-flex align-items-center">
-                                <img src="https://i.pravatar.cc/40" class="rounded-circle me-2" width="35">
-                                <span>Admin</span>
+                        <button class="btn btn-light text-primary border-0 shadow-sm rounded-circle" id="menu-toggle" style="width: 40px; height: 40px;">
+                            <i class="bi bi-list fs-5"></i>
+                        </button>
+
+                        <div class="d-flex align-items-center ms-auto gap-3">
+                            <div class="vr text-secondary opacity-25 mx-1" style="height: 25px;"></div>
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="position-relative">
+                                        <img src="https://i.pravatar.cc/150?u=<%= currentUser.getStaffID()%>" 
+                                             class="rounded-circle border border-2 border-white shadow-sm" 
+                                             width="40" height="40" alt="Avatar">
+                                        <span class="position-absolute bottom-0 start-100 translate-middle p-1 bg-success border border-light rounded-circle">
+                                            <span class="visually-hidden">Online</span>
+                                        </span>
+                                    </div>
+                                    <div class="d-none d-md-block lh-1">
+                                        <span class="d-block fw-bold text-dark" style="font-size: 0.9rem;"><%= currentUser.getFullName()%></span>
+                                        <span class="d-block text-muted" style="font-size: 0.75rem;">Administrator</span>
+                                    </div>
+                                </div>
+                                <a href="logout" class="btn btn-light text-danger rounded-circle shadow-sm d-flex align-items-center justify-content-center hover-danger" 
+                                   style="width: 38px; height: 38px;" title="Logout">
+                                    <i class="bi bi-box-arrow-right fs-6"></i>
+                                </a>
                             </div>
                         </div>
                     </div>
                 </nav>
 
-                <!-- Search bar -->
+                <% List<Products> listProducts = (List<Products>) request.getAttribute("listProducts"); %>
+
                 <div class="container-fluid p-4">
-                    <input type="text" class="form-control w-25" placeholder="🔍 Search">
+                    <form action="promotion" id="promotionForm" method="post" class="form-card p-5 mx-auto" style="max-width: 800px;">
+                        
+                        <div class="form-header text-center">
+                            <h2 class="fw-bold text-primary mb-1">Create Promotion</h2>
+                            <p class="text-muted">Set up a new discount campaign</p>
+                        </div>
+                        
+                        <input type="hidden" name="pmtID" value="">
+
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <h5 class="text-secondary border-bottom pb-2 mb-3"><i class="bi bi-tag-fill me-2"></i>Product Details</h5>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Select Product</label>
+                                    <select class="form-select" name="pID" id="pID">
+                                        <option selected value="">Choose a product...</option>
+                                        <% for (Products p : listProducts) { %>
+                                        <option value="<%= p.getProductID()%>"><%= p.getName()%></option>
+                                        <% } %>
+                                    </select>
+                                    <p id="productError" class="text-danger mt-2" style="display:none;">Please select a product!</p>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Discount Percent (%)</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light text-muted"><i class="bi bi-percent"></i></span>
+                                        <input type="number" class="form-control" name="discountPercent" id="discountPercent" placeholder="e.g. 20">
+                                    </div>
+                                    <p id="discountError" class="text-danger mt-2" style="display:none;">Enter discount value!</p>
+                                    <p id="discountRangeError" class="text-danger mt-2" style="display:none;">Value must be 0 - 100!</p>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <h5 class="text-secondary border-bottom pb-2 mb-3"><i class="bi bi-calendar-range me-2"></i>Duration</h5>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Start Date</label>
+                                    <input type="text" class="form-control" name="startDate" id="startDate" placeholder="dd-MM-yyyy">
+                                    <p id="startDateError" class="text-danger mt-2" style="display:none;">Enter start date!</p>
+                                    <p id="formatStartDateError" class="text-danger mt-2" style="display:none;">Format: dd-MM-yyyy</p>
+                                    <p id="conditionStartDate" class="text-danger mt-2" style="display:none;">Cannot be before today!</p>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">End Date</label>
+                                    <input type="text" class="form-control" name="endDate" id="endDate" placeholder="dd-MM-yyyy">
+                                    <p id="endDateError" class="text-danger mt-2" style="display:none;">Enter end date!</p>
+                                    <p id="formatEndDateError" class="text-danger mt-2" style="display:none;">Format: dd-MM-yyyy</p>
+                                    <p id="conditionEndDate" class="text-danger mt-2" style="display:none;">Must be after start date!</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 pt-3 border-top text-center">
+                            <button type="submit" name="action" value="createPromotion" class="btn btn-gradient-primary rounded-pill w-50">
+                                <i class="bi bi-check-circle me-2"></i> Create Campaign
+                            </button>
+                        </div>
+                    </form>
                 </div>
-
-
-                <%                    List<Products> listProducts = (List<Products>) request.getAttribute("listProducts");
-                %>
-                <!-- Table -->
-                <form action="promotion" id="promotionForm" method="post" class="w-50 mx-auto bg-light p-4 rounded shadow">
-                    <div class="mb-3">
-                        <input type="hidden" class="form-control" name="pmtID" value="" readonly>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Product Name</label>
-                        <select class="form-select" name="pID" id="pID">
-                            <option selected="" value="">Select Product</option>
-                            <%
-                                for (Products p : listProducts) {
-                            %>                    
-                            <option value="<%= p.getProductID()%>" ><%= p.getName()%></option>
-                            <%
-                                }
-                            %>
-                        </select>
-                        <p id="productError" class="text-danger mt-2" style="display:none;">Please select a product!</p>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Discount Percent</label>
-                        <input type="text" class="form-control"  name="discountPercent" id="discountPercent"  value="">
-                        <p id="discountError" class="text-danger mt-2" style="display:none;">Please enter a number in this field!</p>
-                        <p id="discountRangeError" class="text-danger mt-2" style="display:none;">Please enter number 0 to 100!</p>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Start Date</label>
-                        <input type="text" 
-                               placeholder="dd-MM-yyyy"
-                               class="form-control" 
-                               name="startDate" 
-                               id="startDate" 
-                               value="">
-                        <p id="startDateError" class="text-danger mt-2" style="display:none;">Please enter a value in this field!</p>
-                        <p id="formatStartDateError" class="text-danger mt-2" style="display:none;">Please enter format dd-MM-yyyy!</p>
-                        <p id="conditionStartDate" class="text-danger mt-2" style="display:none;">Start date cannot be before today!</p>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">End Date</label>
-                        <input type="text" 
-                               placeholder="dd-MM-yyyy"
-                               class="form-control" 
-                               name="endDate" 
-                               id="endDate" 
-                               value="">
-                        <p id="endDateError" class="text-danger mt-2" style="display:none;">Please enter a value in this field!</p>
-                        <p id="formatEndDateError" class="text-danger mt-2" style="display:none;">Please enter format dd-MM-yyyy!</p>
-                        <p id="conditionEndDate" class="text-danger mt-2" style="display:none;">End date cannot be before start date!</p>
-                    </div>
-
-                    <div class="mb-3">
-                        <button type="submit" name="action" value="createPromotion" class="btn btn-primary w-100">Create</button>
-                    </div>
-
-                </form>
             </div>
+        </div>
 
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="js/dashboard.js"></script>
 
-            <!-- JS Libraries -->
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+        <script>
+            // 1. Sidebar Toggle
+            document.getElementById("menu-toggle").addEventListener("click", function () {
+                document.getElementById("wrapper").classList.toggle("toggled");
+            });
 
-            <!-- Custom JS -->
-            <script src="js/dashboard.js"></script>
-            <script>
-                document.getElementById("promotionForm").addEventListener("submit", function (e) {
-                    const product = document.getElementById("pID");
-                    const startDate = document.getElementById("startDate");
-                    const endDate = document.getElementById("endDate");
-                    const discountPercent = document.getElementById("discountPercent");
+            // 2. Form Validation
+            document.getElementById("promotionForm").addEventListener("submit", function (e) {
+                const product = document.getElementById("pID");
+                const startDate = document.getElementById("startDate");
+                const endDate = document.getElementById("endDate");
+                const discountPercent = document.getElementById("discountPercent");
 
-                    const productError = document.getElementById("productError");
-                    const startDateError = document.getElementById("startDateError");
-                    const endDateError = document.getElementById("endDateError");
-                    const formatStartDateError = document.getElementById("formatStartDateError");
-                    const formatEndDateError = document.getElementById("formatEndDateError");
-                    const discountError = document.getElementById("discountError");
-                    const discountRangeError = document.getElementById("discountRangeError");
-                    const conditionStartDate = document.getElementById("conditionStartDate");
-                    const conditionEndDate = document.getElementById("conditionEndDate");
+                // Error Elements
+                const productError = document.getElementById("productError");
+                const startDateError = document.getElementById("startDateError");
+                const formatStartDateError = document.getElementById("formatStartDateError");
+                const conditionStartDate = document.getElementById("conditionStartDate");
+                const endDateError = document.getElementById("endDateError");
+                const formatEndDateError = document.getElementById("formatEndDateError");
+                const conditionEndDate = document.getElementById("conditionEndDate");
+                const discountError = document.getElementById("discountError");
+                const discountRangeError = document.getElementById("discountRangeError");
 
-                    const today = new Date();
-                    today.setHours(0, 0, 0, 0);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                let isValid = true;
+                const dateRegex = /^(0[1-9]|[12][0-9]|3[01])\-(0[1-9]|1[0-2])\-[0-9]{4}$/;
 
+                // --- Helper Reset Error ---
+                function resetError(field, errorElement) {
+                    errorElement.style.display = "none";
+                    field.classList.remove("is-invalid");
+                    field.classList.add("is-valid");
+                }
+                function showError(field, errorElement) {
+                    errorElement.style.display = "block";
+                    field.classList.add("is-invalid");
+                    field.classList.remove("is-valid");
+                    isValid = false;
+                }
 
+                // 1. Check Product
+                if (product.value === "") showError(product, productError);
+                else resetError(product, productError);
 
-
-
-                    let isValid = true;
-                    // Regex check dd-MM-yyyy
-                    const dateRegex = /^(0[1-9]|[12][0-9]|3[01])\-(0[1-9]|1[0-2])\-[0-9]{4}$/;
-
-                    // Check product
-                    if (product.value === "") {
-                        productError.style.display = "block";
-                        product.classList.add("is-invalid");
-                        isValid = false;
+                // 2. Check Discount
+                if (discountPercent.value.trim() === "") {
+                    showError(discountPercent, discountError);
+                    discountRangeError.style.display = "none";
+                } else {
+                    const discount = Number(discountPercent.value.trim());
+                    if (isNaN(discount)) {
+                        showError(discountPercent, discountError);
+                    } else if (discount < 0 || discount > 100) {
+                        showError(discountPercent, discountRangeError);
+                        discountError.style.display = "none";
                     } else {
-                        productError.style.display = "none";
-                        product.classList.remove("is-invalid");
-                    }
-
-                    //check start date
-                    if (startDate.value === "") {
-                        startDateError.style.display = "block";
-                        startDate.classList.add("is-invalid");
-                        isValid = false;
-                    } else {
-                        startDateError.style.display = "none";
-                        startDate.classList.remove("is-invalid");
-                        if (!dateRegex.test(startDate.value)) {
-                            formatStartDateError.style.display = "block";
-                            startDate.classList.add("is-invalid");
-                            isValid = false;
-                        } else {
-                            formatStartDateError.style.display = "none";
-                            startDate.classList.remove("is-invalid");
-
-                            const [day, month, year] = startDate.value.split('-');
-                            const startDateValue = new Date(year, month - 1, day);
-                            if (startDateValue < today) {
-                                conditionStartDate.style.display = "block";
-                                startDate.classList.add("is-invalid");
-                                isValid = false;
-                            } else {
-                                conditionStartDate.style.display = "none";
-                                startDate.classList.remove("is-invalid");
-                            }
-
-                        }
-                    }
-
-
-
-
-
-                    //check end date
-
-                    if (endDate.value === "") {
-                        endDateError.style.display = "block";
-                        endDate.classList.add("is-invalid");
-                        isValid = false;
-                    } else {
-                        endDateError.style.display = "none";
-                        endDate.classList.remove("is-invalid");
-                        if (!dateRegex.test(endDate.value)) {
-                            formatEndDateError.style.display = "block";
-                            endDate.classList.add("is-invalid");
-                            isValid = false;
-                        } else {
-                            formatEndDateError.style.display = "none";
-                            endDate.classList.remove("is-invalid");
-                            const [sday, smonth, syear] = startDate.value.split('-');
-                            const startDateValue = new Date(syear, smonth - 1, sday);
-                            const [eday, emonth, eyear] = endDate.value.split('-');
-                            const endDateValue = new Date(eyear, emonth - 1, eday);
-                            if (endDateValue < startDateValue) {
-                                conditionEndDate.style.display = "block";
-                                endDate.classList.add("is-invalid");
-                                isValid = false;
-                            } else {
-                                conditionEndDate.style.display = "none";
-                                endDate.classList.remove("is-invalid");
-                            }
-
-                        }
-                    }
-
-
-
-                    // check discount
-                    if (discountPercent.value.trim() === "") {
-                        discountError.style.display = "block";
+                        resetError(discountPercent, discountError);
                         discountRangeError.style.display = "none";
-                        discountPercent.classList.add("is-invalid");
-                        isValid = false;
+                    }
+                }
+
+                // 3. Check Start Date
+                let startDateValue = null;
+                if (startDate.value.trim() === "") {
+                    showError(startDate, startDateError);
+                    formatStartDateError.style.display = "none";
+                    conditionStartDate.style.display = "none";
+                } else if (!dateRegex.test(startDate.value)) {
+                    showError(startDate, formatStartDateError);
+                    startDateError.style.display = "none";
+                } else {
+                    const [day, month, year] = startDate.value.split('-');
+                    startDateValue = new Date(year, month - 1, day);
+                    if (startDateValue < today) {
+                        showError(startDate, conditionStartDate);
                     } else {
-                        const discount = Number(discountPercent.value.trim());
-                        if (isNaN(discount)) {
-                            discountError.style.display = "block";
-                            discountRangeError.style.display = "none";
-                            discountPercent.classList.add("is-invalid");
-                            isValid = false;
-                        } else if (discount < 0 || discount > 100) {
-                            discountError.style.display = "none";
-                            discountRangeError.style.display = "block";
-                            discountPercent.classList.add("is-invalid");
-                            isValid = false;
-                        } else {
-                            discountError.style.display = "none";
-                            discountRangeError.style.display = "none";
-                            discountPercent.classList.remove("is-invalid");
-                        }
+                        resetError(startDate, startDateError);
+                        formatStartDateError.style.display = "none";
+                        conditionStartDate.style.display = "none";
                     }
+                }
 
-
-
-
-                    if (!isValid) {
-                        e.preventDefault();
-                        document.querySelector(".is-invalid").scrollIntoView({
-                            behavior: "smooth",
-                            block: "center"
-                        });
+                // 4. Check End Date
+                if (endDate.value.trim() === "") {
+                    showError(endDate, endDateError);
+                    formatEndDateError.style.display = "none";
+                    conditionEndDate.style.display = "none";
+                } else if (!dateRegex.test(endDate.value)) {
+                    showError(endDate, formatEndDateError);
+                    endDateError.style.display = "none";
+                } else {
+                    const [day, month, year] = endDate.value.split('-');
+                    const endDateValue = new Date(year, month - 1, day);
+                    
+                    if (startDateValue && endDateValue < startDateValue) {
+                        showError(endDate, conditionEndDate);
+                    } else {
+                        resetError(endDate, endDateError);
+                        formatEndDateError.style.display = "none";
+                        conditionEndDate.style.display = "none";
                     }
-                });
-            </script>
+                }
 
+                if (!isValid) {
+                    e.preventDefault();
+                    const firstError = document.querySelector(".is-invalid");
+                    if (firstError) {
+                        firstError.scrollIntoView({ behavior: "smooth", block: "center" });
+                        firstError.focus();
+                    }
+                }
+            });
+        </script>
     </body>
 </html>

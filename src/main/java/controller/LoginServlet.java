@@ -88,6 +88,7 @@ public class LoginServlet extends HttpServlet {
             }
 
             session.setAttribute("user", customer);
+            session.setAttribute("role", customer.getRole());
             session.setAttribute("attempts", 0);
 
             // Customer ALWAYS has role = 1
@@ -96,14 +97,14 @@ public class LoginServlet extends HttpServlet {
             // Handle redirect if exists
             if (redirect != null && !redirect.isEmpty()) {
                 String decoded = URLDecoder.decode(redirect, StandardCharsets.UTF_8);
-                List<Carts> carts = cartDAO.getItemIntoCartByUserID(customer.getCustomerID());
+                List<Carts> carts = cartDAO.getCartByCustomerID(customer.getCustomerID());
                 session.setAttribute("cart", carts);
                 response.sendRedirect(decoded);
                 return;
             }
 
             // Default redirect for customer
-            List<Carts> carts = cartDAO.getItemIntoCartByUserID(customer.getCustomerID());
+            List<Carts> carts = cartDAO.getCartByCustomerID(customer.getCustomerID());
             session.setAttribute("cart", carts);
             response.sendRedirect("homepage");
             return;
@@ -123,16 +124,19 @@ public class LoginServlet extends HttpServlet {
             switch (role) {
                 case 4: // Admin
                     session.setAttribute("admin", staff);
+                    session.setAttribute("role", staff.getRole());
                     response.sendRedirect("admin");
                     return;
 
                 case 3: // Shipper
                     session.setAttribute("shipper", staff);
+                    session.setAttribute("role", staff.getRole());
                     response.sendRedirect("order");
                     return;
 
                 case 2: // Staff
                     session.setAttribute("staff", staff);
+                    session.setAttribute("role", staff.getRole());
                     response.sendRedirect("product");
                     return;
 
@@ -169,3 +173,6 @@ public class LoginServlet extends HttpServlet {
         return "Servlet for handling customer login and logout.";
     }
 }
+
+
+
