@@ -434,10 +434,6 @@ public class OrderDAO extends DBContext {
                         rs.getInt("OrderID"),
                         rs.getInt("Quantity"),
                         rs.getDouble("UnitPrice"),
-                        rs.getInt("InterestRateID"),
-                        rs.getDouble("MonthlyPayment"),
-                        rs.getDouble("DownPayment"),
-                        rs.getInt("InterestRate"),
                         variant));
             }
         } catch (Exception e) {

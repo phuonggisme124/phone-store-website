@@ -59,6 +59,15 @@ public class OrderDetails {
         this.variant = variant;
     }
 
+    public OrderDetails(int orderID, int quantity, double unitPrice, Variants variant) {
+        this.orderID = orderID;
+        this.quantity = quantity;
+        this.unitPrice = unitPrice;
+        this.variant = variant;
+    }
+    
+    
+
     public int getInterestRateID() {
         return interestRateID;
     }

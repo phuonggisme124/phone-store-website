@@ -1,12 +1,3 @@
-/*
-Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
-Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
-*/
-/* 
-    Created on : Dec 12, 2025, 8:47:04 PM
-    Author     : 
-*/
-
 
 /* --- 1. GENERAL TONE --- */
 body {
@@ -91,3 +82,4 @@ p.text-danger::before {
     transform: rotate(90deg);
     transition: 0.3s;
 }
+

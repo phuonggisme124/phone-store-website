@@ -71,31 +71,6 @@ public class CustomerServlet extends HttpServlet {
         switch (action) {
             // 1. Customer: View/Edit Profile
             case "edit":
-                //  ADMIN/STAFF SỬA KHÁCH HÀNG
-                if (staff != null && (staff.getRole() == 2 || staff.getRole() == 4)) {
-                    String idStr = request.getParameter("id");
-                    String roleStr = request.getParameter("role");
-                    if (idStr != null && !idStr.isEmpty()) {
-                        try {
-                            int ID = Integer.parseInt(idStr);
-                            int role = Integer.parseInt(roleStr);
-                            if (role != 1) {
-                                Staff targetUser = staffDAO.getStaffByID(ID);
-                                request.setAttribute("currentUser", targetUser);
-                                request.getRequestDispatcher("admin/admin_manageuser_edit.jsp").forward(request, response);
-                                return;
-                            } else {
-                                Customer targetUser = customerDAO.getCustomerByID(ID);
-                                request.setAttribute("currentUser", targetUser);
-                                request.getRequestDispatcher("admin/admin_manageuser_edit.jsp").forward(request, response);
-                                return;
-                            }
-
-                        } catch (NumberFormatException e) {
-                            System.out.println("ID không hợp lệ: " + idStr);
-                        }
-                    }
-                }
 
                 //  KHÁCH HÀNG TỰ SỬA HỒ SƠ
                 if (customer != null) {
@@ -135,41 +110,9 @@ public class CustomerServlet extends HttpServlet {
                 }
                 break;
 
-            // 5. Admin/Staff: Manage Users
-            case "manageUser":
-                // Only allow Staff/Admin to access this
-                String roleStr = request.getParameter("role");
-                int role = 1;
-                if (roleStr == null || roleStr.isEmpty()){
-                    role = 2;
-                }
-                if (staff != null && (staff.getRole() == 2 || staff.getRole() == 4)) {
-                    List<Customer> listCustomers = customerDAO.getAllCustomers();
-                    List<Staff> listStaff = staffDAO.getAllStaffs();
-                    request.setAttribute("listCustomers", listCustomers);
-                    request.setAttribute("listStaff", listStaff);
-                    request.setAttribute("role", role);
-                    // Ensure the path to the JSP is correct based on your project structure
-                    request.getRequestDispatcher("admin/dashboard_admin_manageuser.jsp").forward(request, response);
-                } else {
-                    // If a customer tries to access manageUser, redirect them home or show error
-                    response.sendRedirect("home");
-                }
-                break;
-            case "createAccount":
-                // Use 'staff' variable here, and check if role is 4 (Admin)
-                if (staff != null && staff.getRole() == 4) {
-                    request.getRequestDispatcher("admin/admin_manageuser_create.jsp").forward(request, response);
-                } else {
-                    // If not admin, redirect or show error
-                    response.sendRedirect("login.jsp");
-                }
-                break;
-            case "selectRole":
-                
-                
-                
-                break;
+            
+            
+            
             // Default: View Profile (Customer only)
             default:
                 if (customer != null) {
@@ -188,19 +131,23 @@ public class CustomerServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
+        StaffDAO sdao = new StaffDAO();
+        CustomerDAO cdao = new CustomerDAO();
         String action = request.getParameter("action");
+        // Check login and determine user type
         HttpSession session = request.getSession();
         Object userObj = session.getAttribute("user");
 
         Customer customer = null;
+        Staff staff = null;
+
         if (userObj instanceof Customer) {
             customer = (Customer) userObj;
+        } else if (userObj instanceof Staff) {
+            staff = (Staff) userObj;
         }
 
-        // Most POST actions here seem to be for the Customer. 
-        if (customer == null) {
-            // You might want to handle Staff POST actions here if needed
+        if (customer == null && staff == null) {
             response.sendRedirect("login.jsp");
             return;
         }
@@ -218,8 +165,6 @@ public class CustomerServlet extends HttpServlet {
 
         } else if ("paidInstalment".equals(action)) {
             processInstallmentPayment(request, response);
-        } else {
-            response.sendRedirect("customer?action=view");
         }
     }
 

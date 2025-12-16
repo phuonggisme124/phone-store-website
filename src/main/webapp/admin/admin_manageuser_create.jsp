@@ -15,66 +15,18 @@
         <link rel="stylesheet" href="css/dashboard_createuser.css">
 
         <style>
-            /* --- 1. GENERAL TONE --- */
+            /* --- GIỮ NGUYÊN CSS CỦA ĐẠI CA --- */
             body { background-color: #f5f5f9; font-family: 'Segoe UI', sans-serif; }
             .text-primary { color: #696cff !important; }
-            
-            /* --- 2. NAVBAR --- */
-            .border-light-purple { border-color: rgba(102, 126, 234, 0.3) !important; }
-            
-            /* --- 3. FORM CARD STYLING --- */
-            .form-card {
-                background: #fff;
-                border-radius: 16px;
-                box-shadow: 0 8px 24px rgba(105, 108, 255, 0.1);
-                border: none;
-                transition: transform 0.3s ease;
-            }
-            .form-header {
-                border-bottom: 1px solid #eceef1;
-                padding-bottom: 1.5rem;
-                margin-bottom: 2rem;
-            }
-
-            /* --- 4. INPUTS --- */
-            .form-label {
-                font-weight: 600;
-                color: #566a7f;
-                font-size: 0.85rem;
-                text-transform: uppercase;
-                letter-spacing: 0.5px;
-            }
-            .form-control, .form-select {
-                border-radius: 8px;
-                border: 1px solid #d9dee3;
-                padding: 0.7rem 1rem;
-                color: #697a8d;
-            }
-            .form-control:focus, .form-select:focus {
-                border-color: #696cff;
-                box-shadow: 0 0 0 0.25rem rgba(105, 108, 255, 0.25);
-            }
-
-            /* --- 5. BUTTONS --- */
-            .btn-gradient-primary {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                border: none; color: white; transition: all 0.3s ease;
-                font-weight: 600; letter-spacing: 1px;
-                box-shadow: 0 4px 12px rgba(105, 108, 255, 0.4);
-            }
-            .btn-gradient-primary:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 6px 15px rgba(105, 108, 255, 0.6);
-                color: white;
-            }
-
-            /* --- 6. ERROR MESSAGES --- */
-            p.text-danger { 
-                font-size: 0.85rem; margin-top: 5px; display: flex; align-items: center; gap: 5px; 
-            }
+            .form-card { background: #fff; border-radius: 16px; box-shadow: 0 8px 24px rgba(105, 108, 255, 0.1); border: none; }
+            .form-header { border-bottom: 1px solid #eceef1; padding-bottom: 1.5rem; margin-bottom: 2rem; }
+            .form-label { font-weight: 600; color: #566a7f; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; }
+            .form-control, .form-select { border-radius: 8px; border: 1px solid #d9dee3; padding: 0.7rem 1rem; color: #697a8d; }
+            .form-control:focus, .form-select:focus { border-color: #696cff; box-shadow: 0 0 0 0.25rem rgba(105, 108, 255, 0.25); }
+            .btn-gradient-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; color: white; font-weight: 600; letter-spacing: 1px; box-shadow: 0 4px 12px rgba(105, 108, 255, 0.4); }
+            .btn-gradient-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(105, 108, 255, 0.6); color: white; }
+            p.text-danger { font-size: 0.85rem; margin-top: 5px; display: flex; align-items: center; gap: 5px; }
             p.text-danger::before { content: "\F333"; font-family: "bootstrap-icons"; }
-
-            /* Navbar Profile */
             .hover-danger:hover { background-color: #ffe5e5 !important; color: #dc3545 !important; transform: rotate(90deg); transition: 0.3s; }
         </style>
     </head>
@@ -90,35 +42,14 @@
                         <button class="btn btn-light text-primary border-0 shadow-sm rounded-circle" id="menu-toggle" style="width: 40px; height: 40px;">
                             <i class="bi bi-list fs-5"></i>
                         </button>
-
                         <div class="d-flex align-items-center ms-auto gap-3">
-                            <div class="vr text-secondary opacity-25 mx-1" style="height: 25px;"></div>
-                            <div class="d-flex align-items-center gap-3">
-                                <div class="d-flex align-items-center gap-2">
-                                    <div class="position-relative">
-                                        <img src="https://i.pravatar.cc/150?u=<%= currentUser.getStaffID()%>" 
-                                             class="rounded-circle border border-2 border-white shadow-sm" 
-                                             width="40" height="40" alt="Avatar">
-                                        <span class="position-absolute bottom-0 start-100 translate-middle p-1 bg-success border border-light rounded-circle">
-                                            <span class="visually-hidden">Online</span>
-                                        </span>
-                                    </div>
-                                    <div class="d-none d-md-block lh-1">
-                                        <span class="d-block fw-bold text-dark" style="font-size: 0.9rem;"><%= currentUser.getFullName()%></span>
-                                        <span class="d-block text-muted" style="font-size: 0.75rem;">Administrator</span>
-                                    </div>
-                                </div>
-                                <a href="logout" class="btn btn-light text-danger rounded-circle shadow-sm d-flex align-items-center justify-content-center hover-danger" 
-                                   style="width: 38px; height: 38px;" title="Logout">
-                                    <i class="bi bi-box-arrow-right fs-6"></i>
-                                </a>
-                            </div>
+                            <span class="fw-bold text-dark"><%= (currentUser != null) ? currentUser.getFullName() : "Admin" %></span>
                         </div>
                     </div>
                 </nav>
 
                 <div class="container-fluid p-4">
-                    <form action="user?action=createAccountAdmin" id="userForm" method="post" class="form-card p-5 mx-auto" style="max-width: 800px;">
+                    <form action="account?action=createAccountAdmin" id="userForm" method="post" class="form-card p-5 mx-auto" style="max-width: 800px;">
                         
                         <div class="form-header text-center">
                             <h2 class="fw-bold text-primary mb-1">Create New Account</h2>
@@ -130,13 +61,12 @@
                                 if (session.getAttribute("exist") != null) {
                                     String exist = (String) session.getAttribute("exist");
                                     out.println("<div class='alert alert-danger shadow-sm border-0 rounded-3'><i class='bi bi-exclamation-circle-fill me-2'></i>" + exist + "</div>");
+                                    session.removeAttribute("exist");
                                 }
-                                session.removeAttribute("exist");
                             %>
                         </div>
 
                         <div class="row g-4">
-                            
                             <div class="col-md-6">
                                 <h5 class="text-secondary border-bottom pb-2 mb-3"><i class="bi bi-shield-lock me-2"></i>Account Details</h5>
                                 
@@ -164,7 +94,6 @@
                                     <label class="form-label">Role</label>
                                     <select class="form-select" name="role" id="role">
                                         <option value="" selected>Select Role</option>
-                                       
                                         <option value="2">Staff</option>
                                         <option value="3">Shipper</option>
                                     </select>
@@ -187,8 +116,13 @@
                                     <p id="phoneError" class="text-danger mt-2" style="display:none;">Enter phone number!</p>
                                     <p id="phoneFormat" class="text-danger mt-2" style="display:none;">Invalid phone format!</p>
                                 </div>
-
                                 
+                                <div class="mb-3">
+                                    <label class="form-label">Address</label>
+                                    <input type="text" class="form-control" name="address" id="address" placeholder="123 Street, City">
+                                    <p id="addressError" class="text-danger mt-2" style="display:none;">Enter address!</p>
+                                </div>
+
                             </div>
                         </div>
 
@@ -203,8 +137,7 @@
         </div>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="js/dashboard.js"></script>
-
+        
         <script>
             // 1. Sidebar Toggle
             document.getElementById("menu-toggle").addEventListener("click", function () {
@@ -213,14 +146,15 @@
 
             // 2. Form Validation
             document.getElementById("userForm").addEventListener("submit", function (e) {
+                // Lấy các element input
                 const name = document.getElementById("name");
                 const phone = document.getElementById("phone");
                 const email = document.getElementById("email");
-                const address = document.getElementById("address");
+                const address = document.getElementById("address"); // Đã có trong HTML, không bị lỗi nữa
                 const password = document.getElementById("password");
                 const role = document.getElementById("role");
 
-                // Errors
+                // Lấy các element hiển thị lỗi
                 const nameError = document.getElementById("nameError");
                 const phoneError = document.getElementById("phoneError");
                 const phoneFormat = document.getElementById("phoneFormat");
@@ -232,16 +166,19 @@
                 const roleError = document.getElementById("roleError");
 
                 let isValid = true;
+                // Regex
                 const reVN = /^(?:\+84|84|0)(?:3|5|7|8|9)\d{8}$/;
                 const reEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
                 const rePass = /^.{8,}$/; // Ít nhất 8 ký tự
 
-                // Helper Reset
+                // Helper Reset Style
                 function resetError(field, ...errors) {
                     errors.forEach(err => err.style.display = "none");
                     field.classList.remove("is-invalid");
                     field.classList.add("is-valid");
                 }
+                
+                // Helper Show Error
                 function showError(field, errorElem) {
                     errorElem.style.display = "block";
                     field.classList.add("is-invalid");
@@ -249,19 +186,21 @@
                     isValid = false;
                 }
 
-                // Check Name
+                // --- LOGIC CHECK TRỐNG ---
+
+                // 1. Check Name
                 if (name.value.trim() === "") showError(name, nameError);
                 else resetError(name, nameError);
 
-                // Check Role
+                // 2. Check Role
                 if (role.value === "") showError(role, roleError);
                 else resetError(role, roleError);
 
-                // Check Address
+                // 3. Check Address (Giờ đã hoạt động vì HTML đã có ID="address")
                 if (address.value.trim() === "") showError(address, addressError);
                 else resetError(address, addressError);
 
-                // Check Email
+                // 4. Check Email
                 if (email.value.trim() === "") {
                     showError(email, emailError);
                     emailFormat.style.display = "none";
@@ -272,7 +211,7 @@
                     resetError(email, emailError, emailFormat);
                 }
 
-                // Check Phone
+                // 5. Check Phone
                 if (phone.value.trim() === "") {
                     showError(phone, phoneError);
                     phoneFormat.style.display = "none";
@@ -283,7 +222,7 @@
                     resetError(phone, phoneError, phoneFormat);
                 }
 
-                // Check Password
+                // 6. Check Password
                 if (password.value === "") {
                     showError(password, passwordError);
                     passwordFormat.style.display = "none";
@@ -294,8 +233,10 @@
                     resetError(password, passwordError, passwordFormat);
                 }
 
+                // CHẶN SUBMIT NẾU CÓ LỖI
                 if (!isValid) {
-                    e.preventDefault();
+                    e.preventDefault(); // Dòng này chặn không cho qua Servlet
+                    // Scroll tới lỗi đầu tiên
                     const firstError = document.querySelector(".is-invalid");
                     if (firstError) {
                         firstError.scrollIntoView({ behavior: "smooth", block: "center" });
