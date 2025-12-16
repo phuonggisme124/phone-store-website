@@ -65,6 +65,9 @@
                     <li class="mb-2"><a href="order?action=manageOrder" class="text-decoration-none text-dark d-block p-2 rounded hover-bg-light"><i class="bi bi-bag me-2"></i>Orders</a></li>
                     <li class="mb-2"><a href="review?action=manageReview" class="text-decoration-none text-dark d-block p-2 rounded hover-bg-light"><i class="bi bi-chat-left-text me-2"></i>Reviews</a></li>
                     <li class="mb-2"><a href="importproduct?action=staff_import" class="text-decoration-none fw-bold text-primary d-block p-2 rounded bg-light"><i class="bi bi-file-earmark-arrow-down me-2"></i>Import Product</a></li>
+                    <li><a href="voucher?action=viewVoucher" class="fw-bold text-primary">
+                        <i class="bi bi-ticket-perforated me-2"></i>Voucher
+                    </a></li>
                 </ul>
             </nav>
 
