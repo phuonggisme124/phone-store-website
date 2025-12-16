@@ -485,9 +485,9 @@
                                             <button class="wishlist-btn toggle-wishlist"
                                                     data-productid="<%= productID %>"
                                                     data-variantid="<%= variantID %>"
-                                                    style="background:none; border:none; padding:0;">
+                                                    style="position:absolute; top:40px; right:10px; background:none; border:none; padding:0; z-index:10;">
                                                 <i class="<%= liked ? "fas fa-heart" : "far fa-heart" %>"
-                                                   style="<%= liked ? "color:#e53e3e;" : "" %>"></i>
+                                                   style="<%= liked ? "color:#e53e3e; font-size:1.5rem;" : "font-size:1.5rem;" %>"></i>
                                             </button>
 
                                         </div>
@@ -561,9 +561,9 @@
                                             <button class="wishlist-btn toggle-wishlist"
                                                     data-productid="<%= productID %>"
                                                     data-variantid="<%= variantID %>"
-                                                    style="background:none; border:none; padding:0;">
+                                                    style="position:absolute; top:40px; right:10px; background:none; border:none; padding:0; z-index:10;">
                                                 <i class="<%= liked ? "fas fa-heart" : "far fa-heart" %>"
-                                                   style="<%= liked ? "color:#e53e3e;" : "" %>"></i>
+                                                   style="<%= liked ? "color:#e53e3e; font-size:1.5rem;" : "font-size:1.5rem;" %>"></i>
                                             </button>
 
                                         </div>
@@ -634,9 +634,9 @@
                                             <button class="wishlist-btn toggle-wishlist"
                                                     data-productid="<%= productID %>"
                                                     data-variantid="<%= variantID %>"
-                                                    style="background:none; border:none; padding:0;">
+                                                    style="position:absolute; top:40px; right:10px; background:none; border:none; padding:0; z-index:10;">
                                                 <i class="<%= liked ? "fas fa-heart" : "far fa-heart" %>"
-                                                   style="<%= liked ? "color:#e53e3e;" : "" %>"></i>
+                                                   style="<%= liked ? "color:#e53e3e; font-size:1.5rem;" : "font-size:1.5rem;" %>"></i>
                                             </button>
 
                                         </div>
@@ -780,5 +780,5 @@
 
         <script src="${pageContext.request.contextPath}/js/google_login.js?v=10"></script>
         <script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
-            </body>
+    </body>
 </html>

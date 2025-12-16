@@ -63,12 +63,15 @@ public class WishlistDAO extends DBContext {
     }
 
     public void removeFromWishlist(int customerID, int productId, int variantId) {
-        String sql = "DELETE FROM Wishlist WHERE CustomerID = ? AND ProductID = ?";
+        String sql = "DELETE FROM Wishlist "
+                + "WHERE CustomerID = ? AND ProductID = ? "
+                + "AND (VariantID = ? OR (VariantID IS NULL AND ? = 0))";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, customerID);
             ps.setInt(2, productId);
-
+            ps.setInt(3, variantId);
+            ps.setInt(4, variantId);  // cho check NULL
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

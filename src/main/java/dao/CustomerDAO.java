@@ -186,35 +186,16 @@ public class CustomerDAO extends DBContext {
     // ============================================================
     // UPDATE PROFILE
     public void updateProfile(Customer c) {
-
-        StringBuilder sql = new StringBuilder(
-                "UPDATE Customers SET FullName=?, Email=?, Phone=?, Address=?, CCCD=?, YOB=?");
-
-        boolean hasPassword = c.getPassword() != null && !c.getPassword().isEmpty();
-        if (hasPassword) {
-            sql.append(", Password=?");
-        }
-
-        sql.append(" WHERE CustomerID=?");
-
-        try (PreparedStatement ps = conn.prepareStatement(sql.toString())) {
-
+        String sql = "UPDATE Customers SET FullName=?, Email=?, Phone=?, Address=?, CCCD=?, YOB=? WHERE CustomerID=?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, c.getFullName());
             ps.setString(2, c.getEmail());
             ps.setString(3, c.getPhone());
             ps.setString(4, c.getAddress());
             ps.setString(5, c.getCccd());
             ps.setDate(6, c.getYob());
-
-            int i = 7;
-            if (hasPassword) {
-                ps.setString(i++, md5(c.getPassword()));
-            }
-
-            ps.setInt(i, c.getCustomerID());
-
+            ps.setInt(7, c.getCustomerID());
             ps.executeUpdate();
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -393,21 +374,22 @@ public class CustomerDAO extends DBContext {
         // 2. Truyền trực tiếp vào constructor (không cần đổi sang LocalDateTime)
         return new Staff(id, fullName, email, phone, pass, role, status, createdAt);
     }
-    
+
     /**
      * Lấy danh sách nhân viên theo vai trò (Role)
+     *
      * @param role (1: Admin, 2: Staff, 3: Shipper)
      * @return List<Staff>
      */
     public List<Staff> getStaffByRole(int role) {
         List<Staff> list = new ArrayList<>();
-        
+
         // Truy vấn bảng Staff theo cột Role
         String sql = "SELECT * FROM Staff WHERE Role = ?";
-        
+
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, role);
-            
+
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     // Gọi hàm map đã viết trước đó
@@ -419,19 +401,19 @@ public class CustomerDAO extends DBContext {
         }
         return list;
     }
+
     public List<String> getAllBuyerPhones() {
         List<String> phones = new ArrayList<>();
-        
+
         // SỬA: Join bảng Orders với Customers (thay vì Staff)
         // Giả sử Orders.UserID liên kết với Customers.CustomerID
-        String sql = "SELECT DISTINCT c.Phone " +
-                     "FROM Orders o " +
-                     "JOIN Customers c ON o.UserID = c.CustomerID " +
-                     "WHERE c.Phone IS NOT NULL AND c.Phone <> ''";
-        
-        try (PreparedStatement ps = conn.prepareStatement(sql); 
-             ResultSet rs = ps.executeQuery()) {
-            
+        String sql = "SELECT DISTINCT c.Phone "
+                + "FROM Orders o "
+                + "JOIN Customers c ON o.UserID = c.CustomerID "
+                + "WHERE c.Phone IS NOT NULL AND c.Phone <> ''";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+
             while (rs.next()) {
                 phones.add(rs.getString("Phone"));
             }

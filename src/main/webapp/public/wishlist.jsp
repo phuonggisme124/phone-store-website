@@ -12,24 +12,20 @@
 <%@ include file="/layout/header.jsp" %>
 
 <%
-    Customer currentUser = (Customer) session.getAttribute("user"); 
-    if(currentUser == null){
-    response.sendRedirect("login.jsp");
-    return;
+    Customer currentUser = (Customer) session.getAttribute("user");
+    if (currentUser == null) {
+        response.sendRedirect("login.jsp");
+        return;
     }
 
     WishlistDAO wdao = new WishlistDAO();
     List<Products> wishlist = null;
     try {
         wishlist = wdao.getWishlistByCustomer(currentUser.getCustomerID());
-    } catch(Exception e){
+    } catch (Exception e) {
         e.printStackTrace();
     }
 %>
-
-
-
-
 <!DOCTYPE html>
 <html lang="vi">
     <head>
@@ -187,14 +183,14 @@
 
                     <!-- Sidebar -->
                     <aside class="profile-sidebar">
-                        <h3>Hello, <%= user.getFullName()%></h3>
+                        <h3>Hello, <%= currentUser.getFullName()%></h3>
 
                         <a href="product?action=viewWishlist" class="sidebar-link">
                             <i class="fas fa-heart"></i>
                             <span>My Wishlist</span>
                         </a>
 
-                        <a href="user?action=transaction" class="sidebar-link">
+                        <a href="customer?action=transaction" class="sidebar-link">
                             <i class="fas fa-shopping-bag"></i>
                             <span>My Orders</span>
                         </a>
@@ -255,10 +251,12 @@
                                 <h5><%= p.getName() %></h5>
                                 <div class="price">N/A</div>
                                 <% } %>
-                                <button class="remove-btn" 
-                                        onclick="location.href = 'product?action=removeWishlist&productID=<%= p.getProductID() %>&variantID=<%= v.getVariantID() %>'">
-                                    <i class="fas fa-trash-alt"></i> Remove
+                                <button class="remove-btn toggle-wishlist"
+                                        data-productid="<%= p.getProductID() %>"
+                                        data-variantid="<%= (v != null) ? v.getVariantID() : 0 %>">
+                                    <i class="fas fa-trash-alt"></i> <span>Remove</span>
                                 </button>
+
                             </div>
                             <% } %>
                         </div>
@@ -271,8 +269,60 @@
                 </div>
             </div>
         </section>
-
         <script src="js/jquery-1.11.0.min.js"></script>
+        <script>
+            document.addEventListener("click", function (e) {
+                const btn = e.target.closest(".toggle-wishlist");
+                if (!btn)
+                    return;
+
+                e.preventDefault();
+                e.stopPropagation();
+
+                const productId = btn.dataset.productid;
+                const variantId = btn.dataset.variantid || 0;
+                const icon = btn.querySelector("i");
+
+                fetch("<%= request.getContextPath() %>/product", {
+                    method: "POST",
+                    headers: {"Content-Type": "application/x-www-form-urlencoded"},
+                    body: "action=toggleWishlist&productId=" + productId + "&variantId=" + variantId
+                })
+                        .then(res => {
+                            if (res.status === 401) {
+                                window.location.href = 'login.jsp';
+                                return Promise.reject("Unauthorized");
+                            }
+                            if (!res.ok)
+                                return Promise.reject("Wishlist toggle failed");
+                            return res.text();
+                        })
+                        .then(text => {
+                            if (text === "ok") {
+                                // xóa thẻ wishlist card trên wishlist page
+                                const card = btn.closest(".wishlist-card");
+                                if (card) {
+                                    card.style.transition = "opacity 0.4s";
+                                    card.style.opacity = 0;
+                                    setTimeout(() => card.remove(), 400);
+                                }
+
+                                // nếu hết sản phẩm, hiển thị thông báo
+                                if (document.querySelectorAll(".wishlist-card").length === 0) {
+                                    const main = document.querySelector(".profile-content");
+                                    const p = document.createElement("p");
+                                    p.style.textAlign = "center";
+                                    p.style.color = "#999";
+                                    p.textContent = "Your wishlist is empty 🤍";
+                                    main.appendChild(p);
+                                }
+                            }
+                        })
+                        .catch(err => console.error(err));
+            });
+
+        </script>
+
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     </body>
 </html>

@@ -33,6 +33,9 @@ import model.Suppliers;
 import model.Customer;
 import model.Staff;
 import model.Variants;
+import dao.SpecificationDAO;
+import java.util.HashMap;
+import java.util.Map;
 
 @MultipartConfig
 @WebServlet(name = "ProductServlet", urlPatterns = {"/product"})
@@ -100,34 +103,9 @@ public class ProductServlet extends HttpServlet {
 
         // public
         if ("viewDetail".equals(action)) {
-            String vIDParam = request.getParameter("vID");
-            String pIDParam = request.getParameter("pID");
+            String vID = request.getParameter("vID");
+            int productID = Integer.parseInt(request.getParameter("pID"));
 
-            int productID = 0;
-            int variantID = 0; // Dùng int để tránh lỗi NumberFormatException
-
-            try {
-                // Kiểm tra pID trước
-                if (pIDParam != null && !pIDParam.isEmpty()) {
-                    productID = Integer.parseInt(pIDParam);
-                } else {
-                    // Nếu pID rỗng, chuyển hướng về danh mục
-                    response.sendRedirect("product?action=category");
-                    return;
-                }
-
-                // Kiểm tra vID
-                if (vIDParam != null && !vIDParam.isEmpty()) {
-                    variantID = Integer.parseInt(vIDParam);
-                }
-            } catch (NumberFormatException e) {
-                Logger.getLogger(ProductServlet.class.getName())
-                        .log(Level.SEVERE, "Number Format Exception for pID/vID", e);
-                response.sendRedirect("product?action=category");
-                return;
-            }
-
-            // Lấy dữ liệu từ database
             List<Category> listCategory = pdao.getAllCategory();
             List<String> listStorage = vdao.getAllStorage(productID);
             Products p = pdao.getProductByID(productID);
@@ -136,23 +114,20 @@ public class ProductServlet extends HttpServlet {
 
             Variants variants = null;
 
-            // Lấy variant theo variantID nếu có
-            if (variantID > 0) {
+            if (vID != null && !vID.isEmpty()) {
                 try {
+                    int variantID = Integer.parseInt(vID);
                     variants = vdao.getVariantByID(variantID);
                 } catch (NumberFormatException e) {
-                    Logger.getLogger(ProductServlet.class.getName())
-                            .log(Level.SEVERE, "Error getting variant by ID", e);
+                    e.printStackTrace();
                 }
             }
 
-            // Nếu không tìm thấy variant, lấy variant đầu tiên trong list
-            if (variants == null && !listVariants.isEmpty()) {
-                Variants firstVariant = listVariants.get(0);
+            if (variants == null) {
                 variants = vdao.getVariant(
                         productID,
-                        firstVariant.getStorage(),
-                        firstVariant.getColor()
+                        listVariants.get(0).getStorage(),
+                        listVariants.get(0).getColor()
                 );
             }
 
@@ -161,14 +136,10 @@ public class ProductServlet extends HttpServlet {
             List<Review> listReview = rdao.getAllReviewByListVariant(listVariantRating);
             double rating = rdao.getTotalRating(listVariantRating, listReview);
 
-// Gán categoryID vào request để JSP sử dụng
             request.setAttribute("categoryID", cID);
-
-// Gán lại vID bằng vIDParam gốc (chuỗi) nếu có
-            if (vIDParam != null && !vIDParam.isEmpty()) {
-                request.setAttribute("vID", vIDParam);
+            if (vID != null) {
+                request.setAttribute("vID", vID);
             }
-
             request.setAttribute("rating", rating);
             request.setAttribute("specification", specification);
             request.setAttribute("productID", productID);
@@ -496,8 +467,47 @@ public class ProductServlet extends HttpServlet {
             request.getRequestDispatcher("/public/wishlist.jsp").forward(request, response);
             return;
 
-        }
+        } else if ("compare".equals(action)) {
+            String vIDsParam = request.getParameter("vIDs");
+            SpecificationDAO specDao = new SpecificationDAO();
+            ProductDAO productDao = new ProductDAO(); // thêm dao lấy tên
 
+            List<Variants> compareList = new ArrayList<>();
+            Map<Integer, Specification> specMap = new HashMap<>();
+            Map<Integer, String> productNameMap = new HashMap<>(); // map chứa tên
+
+            if (vIDsParam != null && !vIDsParam.isEmpty()) {
+                String[] vIDArr = vIDsParam.split(",");
+                for (String s : vIDArr) {
+                    try {
+                        int vID = Integer.parseInt(s);
+                        Variants v = vdao.getVariantByID(vID);
+                        if (v != null) {
+                            compareList.add(v);
+
+                            int pID = v.getProductID();
+
+                            if (!specMap.containsKey(pID)) {
+                                Specification spec = specDao.getSpecificationByProductID(pID);
+                                specMap.put(pID, spec);
+                            }
+
+                            if (!productNameMap.containsKey(pID)) {
+                                String productName = productDao.getProductNameByID(pID);
+                                productNameMap.put(pID, productName);
+                            }
+                        }
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            request.setAttribute("compareList", compareList);
+            request.setAttribute("specMap", specMap);
+            request.setAttribute("productNameMap", productNameMap); // truyền thêm xuống JSP
+            request.getRequestDispatcher("public/compare.jsp").forward(request, response);
+        }
     }
 
     @Override
@@ -647,10 +657,9 @@ public class ProductServlet extends HttpServlet {
             }
 
             // Lấy productId
-            int productId = Integer.parseInt(request.getParameter("productId"));
-
+            int productId = Integer.parseInt(request.getParameter("productID"));
             // Lấy variantId, nếu null thì gán = 0
-            String variantParam = request.getParameter("variantId");
+            String variantParam = request.getParameter("variantID");
             int variantId = (variantParam == null || variantParam.isEmpty())
                     ? 0
                     : Integer.parseInt(variantParam);
@@ -658,8 +667,16 @@ public class ProductServlet extends HttpServlet {
             WishlistDAO wdao = new WishlistDAO();
             wdao.removeFromWishlist(u.getCustomerID(), productId, variantId);
 
-            String redirect = request.getParameter("redirect");
-            response.sendRedirect(redirect);
+            // Kiểm tra xem là yêu cầu AJAX hay yêu cầu bình thường
+            String requestedWith = request.getHeader("X-Requested-With");
+            if ("XMLHttpRequest".equals(requestedWith)) {
+                // Trả về phản hồi trống để AJAX biết là đã xong
+                response.setStatus(HttpServletResponse.SC_OK);
+            } else {
+                // Nếu là click link bình thường thì mới redirect
+                String redirect = request.getParameter("redirect");
+                response.sendRedirect(redirect != null ? redirect : "product?action=viewWishlist");
+            }
             return;
 
         } else if ("viewWishlist".equals(action)) {

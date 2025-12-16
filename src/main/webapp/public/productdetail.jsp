@@ -481,11 +481,11 @@
 
                                                     <% if (logged) { %>
                                                     <button class="wishlist-btn toggle-wishlist"
-                                                            data-productid="<%= rp.getProductID() %>"
+                                                            data-productid="<%= productID %>"
                                                             data-variantid="<%= variantID %>"
-                                                            style="background:none; border:none; padding:0;">
+                                                            style="position:absolute; top:40px; right:10px; background:none; border:none; padding:0; z-index:10;">
                                                         <i class="<%= liked ? "fas fa-heart" : "far fa-heart" %>"
-                                                           style="<%= liked ? "color:#e53e3e;" : "" %>"></i>
+                                                           style="<%= liked ? "color:#e53e3e; font-size:1.5rem;" : "font-size:1.5rem;" %>"></i>
                                                     </button>
                                                     <% } else { %>
                                                     <a href="login.jsp" class="wishlist-btn">

@@ -8,23 +8,23 @@
     
     if (customer == null) {
 %>
-        <!DOCTYPE html>
-        <html lang="vi">
-        <head>
-            <title>Hồ sơ cá nhân | Phone Store</title>
-            <meta charset="utf-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
-            <link rel="stylesheet" type="text/css" href="css/style.css">
-            <link rel="stylesheet" type="text/css" href="css/profile.css">
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-        </head>
-        <body>
+<!DOCTYPE html>
+<html lang="vi">
+    <head>
+        <title>Hồ sơ cá nhân | Phone Store</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="css/style.css">
+        <link rel="stylesheet" type="text/css" href="css/profile.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    </head>
+    <body>
         <h2 style="color:red; text-align:center; margin-top:80px;">
             Không tìm thấy thông tin người dùng. Hãy đăng nhập lại.
         </h2>
-        </body>
-        </html>
+    </body>
+</html>
 <%
         return; 
     }
@@ -53,11 +53,11 @@
                             <i class="fas fa-heart"></i> <span>My Wishlist</span>
                         </a>
 
-                        <a href="user?action=transaction" class="sidebar-link">
+                        <a href="customer?action=transaction" class="sidebar-link">
                             <i class="fas fa-shopping-bag"></i> <span>My Orders</span>
                         </a>
 
-                        <a href="user?action=payInstallment" class="sidebar-link">
+                        <a href="customer?action=payInstallment" class="sidebar-link">
                             <i class="fas fa-receipt"></i> <span>Installment Paying</span>
                         </a>
 
@@ -65,8 +65,13 @@
                             <i class="fas fa-user"></i> <span>Profile & Address</span>
                         </a>
 
-                        <a href="user?action=changePassword" class="sidebar-link">
+                        <a href="customer?action=changePassword" class="sidebar-link">
                             <i class="fas fa-lock"></i> <span>Change Password</span>
+                        </a>
+
+                        <a href="warranty" class="sidebar-link active">
+                            <i class="fas fa-tools"></i>
+                            <span>My Warranty</span>
                         </a>
 
                         <form action="logout" method="post">

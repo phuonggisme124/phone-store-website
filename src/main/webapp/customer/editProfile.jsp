@@ -19,22 +19,18 @@
     </head>
 
     <body>
-        <%            
-            // Lấy đối tượng Customer từ request attribute "user"
-            Customer customer = (Customer) request.getAttribute("user");
-            
+        <%
+            Customer customer = (Customer) session.getAttribute("user");
             if (customer == null) {
         %>
-            <div class="profile-container">
-                <h2 style="color:red; text-align:center; margin-top:80px;">
-                    ❌ Không tìm thấy thông tin người dùng.
-                    <br>Hãy đăng nhập lại.
-                </h2>
-            </div>
-            
+        <div class="profile-container">
+            <h2 style="color:red; text-align:center; margin-top:80px;">
+                ❌ Không tìm thấy thông tin người dùng.
+                <br>Hãy đăng nhập lại.
+            </h2>
+        </div>
         <%
-                return;
-            }
+            } else {
         %>
 
         <div class="profile-container">
@@ -111,7 +107,7 @@
                                     <input type="text" class="form-control" id="fullName" name="fullName"
                                            value="<%= customer.getFullName()%>" required>
                                 </div>
-                                
+
                                 <div class="form-group">
                                     <label for="cccd" class="form-label">
                                         <i class="fas fa-id-card"></i> CCCD
@@ -169,7 +165,9 @@
                 </main>
             </div>
         </div>
-
+        <%
+            } // kết thúc else
+        %>
         <script src="js/jquery-1.11.0.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     </body>
