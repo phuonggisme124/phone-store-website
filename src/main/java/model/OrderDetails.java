@@ -32,7 +32,6 @@ public class OrderDetails {
         this.unitPrice = unitPrice;
     }
 
-
     public OrderDetails(int orderID, int quantity, double unitPrice, Variants variant) {
         this.orderID = orderID;
         this.quantity = quantity;
@@ -51,7 +50,6 @@ public class OrderDetails {
     public void setVariant(Variants variant) {
         this.variant = variant;
     }
-
 
     public int getOrderID() {
         return orderID;

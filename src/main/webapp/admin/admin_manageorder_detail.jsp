@@ -11,7 +11,11 @@
 <%@page import="model.Products"%>
 <%@page import="java.util.List"%>
 <%@page import="java.util.ArrayList"%>
+<<<<<<< HEAD
 <%@page import="model.Users"%>
+=======
+
+>>>>>>> 62bad43794ed9e6ec4e6d026e91b6a10331a6e66
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html lang="en">
@@ -58,7 +62,11 @@
                             <div class="d-flex align-items-center gap-3">
                                 <div class="d-flex align-items-center gap-2">
                                     <div class="position-relative">
+<<<<<<< HEAD
                                         <img src="https://i.pravatar.cc/150?u=<%= (user != null) ? user.getUserId() : "admin" %>" 
+=======
+                                        <img src="https://i.pravatar.cc/150?u=<%= (user != null) ? user.getStaffID(): "admin" %>" 
+>>>>>>> 62bad43794ed9e6ec4e6d026e91b6a10331a6e66
                                              class="rounded-circle border border-2 border-white shadow-sm" 
                                              width="40" height="40" alt="Avatar">
                                         <span class="position-absolute bottom-0 start-100 translate-middle p-1 bg-success border border-light rounded-circle">

@@ -7,18 +7,20 @@ import dao.OrderDAO;
 import dao.OrderDetailDAO;
 import dao.InstallmentDetailDAO;
 import dao.CustomerDAO;
-import dao.InstallmentDetailDAO;
 import dao.VariantsDAO;
+
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+
 import model.Address;
 import model.Carts;
 import model.InterestRate;
@@ -154,7 +156,7 @@ public class PaymentServlet extends HttpServlet {
             }
 
             /* ===== TÁCH ADDRESS & CITY (GIỮ LOGIC CŨ) ===== */
-            String fullAddress = selectedAddress.getAddress(); // "123 Nguyen Trai, Ho Chi Minh"
+            String fullAddress = selectedAddress.getAddress();
             String city = "";
             String address = fullAddress;
 
@@ -174,8 +176,7 @@ public class PaymentServlet extends HttpServlet {
             request.setAttribute("receiverPhone", receiverPhone);
             request.setAttribute("specificAddress", specificAddress);
 
-            request.getRequestDispatcher("customer/payment_checkout.jsp")
-                    .forward(request, response);
+            request.getRequestDispatcher("customer/payment_checkout.jsp").forward(request, response);
         }
     }
 
@@ -219,19 +220,23 @@ public class PaymentServlet extends HttpServlet {
 
                 double totalIfInstalment = totalPrice + ((totalPrice * iR.getPercent()) / 100);
 
-                Order o = new Order(userID, paymentMethod.split("_")[0],
-                        specificAddress, totalIfInstalment,
-                        "Pending", isInstalment,
-                        new Customer(receiverName, receiverPhone));
+                Order o = new Order(
+                        userID,
+                        paymentMethod.split("_")[0],
+                        specificAddress,
+                        totalIfInstalment,
+                        "Pending",
+                        isInstalment,
+                        new Customer(receiverName, receiverPhone)
+                );
 
                 InstallmentDetailDAO pmDAO = new InstallmentDetailDAO();
-                int newOrderID = oDAO.addNewOrder(o);
 
+                int newOrderID = oDAO.addNewOrder(o);
                 o.setOrderID(newOrderID);
                 o.setOrderDate(LocalDateTime.now());
 
                 pmDAO.insertNewPayment(o, term);
-
 
                 OrderDetailDAO oDDAO = new OrderDetailDAO();
                 for (Carts c : carts) {
@@ -242,7 +247,7 @@ public class PaymentServlet extends HttpServlet {
                             newOrderID,
                             c.getVariant().getVariantID(),
                             c.getQuantity(),
-                            unitPrice           
+                            unitPrice
                     );
                     oDDAO.insertNewOrderDetail(oD);
                 }
@@ -252,10 +257,15 @@ public class PaymentServlet extends HttpServlet {
 
                 byte isInstalment = 0;
 
-                Order o = new Order(userID, paymentMethod,
-                        specificAddress, totalPrice,
-                        "Pending", isInstalment,
-                        new Customer(receiverName, receiverPhone));
+                Order o = new Order(
+                        userID,
+                        paymentMethod,
+                        specificAddress,
+                        totalPrice,
+                        "Pending",
+                        isInstalment,
+                        new Customer(receiverName, receiverPhone)
+                );
 
                 int newOrderID = oDAO.addNewOrder(o);
 

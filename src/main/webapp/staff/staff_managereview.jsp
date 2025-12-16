@@ -1,8 +1,8 @@
+<%@page import="model.Staff"%>
 <%@page import="dao.ProductDAO"%>
 <%@page import="java.util.List"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="model.Review"%>
-<%@page import="model.Users"%>
 <%@page import="com.google.gson.Gson"%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
@@ -214,7 +214,7 @@
     <body>
         <%
             List<Review> listReview = (List<Review>) request.getAttribute("listReview");
-            Users currentUser = (Users) session.getAttribute("user");
+            Staff currentUser = (Staff) session.getAttribute("user");
             
             String currentRating = request.getParameter("ratingFilter") != null ? request.getParameter("ratingFilter") : "All";
             String currentProductName = request.getParameter("productName") != null ? request.getParameter("productName") : "";
@@ -497,3 +497,5 @@
         </script>
     </body>
 </html>
+
+

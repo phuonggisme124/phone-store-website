@@ -78,6 +78,24 @@ public class Order {
         this.staffID = staffID;
         this.shipperID = shipperID;
     }
+    
+    public Order(int orderID, Integer userID, LocalDateTime orderDate, String status,
+                   String paymentMethod, String shippingAddress, double totalAmount,
+                   Boolean isInstalment, String receiverName, String receiverPhone,
+                   Integer staffID) {
+        this.orderID = orderID;
+        this.userID = userID;
+        this.orderDate = orderDate;
+        this.status = status;
+        this.paymentMethod = paymentMethod;
+        this.shippingAddress = shippingAddress;
+        this.totalAmount = totalAmount;
+        this.isInstalment = isInstalment;
+        this.receiverName = receiverName;
+        this.receiverPhone = receiverPhone;
+        this.staffID = staffID;
+        
+    }
 
     // --- CÁC CONSTRUCTOR CŨ (ĐÃ SỬA LỖI) ---
     // (Giữ lại để không làm hỏng DAO cũ và PaymentServlet)
@@ -310,3 +328,6 @@ public class Order {
         this.interestRateID = interestRateID;
     }
 }
+
+
+

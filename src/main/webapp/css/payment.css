@@ -1,3 +1,8 @@
+/*
+    Unified Payment Style Sheet
+    Merged & Optimized
+*/
+
 /* =========================================
    1. BASE & RESET
    ========================================= */
@@ -11,33 +16,39 @@ html, body {
     margin: 0;
     padding: 0;
     font-family: 'Poppins', sans-serif;
-    background-color: #fdfdfd; /* Màu nền sáng nhẹ */
+    background-color: #fdfdfd;
     color: #333;
     height: auto;
+    min-height: 100vh;
     overflow-y: auto !important; /* Đảm bảo cuộn trang hoạt động */
 }
 
-h1, h2, h3, p {
+h1, h2, h3, h4, p {
     margin: 0;
+}
+
+.hidden {
+    display: none !important;
 }
 
 /* =========================================
    2. LAYOUT & CONTAINER
    ========================================= */
 .payment-container {
-    max-width: 42rem; /* ~672px */
+    max-width: 42rem; /* Khoảng 672px - Kích thước chuẩn đẹp */
     margin: 2rem auto;
     background-color: #ffffff;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    border-radius: 0.5rem;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
     position: relative;
+    padding-bottom: 20px;
 }
 
 .payment-main {
     padding: 1.5rem;
 }
 
-/* Responsive adjustments */
+/* Responsive */
 @media (max-width: 640px) {
     .payment-container {
         margin: 1rem;
@@ -53,16 +64,16 @@ h1, h2, h3, p {
    ========================================= */
 .payment-header {
     padding: 1rem;
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: 1px solid #f0f0f0;
     display: flex;
     align-items: center;
-    justify-content: center;
     position: relative;
+    justify-content: center;
 }
 
 .header-title {
     font-size: 1.25rem;
-    font-weight: 600;
+    font-weight: 700;
     color: #111;
     text-align: center;
     width: 100%;
@@ -77,28 +88,28 @@ h1, h2, h3, p {
     color: #4b5563;
     display: flex;
     align-items: center;
-    justify-content: center;
-    padding: 0;
+    padding: 5px;
+    transition: color 0.2s;
 }
 
 .back-button:hover {
     color: #111827;
 }
 
-.icon {
-    height: 1.5rem;
-    width: 1.5rem;
+.back-button svg {
+    width: 24px;
+    height: 24px;
 }
 
 /* =========================================
-   4. PRODUCT LIST SECTION
+   4. PRODUCT LIST
    ========================================= */
 .product-info-container {
     background-color: #ffffff;
-    border-radius: 0.5rem;
+    border: 1px solid #f0f0f0;
+    border-radius: 8px;
     margin-bottom: 1.5rem;
-    border: 1px solid #f0f0f0; /* Thêm viền nhẹ cho tách biệt */
-    padding: 10px;
+    padding: 12px;
 }
 
 .product-info {
@@ -111,7 +122,7 @@ h1, h2, h3, p {
     width: 5rem;
     height: 5rem;
     object-fit: cover;
-    border-radius: 0.375rem;
+    border-radius: 6px;
     border: 1px solid #e5e7eb;
 }
 
@@ -123,32 +134,26 @@ h1, h2, h3, p {
     font-weight: 600;
     color: #1f2937;
     margin-bottom: 4px;
+    font-size: 0.95rem;
 }
 
 .product-price {
     display: flex;
     align-items: baseline;
-    gap: 0.5rem;
+    gap: 8px;
 }
 
 .current-price {
     color: #dc2626; /* Đỏ đậm */
     font-weight: 700;
-    font-size: 1.125rem;
+    font-size: 1.1rem;
 }
 
-/*.original-price {
+.original-price {
     color: #9ca3af;
     text-decoration: line-through;
-    font-size: 0.875rem;
-}*/
-.original-price {
-    margin-left: 8px;
-    color: #999;
-    text-decoration: line-through;
-    font-size: 14px;
+    font-size: 0.85rem;
 }
-
 
 .product-quantity {
     color: #4b5563;
@@ -160,13 +165,13 @@ h1, h2, h3, p {
 }
 
 /* =========================================
-   5. SECTIONS (CUSTOMER, RECIPIENT, SUMMARY)
+   5. SECTIONS & BOXES
    ========================================= */
 .section-title {
     font-weight: 700;
-    font-size: 1.125rem;
+    font-size: 1.1rem;
     color: #374151;
-    margin-bottom: 0.75rem;
+    margin-bottom: 1rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
@@ -176,10 +181,11 @@ h1, h2, h3, p {
     margin-top: 1.5rem;
 }
 
+/* Info Box Styles */
 .info-box, 
 .summary-box {
     border: 1px solid #e5e7eb;
-    border-radius: 0.5rem;
+    border-radius: 8px;
     padding: 1rem;
     display: flex;
     flex-direction: column;
@@ -191,12 +197,11 @@ h1, h2, h3, p {
 }
 
 .summary-box {
-    background-color: #eff6ff; /* Xanh nhạt */
+    background-color: rgba(239, 246, 255, 0.4); /* Xanh rất nhạt */
     margin-top: 20px;
     border-color: #bfdbfe;
 }
 
-/* Rows inside boxes */
 .info-row, 
 .total-row {
     display: flex;
@@ -215,73 +220,94 @@ h1, h2, h3, p {
     font-size: 1.25rem;
 }
 
-/* Customer Badges & Email */
-.customer-name-badge {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.customer-name {
-    font-weight: 600;
-    color: #1f2937;
-}
-
-.customer-badge {
-    background-color: #fce7f3;
-    color: #be185d;
-    font-size: 0.75rem;
-    font-weight: 600;
-    padding: 0.25rem 0.5rem;
-    border-radius: 999px;
-}
-
-.info-row-email {
-    border-top: 1px solid #e5e7eb;
-    padding-top: 0.75rem;
-}
-
-.email-label {
-    font-size: 0.75rem;
-    color: #6b7280;
-    margin-bottom: 2px;
-}
-
-.customer-email {
-    font-weight: 500;
-    color: #1f2937;
-}
-
-/* =========================================
-   6. FORMS & INPUTS
-   ========================================= */
+/* Customer Inputs */
 .user-info label {
     font-weight: 600;
     margin-bottom: 6px;
     display: block;
     font-size: 0.9rem;
-    color: #374151;
 }
 
-.user-info input,
-.user-info textarea {
+.user-info input {
     width: 100%;
     border: 1px solid #d1d5db;
     border-radius: 8px;
-    padding: 10px;
-    margin-bottom: 16px;
-    transition: all 0.2s;
+    padding: 10px 12px;
+    margin-bottom: 12px;
     font-family: inherit;
+    transition: all 0.2s;
 }
 
-.user-info input:focus,
-.user-info textarea:focus {
+.user-info input:focus {
     border-color: #ff5b77;
-    box-shadow: 0 0 0 3px rgba(255, 91, 119, 0.1);
+    box-shadow: 0 0 0 3px rgba(255, 91, 119, 0.15);
     outline: none;
 }
 
-/* Main Action Button */
+/* =========================================
+   6. ADDRESS MANAGEMENT (List & Selected)
+   ========================================= */
+/* Box hiển thị địa chỉ đã chọn */
+.selected-addr-box {
+    border: 1px solid #72AEC8;
+    background-color: #f8fcfd;
+    border-radius: 8px;
+    padding: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s;
+}
+
+.selected-addr-content {
+    flex: 1;
+    margin-right: 15px;
+    font-size: 0.95rem;
+    color: #333;
+    line-height: 1.5;
+    display: flex;
+    gap: 10px;
+}
+
+.change-addr-btn {
+    color: #007bff;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    border-radius: 4px;
+    white-space: nowrap;
+}
+
+.change-addr-btn:hover {
+    background-color: #e3f2fd;
+}
+
+/* Nút thêm mới trong danh sách */
+.btn-add-new-modal {
+    width: 100%;
+    padding: 12px;
+    border: 2px dashed #ccc;
+    background: #fff;
+    color: #555;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+    margin-top: 10px;
+}
+
+.btn-add-new-modal:hover {
+    border-color: #72AEC8;
+    color: #72AEC8;
+    background: #eaf4f7;
+}
+
+/* =========================================
+   7. MAIN ACTION BUTTONS
+   ========================================= */
 #confirm-btn {
     width: 100%;
     background-color: #ff5b77; /* Màu hồng chủ đạo */
@@ -291,10 +317,10 @@ h1, h2, h3, p {
     border-radius: 10px;
     padding: 14px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 1rem;
     margin-top: 24px;
     transition: background-color 0.25s;
-    box-shadow: 0 4px 6px rgba(255, 91, 119, 0.2);
+    box-shadow: 0 4px 10px rgba(255, 91, 119, 0.3);
 }
 
 #confirm-btn:hover {
@@ -302,108 +328,47 @@ h1, h2, h3, p {
 }
 
 /* =========================================
-   7. ADDRESS MANAGEMENT (NEW)
+   8. MODAL STYLES (Quan trọng - Đã fix lỗi)
    ========================================= */
-.addr-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
 
-.addr-card {
-    border: 1px solid #e5e7eb;
-    border-radius: 10px;
-    padding: 14px;
-    cursor: pointer;
-    background: #fff;
-    transition: all 0.2s ease;
-    position: relative;
-}
-
-.addr-card:hover {
-    border-color: #72AEC8;
-    background: #f8fcfd;
-}
-
-.addr-card.active {
-    border-color: #72AEC8;
-    background: #eaf4f7; /* Xanh nhạt highlight */
-    box-shadow: 0 0 0 1px #72AEC8; /* Viền đôi nhẹ */
-}
-
-/* Address Actions (Edit/Delete buttons inside card) */
-.addr-actions {
-    margin-top: 8px;
-    font-size: 0.85rem;
-    border-top: 1px dashed #e5e7eb;
-    padding-top: 8px;
-}
-
-.addr-btn-link {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: #007bff;
-    padding: 0;
-    margin-right: 15px;
-    font-weight: 500;
-    text-decoration: none;
-}
-
-.addr-btn-link:hover {
-    text-decoration: underline;
-}
-
-.addr-btn-link.delete {
-    color: #dc3545;
-}
-
-/* Add New Address Button (Dotted) */
-.addr-add {
-    border: 2px dashed #72AEC8;
-    border-radius: 10px;
-    padding: 14px;
-    text-align: center;
-    color: #72AEC8;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.2s;
-}
-
-.addr-add:hover {
-    background: #eaf4f7;
-}
-
-/* =========================================
-   8. ADDRESS MODAL
-   ========================================= */
+/* Backdrop: Nền đen mờ phủ toàn màn hình */
 .addr-modal-backdrop {
     position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.5); /* Màu nền tối mờ */
-    backdrop-filter: blur(2px); /* Hiệu ứng mờ nền */
-    display: none !important; /* Mặc định ẩn, dùng !important để tránh override */
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+    z-index: 9999; /* Luôn nổi trên cùng */
+    
+    display: none !important; /* Mặc định ẩn */
+    
     align-items: center;
     justify-content: center;
-    z-index: 9999 !important;
 }
 
+/* Khi có class .show thì hiện lên */
 .addr-modal-backdrop.show {
     display: flex !important;
 }
 
+/* Hộp Modal chính */
 .addr-modal {
     background: #fff;
     width: 90%;
-    max-width: 420px;
-    border-radius: 16px;
+    max-width: 500px;
+    border-radius: 12px;
     padding: 24px;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    position: relative;
+    max-height: 85vh; /* Không quá cao */
+    overflow-y: auto; /* Cho phép cuộn */
     animation: modalSlideIn 0.3s ease-out;
 }
 
 @keyframes modalSlideIn {
-    from { transform: translateY(20px); opacity: 0; }
+    from { transform: translateY(-20px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
 }
 
@@ -415,6 +380,7 @@ h1, h2, h3, p {
     text-align: center;
 }
 
+/* Form inputs trong Modal */
 .addr-modal select,
 .addr-modal textarea {
     width: 100%;
@@ -437,15 +403,95 @@ h1, h2, h3, p {
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-bottom: 20px;
-    font-size: 0.95rem;
-    cursor: pointer;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #374151;
+    font-size: 0.9rem;
 }
 
+/* Danh sách địa chỉ trong Modal */
+.addr-list-container {
+    border: 1px solid #f0f0f0;
+    border-radius: 8px;
+    max-height: 300px;
+    overflow-y: auto;
+    margin-bottom: 15px;
+}
+
+.addr-item-row {
+    padding: 12px 15px;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    transition: background 0.2s;
+}
+
+.addr-item-row:hover {
+    background-color: #f9fafb;
+}
+
+.addr-item-row:last-child {
+    border-bottom: none;
+}
+
+.addr-radio {
+    margin-top: 4px;
+    width: 18px;
+    height: 18px;
+    accent-color: #72AEC8;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.addr-item-content {
+    flex: 1;
+    font-size: 0.95rem;
+    color: #333;
+}
+
+.tag-default {
+    color: #72AEC8;
+    border: 1px solid #72AEC8;
+    font-size: 0.7rem;
+    padding: 1px 5px;
+    border-radius: 4px;
+    margin-right: 5px;
+    font-weight: 600;
+    vertical-align: middle;
+}
+
+.addr-item-actions {
+    margin-top: 8px;
+    display: flex;
+    gap: 15px;
+}
+
+.addr-action-link {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 0.85rem;
+    cursor: pointer;
+    text-decoration: underline;
+    color: #6b7280;
+}
+
+.addr-action-link:hover {
+    color: #007bff;
+}
+
+.addr-action-link.delete {
+    color: #ef4444;
+}
+
+/* Nút bấm cuối Modal */
 .addr-modal-actions {
     display: flex;
     justify-content: flex-end;
-    gap: 12px;
+    gap: 10px;
+    margin-top: 20px;
 }
 
 .addr-btn {
@@ -453,7 +499,8 @@ h1, h2, h3, p {
     border-radius: 8px;
     font-weight: 600;
     cursor: pointer;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
+    border: none;
     transition: opacity 0.2s;
 }
 
@@ -462,21 +509,13 @@ h1, h2, h3, p {
 }
 
 .addr-btn-cancel {
-    border: 1px solid #d1d5db;
-    background: #fff;
+    background: #f3f4f6;
     color: #374151;
+    border: 1px solid #e5e7eb;
 }
 
 .addr-btn-save {
     background: #72AEC8;
-    color: #fff;
-    border: none;
-    box-shadow: 0 2px 4px rgba(114, 174, 200, 0.3);
-}
-
-/* =========================================
-   9. UTILITIES & HELPERS
-   ========================================= */
-.hidden {
-    display: none;
+    color: white;
+    box-shadow: 0 2px 5px rgba(114, 174, 200, 0.4);
 }

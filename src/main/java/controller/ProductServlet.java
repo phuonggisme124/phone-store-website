@@ -17,6 +17,7 @@ import model.*;
 @WebServlet(name = "ProductServlet", urlPatterns = {"/product"})
 public class ProductServlet extends HttpServlet {
 
+
     /* ================= SESSION HELPERS ================= */
     private Integer getRole(HttpSession session) {
         return (session != null) ? (Integer) session.getAttribute("role") : null;
@@ -54,110 +55,232 @@ public class ProductServlet extends HttpServlet {
             throws ServletException, IOException {
 
         String action = request.getParameter("action");
-        if (action == null) {
-            action = "manageProduct";
-        }
-
-        HttpSession session = request.getSession(false);
-        Customer customer = getCustomer(session);
-        Staff staff = getStaff(session);
 
         ProductDAO pdao = new ProductDAO();
         VariantsDAO vdao = new VariantsDAO();
         ReviewDAO rdao = new ReviewDAO();
-        CategoryDAO ctdao = new CategoryDAO();
         SupplierDAO sldao = new SupplierDAO();
+        CategoryDAO ctdao = new CategoryDAO();
         PromotionsDAO pmtdao = new PromotionsDAO();
         ProfitDAO pfdao = new ProfitDAO();
 
-        /* ================= PUBLIC ================= */
-        if ("viewDetail".equals(action) || "selectStorage".equals(action)) {
+        HttpSession session = request.getSession();
+        Object userObj = (session != null) ? session.getAttribute("user") : null;
+        Integer roleObj = (session != null && session.getAttribute("role") != null) ? (Integer) session.getAttribute("role") : null;
+        int role = (roleObj != null) ? roleObj : 0;
+        System.out.println("role : " + role);
+        Customer currentCustomer = new Customer();
+        Staff currentStaff = new Staff();
+        int userID = 0;
+        if (role == 1) {
+            currentCustomer = (Customer) userObj;
+            userID = currentCustomer.getCustomerID();
+        } else if (role > 1) {
+            // Staff/shipper/admin use Staff model
+            currentStaff = (Staff) userObj;
+            userID = currentStaff.getStaffID();
+        }
+        // mặt định manageProduct
 
-            int productID = Integer.parseInt(request.getParameter("pID"));
+        if (action == null) {
+            action = "manageProduct";
+        }
+
+        // check role
+        if (action.equals("manageProduct") || action.equals("productDetail")
+                || action.equals("updateProduct") || action.equals("deleteProduct")
+                || action.equals("createProduct")) {
+            if (userObj == null || (role != 2 && role != 4)) {
+                response.sendRedirect("login");
+                return;
+            }
+        }
+
+        // public
+        if ("viewDetail".equals(action)) {
             String vID = request.getParameter("vID");
+            int productID = Integer.parseInt(request.getParameter("pID"));
 
-            Products product = pdao.getProductByID(productID);
-            List<Variants> listVariants = vdao.getAllVariantByProductID(productID);
+            List<Category> listCategory = pdao.getAllCategory();
             List<String> listStorage = vdao.getAllStorage(productID);
+            Products p = pdao.getProductByID(productID);
+            int cID = p.getCategoryID();
+            List<Variants> listVariants = vdao.getAllVariantByProductID(productID);
 
             Variants variants = null;
+
             if (vID != null && !vID.isEmpty()) {
                 try {
-                    variants = vdao.getVariantByID(Integer.parseInt(vID));
-                } catch (NumberFormatException ignored) {
+                    int variantID = Integer.parseInt(vID);
+                    variants = vdao.getVariantByID(variantID);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
                 }
             }
 
-            if (variants == null && !listVariants.isEmpty()) {
-                Variants v = listVariants.get(0);
-                variants = vdao.getVariant(productID, v.getStorage(), v.getColor());
+            if (variants == null) {
+                variants = vdao.getVariant(
+                        productID,
+                        listVariants.get(0).getStorage(),
+                        listVariants.get(0).getColor()
+                );
             }
 
-            List<Variants> listVariantRating
-                    = vdao.getAllVariantByStorage(productID, variants.getStorage());
-
-            List<Review> listReview
-                    = rdao.getAllReviewByListVariant(listVariantRating);
-
-            double rating = rdao.getTotalRating(listVariantRating, listReview);
+            List<Variants> listVariantRating = vdao.getAllVariantByStorage(variants.getProductID(), variants.getStorage());
             Specification specification = pdao.getSpecificationByProductID(productID);
+            List<Review> listReview = rdao.getAllReviewByListVariant(listVariantRating);
+            double rating = rdao.getTotalRating(listVariantRating, listReview);
 
-            /* ====== SET ĐỦ ATTRIBUTE CHO JSP ====== */
-            request.setAttribute("productID", productID);        // 🔥 FIX NPE
-            request.setAttribute("product", product);
-            request.setAttribute("variants", variants);
-            request.setAttribute("listVariants", listVariants);
-            request.setAttribute("listStorage", listStorage);
-            request.setAttribute("listVariantRating", listVariantRating);
-            request.setAttribute("listReview", listReview);
+            request.setAttribute("categoryID", cID);
+            if (vID != null) {
+                request.setAttribute("vID", vID);
+            }
             request.setAttribute("rating", rating);
             request.setAttribute("specification", specification);
-            request.setAttribute("listCategory", ctdao.getAllCategories());
+            request.setAttribute("productID", productID);
+            request.setAttribute("listStorage", listStorage);
+            request.setAttribute("listVariants", listVariants);
+            request.setAttribute("variants", variants);
+            request.setAttribute("listCategory", listCategory);
+            request.setAttribute("listVariantRating", listVariantRating);
+            request.setAttribute("listReview", listReview);
+            request.setAttribute("product", p);
 
-            // Wishlist
-//            if (customer != null) {
-////                WishlistDAO wdao = new WishlistDAO();
-//                request.setAttribute("wishlist",
-////                        wdao.getWishlistByUser(customer.getCustomerID()));
-//            }
-
-            request.getRequestDispatcher("public/productdetail.jsp")
-                    .forward(request, response);
-            return;
-        }
-
-        /* ================= STAFF / ADMIN ================= */
-        if (!isStaffOrAdmin(staff)) {
-            response.sendRedirect("login");
-            return;
-        }
-
-        /* ================= MANAGE PRODUCT ================= */
-        if ("manageProduct".equals(action)) {
-
-            List<Products> listProducts = pdao.getAllProduct();
-
-            request.setAttribute("listProducts", listProducts); // ✅ FIX
-            request.setAttribute("listCategory", ctdao.getAllCategories());
-            request.setAttribute("listSupplier", sldao.getAllSupplier());
-
-            if (staff.getRole() == 2) {
-                request.getRequestDispatcher(
-                        "staff/dashboard_staff_manageproduct.jsp")
-                        .forward(request, response);
-            } else {
-                request.getRequestDispatcher(
-                        "admin/dashboard_admin_manageproduct.jsp")
-                        .forward(request, response);
+            // Recommended related products bằng suggested variants
+            List<Variants> suggestedVariants = new ArrayList<>();
+            if (variants != null) {
+                try {
+                    suggestedVariants = vdao.getSuggestedVariantsByVariantID(variants.getVariantID());
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
-            return;
+
+            List<Products> relatedList = new ArrayList<>();
+            for (Variants v : suggestedVariants) {
+                Products pOther = pdao.getProductByID(v.getProductID());
+                if (pOther != null) {
+                    List<Variants> variantList = new ArrayList<>();
+                    variantList.add(v); // gắn 1 variant gợi ý
+                    pOther.setVariants(variantList);
+                    relatedList.add(pOther);
+                }
+            }
+            request.setAttribute("relatedList", relatedList);
+
+            WishlistDAO wdao = new WishlistDAO();
+            Customer u = (Customer) request.getSession().getAttribute("user");
+
+            if (u != null) {
+                List<Products> wishlist = wdao.getWishlistByCustomer(u.getCustomerID());
+                request.setAttribute("wishlist", wishlist);
+                request.setAttribute("user", currentCustomer);
+
+            }
+            request.getRequestDispatcher("public/productdetail.jsp").forward(request, response);
+
+        } else if ("selectStorage".equals(action)) {
+            int pID = Integer.parseInt(request.getParameter("pID"));
+
+            String storage = request.getParameter("storage");
+            String color = request.getParameter("color");
+
+            Variants variants;
+            List<Products> listProducts = pdao.getAllProduct();
+            List<Variants> listVariants = vdao.getAllVariantByProductID(pID);
+            List<Variants> listVariantRating = vdao.getAllVariantByStorage(pID, storage);
+            List<String> listStorage = vdao.getAllStorage(pID);
+            List<Category> listCategory = pdao.getAllCategory();
+
+            variants = vdao.getVariant(pID, storage, color);
+            if (variants == null && !listVariantRating.isEmpty()) {
+                variants = vdao.getVariant(pID, storage, listVariantRating.get(0).getColor());
+            }
+
+            List<Variants> suggestedVariants = new ArrayList<>();
+            if (variants != null) {
+                try {
+                    suggestedVariants = vdao.getSuggestedVariantsByVariantID(variants.getVariantID());
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            List<Products> relatedList = new ArrayList<>();
+            for (Variants v : suggestedVariants) {
+                Products pOther = pdao.getProductByID(v.getProductID());
+                if (pOther != null) {
+                    List<Variants> variantList = new ArrayList<>();
+                    variantList.add(v);
+                    pOther.setVariants(variantList);
+                    relatedList.add(pOther);
+                }
+            }
+            request.setAttribute("relatedList", relatedList);
+
+            List<Review> listReview = rdao.getAllReviewByListVariant(listVariantRating);
+            double rating = rdao.getTotalRating(listVariantRating, listReview);
+            Specification specification = pdao.getSpecificationByProductID(pID);
+
+            request.setAttribute("productID", pID);
+            request.setAttribute("rating", rating);
+            request.setAttribute("variants", variants);
+            request.setAttribute("listProducts", listProducts);
+            request.setAttribute("listVariants", listVariants);
+            request.setAttribute("listVariantRating", listVariantRating);
+            request.setAttribute("listReview", listReview);
+            request.setAttribute("specification", specification);
+            request.setAttribute("listStorage", listStorage);
+            request.setAttribute("listCategory", listCategory);
+
+            request.getRequestDispatcher("public/productdetail.jsp").forward(request, response);
+        } else if ("category".equals(action)) {
+            int cID = Integer.parseInt(request.getParameter("cID"));
+            String variation = request.getParameter("variation");
+            if (variation == null) {
+                variation = "ALL";
+            }
+            List<Products> listProduct = pdao.getAllProductByCategory(cID);
+            List<Variants> listVariant;
+            List<Review> listReview = rdao.getAllReview();
+
+            if (variation.equals("ALL")) {
+                listVariant = vdao.getAllVariantByCategory(cID);
+            } else if (variation.equals("PROMOTION")) {
+                listVariant = vdao.getAllVariantByCategory(cID);
+                PromotionsDAO promotionDAO = new PromotionsDAO();
+                List<Promotions> promotionsList = promotionDAO.getTheHighestPromotion();
+                request.setAttribute("promotionsList", promotionsList);
+            } else {
+                listVariant = vdao.getAllVariantByCategoryAndOrderByPrice(cID, variation);
+            }
+
+            List<Products> productList1_search = pdao.getAllProduct();
+            List<Variants> variantsList_search = new ArrayList<>();
+            try {
+                variantsList_search = vdao.getAllVariants();
+            } catch (SQLException ex) {
+                Logger.getLogger(ProductServlet.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            request.setAttribute("productList1", productList1_search);
+            request.setAttribute("variantsList", variantsList_search);
+            request.setAttribute("listVariant", listVariant);
+            request.setAttribute("categoryID", cID);
+            request.setAttribute("listProduct", listProduct);
+            request.setAttribute("listReview", listReview);
+
+            request.getRequestDispatcher("public/view_product_by_category.jsp").forward(request, response);
+
         } else if (action.equals("productDetail")) {
             try {
                 List<Products> listProducts = pdao.getAllProduct();
                 List<Variants> listVariants;
 
-                if (staff != null && staff.getRole() == 2) {
-                    // staff logic
+                // check roel 2,4
+                if (role == 2) {
+                    // staff
+
                     String productId = request.getParameter("productId");
                     if (productId == null) {
                         productId = request.getParameter("pID");
@@ -195,8 +318,10 @@ public class ProductServlet extends HttpServlet {
 
                     request.getRequestDispatcher("staff/staff_manageproduct_detail.jsp").forward(request, response);
 
-                } else if (staff != null && staff.getRole() == 4) {
-                    // admin logic
+                } else if (role == 4) {
+                    // admin
+                    System.out.println("vào admin");
+
                     int pID = Integer.parseInt(request.getParameter("pID"));
                     listVariants = vdao.getAllVariantByProductID(pID);
 
@@ -213,83 +338,347 @@ public class ProductServlet extends HttpServlet {
                 }
 
             } catch (Exception e) {
-                e.printStackTrace();
-                response.sendRedirect("error.jsp");
+
+                System.out.println(e.getMessage());
             }
-        }
+        } else if (action.equals("updateProduct")) {
+            if (role != 4) {
 
-
-        /* ================= UPDATE PRODUCT ================= */
-        if ("updateProduct".equals(action)) {
-            if (!isAdmin(staff)) {
                 response.sendRedirect("product?action=manageProduct");
                 return;
             }
 
             int pID = Integer.parseInt(request.getParameter("pID"));
-            request.setAttribute("product", pdao.getProductByID(pID));
-            request.setAttribute("specification",
-                    pdao.getSpecificationByProductID(pID));
-            request.setAttribute("listSupplier", sldao.getAllSupplier());
-            request.setAttribute("listCategories", ctdao.getAllCategories());
 
-            request.getRequestDispatcher(
-                    "admin/admin_manageproduct_editproduct.jsp")
-                    .forward(request, response);
-            return;
-        }
+            List<Suppliers> listSupplier = sldao.getAllSupplier();
+            List<Category> listCategories = ctdao.getAllCategories();
 
-        /* ================= DELETE PRODUCT ================= */
-        if ("deleteProduct".equals(action)) {
-            if (!isAdmin(staff)) {
+            Products product = pdao.getProductByID(pID);
+            Specification specification = pdao.getSpecificationByProductID(pID);
+
+            request.setAttribute("listSupplier", listSupplier);
+            request.setAttribute("listCategories", listCategories);
+            request.setAttribute("product", product);
+            request.setAttribute("specification", specification);
+            request.getRequestDispatcher("admin/admin_manageproduct_editproduct.jsp").forward(request, response);
+        } else if (action.equals("deleteProduct")) {
+            if (role != 4) {
+
                 response.sendRedirect("product?action=manageProduct");
                 return;
             }
 
             int pID = Integer.parseInt(request.getParameter("pID"));
-            for (Variants v : vdao.getVariantByProductID(pID)) {
+
+            List<Variants> listVariant = vdao.getVariantByProductID(pID);
+            for (Variants v : listVariant) {
                 pfdao.deleteProfitByVariantID(v.getVariantID());
             }
-
             vdao.deleteVariantByProductID(pID);
+
             pdao.deleteSpecificationByProductID(pID);
             pmtdao.deletePromotionByProductID(pID);
             pdao.deleteProductByProductID(pID);
 
             response.sendRedirect("product?action=manageProduct");
-        }
+
+        } else if (action.equals("createProduct")) {
+            if (role != 4) {
+                response.sendRedirect("product?action=manageProduct");
+                return;
+            }
+            List<Suppliers> listSupplier = sldao.getAllSupplier();
+            List<Category> listCategories = ctdao.getAllCategories();
+            request.setAttribute("listSupplier", listSupplier);
+            request.setAttribute("listCategories", listCategories);
+            request.getRequestDispatcher("admin/admin_manageproduct_create.jsp").forward(request, response);
+        } else if (action.equals("manageProduct")) {
+            List<Products> listProducts = pdao.getAllProduct();
+            List<Category> listCategory = ctdao.getAllCategories();
+            List<Suppliers> listSupplier = sldao.getAllSupplier();
+
+            for (Products product : listProducts) {
+                List<Variants> listVariant = vdao.getAllVariantByProductID(product.getProductID());
+                if (listVariant == null || listVariant.isEmpty()) {
+                    pdao.deleteSpecificationByProductID(product.getProductID());
+                    pmtdao.deletePromotionByProductID(product.getProductID());
+                    pdao.deleteProductByProductID(product.getProductID());
+                }
+            }
+
+            List<Products> currentListProduct = pdao.getAllProduct();
+            request.setAttribute("currentListProduct", currentListProduct);
+            request.setAttribute("listCategory", listCategory);
+            request.setAttribute("listSupplier", listSupplier);
+
+            // check role 2,4
+            if (role == 2) {
+                // staff
+                String productName = request.getParameter("productName");
+                String supplierIDStr = request.getParameter("supplierID");
+                Integer supplierID = null;
+
+                if (supplierIDStr != null && !supplierIDStr.equalsIgnoreCase("All")) {
+                    try {
+                        supplierID = Integer.parseInt(supplierIDStr);
+                    } catch (NumberFormatException e) {
+                        supplierID = null;
+                    }
+                }
+
+                List<Products> filteredProducts;
+                if (productName != null && !productName.trim().isEmpty() && supplierID != null) {
+                    filteredProducts = pdao.getProductsByNameAndSupplier(productName.trim(), supplierID);
+                } else if (productName != null && !productName.trim().isEmpty()) {
+                    filteredProducts = pdao.getProductsByName(productName.trim());
+                } else if (supplierID != null) {
+                    filteredProducts = pdao.getProductsBySupplier(supplierID);
+                } else {
+                    filteredProducts = currentListProduct;
+                }
+
+                request.setAttribute("listProducts", filteredProducts);
+                request.getRequestDispatcher("staff/dashboard_staff_manageproduct.jsp").forward(request, response);
+
+            } else if (role == 4) {
+                // admin
+                request.getRequestDispatcher("admin/dashboard_admin_manageproduct.jsp").forward(request, response);
+            }
+        }// ----- WISHLIST HANDLER -----
+//        else if ("viewWishlist".equals(action)) {
+//            if (currentCustomer == null) {
+//                response.sendRedirect("login.jsp");
+//                return;
+//            }
+//
+//            WishlistDAO wdao = new WishlistDAO();
+//            List<Products> wishlist = wdao.getWishlistByUser(currentCustomer.getCustomerID());
+//
+//            request.setAttribute("wishlist", wishlist);
+//            request.setAttribute("user", currentCustomer);
+//            request.getRequestDispatcher("/public/wishlist.jsp").forward(request, response);
+//            return;
+//
+//        }
+//        else if ("wishlist".equals(action)) {
+//            if (currentUser == null) {
+//                response.sendRedirect("login.jsp");
+//                return;
+//            }
+//
+//            String variantIdStr = request.getParameter("variantId");
+//            if (variantIdStr == null || variantIdStr.isEmpty()) {
+//                response.sendRedirect(request.getHeader("referer"));
+//
+//                return;
+//            }
+//
+//            try {
+//                int variantId = Integer.parseInt(variantIdStr);
+//                WishlistDAO wdao = new WishlistDAO();
+//                // Check tồn tại trước khi thêm
+//                if (!wdao.isExist(currentUser.getUserId(), variantId)) {
+//                    wdao.addToWishlist(currentUser.getUserId(), variantId);
+//                }
+//            } catch (NumberFormatException e) {
+//                e.printStackTrace();
+//                response.sendRedirect(request.getHeader("referer"));
+//
+//                return;
+//            }
+//
+//            // Redirect về trang hiện tại nếu có
+//            String redirectURL = request.getParameter("redirect");
+//            if (redirectURL != null && !redirectURL.isEmpty()) {
+//                response.sendRedirect(redirectURL);
+//            } else {
+//                response.sendRedirect("product?action=viewDetail&pID=" + request.getParameter("pID"));
+//            }
+//        } else if ("remove".equals(action)) {
+//            if (currentUser != null) {
+//                String variantIdStr = request.getParameter("variantId");
+//                if (variantIdStr != null && !variantIdStr.isEmpty()) {
+//                    try {
+//                        int variantId = Integer.parseInt(variantIdStr);
+//                        WishlistDAO wdao = new WishlistDAO();
+//                        wdao.removeFromWishlist(currentUser.getUserId(), variantId);
+//                    } catch (NumberFormatException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }
+//
+//            // Redirect về trang hiện tại nếu có
+//            String redirectURL = request.getParameter("redirect");
+//            if (redirectURL != null && !redirectURL.isEmpty()) {
+//                response.sendRedirect(redirectURL);
+//            } else {
+//                response.sendRedirect("product?action=viewDetail&pID=" + request.getParameter("pID"));
+//            }
+//        }
     }
 
-    /* ================= POST ================= */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
-        HttpSession session = request.getSession(false);
-        Staff staff = getStaff(session);
+        HttpSession session = request.getSession();
         String action = request.getParameter("action");
+        VariantsDAO vdao = new VariantsDAO();
+        ProductDAO pdao = new ProductDAO();
+        ProfitDAO pfdao = new ProfitDAO();
 
-        if ("createProduct".equals(action)) {
-            if (!isAdmin(staff)) {
+        if (action == null) {
+            action = "dashboard";
+        }
+
+        model.Customer currentUser = (model.Customer) session.getAttribute("user");
+        if (action.equals("createProduct") || action.equals("updateProduct")) {
+            if (currentUser == null || currentUser.getRole() != 4) {
                 response.sendRedirect("login");
                 return;
             }
+        }
 
-            ProductDAO pdao = new ProductDAO();
-            pdao.createProduct(
-                    Integer.parseInt(request.getParameter("category")),
-                    Integer.parseInt(request.getParameter("supplierID")),
-                    request.getParameter("pName"),
-                    request.getParameter("brand"),
-                    Integer.parseInt(request.getParameter("warrantyPeriod"))
-            );
+        if ("viewVariantColor".equals(action)) {
+            int pID = Integer.parseInt(request.getParameter("pID"));
+
+            String storage = request.getParameter("storage");
+            if (storage == null) {
+                request.getRequestDispatcher("public/homepage.jsp").forward(request, response);
+                return;
+            }
+            String color = request.getParameter("color");
+            if (color == null) {
+                request.getRequestDispatcher("public/homepage.jsp").forward(request, response);
+                return;
+            }
+            List<Variants> listVariants = vdao.getAllVariantByColor(pID, color);
+            Variants variants = vdao.getVariant(pID, storage, color);
+            if (listVariants.isEmpty()) {
+                request.getRequestDispatcher("public/homepage.jsp").forward(request, response);
+                return;
+            }
+            request.setAttribute("variants", variants);
+            request.setAttribute("listVariants", listVariants);
+
+            request.getRequestDispatcher("public/homepage.jsp").forward(request, response);
+
+        } else if (action.equals("createProduct")) {
+            String pName = request.getParameter("pName");
+            int categoryID = Integer.parseInt(request.getParameter("category"));
+            String brand = request.getParameter("brand");
+            int warrantyPeriod = Integer.parseInt(request.getParameter("warrantyPeriod"));
+            int supplierID = Integer.parseInt(request.getParameter("supplierID"));
+            String os = request.getParameter("os");
+            String cpu = request.getParameter("cpu");
+            String gpu = request.getParameter("gpu");
+            String ram = request.getParameter("ram");
+            String batteryCapacityStr = request.getParameter("batteryCapacity");
+            int batteryCapacity = 0;
+            if (batteryCapacityStr != null && !batteryCapacityStr.isEmpty()) {
+                batteryCapacity = Integer.parseInt(batteryCapacityStr);
+            }
+
+            String touchscreen = request.getParameter("touchscreen");
+
+            boolean isNameProduct = pdao.isProductByName(pName);
+            if (isNameProduct) {
+                session.setAttribute("existName", pName + " already exists!");
+
+                response.sendRedirect("product?action=createProduct");
+
+            } else {
+                pdao.createProduct(categoryID, supplierID, pName, brand, warrantyPeriod);
+
+                int currentProductID = pdao.getCurrentProductID();
+                pdao.createSpecification(currentProductID, os, cpu, gpu, ram, batteryCapacity, touchscreen);
+                List<Variants> listVariants = vdao.getAllVariantByProductID(currentProductID);
+                if (listVariants == null || listVariants.isEmpty()) {
+                    response.sendRedirect("variants?action=createVariant&pID=" + currentProductID);
+                    return;
+                }
+
+                response.sendRedirect("product?action=manageProduct");
+            }
+        } else if (action.equals("updateProduct")) {
+            int pID = Integer.parseInt(request.getParameter("pID"));
+            String pName = request.getParameter("pName");
+            int categoryID = Integer.parseInt(request.getParameter("category"));
+            String brand = request.getParameter("brand");
+            int warrantyPeriod = Integer.parseInt(request.getParameter("warrantyPeriod"));
+            int supplierID = Integer.parseInt(request.getParameter("supplierID"));
+            int specID = Integer.parseInt(request.getParameter("specID"));
+            String os = request.getParameter("os");
+            String cpu = request.getParameter("cpu");
+            String gpu = request.getParameter("gpu");
+            String ram = request.getParameter("ram");
+            int batteryCapacity = Integer.parseInt(request.getParameter("batteryCapacity"));
+            String touchscreen = request.getParameter("touchscreen");
+
+            pdao.updateProduct(pID, categoryID, supplierID, pName, brand, warrantyPeriod);
+            pdao.updateSpecification(specID, os, cpu, gpu, ram, batteryCapacity, touchscreen);
 
             response.sendRedirect("product?action=manageProduct");
+        } else if (action.equals("dashboard")) {
+            response.sendRedirect("admin");
+        } else if (action.equals("importproduct")) {
+            List<Profit> listImports = pfdao.getAllProfit();
+            request.setAttribute("listImports", listImports);
+            request.getRequestDispatcher("admin/import_history.jsp").forward(request, response);
+        } else if ("viewWishlist".equals(action)) {
+            if (currentUser == null) {
+                response.sendRedirect("login.jsp");
+                return;
+            }
+
+            WishlistDAO wdao = new WishlistDAO();
+            List<Products> wishlist = wdao.getWishlistByCustomer(currentUser.getCustomerID());
+
+            request.setAttribute("wishlist", wishlist);
+            request.setAttribute("user", currentUser);
+            request.getRequestDispatcher("/public/wishlist.jsp").forward(request, response);
+            return;
+        } else if ("toggleWishlist".equals(action)) {
+
+            Customer u = (Customer) session.getAttribute("user");
+            if (u == null) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
+            }
+
+            int productId = Integer.parseInt(request.getParameter("productId"));
+
+            String var = request.getParameter("variantId");
+            int variantId = (var == null || var.equals("") || var.equals("undefined"))
+                    ? 0
+                    : Integer.parseInt(var);
+
+            WishlistDAO wdao = new WishlistDAO();
+
+            try {
+                if (wdao.isExist(u.getCustomerID(), productId, variantId)) {
+                    wdao.removeFromWishlist(u.getCustomerID(), productId, variantId);
+                } else {
+                    wdao.addToWishlist(u.getCustomerID(), productId, variantId);
+                }
+                response.getWriter().write("ok");
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            }
+
+            return;
         }
     }
 
     @Override
     public String getServletInfo() {
+
         return "ProductServlet - FINAL stable version (no NPE, safe role handling)";
+
     }
 }
+
+
+

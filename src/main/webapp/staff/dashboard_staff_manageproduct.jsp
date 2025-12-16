@@ -4,13 +4,16 @@
 <%@page import="model.Products"%>
 <%@page import="java.util.List"%>
 <%@page import="java.util.ArrayList"%>
+
 <%@page import="model.Customer"%>
+
 <%@page import="com.google.gson.Gson"%>
 <%@page import="java.text.NumberFormat"%>
 <%@page import="java.util.Locale"%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html lang="en">
+
     <head>
         <meta charset="UTF-8">
         <title>Staff Dashboard - Products</title>
@@ -182,6 +185,7 @@
                 box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
                 animation: slideDown 0.5s ease-out;
             }
+
 
             @keyframes slideDown {
                 from {
@@ -622,5 +626,7 @@
         </script>
     </body>
 </html>
+
+
 
 

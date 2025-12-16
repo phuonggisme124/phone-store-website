@@ -7,12 +7,13 @@
 <%@page import="java.util.List"%>
 <%@page import="model.Products"%>
 <%@page import="model.Category"%>
-<%@ page import="model.Users" %>
+
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/layout/header.jsp" %>
 
 <%
-    if (user == null) {
+Customer customer = (Customer) session.getAttribute("user");
+if (customer == null) {
         response.sendRedirect("login.jsp");
         return;
     }
@@ -366,39 +367,7 @@
         <div class="profile-container">
             <div class="profile-wrapper">
                 <!-- Sidebar -->
-                    <aside class="profile-sidebar">
-                        <h3>Hello, <%= user.getFullName()%></h3>
-
-                        <a href="product?action=viewWishlist" class="sidebar-link">
-                            <i class="fas fa-heart"></i>
-                            <span>My Wishlist</span>
-                        </a>
-                        
-                        <a href="user?action=transaction" class="sidebar-link">
-                            <i class="fas fa-shopping-bag"></i>
-                            <span>My Orders</span>
-                        </a>
-                        <a href="user?action=payInstallment" class="sidebar-link">
-                            <i class="fas fa-receipt"></i>
-                            <span>Installment Paying</span>
-                        </a>
-
-                        <a href="user" class="sidebar-link">
-                            <i class="fas fa-user"></i>
-                            <span>Profile & Address</span>
-                        </a>
-
-                        <a href="user?action=changePassword" class="sidebar-link">
-                            <i class="fas fa-lock"></i>
-                            <span>Change Password</span>
-                        </a>
-
-                        <form action="logout" method="post">
-                            <button type="submit" class="logout-btn">
-                                <i class="fas fa-sign-out-alt"></i> Logout
-                            </button>
-                        </form>
-                    </aside>
+                <%@ include file="sidebar.jsp" %>
 
                 <!-- Main Content -->
                 <main class="profile-content">
@@ -414,8 +383,8 @@
                                 <div class="avatar-wrapper">
                                     <img src="images/avatar.png" alt="User Avatar">
                                 </div>
-                                <h5><%= user.getFullName() %></h5>
-                                <span class="user-id">ID: #<%= user.getUserId() %></span>
+                                <h5><%= user.getFullName()%></h5>
+                                <span class="user-id">ID: #<%= customer.getCustomerID()%></span>
                             </div>
                         </div>
 
@@ -423,23 +392,23 @@
                         <div class="col-lg-8">
                             <form id="changePasswordForm" action="user" method="post" class="profile-form">
                                 <input type="hidden" name="action" value="changePassword">
-                                <% 
-                                    
+                                <%
+
                                 %>
-                                <% if (message != null) { %>
+                                <% if (message != null) {%>
                                 <div class="alert alert-success">
                                     <i class="fas fa-check-circle"></i>
-                                    <%= message %>
+                                    <%= message%>
                                 </div>
-                                <% 
+                                <%
                                     session.removeAttribute("message");
                                 %>
-                                <% } else if (error != null) { %>
+                                <% } else if (error != null) {%>
                                 <div class="alert alert-danger">
                                     <i class="fas fa-exclamation-circle"></i>
-                                    <%= error %>
+                                    <%= error%>
                                 </div>
-                                <% } %>
+                                <% }%>
 
                                 <div class="form-group">
                                     <label for="oldPassword" class="form-label">
@@ -520,3 +489,6 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     </body>
 </html>
+
+
+

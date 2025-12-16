@@ -7,21 +7,21 @@
 <%@page import="java.util.List"%>
 <%@page import="model.Products"%>
 <%@ page import="model.Variants" %>
-<%@ page import="model.Users" %>
+<%@page import="model.Customer"%>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/layout/header.jsp" %>
 
 <%
-    Users currentUser = (Users) session.getAttribute("user");
+    Customer currentUser = (Customer) session.getAttribute("user"); 
     if(currentUser == null){
-        response.sendRedirect("login.jsp");
-        return;
+    response.sendRedirect("login.jsp");
+    return;
     }
 
     WishlistDAO wdao = new WishlistDAO();
     List<Products> wishlist = null;
     try {
-        wishlist = wdao.getWishlistByUser(currentUser.getUserId());
+        wishlist = wdao.getWishlistByCustomer(currentUser.getCustomerID());
     } catch(Exception e){
         e.printStackTrace();
     }
@@ -255,7 +255,10 @@
                                 <h5><%= p.getName() %></h5>
                                 <div class="price">N/A</div>
                                 <% } %>
-
+                                <button class="remove-btn" 
+                                        onclick="location.href = 'product?action=removeWishlist&productID=<%= p.getProductID() %>&variantID=<%= v.getVariantID() %>'">
+                                    <i class="fas fa-trash-alt"></i> Remove
+                                </button>
                             </div>
                             <% } %>
                         </div>
@@ -273,3 +276,6 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     </body>
 </html>
+
+
+

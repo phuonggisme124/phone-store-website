@@ -32,7 +32,11 @@
         <li><a href="${pageContext.request.contextPath}/review?action=manageReview" <%= (action.equals("manageReview")) ? "class='active'" : ""%>
                ><i class="bi bi-chat me-2"></i>Reviews</a></li>
         <li><a href="${pageContext.request.contextPath}/customer?action=manageUser" <%= (action.equals("manageUser")) ? "class='active'" : ""%>
+<<<<<<< HEAD
                ><i class="bi bi-people me-2"></i>Users</a></li>
+=======
+               ><i class="bi bi-people me-2"></i>Account</a></li>
+>>>>>>> 62bad43794ed9e6ec4e6d026e91b6a10331a6e66
         <li><a href="${pageContext.request.contextPath}/category?action=manageCategory" <%= (action.equals("manageCategory")) ? "class='active'" : ""%>
 
                ><i class="bi bi-grid me-2"></i>Category</a></li>          

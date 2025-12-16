@@ -17,6 +17,7 @@ import utils.DBContext;
  */
 public class OrderDetailDAO extends DBContext {
 
+
     public void insertNewOrderDetail(OrderDetails oD) {
  String sql = "INSERT INTO OrderDetails (OrderID, VariantID, Quantity, UnitPrice) "
                 + "VALUES (?, ?, ?, ?)";
@@ -50,7 +51,7 @@ public class OrderDetailDAO extends DBContext {
 
                 od.setQuantity(quantity);
                 od.setUnitPrice(unitPrice);
-                od.setVariantID(variantID);
+               od.setVariantID(variantID);
                 oDList.add(od);
 
             }

@@ -1,0 +1,161 @@
+/* Style cho khung tìm kiếm màu tím nhạt */
+.border-light-purple {
+    border-color: #d1d9e6 !important;
+}
+.input-group:focus-within .border-light-purple {
+    border-color: #696cff !important;
+}
+
+/* Nút Gradient */
+.btn-gradient-primary {
+    background: linear-gradient(45deg, #696cff, #8592a3);
+    border: none;
+    color: white;
+    transition: transform 0.2s;
+}
+.btn-gradient-primary:hover {
+    transform: scale(1.05);
+    color: white;
+}
+
+/* Hiệu ứng nút Logout */
+.hover-danger:hover {
+    background-color: #ff3e1d !important;
+    color: white !important;
+    transform: rotate(90deg);
+    transition: all 0.3s ease;
+}
+
+/* Gợi ý tìm kiếm */
+#suggestionBox .list-group-item {
+    cursor: pointer;
+    transition: background 0.2s;
+}
+#suggestionBox .list-group-item:hover {
+    background-color: #f5f5f9;
+    padding-left: 1rem;
+}
+
+
+/* Màu nền tím nhạt cho Header bảng */
+.bg-light-purple {
+    background-color: #f5f5f9 !important; /* Hoặc màu #e7e7ff nếu muốn tím hơn */
+    color: #697a8d;
+}
+
+/* Nút Gradient (nhắc lại) */
+.btn-gradient-primary {
+    background: linear-gradient(45deg, #696cff, #8592a3);
+    border: none;
+    color: white;
+    transition: all 0.2s;
+}
+.btn-gradient-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(105, 108, 255, 0.4);
+    color: white;
+}
+
+/* Hiệu ứng hover cho dòng trong bảng */
+.cursor-pointer {
+    cursor: pointer;
+}
+.transition-hover {
+    transition: all 0.2s ease;
+}
+.transition-hover:hover {
+    background-color: white !important;
+    transform: scale(1.01);
+    box-shadow: 0 0.25rem 1rem rgba(161, 172, 184, 0.4);
+    z-index: 1; /* Để bóng đổ đè lên dòng khác */
+    position: relative;
+}
+
+/* Table styling */
+.custom-table th {
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid #d9dee3;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+.custom-table td {
+    border-bottom: 1px solid #ebeef0;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+.product-id-badge {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    transition: all 0.3s ease;
+}
+
+
+/* 1. Màu nền tím nhạt */
+.bg-light-purple {
+    background-color: #f5f5f9 !important;
+    color: #697a8d;
+}
+.bg-light-purple.bg-opacity-10 {
+    background-color: rgba(105, 108, 255, 0.05) !important;
+}
+
+/* 2. Border tím */
+.border-light-purple {
+    border-color: #d1d9e6 !important;
+}
+.input-group:focus-within .border-light-purple {
+    border-color: #696cff !important;
+}
+
+/* 3. Nút Gradient */
+.btn-gradient-primary {
+    background: linear-gradient(45deg, #696cff, #8592a3);
+    border: none;
+    color: white;
+    transition: all 0.2s;
+}
+.btn-gradient-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(105, 108, 255, 0.4);
+    color: white;
+}
+
+/* 4. Hiệu ứng Hover bảng và nút */
+.cursor-pointer {
+    cursor: pointer;
+}
+.transition-hover {
+    transition: all 0.2s ease;
+}
+.transition-hover:hover {
+    background-color: white !important;
+    transform: scale(1.01);
+    box-shadow: 0 0.25rem 1rem rgba(161, 172, 184, 0.4);
+    z-index: 1;
+    position: relative;
+}
+.hover-scale {
+    transition: transform 0.2s;
+}
+.hover-scale:hover {
+    transform: scale(1.2);
+}
+.hover-danger:hover {
+    color: #ff3e1d !important;
+}
+
+/* 5. Gợi ý tìm kiếm */
+#suggestionBox {
+    background-color: white;
+}
+#suggestionBox .list-group-item:hover {
+    background-color: #f5f5f9;
+    padding-left: 1rem;
+    transition: padding 0.2s;
+}

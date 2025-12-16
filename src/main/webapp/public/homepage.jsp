@@ -470,16 +470,16 @@
                                         <!--WISH LIST BUTTON-->
                                         <div class="wishlist-wrap">
                                             <%
-                                                Customer u = (Customer) session.getAttribute("user");
-                                                boolean logged = (u != null);
-                                                boolean liked = false;
-                                                int variantID = p.getVariants().get(0).getVariantID();
-                                                int productID = p.getProductID();
+ Customer u = (Customer) session.getAttribute("user");
+ boolean logged = (u != null);
+ boolean liked = false;
+ int variantID = p.getVariants().get(0).getVariantID();
+ int productID = p.getProductID();
 
-                                                if (logged && variantID > 0) {
-                                                    WishlistDAO wdao = new WishlistDAO();
-                                                    liked = wdao.isExist(u.getCustomerID(), productID, variantID);
-                                                }
+ if (logged && variantID > 0) {
+     WishlistDAO wdao = new WishlistDAO();
+     liked = wdao.isExist(u.getCustomerID(), productID, variantID);
+ }
                                             %>
 
                                             <button class="wishlist-btn toggle-wishlist"
@@ -491,6 +491,7 @@
                                             </button>
 
                                         </div>
+
 
                                         <span class="item-price text-primary"><%= vnFormat.format(p.getVariants().get(0).getDiscountPrice())%></span>
                                     </div>
@@ -599,49 +600,50 @@
                                 if (productList1 != null) {
                                     for (Products p : productList1) {
                                         if (p.getCategoryID() != null && p.getCategoryID() == 3) {
-
                             %>
                             <div class="swiper-slide">
+                                <div class="product-card text-center position-relative">  <!-- Thêm div này -->
+                                    <div class="image-holder">
+                                        <a href="product?action=viewDetail&pID=<%= p.getProductID()%>">
+                                            <img src="images/<%= p.getVariants().get(0).getImageUrl()%>" alt="<%= p.getName()%>" class="img-fluid rounded-3">
+                                        </a>
+                                    </div>
+                                    <div class="card-detail pt-3">  <!-- Thêm div này -->
+                                        <h3 class="card-title text-uppercase">
+                                            <a href="product?action=viewDetail&pID=<%= p.getProductID()%>">
+                                                <%=p.getName()%>
+                                                <%=p.getVariants().get(0).getColor()%>
+                                                <%=p.getVariants().get(0).getStorage()%></a>
+                                        </h3>
 
-                                <div class="image-holder">
-                                    <a href="product?action=viewDetail&pID=<%= p.getProductID()%>">
-                                        <img src="images/<%= p.getVariants().get(0).getImageUrl()%>" alt="<%= p.getName()%>" class="img-fluid rounded-3">
-                                    </a>
-                                </div>
+                                        <!--WISH LIST BUTTON-->
+                                        <div class="wishlist-wrap">
+                                            <%
+ Customer u = (Customer) session.getAttribute("user");
+ boolean logged = (u != null);
+ boolean liked = false;
+ int variantID = p.getVariants().get(0).getVariantID();
+ int productID = p.getProductID();
 
-                                <h3 class="card-title text-uppercase">
-                                    <a href="product?action=viewDetail&pID=<%= p.getProductID()%>">
-                                        <%=p.getName()%>
-                                        <%=p.getVariants().get(0).getColor()%>
-                                        <%=p.getVariants().get(0).getStorage()%></a>
-                                </h3>
+ if (logged && variantID > 0) {
+     WishlistDAO wdao = new WishlistDAO();
+     liked = wdao.isExist(u.getCustomerID(), productID, variantID);
+ }
+                                            %>
 
-                                <!--WISH LIST BUTTON-->
-                                <div class="wishlist-wrap">
-                                    <%
-                                        Customer u = (Customer) session.getAttribute("user");
-                                        boolean logged = (u != null);
-                                        boolean liked = false;
-                                        int variantID = p.getVariants().get(0).getVariantID();
-                                        int productID = p.getProductID();
+                                            <button class="wishlist-btn toggle-wishlist"
+                                                    data-productid="<%= productID %>"
+                                                    data-variantid="<%= variantID %>"
+                                                    style="background:none; border:none; padding:0;">
+                                                <i class="<%= liked ? "fas fa-heart" : "far fa-heart" %>"
+                                                   style="<%= liked ? "color:#e53e3e;" : "" %>"></i>
+                                            </button>
 
-                                        if (logged && variantID > 0) {
-                                            WishlistDAO wdao = new WishlistDAO();
-                                            liked = wdao.isExist(u.getCustomerID(), productID, variantID);
-                                        }
-                                    %>
+                                        </div>
 
-                                    <button class="wishlist-btn toggle-wishlist"
-                                            data-productid="<%= productID %>"
-                                            data-variantid="<%= variantID %>"
-                                            style="background:none; border:none; padding:0;">
-                                        <i class="<%= liked ? "fas fa-heart" : "far fa-heart" %>"
-                                           style="<%= liked ? "color:#e53e3e;" : "" %>"></i>
-                                    </button>
-
-                                </div>
-
-                                <span class="item-price text-primary"><%= vnFormat.format(p.getVariants().get(0).getPrice())%></span>
+                                        <span class="item-price text-primary"><%= vnFormat.format(p.getVariants().get(0).getPrice())%></span>
+                                    </div>      
+                                </div>  
                             </div>
                             <%         }
                                     }
@@ -733,13 +735,12 @@
         </script>
         <script>
             document.addEventListener("click", function (e) {
-                let btn = e.target.closest(".toggle-wishlist");
+                const btn = e.target.closest(".toggle-wishlist");
                 if (!btn)
                     return;
 
                 e.preventDefault();
                 e.stopPropagation();
-
 
                 const productId = btn.dataset.productid;
                 const variantId = btn.dataset.variantid || 0;
@@ -750,7 +751,16 @@
                     headers: {"Content-Type": "application/x-www-form-urlencoded"},
                     body: "action=toggleWishlist&productId=" + productId + "&variantId=" + variantId
                 })
-                        .then(res => res.ok ? res.text() : Promise.reject("Wishlist toggle failed"))
+                        .then(res => {
+                            if (res.status === 401) {
+                                // Chuyển hướng nếu chưa login
+                                window.location.href = 'login.jsp';
+                                return Promise.reject("Unauthorized");
+                            }
+                            if (!res.ok)
+                                return Promise.reject("Wishlist toggle failed");
+                            return res.text();
+                        })
                         .then(text => {
                             if (text === "ok") {
                                 if (icon.classList.contains("fas")) {
@@ -766,11 +776,11 @@
                         })
                         .catch(err => console.error(err));
             });
-
         </script>
-
 
         <script src="${pageContext.request.contextPath}/js/google_login.js?v=10"></script>
         <script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
-        <!--    </body>-->
+            </body>
 </html>
+
+

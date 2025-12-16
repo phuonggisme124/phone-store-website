@@ -308,7 +308,7 @@
                                         <a href="${pageContext.request.contextPath}/logout" class="nav-link p-0 text-dark text-uppercase fw-bold">Logout</a> 
                                     </li>
                                     <li class="text-dark fw-bold">
-                                        <a href="${pageContext.request.contextPath}/user?action=view" class="nav-link p-0 text-dark text-uppercase fw-bold"><%= displayName%></a> 
+                                        <a href="${pageContext.request.contextPath}/customer?action=view" class="nav-link p-0 text-dark text-uppercase fw-bold"><%= displayName%></a> 
                                     </li>
                                     <%
                                     } else {
@@ -340,12 +340,13 @@
     </form>
 
     <script>
-        // SCRIPT LOGIC GIỮ NGUYÊN NHƯNG ĐÃ ĐƯỢC CHUẨN HÓA VỚI JS HIỆN ĐẠI
+        // SCRIPT LOGIC GIá»® NGUYÃN NHÆ¯NG ÄÃ ÄÆ¯á»¢C CHUáº¨N HÃA Vá»I JS HIá»N Äáº I
         document.addEventListener("DOMContentLoaded", function () {
             const headerSearchInput = document.getElementById('headerSearchInput');
             const headerSearchResults = document.getElementById('headerSearchResults');
             const headerSearchContainer = document.getElementById('headerSearchContainer');
             const headerAllSuggestionItems = headerSearchResults.querySelectorAll('.suggestion-item');
+
 
             headerSearchInput.addEventListener('keyup', function () {
                 const query = headerSearchInput.value.toLowerCase().trim();
@@ -367,6 +368,7 @@
                 }
             });
 
+
             headerAllSuggestionItems.forEach(item => {
                 item.addEventListener('click', function () {
                     document.getElementById('formPID').value = this.dataset.pid;
@@ -377,27 +379,94 @@
                 });
             });
 
+
+            headerSearchInput.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const firstVisible = Array.from(headerAllSuggestionItems).find(
+                            item => item.style.display === 'flex'
+                    );
+                    if (firstVisible)
+                        firstVisible.click();
+                }
+            });
+
+            
+
             document.addEventListener('click', function (e) {
                 if (headerSearchContainer && !headerSearchContainer.contains(e.target)) {
                     headerSearchResults.classList.remove('show');
                 }
             });
         });
-        
-        // SCROLL SCRIPT
+
+
+    </script>
+    <script>
+
+
         (function () {
+            
             const header = document.querySelector('header.site-header');
+
+            
             const scrollThreshold = 50;
-            if (!header) return;
+
+            if (!header) {
+                return; 
+            }
+
+            
             window.addEventListener('scroll', function () {
+                
                 let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+                
                 if (scrollTop > scrollThreshold) {
                     header.classList.add('header-scrolled');
-                } else {
+                }
+                
+                else {
+
                     header.classList.remove('header-scrolled');
                 }
             });
         })();
+
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const bell = document.getElementById("notification-bell");
+            const dropdown = document.getElementById("notification-dropdown");
+
+            bell.addEventListener("click", function (e) {
+                e.stopPropagation();
+                const dropdown = document.getElementById("notification-dropdown");
+                dropdown.classList.toggle("show");
+
+                if (dropdown.classList.contains("show")) {
+                    fetch('notification', {
+                        method: 'POST'
+                    })
+                            .then(res => res.text())
+                            .then(data => {
+                                if (data === 'success') {
+                                    notifCount.innerText = '0'; // ?n badge
+                                }
+                            });
+                }
+            });
+
+
+
+            document.addEventListener("click", function (e) {
+                if (!dropdown.contains(e.target) && !bell.contains(e.target)) {
+                    dropdown.classList.remove("show");
+                }
+            });
+        });
+
     </script>
 </body>
 </html>
+
+

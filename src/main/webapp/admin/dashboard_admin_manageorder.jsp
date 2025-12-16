@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+<%@page import="dao.StaffDAO"%>
+>>>>>>> 62bad43794ed9e6ec4e6d026e91b6a10331a6e66
 <%@page import="dao.CustomerDAO"%>
 <%@page import="model.Staff"%>
 <%@page import="java.util.ArrayList"%>
@@ -232,8 +236,13 @@
 
                                             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMM yyyy");
                                             String dateFormated = (o.getOrderDate() != null) ? o.getOrderDate().format(formatter) : "-";
+<<<<<<< HEAD
                                             
                                             String staffName = (o.getStaffID() != 0 && udao.getCustomerByID(o.getStaffID()) != null) ? udao.getCustomerByID(o.getStaffID()).getFullName() : "-";
+=======
+                                            StaffDAO sdao = new StaffDAO();
+                                            String staffName = (o.getStaffID() != 0 && sdao.getStaffByID(o.getStaffID()) != null) ? sdao.getStaffByID(o.getStaffID()).getFullName() : "-";
+>>>>>>> 62bad43794ed9e6ec4e6d026e91b6a10331a6e66
                                             String shipperName = (o.getShipperID() != 0 && udao.getCustomerByID(o.getShipperID()) != null) ? udao.getCustomerByID(o.getShipperID()).getFullName() : "-";
                                     %>      
                                     <tr onclick="window.location.href = 'order?action=orderDetail&id=<%= o.getOrderID()%>&isInstalment=<%= o.getIsInstalment()%>'" 

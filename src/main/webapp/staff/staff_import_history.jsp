@@ -1,5 +1,6 @@
-<%@page import="dao.UsersDAO"%>
-<%@page import="model.Users"%>
+<%@page import="dao.StaffDAO"%>
+<%@page import="model.Staff"%>
+
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -53,8 +54,8 @@
         </style>
     </head>
     <body>
-        <% Users currentUser = (Users) session.getAttribute("user");
-            UsersDAO udao = new UsersDAO();
+        <% Staff currentUser = (Staff) session.getAttribute("user");
+            StaffDAO udao = new StaffDAO();
         %>
 
         <div class="d-flex align-items-center" style="position: absolute; top: 15px; right: 20px; z-index: 1000;">
@@ -175,3 +176,5 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     </body>
 </html>
+
+
