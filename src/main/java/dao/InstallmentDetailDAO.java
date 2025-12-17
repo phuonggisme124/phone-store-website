@@ -125,6 +125,7 @@ public class InstallmentDetailDAO extends DBContext {
 
         try {
 
+
             PreparedStatement ps = conn.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -141,6 +142,7 @@ public class InstallmentDetailDAO extends DBContext {
                 int eday = rs.getInt("ExpriedDate");
                 list.add(new InstallmentDetail(payID, orderID, amount, paymentDate, paymentStatus, totalMonth, currentMonth, eday));
             }
+
 
         } catch (Exception e) {
             System.out.println(e.getMessage());

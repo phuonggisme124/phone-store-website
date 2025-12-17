@@ -136,13 +136,16 @@ public class PaymentServlet extends HttpServlet {
             String receiverPhone = request.getParameter("receiverPhone");
             String addressIDRaw = request.getParameter("addressID");
             String city = (String) request.getAttribute("city");
+
             
             // Lưu tạm vào session để không bị mất khi reload
             session.setAttribute("receiverName", receiverName);
             session.setAttribute("receiverPhone", receiverPhone);
             session.setAttribute("addressID", addressIDRaw);
             
+
             String address = (String) request.getAttribute("address");
+
             String saveAddress = (String) request.getAttribute("saveAddress");
 
             if (receiverPhone == null || receiverPhone.trim().isEmpty()) {
@@ -166,7 +169,7 @@ public class PaymentServlet extends HttpServlet {
                 return;
             }
 
-            /* ===== TÁCH ADDRESS & CITY ===== */
+
             String fullAddress = selectedAddress.getAddress();
             if (fullAddress.contains(",")) {
                 city = fullAddress.substring(fullAddress.lastIndexOf(",") + 1).trim();
@@ -175,7 +178,6 @@ public class PaymentServlet extends HttpServlet {
 
             String specificAddress = address + ", " + city;
 
-            // --- LOGIC KIỂM TRA ĐỊA CHỈ TỪ PARAM NẾU CÓ ---
             if (specificAddress == null) {
                 specificAddress = request.getParameter("specificAddress");
                 if (city == null) {
@@ -398,7 +400,7 @@ public class PaymentServlet extends HttpServlet {
                 o.setOrderID(newOrderID);
                 o.setOrderDate(LocalDateTime.now());
 
-                // INSERT INSTALLMENT DETAILS
+
                 pmDAO.insertNewPayment(o, term, iR.getInterestRateID());
 
                 OrderDetailDAO oDDAO = new OrderDetailDAO();

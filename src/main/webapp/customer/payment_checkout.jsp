@@ -7,7 +7,9 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="/layout/header.jsp" %>
+
 <%    Customer userC = (Customer) session.getAttribute("user");
+
 
     boolean isOver18 = false;
     boolean hasCCCD = false;
@@ -41,6 +43,8 @@
         <script src="https://cdn.tailwindcss.com"></script>
 
         <style>
+
+
             :root {
                 --main-color: #FF424F;
                 --main-hover: #e03a45;
@@ -48,6 +52,7 @@
                 --addr-bg: #f8fcfd;
                 --addr-text: #007bff;
             }
+
             .payment-wrapper {
                 font-family: 'Poppins', sans-serif;
                 background-color: #f8f9fa;
@@ -60,6 +65,11 @@
             .text-main { color: var(--main-color) !important; }
             .bg-main { background-color: var(--main-color) !important; }
 
+
+            .text-main { color: var(--main-color) !important; }
+            .bg-main { background-color: var(--main-color) !important; }
+
+
             .payment-container {
                 max-width: 42rem;
                 margin: 2rem auto;
@@ -69,6 +79,7 @@
                 position: relative;
                 overflow: hidden;
             }
+
             .payment-form-header {
                 padding: 1.25rem;
                 border-bottom: 1px solid #f0f0f0;
@@ -95,6 +106,7 @@
             }
             .back-button:hover { color: var(--main-color); }
             .payment-main { padding: 1.5rem; }
+
             .section-title {
                 font-weight: 700;
                 font-size: 0.95rem;
@@ -105,6 +117,7 @@
                 margin-top: 1.5rem;
             }
             .recipient-info-section:first-of-type .section-title { margin-top: 0; }
+
             .info-box {
                 background-color: #fafafa;
                 border: 1px solid #eee;
@@ -117,6 +130,7 @@
             .info-row { display: flex; justify-content: space-between; }
             .info-label { color: #666; font-weight: 500; font-size: 0.9rem; }
             .info-value { color: #222; font-weight: 600; font-size: 0.95rem; text-align: right; }
+
             .selected-addr-box {
                 border: 1px solid var(--addr-border);
                 background-color: var(--addr-bg);
@@ -131,6 +145,7 @@
                 margin-top: 3px;
                 font-size: 1.2rem;
             }
+
             .payment-selector-box {
                 border: 1px solid #eee;
                 border-radius: 8px;
@@ -146,6 +161,7 @@
                 border-color: var(--main-color);
                 background-color: #fff0f1;
             }
+
             .summary-box {
                 background-color: #f8f9fa;
                 margin-top: 25px;
@@ -171,6 +187,7 @@
                 box-shadow: 0 4px 10px rgba(255, 66, 79, 0.3);
             }
             #confirm-btn:hover { background-color: var(--main-hover); }
+
             .check-product-link {
                 color: var(--main-color);
                 font-weight: 500;
@@ -182,6 +199,7 @@
                 margin-top: 10px;
             }
             .check-product-link:hover { text-decoration: underline; }
+
             .payment-option.selected {
                 border-color: var(--main-color);
                 box-shadow: 0 0 0 1px var(--main-color) inset;
@@ -204,6 +222,7 @@
             .hover\:bg-theme-dark:hover { background-color: var(--main-hover) !important; }
             .bg-theme { background-color: var(--main-color) !important; }
             .text-theme { color: var(--main-color) !important; }
+
             #qrCodeImage { max-width: 100%; height: auto; }
         </style>
     </head>
@@ -402,7 +421,7 @@
                             </div>
                         </div>
                         <%  }
-                        } else { %>
+                    } else { %>
                         <p class="text-center text-gray-500">Cart is empty.</p>
                         <% }%>
                     </div>
@@ -487,6 +506,7 @@
                                 <div class="w-3/4 flex">
                                     <% if (iRList != null) {
                                             for (InterestRate iR : iRList) {
+
                                                 double instalmentPrice = (finalPaymentTotal * iR.getPercent()) / 100;
                                                 double totalPriceEachMothPay = (finalPaymentTotal + instalmentPrice) / iR.getInstalmentPeriod();
                                                 double totalPriceAfterInstalment = finalPaymentTotal + instalmentPrice;
@@ -815,10 +835,14 @@
                     });
 
                     function submitOrderForm() {
+<<<<<<< HEAD
                         // SỬA LỖI TẠI ĐÂY: Chỉ tìm input nằm trong paymentForm
                         // Code cũ: let actionInput = document.querySelector('input[name="action"]');
                         let actionInput = paymentForm.querySelector('input[name="action"]'); 
                         
+=======
+                        let actionInput = document.querySelector('input[name="action"]');
+>>>>>>> a0873bcb5654374d47d9679beb54d2ed86184214
                         if (!actionInput) {
                             actionInput = document.createElement('input');
                             actionInput.type = 'hidden';

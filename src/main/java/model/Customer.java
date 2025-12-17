@@ -5,26 +5,30 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.time.Period;
 
+import java.time.ZoneId;
+
+
 public class Customer {
 
-    private int customerID;         
-    private String fullName;        
-    private String email;           
-    private String phone;           
-    private String password;        
-    private String address;         
-    private Timestamp createdAt;    
-    private String status;          
-    private String cccd;            
-    private Date yob;               
-    private int point;              
+    private int customerID;
+    private String fullName;
+    private String email;
+    private String phone;
+    private String password;
+    private String address;
+    private Timestamp createdAt;
+    private String status;
+    private String cccd;
+    private Date yob;
+    private int point;
 
-    public Customer() {}
+    public Customer() {
+    }
 
     // Full constructor
     public Customer(int customerID, String fullName, String email, String phone, String password,
-                    String address, Timestamp createdAt, String status, 
-                    String cccd, Date yob, int point) {
+            String address, Timestamp createdAt, String status,
+            String cccd, Date yob, int point) {
         this.customerID = customerID;
         this.fullName = fullName;
         this.email = email;
@@ -46,12 +50,11 @@ public class Customer {
     }
 
     public Customer(String name, String phone) {
-          this.fullName = name;
+        this.fullName = name;
         this.phone = phone;
     }
 
     // ===================== GETTERS & SETTERS =====================
-
     public int getCustomerID() {
         return customerID;
     }
@@ -128,6 +131,15 @@ public class Customer {
         return yob;
     }
 
+public int getAge() {
+        if (yob == null) {
+            return 0;
+        }
+        LocalDate birthDate = new java.sql.Date(yob.getTime()).toLocalDate();
+        LocalDate currentDate = LocalDate.now();
+        return Period.between(birthDate, currentDate).getYears();
+    }
+
     public void setYob(Date yob) {
         this.yob = yob;
     }
@@ -145,14 +157,7 @@ public class Customer {
         return 1;
     }
     
-    public int getAge() {
-        if (yob == null) {
-            return 0;
-        }
-        LocalDate birthDate = new java.sql.Date(yob.getTime()).toLocalDate();
-        LocalDate currentDate = LocalDate.now();
-        return Period.between(birthDate, currentDate).getYears();
-    }
+   
 
 
 

@@ -230,7 +230,9 @@ public class CustomerDAO extends DBContext {
     public void updateProfile(Customer c) {
 
         StringBuilder sql = new StringBuilder(
+
                 "UPDATE Customers SET FullName=?, Email=?, Phone=?, Address=?, CCCD=?, YOB=?");
+
 
         sql.append(" WHERE CustomerID=?");
 
@@ -244,6 +246,7 @@ public class CustomerDAO extends DBContext {
             ps.setDate(6, c.getYob());
 
             ps.setInt(7, c.getCustomerID());
+
 
             ps.executeUpdate();
 

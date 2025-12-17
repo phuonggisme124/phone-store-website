@@ -6,7 +6,9 @@ import dao.OrderDAO;
 import dao.ProductDAO;
 import dao.CustomerDAO;
 import dao.OrderDetailDAO;
+
 import dao.VariantsDAO;
+
 import java.io.IOException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
