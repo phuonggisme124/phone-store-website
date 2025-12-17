@@ -312,3 +312,6 @@ public class CustomerServlet extends HttpServlet {
         response.sendRedirect("customer?action=payInstallment");
     }
 }
+
+
+

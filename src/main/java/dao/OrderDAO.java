@@ -1,63 +1,45 @@
 package dao;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+
+import model.Customer;
 import model.Order;
 import model.OrderDetails;
 import model.Payments;
-import model.Customer;
 import model.Variants;
 import utils.DBContext;
 
-/**
- * OrderDAO Customers Staff: Admin (Role=4), Staff (Role=2), Shipper (Role=3)
- * OrderShippers:Orders và Staff (Shipper)
- */
 public class OrderDAO extends DBContext {
 
     public OrderDAO() {
         super();
     }
 
+    /* ======================== MAPPER ======================== */
     private Order mapResultSetToOrderWithCustomer(ResultSet rs) throws SQLException {
         Order order = new Order();
 
-        String name = rs.getString("ReceiverName");
-        String phone = rs.getString("ReceiverPhone");
-        String address = rs.getString("ShippingAddress");
-
         order.setOrderID(rs.getInt("OrderID"));
-        order.setTotalAmount(rs.getDouble("TotalAmount"));
         order.setUserID((Integer) rs.getObject("CustomerID"));
-
-        Customer buyer = new Customer((Integer) rs.getObject("CustomerID"), name, phone);
+        order.setTotalAmount(rs.getDouble("TotalAmount"));
+        order.setStatus(rs.getString("Status"));
+        order.setPaymentMethod(rs.getString("PaymentMethod"));
+        order.setShippingAddress(rs.getString("ShippingAddress"));
+        order.setReceiverName(rs.getString("ReceiverName"));
+        order.setReceiverPhone(rs.getString("ReceiverPhone"));
         order.setStaffID((Integer) rs.getObject("StaffID"));
-
-        Object isInstalmentObj = rs.getObject("IsInstalment");
-        if (isInstalmentObj != null) {
-            order.setIsInstalment((Boolean) isInstalmentObj);
-        } else {
-            order.setIsInstalment(null);
-        }
+        order.setIsInstalment((Boolean) rs.getObject("IsInstalment"));
 
         Timestamp ts = rs.getTimestamp("OrderDate");
         if (ts != null) {
             order.setOrderDate(ts.toLocalDateTime());
         }
 
-        order.setStatus(rs.getString("Status"));
-        order.setPaymentMethod(rs.getString("PaymentMethod"));
-        order.setShippingAddress(rs.getString("ShippingAddress"));
-        order.setReceiverName(rs.getString("ReceiverName"));
-        order.setReceiverPhone(rs.getString("ReceiverPhone"));
-
         if (hasColumn(rs, "BuyerID") && rs.getObject("BuyerID") != null) {
-            buyer = new Customer();
+            Customer buyer = new Customer();
             buyer.setCustomerID(rs.getInt("BuyerID"));
             buyer.setFullName(rs.getString("BuyerName"));
             buyer.setPhone(rs.getString("BuyerPhone"));
@@ -69,13 +51,12 @@ public class OrderDAO extends DBContext {
             shipper.setCustomerID(rs.getInt("ShipperID_Alias"));
             shipper.setFullName(rs.getString("ShipperName"));
             shipper.setPhone(rs.getString("ShipperPhone"));
-            order.setShippers(shipper);
         }
 
         return order;
     }
 
-    private boolean hasColumn(ResultSet rs, String columnName) throws SQLException {
+    private boolean hasColumn(ResultSet rs, String columnName) {
         try {
             rs.findColumn(columnName);
             return true;
@@ -84,37 +65,45 @@ public class OrderDAO extends DBContext {
         }
     }
 
+    /* ======================== BASIC ======================== */
+    public int addNewOrder(Order o) {
+        String sql = " INSERT INTO Orders\n"
+                + "            (CustomerID, Status, PaymentMethod, ShippingAddress,\n"
+                + "             TotalAmount, IsInstalment, ReceiverName, ReceiverPhone)\n"
+                + "            VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            ps.setObject(1, o.getUserID());
+            ps.setString(2, o.getStatus());
+            ps.setString(3, o.getPaymentMethod());
+            ps.setString(4, o.getShippingAddress());
+            ps.setDouble(5, o.getTotalAmount());
+            ps.setObject(6, o.getIsInstalment());
+            ps.setString(7, o.getReceiverName());
+            ps.setString(8, o.getReceiverPhone());
+
+            ps.executeUpdate();
+            ResultSet rs = ps.getGeneratedKeys();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
     public Order getOrderById(int orderId) {
-        String sql = "SELECT o.*, c.FullName AS BuyerName "
-                + "FROM Orders o "
-                + "LEFT JOIN Customers c ON o.CustomerID = c.CustomerID "
-                + "WHERE o.OrderID = ?";
+        String sql = "SELECT o.*, c.FullName AS BuyerName\n"
+                + "            FROM Orders o\n"
+                + "            LEFT JOIN Customers c ON o.CustomerID = c.CustomerID\n"
+                + "            WHERE o.OrderID = ?";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, orderId);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                Order o = new Order();
-                o.setOrderID(rs.getInt("OrderID"));
-                o.setUserID((Integer) rs.getObject("CustomerID"));
-                o.setOrderDate(rs.getTimestamp("OrderDate") != null ? rs.getTimestamp("OrderDate").toLocalDateTime() : null);
-                o.setStatus(rs.getString("Status"));
-                o.setPaymentMethod(rs.getString("PaymentMethod"));
-                o.setShippingAddress(rs.getString("ShippingAddress"));
-                o.setTotalAmount(rs.getDouble("TotalAmount"));
-                o.setIsInstalment((Boolean) rs.getObject("IsInstalment"));
-                o.setReceiverName(rs.getString("ReceiverName"));
-                o.setReceiverPhone(rs.getString("ReceiverPhone"));
-                o.setStaffID((Integer) rs.getObject("StaffID"));
-
-                if (o.getUserID() != null) {
-                    Customer buyer = new Customer();
-                    buyer.setCustomerID(o.getUserID());
-                    buyer.setFullName(rs.getString("BuyerName"));
-                    o.setBuyer(buyer);
-                }
-
-                return o;
+                return mapResultSetToOrderWithCustomer(rs);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -122,56 +111,155 @@ public class OrderDAO extends DBContext {
         return null;
     }
 
+    /* ======================== SHIPPER ======================== */
     public List<Order> getOrdersByShipperId(int shipperID) {
         List<Order> list = new ArrayList<>();
 
-        String sql = "        SELECT \n"
-                + "            o.*,\n"
-                + "            c.FullName,\n"
-                + "            c.Phone,\n"
-                + "            c.Address\n"
-                + "        FROM Orders o\n"
-                + "        JOIN OrderShippers os ON o.OrderID = os.OrderID\n"
-                + "        JOIN Customers c ON o.CustomerID = c.CustomerID\n"
-                + "        WHERE os.ShipperID = ?\n"
-                + "        ORDER BY o.OrderDate DESC";
+        String sql = "SELECT o.*, c.FullName, c.Phone, c.Address\n"
+                + "            FROM Orders o\n"
+                + "            JOIN OrderShippers os ON o.OrderID = os.OrderID\n"
+                + "            JOIN Customers c ON o.CustomerID = c.CustomerID\n"
+                + "            WHERE os.ShipperID = ?\n"
+                + "            ORDER BY o.OrderDate DESC";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, shipperID);
             ResultSet rs = ps.executeQuery();
-
             while (rs.next()) {
-                Order o = new Order();
-
-                o.setOrderID(rs.getInt("OrderID"));
-                o.setUserID(rs.getInt("CustomerID"));
-                o.setOrderDate(rs.getTimestamp("OrderDate") != null
-                        ? rs.getTimestamp("OrderDate").toLocalDateTime()
-                        : null);
-                o.setStatus(rs.getString("Status"));
-                o.setPaymentMethod(rs.getString("PaymentMethod"));
-                o.setShippingAddress(rs.getString("ShippingAddress"));
-                o.setTotalAmount(rs.getDouble("TotalAmount"));
-                o.setIsInstalment(rs.getBoolean("IsInstalment"));
-                o.setReceiverName(rs.getString("ReceiverName"));
-                o.setReceiverPhone(rs.getString("ReceiverPhone"));
-
-                Customer buyer = new Customer();
-                buyer.setCustomerID(rs.getInt("CustomerID"));
-                buyer.setFullName(rs.getString("FullName"));
-                buyer.setPhone(rs.getString("Phone"));
-                buyer.setAddress(rs.getString("Address"));
-
-                o.setBuyer(buyer);
-
+                Order o = mapResultSetToOrderWithCustomer(rs);
                 list.add(o);
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return list;
     }
+
+    public boolean updateOrderStatusByShipper(int orderID, int shipperID, String newStatus) {
+        if (!newStatus.equals("Delivered") && !newStatus.equals("Cancelled")) {
+            return false;
+        }
+
+        String sql = "  UPDATE Orders\n"
+                + "            SET Status = ?\n"
+                + "            WHERE OrderID = ?\n"
+                + "              AND Status = 'In Transit'\n"
+                + "              AND EXISTS (\n"
+                + "                  SELECT 1 FROM OrderShippers\n"
+                + "                  WHERE OrderID = Orders.OrderID AND ShipperID = ?\n"
+                + "              )";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, newStatus);
+            ps.setInt(2, orderID);
+            ps.setInt(3, shipperID);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /* ======================== STAFF ======================== */
+    public boolean assignShipperAndStaff(int orderID, int shipperID, int staffID) {
+        try {
+            conn.setAutoCommit(false);
+
+            String updateOrder = "UPDATE Orders\n"
+                    + "                            SET StaffID = ?, Status = 'In Transit'\n"
+                    + "                            WHERE OrderID = ? AND Status = 'Pending'";
+
+            try (PreparedStatement ps = conn.prepareStatement(updateOrder)) {
+                ps.setInt(1, staffID);
+                ps.setInt(2, orderID);
+                if (ps.executeUpdate() == 0) {
+                    conn.rollback();
+                    return false;
+                }
+            }
+
+            String insertShipper = "INSERT INTO OrderShippers (OrderID, ShipperID) VALUES (?, ?)";
+            try (PreparedStatement ps = conn.prepareStatement(insertShipper)) {
+                ps.setInt(1, orderID);
+                ps.setInt(2, shipperID);
+                ps.executeUpdate();
+            }
+
+            String reduceStock = " UPDATE Variants\n"
+                    + "                SET Stock = Stock - od.Quantity\n"
+                    + "                FROM Variants v\n"
+                    + "                JOIN OrderDetails od ON v.VariantID = od.VariantID\n"
+                    + "                WHERE od.OrderID = ?";
+
+            try (PreparedStatement ps = conn.prepareStatement(reduceStock)) {
+                ps.setInt(1, orderID);
+                ps.executeUpdate();
+            }
+
+            conn.commit();
+            return true;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            try {
+                conn.rollback();
+            } catch (SQLException ignored) {
+            }
+            return false;
+        } finally {
+            try {
+                conn.setAutoCommit(true);
+            } catch (SQLException ignored) {
+            }
+        }
+    }
+
+    /* ======================== INSTALLMENT ======================== */
+    public List<Order> getAllPendingInstalment(List<Order> orders) {
+        PaymentsDAO pmdao = new PaymentsDAO();
+        List<Order> list = new ArrayList<>();
+
+        for (Order o : orders) {
+            List<Payments> payments = pmdao.getPaymentByOrderID(o.getOrderID());
+            if (payments != null) {
+                for (Payments p : payments) {
+                    if ("Pending".equals(p.getPaymentStatus())) {
+                        list.add(o);
+                        break;
+                    }
+                }
+            }
+        }
+        return list;
+    }
+
+    public List<Order> getAllCompletedInstalment(List<Order> orders) {
+        PaymentsDAO pmdao = new PaymentsDAO();
+        List<Order> list = new ArrayList<>();
+
+        for (Order o : orders) {
+            boolean pending = false;
+            List<Payments> payments = pmdao.getPaymentByOrderID(o.getOrderID());
+            if (payments != null) {
+                for (Payments p : payments) {
+                    if ("Pending".equals(p.getPaymentStatus())) {
+                        pending = true;
+                        break;
+                    }
+                }
+            }
+            if (!pending) {
+                list.add(o);
+            }
+        }
+        return list;
+    }
+ 
+
+
+    
+
+    
 
     public List<Order> getOrdersByShipperIdAndStatus(int shipperID, String status) {
         List<Order> list = new ArrayList<>();
@@ -395,30 +483,7 @@ public class OrderDAO extends DBContext {
         }
     }
 
-    public int addNewOrder(Order o) {
-        String sql = "INSERT INTO Orders (CustomerID, Status, PaymentMethod, ShippingAddress, "
-                + "TotalAmount, IsInstalment, ReceiverName, ReceiverPhone) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            ps.setObject(1, o.getUserID());
-            ps.setString(2, o.getStatus());
-            ps.setString(3, o.getPaymentMethod());
-            ps.setString(4, o.getShippingAddress());
-            ps.setDouble(5, o.getTotalAmount());
-            ps.setObject(6, o.getIsInstalment());
-            ps.setString(7, o.getReceiverName());
-            ps.setString(8, o.getReceiverPhone());
-            ps.executeUpdate();
 
-            ResultSet rs = ps.getGeneratedKeys();
-            if (rs.next()) {
-                return rs.getInt(1);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return -1;
-    }
 
     public List<OrderDetails> getAllOrderDetailByOrderID(int oid) {
         VariantsDAO vdao = new VariantsDAO();
@@ -488,43 +553,9 @@ public class OrderDAO extends DBContext {
         return list;
     }
 
-    public List<Order> getAllPendingInstalment(List<Order> listInstalment) {
-        PaymentsDAO pmdao = new PaymentsDAO();
-        List<Order> list = new ArrayList<>();
-        for (Order order : listInstalment) {
-            List<Payments> listPayment = pmdao.getPaymentByOrderID(order.getOrderID());
-            if (listPayment != null && !listPayment.isEmpty()) {
-                for (Payments payment : listPayment) {
-                    if (payment.getPaymentStatus().equals("Pending")) {
-                        list.add(order);
-                        break;
-                    }
-                }
-            }
-        }
-        return list;
-    }
 
-    public List<Order> getAllCompletedInstalment(List<Order> listInstalment) {
-        PaymentsDAO pmdao = new PaymentsDAO();
-        List<Order> list = new ArrayList<>();
-        for (Order order : listInstalment) {
-            boolean checkPending = false;
-            List<Payments> listPayment = pmdao.getPaymentByOrderID(order.getOrderID());
-            if (listPayment != null && !listPayment.isEmpty()) {
-                for (Payments payment : listPayment) {
-                    if (payment.getPaymentStatus().equals("Pending")) {
-                        checkPending = true;
-                        break;
-                    }
-                }
-            }
-            if (!checkPending) {
-                list.add(order);
-            }
-        }
-        return list;
-    }
+
+  
 
     public List<String> getAllPhone() {
         String sql = "SELECT DISTINCT ReceiverPhone FROM Orders WHERE ReceiverPhone IS NOT NULL";
@@ -776,73 +807,7 @@ public class OrderDAO extends DBContext {
         return false;
     }
 
-    /**
-     * Assign shipper to order and insert into OrderShippers table Update order
-     * status to 'In Transit' and reduce stock for variants
-     *
-     * @param orderID Order ID to assign
-     * @param shipperID Shipper ID (from Staff table with Role = 3)
-     * @param staffID Staff ID who is assigning the order
-     * @return true if successful, false otherwise
-     */
-    public boolean assignShipperAndStaff(int orderID, int shipperID, int staffID) {
-        try {
-            conn.setAutoCommit(false);
 
-            String updateOrderSQL = "UPDATE Orders SET StaffID = ?, Status = 'In Transit' "
-                    + "WHERE OrderID = ? AND Status = 'Pending'";
-
-            try (PreparedStatement stmt = conn.prepareStatement(updateOrderSQL)) {
-                stmt.setInt(1, staffID);
-                stmt.setInt(2, orderID);
-
-                int rowsAffected = stmt.executeUpdate();
-                if (rowsAffected == 0) {
-                    System.out.println("assignShipperAndStaff: Không thể cập nhật đơn hàng " + orderID);
-                    conn.rollback();
-                    return false;
-                }
-            }
-
-            String insertShipperSQL = "INSERT INTO OrderShippers (OrderID, ShipperID) VALUES (?, ?)";
-
-            try (PreparedStatement stmt = conn.prepareStatement(insertShipperSQL)) {
-                stmt.setInt(1, orderID);
-                stmt.setInt(2, shipperID);
-                stmt.executeUpdate();
-            }
-
-            String reduceStockSQL = "UPDATE Variants SET Stock = Stock - od.Quantity "
-                    + "FROM Variants v "
-                    + "INNER JOIN OrderDetails od ON v.VariantID = od.VariantID "
-                    + "WHERE od.OrderID = ?";
-
-            try (PreparedStatement stmt = conn.prepareStatement(reduceStockSQL)) {
-                stmt.setInt(1, orderID);
-                stmt.executeUpdate();
-            }
-
-            conn.commit();
-            System.out.println("assignShipperAndStaff: Thành công cho OrderID: " + orderID);
-            return true;
-
-        } catch (SQLException e) {
-            System.err.println("assignShipperAndStaff SQL Error: " + e.getMessage());
-            e.printStackTrace();
-            try {
-                conn.rollback();
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
-            return false;
-        } finally {
-            try {
-                conn.setAutoCommit(true);
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
-        }
-    }
 
     /**
      * Assign shipper only (without staff parameter - for backward
@@ -911,42 +876,6 @@ public class OrderDAO extends DBContext {
         }
     }
 
-    /**
-     * Update order status by shipper (Delivered or Cancelled)
-     *
-     * @param orderID Order ID to update
-     * @param shipperID Shipper ID updating the status
-     * @param newStatus New status (must be 'Delivered' or 'Cancelled')
-     * @return true if successful, false otherwise
-     */
-    public boolean updateOrderStatusByShipper(int orderID, int shipperID, String newStatus) {
-
-        if (!newStatus.equals("Delivered") && !newStatus.equals("Cancelled")) {
-            return false;
-        }
-
-        String sql = "    UPDATE Orders\n"
-                + "        SET Status = ?\n"
-                + "        WHERE OrderID = ?\n"
-                + "          AND Status = 'In Transit'\n"
-                + "          AND EXISTS (\n"
-                + "              SELECT 1\n"
-                + "              FROM OrderShippers os\n"
-                + "              WHERE os.OrderID = Orders.OrderID\n"
-                + "                AND os.ShipperID = ?\n"
-                + "          )";
-
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, newStatus);
-            stmt.setInt(2, orderID);
-            stmt.setInt(3, shipperID);
-
-            return stmt.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
 
     /**
      * Check order status for debugging
@@ -1101,4 +1030,7 @@ public class OrderDAO extends DBContext {
 
         return list;
     }
+
+
+
 }

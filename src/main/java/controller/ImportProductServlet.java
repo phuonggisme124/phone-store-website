@@ -57,7 +57,7 @@ public class ImportProductServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         response.setCharacterEncoding("UTF-8");
-        
+
         ProductDAO pdao = new ProductDAO();
         SupplierDAO sldao = new SupplierDAO();
         CategoryDAO ctdao = new CategoryDAO();
@@ -69,7 +69,7 @@ public class ImportProductServlet extends HttpServlet {
         if (action == null) {
             action = "default";
         }
-        
+
         // Kiểm tra quyền truy cập (Optional - tránh lỗi null khi chưa login)
         HttpSession session = request.getSession();
         Object userObj = session.getAttribute("user");
@@ -85,13 +85,21 @@ public class ImportProductServlet extends HttpServlet {
                 List<Import> list = idao.getAllImports();
                 request.setAttribute("listImports", list);
                 request.getRequestDispatcher("staff/staff_import_history.jsp").forward(request, response);
-                
+
             } else if (action.equals("showImportForm")) {
                 // Hiện form nhập hàng 
                 List<Suppliers> listSup = sldao.getAllSupplier();
                 request.setAttribute("listSup", listSup);
 
                 List<Variants> listVar = vdao.getAllVariantsWithProductName();
+                // --- THÊM ĐOẠN DEBUG NÀY ---
+                if (listVar == null || listVar.isEmpty()) {
+                    System.out.println("DEBUG: listVar bị RỖNG! Kiểm tra lại SQL trong VariantsDAO.");
+                } else {
+                    System.out.println("DEBUG: listVar có dữ liệu. Số lượng: " + listVar.size());
+                    // Kiểm tra thử phần tử đầu tiên
+                    System.out.println("DEBUG: Phần tử 1 - CategoryID: " + listVar.get(0).getCategoryID());
+                }
                 request.setAttribute("listVar", listVar);
 
                 List<Products> listProducts = pdao.getAllProduct();
@@ -100,7 +108,7 @@ public class ImportProductServlet extends HttpServlet {
                 request.setAttribute("listCategories", listCategories);
 
                 request.getRequestDispatcher("staff/staff_importProduct.jsp").forward(request, response);
-                
+
             } else if (action.equals("viewDetail")) {
                 try {
                     int id = Integer.parseInt(request.getParameter("id"));
@@ -109,13 +117,13 @@ public class ImportProductServlet extends HttpServlet {
 
                     // 2. Gửi sang trang JSP chi tiết
                     request.setAttribute("listDetails", listDetails);
-                    request.setAttribute("importID", id); 
+                    request.setAttribute("importID", id);
 
                     request.getRequestDispatcher("/staff/staff_import_detail.jsp").forward(request, response);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                
+
             } else if (action.equals("createProductPage")) {
                 // 1. Lấy danh sách Category
                 List<Category> listCategories = ctdao.getAllCategories();
@@ -125,7 +133,7 @@ public class ImportProductServlet extends HttpServlet {
                 request.setAttribute("listSupplier", listSupplier);
                 // 3. Chuyển hướng
                 request.getRequestDispatcher("staff/staff_createProduct.jsp").forward(request, response);
-                
+
             } else if (action.equals("createVariantPage")) {
                 List<Products> listProducts = pdao.getAllProduct();
                 request.setAttribute("listProducts", listProducts);
@@ -143,10 +151,10 @@ public class ImportProductServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         try {
             HttpSession session = request.getSession();
-            
+
             // --- SỬA LỖI Ở ĐÂY: Thay vì Customer, ta lấy Staff ---
             Object userObj = session.getAttribute("user");
             Staff currentStaff = null;
@@ -158,7 +166,7 @@ public class ImportProductServlet extends HttpServlet {
                 response.sendRedirect("login.jsp");
                 return;
             }
-            
+
             // --- DEBUG LOG ---
             System.out.println("---------------- IMPORT PROCESS ----------------");
             System.out.println("Staff performing import: " + currentStaff.getFullName() + " (ID: " + currentStaff.getStaffID() + ")");
@@ -170,17 +178,17 @@ public class ImportProductServlet extends HttpServlet {
             String[] qualities = request.getParameterValues("quantity");
             String[] costPrice = request.getParameterValues("costPrice");
             String[] discountPrices = request.getParameterValues("discountPrice");
-            
+
             List<ImportDetail> listDetails = new ArrayList<>();
             double totalPrice = 0;
-            
+
             if (variantID != null) {
                 for (int i = 0; i < variantID.length; i++) {
                     int vID = Integer.parseInt(variantID[i]);
                     int qty = Integer.parseInt(qualities[i]);
                     double price = Double.parseDouble(costPrice[i]);
                     totalPrice += (qty * price); // tính tổng phiếu nhập  
-                    
+
                     // Parse giá bán (discountPrice)
                     double discountPrice = 0;
                     if (discountPrices != null && discountPrices.length > i && !discountPrices[i].trim().isEmpty()) {
@@ -190,7 +198,7 @@ public class ImportProductServlet extends HttpServlet {
                             discountPrice = 0;
                         }
                     }
-                    
+
                     ImportDetail detail = new ImportDetail();
                     detail.setVariantID(vID);
                     detail.setQuality(qty);
@@ -199,16 +207,16 @@ public class ImportProductServlet extends HttpServlet {
                     listDetails.add(detail);
                 }
             }
-            
+
             Import imp = new Import();
             // Sử dụng ID của Staff
-            imp.setStaffID(currentStaff.getStaffID() ); 
-            
+            imp.setStaffID(currentStaff.getStaffID());
+
             imp.setSupplierID(supplierID);
             imp.setTotalCost(totalPrice);
             imp.setNote(note);
             imp.setStatus(0); // 0: Pending, 1: Completed
-            
+
             ImportDAO dao = new ImportDAO();
             boolean result = dao.insertImportTransaction(imp, listDetails);
 
@@ -220,7 +228,7 @@ public class ImportProductServlet extends HttpServlet {
                 request.setAttribute("ERROR", "Lỗi SQL: Không thể tạo phiếu nhập.");
                 request.getRequestDispatcher("staff/staff_importProduct.jsp").forward(request, response);
             }
-            
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -231,3 +239,4 @@ public class ImportProductServlet extends HttpServlet {
         return "Import Product Servlet";
     }
 }
+

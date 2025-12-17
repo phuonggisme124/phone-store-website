@@ -181,32 +181,57 @@ public class VoucherServlet extends HttpServlet {
         String status = request.getParameter("status");
 
         if (action.equals("createVoucher")) {
-            if (dao.checkVoucherCodeExist(code)) {
-                // A. Báo lỗi
-                request.setAttribute("error", "Mã Voucher '" + code + "' đã tồn tại!");
+            // 1. Chuẩn bị dữ liệu để so sánh ngày
+            long millis = System.currentTimeMillis();
+            // Dùng java.time.LocalDate để lấy đúng ngày hôm nay (00:00:00)
+            java.sql.Date today = java.sql.Date.valueOf(java.time.LocalDate.now());
+            String errorMsg = null;
 
-                // B. Gửi lại dữ liệu cũ để form không bị trắng trơn
+            // 2. CHUỖI KIỂM TRA LOGIC (Validate)
+            // Bước A: Kiểm tra trùng tên trước
+            if (dao.checkVoucherCodeExist(code)) {
+                errorMsg = "Mã Voucher '" + code + "' đã tồn tại!";
+            } // Bước B: Kiểm tra ngày bắt đầu phải >= hôm nay
+            else if (start.before(today)) {
+                errorMsg = "Ngày bắt đầu không được nhỏ hơn ngày hiện tại!";
+            } // Bước C: Kiểm tra ngày kết thúc phải > ngày bắt đầu
+            else if (end.before(start)) {
+                errorMsg = "Ngày kết thúc không được nhỏ hơn ngày bắt đầu!";
+            }
+
+            // 3. XỬ LÝ KẾT QUẢ
+            if (errorMsg != null) {
+                // === TRƯỜNG HỢP CÓ LỖI ===
+                request.setAttribute("error", errorMsg);
+
+                // Giữ lại dữ liệu cũ để form không bị trắng xóa
                 request.setAttribute("code", code);
                 request.setAttribute("percentDiscount", percent);
                 request.setAttribute("startDay", start);
                 request.setAttribute("endDay", end);
                 request.setAttribute("quantity", quantity);
 
+                // Lưu ý: attribute "status" nếu cần cũng set lại luôn
+
+                // Điều hướng lại trang nhập liệu
                 if (user.getRole() == 2) {
                     request.getRequestDispatcher("staff/staff_manageVoucher_create.jsp").forward(request, response);
                 } else if (user.getRole() == 4) {
                     request.getRequestDispatcher("admin/admin_manageVoucher_create.jsp").forward(request, response);
                 }
-                return; // Dừng code tại đây
+
+                return; // Dừng code tại đây, KHÔNG chạy xuống dưới nữa
             }
+
+            // === TRƯỜNG HỢP THÀNH CÔNG (Không có lỗi) ===
             Vouchers v = new Vouchers(0, code, percent, start, end, quantity, status);
             dao.createVoucher(v);
+
         } else if (action.equals("updateVoucher")) {
             int id = Integer.parseInt(request.getParameter("id"));
             Vouchers v = new Vouchers(id, code, percent, start, end, quantity, status);
             dao.updateVoucher(v);
         }
-
         if (user.getRole() == 4) {
             response.sendRedirect("admin?action=viewVoucher");
         } else if (user.getRole() == 2) {

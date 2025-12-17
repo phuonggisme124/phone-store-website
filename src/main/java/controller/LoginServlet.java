@@ -172,3 +172,6 @@ public class LoginServlet extends HttpServlet {
         return "Servlet for handling customer login and logout.";
     }
 }
+
+
+

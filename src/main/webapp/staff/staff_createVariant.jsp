@@ -1,4 +1,5 @@
 
+<%@page import="model.Staff"%>
 <%@page import="model.Suppliers"%>
 <%@page import="model.Products"%>
 <%@page import="model.Variants"%>
@@ -73,7 +74,7 @@
         </style>
     </head>
     <body>
-        <% Users currentUser = (Users) session.getAttribute("user");%>
+        <% Staff currentUser = (Staff) session.getAttribute("user");%>
 
         <div class="d-flex-wrapper">
 
@@ -88,6 +89,9 @@
                     <li><a href="review?action=manageReview"><i class="bi bi-chat-left-text me-2"></i>Reviews</a></li>
 
                     <li><a href="importproduct?action=staff_import" class="fw-bold text-primary"><i class="bi bi-chat-left-text me-2"></i>importProduct</a></li>
+                    <li><a href="voucher?action=viewVoucher" class="fw-bold text-primary">
+                        <i class="bi bi-ticket-perforated me-2"></i>Voucher
+                    </a></li>
                 </ul>
             </nav>
 

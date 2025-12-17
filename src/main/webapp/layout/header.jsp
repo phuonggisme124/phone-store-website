@@ -135,14 +135,14 @@
 
     <body data-bs-spy="scroll" data-bs-target="#navbar" data-bs-root-margin="0px 0px -40%" data-bs-smooth-scroll="true" tabindex="0">
 
-    <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
-        <symbol id="search" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-            <title>Search</title>
-            <path fill="currentColor" d="M19 3C13.488 3 9 7.488 9 13c0 2.395.84 4.59 2.25 6.313L3.281 27.28l1.439 1.44l7.968-7.969A9.922 9.922 0 0 0 19 23c5.512 0 10-4.488 10-10S24.512 3 19 3zm0 2c4.43 0 8 3.57 8 8s-3.57 8-8 8s-8-3.57-8-8s3.57-8 8-8z" />
-        </symbol>
-        <symbol xmlns="http://www.w3.org/2000/svg" id="navbar-icon" viewBox="0 0 16 16">
-            <path d="M14 10.5a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0 0 1h3a.5.5 0 0 0 .5-.5zm0-3a.5.5 0 0 0-.5-.5h-7a.5.5 0 0 0 0 1h7a.5.5 0 0 0 .5-.5zm0-3a.5.5 0 0 0-.5-.5h-11a.5.5 0 0 0 0 1h11a.5.5 0 0 0 .5-.5z" />
-        </symbol>
+        <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+    <symbol id="search" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+        <title>Search</title>
+        <path fill="currentColor" d="M19 3C13.488 3 9 7.488 9 13c0 2.395.84 4.59 2.25 6.313L3.281 27.28l1.439 1.44l7.968-7.969A9.922 9.922 0 0 0 19 23c5.512 0 10-4.488 10-10S24.512 3 19 3zm0 2c4.43 0 8 3.57 8 8s-3.57 8-8 8s-8-3.57-8-8s3.57-8 8-8z" />
+    </symbol>
+    <symbol xmlns="http://www.w3.org/2000/svg" id="navbar-icon" viewBox="0 0 16 16">
+        <path d="M14 10.5a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0 0 1h3a.5.5 0 0 0 .5-.5zm0-3a.5.5 0 0 0-.5-.5h-7a.5.5 0 0 0 0 1h7a.5.5 0 0 0 .5-.5zm0-3a.5.5 0 0 0-.5-.5h-11a.5.5 0 0 0 0 1h11a.5.5 0 0 0 .5-.5z" />
+    </symbol>
     </svg> 
 
     <header id="header" class="site-header position-fixed">
@@ -215,7 +215,12 @@
                                 <a class="nav-link me-4 <%= ("viewpromotion".equals(currentAction)) ? "active" : ""%>"
                                    href="${pageContext.request.contextPath}/homepage?action=viewpromotion">View Hot Promotions</a>
                             </li>
-                            
+                            <li>
+                                <a class="dropdown-item" href="voucher?action=viewMyVouchers">
+                                    <i class="fas fa-ticket-alt me-2"></i> View My Voucher
+                                </a>
+                            </li>
+
                             <li class="nav-item flex-grow-1"> 
                                 <div id="headerSearchContainer">
                                     <%
@@ -287,7 +292,7 @@
                                     %>
                                     <li class="pe-3">
                                         <form action="${pageContext.request.contextPath}/cart" method="get" class="d-inline-block position-relative">
-                                            <input type="hidden" name="userID" value="<%=user.getCustomerID() %>">
+                                            <input type="hidden" name="userID" value="<%=user.getCustomerID()%>">
                                             <button type="submit" class="position-relative border-0 bg-transparent p-0">
                                                 <i class="bi bi-cart text-dark fs-4"></i>
                                                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"><%=carts != null ? carts.size() : 0%></span>
@@ -301,7 +306,7 @@
                                             <span id="notifCount" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">0</span>
                                         </button>
                                         <div id="notification-dropdown" class="notification-dropdown shadow rounded">
-                                            </div>
+                                        </div>
                                     </li>
 
                                     <li class="pe-3">
@@ -340,7 +345,7 @@
     </form>
 
     <script>
-        // SCRIPT LOGIC GIá»® NGUYÃN NHÆ¯NG ÄÃ ÄÆ¯á»¢C CHUáº¨N HÃA Vá»I JS HIá»N Äáº I
+        // SCRIPT LOGIC GIá»® NGUYÃN NHÆ¯NG ÄÃ ÄÆ¯á»¢C CHUáº¨N HÃA Vá»I JS HIá»N Äáº I
         document.addEventListener("DOMContentLoaded", function () {
             const headerSearchInput = document.getElementById('headerSearchInput');
             const headerSearchResults = document.getElementById('headerSearchResults');
@@ -391,7 +396,7 @@
                 }
             });
 
-            
+
 
             document.addEventListener('click', function (e) {
                 if (headerSearchContainer && !headerSearchContainer.contains(e.target)) {
@@ -406,27 +411,25 @@
 
 
         (function () {
-            
+
             const header = document.querySelector('header.site-header');
 
-            
+
             const scrollThreshold = 50;
 
             if (!header) {
-                return; 
+                return;
             }
 
-            
+
             window.addEventListener('scroll', function () {
-                
+
                 let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
-                
+
                 if (scrollTop > scrollThreshold) {
                     header.classList.add('header-scrolled');
-                }
-                
-                else {
+                } else {
 
                     header.classList.remove('header-scrolled');
                 }
@@ -466,5 +469,9 @@
         });
 
     </script>
+
 </body>
 </html>
+
+
+

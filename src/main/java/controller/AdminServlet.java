@@ -16,6 +16,7 @@ import dao.ReviewDAO;
 import dao.SupplierDAO;
 import dao.CustomerDAO;
 import dao.VariantsDAO;
+import dao.VouchersDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -49,6 +50,7 @@ import model.Sale;
 import model.Suppliers;
 import model.Customer;
 import model.Variants;
+import model.Vouchers;
 
 /**
  *
@@ -113,6 +115,7 @@ public class AdminServlet extends HttpServlet {
         ProfitDAO pfdao = new ProfitDAO();
         HttpSession session = request.getSession();
         ImportDAO imdao = new ImportDAO();
+        VouchersDAO vouDAO = new VouchersDAO();
 
         System.out.println("DEBUG: Action nhận được = " + action);
         if (action == null) {
@@ -224,6 +227,24 @@ public class AdminServlet extends HttpServlet {
             }
             // Quay lại trang danh sách của ADMIN
             response.sendRedirect("admin?action=importproduct");
+        } if (action.equals("viewVoucher")) {
+            List<Vouchers> list = vouDAO.getAllVouchers();
+            request.setAttribute("listVouchers", list);
+            request.getRequestDispatcher("admin/admin_manageVoucher_view.jsp").forward(request, response);
+        }  else if (action.equals("createVoucher")) {
+            CustomerDAO cdao = new CustomerDAO();
+            List<Customer> listCustomer = cdao.getAllCustomers();
+            request.setAttribute("listCustomers", listCustomer);
+            request.getRequestDispatcher("admin/admin_manageVoucher_create.jsp").forward(request, response);
+        } else if (action.equals("updateVoucher")) {
+            int id = Integer.parseInt(request.getParameter("id"));
+            Vouchers v = vouDAO.getVoucherByID(id);
+            request.setAttribute("voucher", v);
+            request.getRequestDispatcher("admin/admin_manageVoucher_edit.jsp").forward(request, response);
+        } else if (action.equals("deleteVoucher")) {
+            int id = Integer.parseInt(request.getParameter("id"));
+            vouDAO.deleteVoucher(id);
+            response.sendRedirect("admin?action=viewVoucher");
         }
 
     }
@@ -261,6 +282,8 @@ public class AdminServlet extends HttpServlet {
     }// </editor-fold>
 
 }
+
+
 
 
 

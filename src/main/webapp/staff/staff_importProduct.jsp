@@ -81,10 +81,13 @@
                     <h4 class="fw-bold text-primary">Mantis</h4>
                 </div>
                 <ul class="list-unstyled ps-3">
-                    <li class="mb-2"><a href="product?action=manageProduct" class="text-decoration-none text-dark d-block p-2"><i class="bi bi-box me-2"></i>Products</a></li>
-                    <li class="mb-2"><a href="order?action=manageOrder" class="text-decoration-none text-dark d-block p-2"><i class="bi bi-bag me-2"></i>Orders</a></li>
-                    <li class="mb-2"><a href="review?action=manageReview" class="text-decoration-none text-dark d-block p-2"><i class="bi bi-chat-left-text me-2"></i>Reviews</a></li>
-                    <li class="mb-2"><a href="importproduct?action=staff_import" class="fw-bold text-primary bg-light d-block p-2 rounded"><i class="bi bi-file-earmark-arrow-down me-2"></i>Import Product</a></li>
+                    <li><a href="product?action=manageProduct"><i class="bi bi-box me-2"></i>Products</a></li>
+                    <li><a href="order?action=manageOrder"><i class="bi bi-bag me-2"></i>Orders</a></li>
+
+                    <li><a href="review?action=manageReview"><i class="bi bi-chat-left-text me-2"></i>Reviews</a></li>
+
+                    <li><a href="importproduct?action=staff_import" class="fw-bold text-primary"><i class="bi bi-chat-left-text me-2"></i>importProduct</a></li>
+                    <li><a href="voucher?action=viewVoucher" class="fw-bold text-primary"><i class="bi bi-chat-left-text me-2"></i>Voucher</a></li>
                 </ul>
             </nav>
 
@@ -351,7 +354,7 @@
                             document.getElementById("displayTotal").innerText = formatCurrency(totalAmount);
                         }
 
-                       
+
                         // 4. HÀM THÊM DÒNG (LOGIC CỘNG DỒN)
                         function addRow() {
                             var selectBox = document.getElementById("selectVariant");
@@ -366,44 +369,63 @@
                             var rawSellingPrice = document.getElementById("inputSellingPrice").value.replace(/\./g, '');
                             var sellingPrice = parseFloat(rawSellingPrice) || 0;
                             var rawCostPrice = document.getElementById("inputPrice").value.replace(/\./g, '');
-                            var costPrice = parseFloat(rawCostPrice) || 0;
-                            var qty = parseInt(document.getElementById("inputQty").value);
+                            var costPrice = parseFloat(rawCostPrice) || 0; // ĐÂY LÀ GIÁ MỚI NHẤT
+                            var qty = parseInt(document.getElementById("inputQty").value); // SL MỚI NHẬP
 
                             if (isNaN(qty) || qty <= 0 || costPrice < 0) {
                                 alert("Số lượng và giá nhập phải hợp lệ!");
                                 return;
                             }
-
-                            if (costPrice > sellingPrice && sellingPrice > 0) {
-                                if (!confirm("Cảnh báo: Giá nhập (" + formatCurrency(costPrice) + ") đang CAO HƠN giá bán (" + formatCurrency(sellingPrice) + ")! Bạn có chắc chắn muốn nhập?")) {
-                                    document.getElementById("inputPrice").focus();
-                                    return;
-                                }
+                            if (costPrice < 100000) {
+                                alert("Giá nhập phải tối thiểu là 100.000 VNĐ!");
+                                document.getElementById("inputPrice").focus();
+                                return;
                             }
 
-                            // LOGIC CỘNG DỒN: ID dòng bây giờ kết hợp cả variantID và giá nhập
-                            // Ví dụ: row-101-5000000 (Variant 101, giá nhập 5tr)
-                            var rowId = "row-" + variantID + "-" + costPrice;
+                            if (costPrice > sellingPrice && sellingPrice > 0) {
+                                alert("LỖI: Giá nhập (" + formatCurrency(costPrice) + ") đang CAO HƠN giá bán (" + formatCurrency(sellingPrice) + ")! \nKhông được phép nhập lỗ vốn.");
+                                document.getElementById("inputPrice").focus();
+                                return; // Dừng hàm ngay lập tức, không thêm dòng
+                            }
+                            // --- THAY ĐỔI 1: ID chỉ dựa trên variantID, bỏ costPrice ra khỏi ID ---
+                            var rowId = "row-" + variantID;
                             var existingRow = document.getElementById(rowId);
 
                             if (existingRow) {
-                                // Update dòng cũ (Chỉ khi cùng Variant VÀ cùng Giá nhập)
-                                var qtyInput = existingRow.querySelector("input[name='quantity']");
-                                // Giá nhập không đổi vì đã check trùng giá rồi
+                                // --- THAY ĐỔI 2: Logic khi dòng đã tồn tại ---
 
-                                var oldQty = parseInt(qtyInput.value);
+                                // 1. Lấy thông tin cũ từ dòng hiện tại
+                                var oldQtyInput = existingRow.querySelector("input[name='quantity']");
+                                var oldPriceInput = existingRow.querySelector("input[name='costPrice']");
 
-                                var oldSubTotal = oldQty * costPrice;
-                                var newQty = oldQty + qty;
-                                var newSubTotal = newQty * costPrice;
+                                var oldQty = parseInt(oldQtyInput.value);
+                                var oldPrice = parseFloat(oldPriceInput.value);
 
+                                // 2. Tính toán lại
+                                var oldSubTotal = oldQty * oldPrice; // Thành tiền cũ (để trừ ra khỏi tổng)
+
+                                var newQty = oldQty + qty;       // Cộng dồn số lượng
+                                var newPrice = costPrice;        // LẤY GIÁ MỚI NHẤT (theo yêu cầu của bạn)
+                                var newSubTotal = newQty * newPrice; // Thành tiền mới (SL mới * Giá mới)
+
+                                // 3. Cập nhật biến tổng tiền toàn cục (Trừ cái cũ, cộng cái mới)
                                 totalAmount = totalAmount - oldSubTotal + newSubTotal;
 
-                                // Cập nhật lại số lượng và thành tiền
-                                existingRow.cells[2].innerHTML = newQty + "<input type='hidden' name='quantity' value='" + newQty + "'>";
+                                // 4. Cập nhật lại giao diện (HTML) của dòng đó
+
+                                // Cập nhật cột Giá nhập (Cell index 1) -> Cập nhật giá mới
+                                existingRow.cells[1].innerHTML = formatCurrency(newPrice) +
+                                        "<input type='hidden' name='costPrice' value='" + newPrice + "'>";
+
+                                // Cập nhật cột Số lượng (Cell index 2) -> Cập nhật SL cộng dồn
+                                existingRow.cells[2].innerHTML = newQty +
+                                        "<input type='hidden' name='quantity' value='" + newQty + "'>";
+
+                                // Cập nhật cột Thành tiền (Cell index 3)
                                 existingRow.cells[3].innerText = formatCurrency(newSubTotal);
+
                             } else {
-                                // Tạo dòng mới (Khác Variant HOẶC Khác Giá)
+                                // --- Logic khi dòng chưa tồn tại (Tạo mới) ---
                                 var subTotal = costPrice * qty;
                                 totalAmount += subTotal;
 
@@ -428,16 +450,32 @@
 
                             updateTotalDisplay();
 
-                            // --- PHẦN SỬA ĐỔI ĐỂ RESET FORM ---
+                            // Reset Form
                             resetInputs();
                             var variantSelect = document.getElementById("selectVariant");
                             variantSelect.innerHTML = '<option value="" data-price="0">-- Màu / DL --</option>';
                             variantSelect.value = "";
                             document.getElementById("selectProductName").value = "";
-                            // -----------------------------------
+                        }
+
+// Hàm xóa dòng cần sửa lại một chút để lấy đúng giá trị trừ tiền
+                        function removeRow(btn) {
+                            var row = btn.parentNode.parentNode;
+
+                            // Lấy input giá và số lượng để tính số tiền cần trừ
+                            var price = parseFloat(row.querySelector("input[name='costPrice']").value);
+                            var qty = parseInt(row.querySelector("input[name='quantity']").value);
+
+                            var deductAmount = price * qty;
+
+                            totalAmount -= deductAmount;
+                            updateTotalDisplay();
+                            row.parentNode.removeChild(row);
                         }
         </script>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     </body>
 </html>
+
+

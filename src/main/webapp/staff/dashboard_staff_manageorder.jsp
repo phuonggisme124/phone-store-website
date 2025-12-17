@@ -342,6 +342,9 @@
                     <li><a href="order?action=manageOrder" class="fw-bold text-primary"><i class="bi bi-bag me-2"></i>Orders</a></li>
                     <li><a href="review?action=manageReview"><i class="bi bi-chat-left-text me-2"></i>Reviews</a></li>
                     <li><a href="importproduct?action=staff_import"><i class="bi bi-box-arrow-in-down me-2"></i>Import Product</a></li>
+                    <li><a href="voucher?action=viewVoucher" class="fw-bold text-primary">
+                        <i class="bi bi-ticket-perforated me-2"></i>Voucher
+                    </a></li>
                 </ul>
             </nav>
 
@@ -498,12 +501,12 @@
                                                     StaffDAO sdao = new StaffDAO();
                                                     Integer shipperID = (Integer) o.getShipperID();
                                                     Staff shipper = null;
-                                                    if(shipperID != null ){
-                                                     shipper = sdao.getStaffByID(o.getShipperID());
+                                                    if (shipperID != null) {
+                                                        shipper = sdao.getStaffByID(o.getShipperID());
                                                     }
-                                                    
+
                                                     boolean isPending = status != null && "pending".equalsIgnoreCase(status.trim());
-                                                    boolean hasShipper = shipper!= null;
+                                                    boolean hasShipper = shipper != null;
                                                     boolean isCancelled = status != null && "cancelled".equalsIgnoreCase(status.trim());
                                                 %>
 
@@ -832,3 +835,6 @@
         </script>
     </body>
 </html>
+
+
+

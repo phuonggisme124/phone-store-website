@@ -1,3 +1,4 @@
+<%@page import="model.Staff"%>
 <%@page import="java.util.List"%>
 <%@page import="model.Order"%>
 <%@page import="model.Users"%>
@@ -47,7 +48,7 @@
     <body>
         <%
             List<Order> orders = (List<Order>) request.getAttribute("orders");
-            Users currentUser = (Users) session.getAttribute("user");
+            Staff currentUser = (Staff) session.getAttribute("user");
 
             NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(new Locale("en", "US"));
             currencyFormatter.setMaximumFractionDigits(0);
@@ -67,7 +68,7 @@
                 <nav class="navbar navbar-light bg-white shadow-sm">
                     <div class="container-fluid d-flex justify-content-end">
                         <div class="d-flex align-items-center">
-                            <img src="https://i.pravatar.cc/40?u=<%= currentUser != null ? currentUser.getUserId() : "staff"%>" class="rounded-circle me-2" width="35">
+                            <img src="https://i.pravatar.cc/40?u=<%= currentUser != null ? currentUser.getStaffID() : "staff"%>" class="rounded-circle me-2" width="35">
                             <span>Staff (<%= currentUser != null ? currentUser.getFullName() : "Unknown"%>)</span>
                         </div>
                     </div>
