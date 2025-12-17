@@ -25,7 +25,7 @@
     <body>
         <%
             // 1. LOGIC GIỮ NGUYÊN
-            Staff currentUser = (Staff) session.getAttribute("user");
+            Staff currentUser = (Staff) session.getAttribute("admin");
             
             // Xử lý roleTable (Tránh null pointer)
             Integer roleTableObj = (Integer) request.getAttribute("role");

@@ -2,6 +2,8 @@ package model;
 
 import java.sql.Timestamp;
 import java.sql.Date;
+import java.time.LocalDate;
+import java.time.Period;
 
 public class Customer {
 
@@ -142,6 +144,18 @@ public class Customer {
     public int getRole() {
         return 1;
     }
+    
+    public int getAge() {
+        if (yob == null) {
+            return 0;
+        }
+        LocalDate birthDate = new java.sql.Date(yob.getTime()).toLocalDate();
+        LocalDate currentDate = LocalDate.now();
+        return Period.between(birthDate, currentDate).getYears();
+    }
+
+
+
 
     @Override
     public String toString() {

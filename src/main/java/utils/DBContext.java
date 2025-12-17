@@ -27,7 +27,6 @@ public class DBContext {
                     + "databaseName=PhoneStore;"
                     + "user=sa;"
                     + "password=123456;"
-
                     + "encrypt=true;trustServerCertificate=true;";
 
             // Establish the connection

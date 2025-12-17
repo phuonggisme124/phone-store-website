@@ -441,8 +441,10 @@ public class ProductDAO extends DBContext {
                 int id = rs.getInt("InterestRateID");
                 int instalmentPeriod = rs.getInt("InstalmentPeriod");
                 int percent = rs.getInt("Percent");
+                float percentExpried = rs.getFloat("PercentExpried");
+                InterestRate ir = new InterestRate(id, percent, instalmentPeriod, percentExpried);
 
-                list.add(new InterestRate(id, percent, instalmentPeriod));
+                list.add(ir);
             }
 
         } catch (Exception e) {
@@ -451,6 +453,7 @@ public class ProductDAO extends DBContext {
 
         return list;
     }
+
 
     public Specification getSpecificationByProductID(int productID) {
         String sql = "Select * from Specifications WHERE ProductID = ? ";

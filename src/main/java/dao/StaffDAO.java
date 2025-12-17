@@ -282,9 +282,9 @@ public class StaffDAO extends DBContext {
     /**
      * Delete role-specific entry.
      */
-    public void deleteByRole(int userId, int oldRole) {
+    public void deleteByRole(int userId, int role) {
         String sql = null;
-        if (oldRole >1) {
+        if (role >1) {
             sql = "DELETE FROM Staff WHERE StaffID = ?";
         } else {
             sql = "DELETE FROM Customers WHERE CustomerID = ?";

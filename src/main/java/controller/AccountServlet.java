@@ -68,26 +68,10 @@ public class AccountServlet extends HttpServlet {
         String action = request.getParameter("action");
         // Check login and determine user type
         HttpSession session = request.getSession();
-        Object userObj = session.getAttribute("user");
-
-        Customer customer = null;
-        Staff staff = null;
-
-        if (userObj instanceof Customer) {
-            customer = (Customer) userObj;
-        } else if (userObj instanceof Staff) {
-            staff = (Staff) userObj;
-        }
-
-        if (customer == null && staff == null) {
-            response.sendRedirect("login.jsp");
-            return;
-        }
-        if (action == null || action.isEmpty()) {
-            action = "null";
-        }
+        Staff admin = (Staff) session.getAttribute("user");
         if ("edit".equals(action)) {
-            if (staff != null && (staff.getRole() == 2 || staff.getRole() == 4)) {
+
+            if (admin != null && (admin.getRole() == 4)) {
                 String idStr = request.getParameter("id");
                 String roleStr = request.getParameter("role");
                 if (idStr != null && !idStr.isEmpty()) {
@@ -119,7 +103,7 @@ public class AccountServlet extends HttpServlet {
             if (roleStr == null || roleStr.isEmpty() || roleStr.equals("2")) {
                 role = 2;
             }
-            if (staff != null && (staff.getRole() == 4)) {
+            if (admin != null && (admin.getRole() == 4)) {
                 List<Customer> listCustomers = cdao.getAllCustomers();
                 List<Staff> listStaff = sdao.getAllStaffs();
                 request.setAttribute("listCustomers", listCustomers);
@@ -132,7 +116,7 @@ public class AccountServlet extends HttpServlet {
                 response.sendRedirect("admin");
             }
         } else if ("createAccount".equals(action)) {
-            if (staff != null && staff.getRole() == 4) {
+            if (admin != null && admin.getRole() == 4) {
                 request.getRequestDispatcher("admin/admin_manageuser_create.jsp").forward(request, response);
             } else {
                 // If not admin, redirect or show error
@@ -158,23 +142,9 @@ public class AccountServlet extends HttpServlet {
         CustomerDAO cdao = new CustomerDAO();
         String action = request.getParameter("action");
         // Check login and determine user type
-        HttpSession session = request.getSession();
-        Object userObj = session.getAttribute("user");
+        HttpSession session = request.getSession(false);
+        Staff admin = (Staff) session.getAttribute("admin");
 
-        Customer customer = null;
-        Staff staff = null;
-
-        if (userObj instanceof Customer) {
-            customer = (Customer) userObj;
-        } else if (userObj instanceof Staff) {
-            staff = (Staff) userObj;
-        }
-
-        if (customer == null && staff == null) {
-            response.sendRedirect("login.jsp");
-            return;
-        }
-        
         if (action.equals("updateUserAdmin")) {
             int userId = Integer.parseInt(request.getParameter("userId"));
             String name = request.getParameter("name");

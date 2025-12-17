@@ -2,15 +2,11 @@ package controller;
 
 import dao.CategoryDAO;
 import dao.OrderDAO;
-import dao.PaymentsDAO;
+
 import dao.ProductDAO;
 import dao.CustomerDAO;
 import dao.OrderDetailDAO;
 import dao.VariantsDAO;
-
-import dao.VariantsDAO;
-import dao.VariantsDAO;
-
 import java.io.IOException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -24,12 +20,14 @@ import model.Category;
 import model.InterestRate;
 import model.Order;
 import model.OrderDetails;
-import model.Payments;
+
 import model.Customer;
 import model.Staff;
 import com.google.gson.Gson;
+import dao.InstallmentDetailDAO;
 
 import dao.StaffDAO;
+import model.InstallmentDetail;
 
 /**
  * OrderServlet - Handles order management for Staff, Shipper, Admin, and
@@ -44,7 +42,7 @@ public class OrderServlet extends HttpServlet {
 
     private final ProductDAO pdao = new ProductDAO();
     private final OrderDAO dao = new OrderDAO();
-    private final PaymentsDAO paydao = new PaymentsDAO();
+    private final InstallmentDetailDAO paydao = new InstallmentDetailDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -247,13 +245,13 @@ public class OrderServlet extends HttpServlet {
                 return;
             }
             int oid = Integer.parseInt(idParam);
-            String isInstalmentParam = request.getParameter("isIntalment");
-            boolean isInstalment = (isInstalmentParam != null) ? Boolean.parseBoolean(isInstalmentParam) : false;
+           
+            
 
             List<OrderDetails> listOrderDetails = dao.getAllOrderDetailByOrderID(oid);
-            List<Payments> listPayments = paydao.getPaymentByOrderID(oid);
+            List<InstallmentDetail> listPayments = paydao.getPaymentByOrderID(oid);
             List<InterestRate> listInterestRate = pdao.getAllInterestRate();
-
+            boolean isInstalment = (listPayments != null && !listPayments.isEmpty());
             request.setAttribute("listOrderDetails", listOrderDetails);
             request.setAttribute("listInterestRate", listInterestRate);
             request.setAttribute("listPayments", listPayments);

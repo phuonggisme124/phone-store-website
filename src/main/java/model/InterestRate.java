@@ -12,16 +12,28 @@ public class InterestRate {
     private int interestRateID;
     private int percent;
     private int instalmentPeriod;
+    private float percentExpried;
 
     public InterestRate(int percent, int instalmentPeriod) {
         this.percent = percent;
         this.instalmentPeriod = instalmentPeriod;
     }
 
-    public InterestRate(int interestRateID, int percent, int instalmentPeriod) {
+    public InterestRate(int interestRateID, int percent, int instalmentPeriod, float percentExpried) {
         this.interestRateID = interestRateID;
         this.percent = percent;
         this.instalmentPeriod = instalmentPeriod;
+        this.percentExpried = percentExpried;
+    }
+    
+    
+
+    public float getPercentExpried() {
+        return percentExpried;
+    }
+
+    public void setPercentExpried(float percentExpried) {
+        this.percentExpried = percentExpried;
     }
     
     
