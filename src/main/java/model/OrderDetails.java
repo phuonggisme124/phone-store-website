@@ -41,6 +41,7 @@ public class OrderDetails {
     }
 
 
+
     // GETTER - SETTER
 
     public Variants getVariant() {

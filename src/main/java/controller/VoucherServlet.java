@@ -181,7 +181,6 @@ public class VoucherServlet extends HttpServlet {
         String status = request.getParameter("status");
 
         if (action.equals("createVoucher")) {
-
             // 1. Chuẩn bị dữ liệu để so sánh ngày
             long millis = System.currentTimeMillis();
             // Dùng java.time.LocalDate để lấy đúng ngày hôm nay (00:00:00)
@@ -211,6 +210,7 @@ public class VoucherServlet extends HttpServlet {
                 request.setAttribute("startDay", start);
                 request.setAttribute("endDay", end);
                 request.setAttribute("quantity", quantity);
+
                 // Lưu ý: attribute "status" nếu cần cũng set lại luôn
 
                 // Điều hướng lại trang nhập liệu
@@ -219,6 +219,7 @@ public class VoucherServlet extends HttpServlet {
                 } else if (user.getRole() == 4) {
                     request.getRequestDispatcher("admin/admin_manageVoucher_create.jsp").forward(request, response);
                 }
+
                 return; // Dừng code tại đây, KHÔNG chạy xuống dưới nữa
             }
 

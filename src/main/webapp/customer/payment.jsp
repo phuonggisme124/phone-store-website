@@ -189,7 +189,7 @@
                             <p class="product-name"><%= pDAO.getProductByID(c.getVariant().getProductID()).getName().toUpperCase() + " - " + c.getVariant().getColor().toUpperCase() + " - " + c.getVariant().getStorage()%></p>
                             <div class="product-price">
                                 <span class="current-price"><%= String.format("%,.0f", c.getVariant().getDiscountPrice())%> VND</span><span class="original-price"
-                                                                                                                                              style="<%= c.getVariant().getDiscountPrice() < c.getVariant().getPrice() ? "" : "display:none;"%>">
+                                                                                                                                            style="<%= c.getVariant().getDiscountPrice() < c.getVariant().getPrice() ? "" : "display:none;"%>">
                                     <%= String.format("%,.0f", c.getVariant().getPrice())%> VND
                                 </span>
 
@@ -335,62 +335,65 @@
         </div>
 
         <script>
-            // --- 1. TỰ ĐỘNG MỞ MODAL SAU KHI RELOAD ---
             document.addEventListener("DOMContentLoaded", function () {
-                // Kiểm tra trên URL xem có cờ 'openModal=1' không
+
+                // --- 1. TỰ ĐỘNG MỞ MODAL SAU KHI RELOAD ---
                 const urlParams = new URLSearchParams(window.location.search);
                 if (urlParams.get('openModal') === '1') {
                     openListModal();
-
-                    // Xóa param khỏi URL để F5 không bị mở lại, nhưng giữ lại action=checkout
-                    // Điều này giúp trải nghiệm mượt hơn
                     const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + "?action=checkout";
                     window.history.replaceState({path: newUrl}, '', newUrl);
                 }
+
+                // --- 2. KHỞI TẠO API TỈNH THÀNH (ĐÃ SỬA) ---
+                // Dùng API của esgoo.net ổn định hơn
+                fetch('https://esgoo.net/api-tinhthanh/1/0.htm')
+                        .then(response => response.json())
+                        .then(data => {
+                            // API này trả về dạng { error: 0, data: [...] } nên phải gọi data.data
+                            let provinces = data.data;
+                            const citySelect = document.getElementById("modalCity");
+
+                            // Kiểm tra xem thẻ select có tồn tại không để tránh lỗi
+                            if (citySelect) {
+                                provinces.forEach(p => {
+                                    const opt = document.createElement("option");
+                                    opt.value = p.full_name; // Hoặc p.name tuỳ dữ liệu DB của đại ca
+                                    opt.textContent = p.full_name;
+                                    citySelect.appendChild(opt);
+                                });
+                            }
+                        })
+                        .catch(error => console.error('Lỗi gọi API tỉnh thành:', error));
             });
 
-            // --- 2. KHỞI TẠO API TỈNH THÀNH ---
-            fetch("https://provinces.open-api.vn/api/p/")
-                    .then(res => res.json())
-                    .then(data => {
-                        const city = document.getElementById("modalCity");
-                        data.forEach(p => {
-                            const opt = document.createElement("option");
-                            opt.value = p.name;
-                            opt.textContent = p.name;
-                            city.appendChild(opt);
-                        });
-                    });
+            // --- 3. CÁC HÀM XỬ LÝ SỰ KIỆN (Để bên ngoài để HTML gọi được onclick) ---
 
-            // --- 3. LOGIC MODAL DANH SÁCH (List Modal) ---
             function openListModal() {
-                document.getElementById("listAddrModal").classList.add("show");
+                const modal = document.getElementById("listAddrModal");
+                if (modal)
+                    modal.classList.add("show");
             }
 
             function closeListModal() {
-                document.getElementById("listAddrModal").classList.remove("show");
+                const modal = document.getElementById("listAddrModal");
+                if (modal)
+                    modal.classList.remove("show");
             }
 
-            // Khi chọn 1 dòng trong danh sách -> Cập nhật màn hình chính & Đóng modal
             function selectFromList(id, addressText) {
                 document.getElementById("mainAddressID").value = id;
                 document.getElementById("displayAddressText").innerText = addressText;
-
-                // Update Radio button UI
                 const radios = document.getElementsByName("addrGroup");
                 radios.forEach(r => {
                     if (r.value == id)
                         r.checked = true;
                 });
-
                 closeListModal();
             }
 
-            // --- 4. LOGIC MODAL NHẬP LIỆU (Form Modal) ---
             function openFormModal(mode, id = 0, fullAddress = '', isDefault = false) {
-                // Đóng modal list trước
                 closeListModal();
-
                 const modal = document.getElementById("formAddrModal");
                 const title = document.getElementById("formModalTitle");
                 const citySelect = document.getElementById("modalCity");
@@ -402,10 +405,13 @@
 
                 if (mode === 'edit') {
                     title.innerText = "Edit Address";
-                    if (fullAddress.includes(",")) {
+                    // Logic tách chuỗi địa chỉ (đại ca tùy chỉnh theo dữ liệu thực tế)
+                    if (fullAddress && fullAddress.includes(",")) {
                         let parts = fullAddress.split(",");
                         let cityVal = parts[parts.length - 1].trim();
                         let specificVal = fullAddress.substring(0, fullAddress.lastIndexOf(",")).trim();
+
+                        // Set giá trị cho select (cần đảm bảo value khớp với option đã load từ API)
                         citySelect.value = cityVal;
                         specificInput.value = specificVal;
                     } else {
@@ -414,7 +420,7 @@
                     defaultCheck.checked = isDefault;
                 } else {
                     title.innerText = "Add New Address";
-                    citySelect.value = "";
+                    citySelect.value = ""; // Reset về mặc định
                     specificInput.value = "";
                     defaultCheck.checked = false;
                 }
@@ -423,13 +429,12 @@
 
             function closeFormModal() {
                 document.getElementById("formAddrModal").classList.remove("show");
-                // Khi ấn nút Back/Cancel từ Form -> Mở lại List Modal để user chọn tiếp
+                // Kiểm tra biến server-side render (JSP/Thymeleaf...)
             <% if (hasAddress) { %>
                 openListModal();
             <% }%>
             }
 
-            // --- 5. SUBMIT & DELETE (CÓ UPDATE URL KHI RELOAD) ---
             function submitAddress() {
                 const mode = document.getElementById("mode").value;
                 const id = document.getElementById("editAddressID").value;
@@ -438,7 +443,7 @@
                 const isDefault = document.getElementById("modalDefault").checked;
 
                 if (!city || !specific) {
-                    alert("Please enter full address (City & Details).");
+                    alert("Please select City and enter Address details.");
                     return;
                 }
 
@@ -456,7 +461,6 @@
                     body: params
                 }).then(res => {
                     if (res.ok) {
-                        // RELOAD KÈM THAM SỐ openModal=1
                         const currentUrl = new URL(window.location.href);
                         currentUrl.searchParams.set("openModal", "1");
                         window.location.href = currentUrl.toString();
@@ -475,7 +479,6 @@
                     body: new URLSearchParams({action: "delete", addressID: id})
                 }).then(res => {
                     if (res.ok) {
-                        // RELOAD KÈM THAM SỐ openModal=1
                         const currentUrl = new URL(window.location.href);
                         currentUrl.searchParams.set("openModal", "1");
                         window.location.href = currentUrl.toString();
@@ -484,14 +487,10 @@
                 });
             }
 
-            // --- 6. VALIDATE FORM CHECKOUT ---
             function validateAndSubmit() {
                 var addrID = document.getElementById("mainAddressID").value;
-
-                // Kiểm tra xem ID có rỗng không
                 if (!addrID || addrID.trim() === "") {
                     alert("⚠️ Please select a shipping address to continue.");
-                    // Nếu chưa chọn, tự mở modal list lên cho người ta chọn
                     openListModal();
                     return;
                 }

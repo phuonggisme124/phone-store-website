@@ -26,66 +26,9 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
         <link rel="stylesheet" href="css/dashboard_admin.css">
+        <link rel="stylesheet" href="css/dashboard_manageuser.css">
 
-        <style>
-            /* --- 1. GENERAL TONE --- */
-            body { background-color: #f5f5f9; font-family: 'Segoe UI', sans-serif; }
-            .text-primary { color: #696cff !important; }
-            .bg-light-purple { background-color: #f5f5f9 !important; color: #697a8d; }
-            .border-light-purple { border-color: rgba(102, 126, 234, 0.3) !important; }
-
-            /* --- 2. BUTTONS --- */
-            .btn-gradient-primary {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                border: none; color: white; transition: all 0.3s ease;
-            }
-            .btn-gradient-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(105, 108, 255, 0.4); color: white; }
-
-            .btn-outline-custom {
-                color: #667eea; border: 1px solid rgba(102, 126, 234, 0.3); background: white;
-            }
-            .btn-outline-custom:hover {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-color: transparent;
-            }
-
-            /* --- 3. TABS (Styled Links) --- */
-            .nav-pills .nav-link {
-                color: #697a8d; font-weight: 600; border-radius: 50px; padding: 10px 25px; margin-right: 10px; transition: all 0.3s; cursor: pointer;
-            }
-            .nav-pills .nav-link.active {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                color: white; box-shadow: 0 4px 10px rgba(105, 108, 255, 0.4);
-            }
-            .nav-pills .nav-link:hover:not(.active) { background-color: rgba(105, 108, 255, 0.1); color: #696cff; }
-
-            /* --- 4. TABLE --- */
-            .custom-table thead th {
-                background-color: #f5f5f9 !important; color: #566a7f;
-                font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
-                border-bottom: 1px solid #d9dee3; padding: 1.2rem 1rem;
-            }
-            .custom-table tbody tr { transition: all 0.2s ease-in-out; background-color: #fff; }
-            .custom-table tbody tr:hover {
-                transform: scale(1.01); box-shadow: 0 5px 15px rgba(105, 108, 255, 0.15);
-                z-index: 10; position: relative; background-color: #fff !important; border-radius: 5px;
-            }
-            .product-id-badge { background-color: rgba(105, 108, 255, 0.12); color: #696cff; padding: 5px 10px; border-radius: 6px; font-weight: 600; font-size: 0.85rem; }
-
-            /* --- 5. ROLES & STATUS --- */
-            .role-customer { color: #696cff; background-color: #e8fadf; padding: 5px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 600;}
-            .role-staff { color: #03c3ec; background-color: #d7f5fc; padding: 5px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 600;}
-            .role-shipper { color: #ffab00; background-color: #fff2d6; padding: 5px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 600;}
-            
-            .status-green { color: #71dd37; background-color: #e8fadf; padding: 5px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; }
-            .status-red { color: #ff3e1d; background-color: #ffe0db; padding: 5px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; }
-
-            /* Suggestion Box */
-            #suggestionBox { background: white; border: 1px solid rgba(102, 126, 234, 0.2); border-radius: 0 0 12px 12px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1); }
-            #suggestionBox .list-group-item:hover { background-color: #f5f5f9; padding-left: 1.5rem; transition: all 0.2s; color: #696cff; }
-            
-            /* Navbar Profile */
-            .hover-danger:hover { background-color: #ffe5e5 !important; color: #dc3545 !important; transform: rotate(90deg); transition: 0.3s; }
-        </style>
+        
     </head>
     <body>
         <%
@@ -94,7 +37,7 @@
             Staff currentUser = (Staff) session.getAttribute("user");
 =======
             // 1. LOGIC GIỮ NGUYÊN
-            Staff currentUser = (Staff) session.getAttribute("user");
+            Staff currentUser = (Staff) session.getAttribute("admin");
             
             // Xử lý roleTable (Tránh null pointer)
             Integer roleTableObj = (Integer) request.getAttribute("role");
@@ -124,11 +67,16 @@
 
             List<String> allUserNames = new ArrayList<>();
 <<<<<<< HEAD
+<<<<<<< HEAD
             if (listUsers != null) {
                 for (Customer u : listUsers) {
                     // Lấy tên Customer
 =======
             if (listCustomers != null) {
+=======
+            // Fix logic lấy tên cho Autocomplete
+            if (listCustomers != null && roleTable == 1) {
+>>>>>>> eff3e4e3ea3ea5244350c64dcc6223c7f46cf145
                 for (Customer u : listCustomers) {
 >>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
                     if (!allUserNames.contains(u.getFullName())) {
@@ -136,8 +84,8 @@
                     }
                 }
             }
-             // Bổ sung autocomplete cho Staff nếu cần
-            if (listStaff != null) {
+             // Fix: Lấy Staff nếu roleTable khác 1 (mặc định hoặc tab Staff)
+            if (listStaff != null && roleTable != 1) {
                 for (Staff u : listStaff) {
                     if (u.getRole() != 4 && !allUserNames.contains(u.getFullName())) {
                          allUserNames.add(u.getFullName());
@@ -192,8 +140,11 @@
                                     <i class="bi bi-funnel"></i> Filter
 =======
                         <div class="d-flex align-items-center ms-auto gap-3">
-                            <form action="admin" method="get" class="position-relative mb-0" id="searchForm" autocomplete="off">
+                            <form action="account" method="get" class="position-relative mb-0" id="searchForm" autocomplete="off">
                                 <input type="hidden" name="action" value="manageUser">
+                                <% if(roleTable == 1){%>
+                                <input type="hidden" name="role" value="1">
+                                <%}%>
                                 <input type="hidden" name="roleFilter" value="<%= currentRole%>">
                                 <div class="input-group">
                                     <span class="input-group-text bg-white border-end-0 text-muted ps-3 rounded-start-pill border-light-purple"><i class="bi bi-person-circle"></i></span>
@@ -206,8 +157,14 @@
                             <% 
                                 String roleLabel = "All Roles";
                                 if(currentRole.equals("1")) roleLabel = "Customer";
+                                if(currentRole.equals("2")) roleLabel = "Staff";
+                                if(currentRole.equals("3")) roleLabel = "Shipper";
                             %>
-                            <form action="admin" method="get" class="dropdown mb-0">
+                            
+                            <%
+                                if(roleTable!=1){
+                            %>
+                            <form action="account" method="get" class="dropdown mb-0">
                                 <input type="hidden" name="action" value="manageUser">
                                 <input type="hidden" name="userName" value="<%= currentUserName%>">
                                 <button class="btn btn-outline-custom dropdown-toggle px-3 rounded-pill d-flex align-items-center gap-2" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
@@ -216,6 +173,7 @@
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-3 mt-2">
                                     <li><button type="submit" name="roleFilter" value="All" class="dropdown-item">All Roles</button></li>
+<<<<<<< HEAD
 <<<<<<< HEAD
                                     <li><button type="submit" name="roleFilter" value="1" class="dropdown-item">
                                             <i class="bi bi-person"></i> Customer
@@ -229,8 +187,16 @@
                                 <span><%= currentUser.getFullName()%></span>
 =======
                                     <li><button type="submit" name="roleFilter" value="1" class="dropdown-item">Customer</button></li>
+=======
+                                    <li><button type="submit" name="roleFilter" value="2" class="dropdown-item">Staff</button></li>
+                                    <li><button type="submit" name="roleFilter" value="3" class="dropdown-item">Shipper</button></li>
+>>>>>>> eff3e4e3ea3ea5244350c64dcc6223c7f46cf145
                                 </ul>
                             </form>
+                            <%
+                                }
+                            %>
+                            
 
                             <div class="vr text-secondary opacity-25 mx-1" style="height: 25px;"></div>
 
@@ -331,19 +297,60 @@
                         </div>
                         
                         <div class="nav nav-pills">
-                            <a href="customer?action=manageUser" class="nav-link d-flex align-items-center gap-2 <%= (roleTable != 1) ? "active" : "" %>">
+                            <a href="account?action=manageUser" class="nav-link d-flex align-items-center gap-2 <%= (roleTable != 1) ? "active" : "" %>">
                                 <i class="bi bi-person-badge"></i> Staff
                             </a>
-                            <a href="customer?action=manageUser&role=1" class="nav-link d-flex align-items-center gap-2 <%= (roleTable == 1) ? "active" : "" %>">
+                            <a href="account?action=manageUser&role=1" class="nav-link d-flex align-items-center gap-2 <%= (roleTable == 1) ? "active" : "" %>">
                                 <i class="bi bi-people"></i> Customer
                             </a>
                         </div>
 
-                        <a class="btn btn-gradient-primary px-4 py-2 rounded-pill shadow-sm d-flex align-items-center gap-2" href="customer?action=createAccount">
+                        <a class="btn btn-gradient-primary px-4 py-2 rounded-pill shadow-sm d-flex align-items-center gap-2" href="account?action=createAccount">
                             <i class="bi bi-person-plus"></i> <span>Add User</span>
                         </a>
                     </div>
+                    
+                    <%
+                        boolean hasNameFilter = !currentUserName.isEmpty();
+                        boolean hasRoleFilter = !currentRole.equals("All");
+                        
+                        // Chỉ hiển thị khu vực này nếu có ít nhất 1 filter đang active
+                        if (hasNameFilter || hasRoleFilter) {
+                    %>
+                    <div class="px-4 pb-3 border-bottom-0">
+                        <div class="d-flex align-items-center flex-wrap gap-2">
+                            <span class="text-secondary small fw-bold text-uppercase me-2" style="letter-spacing: 0.5px;">
+                                <i class="bi bi-funnel-fill me-1"></i> Filtering by:
+                            </span>
 
+                            <% if (hasNameFilter) { %>
+                            <div class="filter-chip shadow-sm">
+                                <i class="bi bi-search me-2 text-primary opacity-75"></i>
+                                <span>Name: <strong><%= currentUserName %></strong></span>
+                                <a href="account?action=manageUser&role=<%= roleTable %>&roleFilter=<%= currentRole %>" 
+                                   class="btn-close-filter" title="Remove filter"><i class="bi bi-x"></i></a>
+                            </div>
+                            <% } %>
+
+                            <% if (hasRoleFilter && roleTable != 1) { 
+                                String roleNameDisplay = (currentRole.equals("2")) ? "Staff" : "Shipper";
+                            %>
+                            <div class="filter-chip shadow-sm">
+                                <i class="bi bi-person-badge me-2 text-warning opacity-75"></i>
+                                <span>Role: <strong><%= roleNameDisplay %></strong></span>
+                                <a href="account?action=manageUser&userName=<%= currentUserName %>&roleFilter=All" 
+                                   class="btn-close-filter" title="Remove filter"><i class="bi bi-x"></i></a>
+                            </div>
+                            <% } %>
+
+                            <a href="account?action=manageUser&role=<%= roleTable %>" 
+                               class="btn btn-sm btn-link text-danger text-decoration-none fw-bold ms-2" 
+                               style="font-size: 0.85rem;">
+                                Clear All
+                            </a>
+                        </div>
+                    </div>
+                    <% } %>
                     <div class="card-body p-0">
                         
                         <% if (roleTable == 1) { %>
@@ -415,6 +422,7 @@
                                             }
                                         %>
 <<<<<<< HEAD
+<<<<<<< HEAD
                                         <tr onclick="window.location.href = 'customer?action=edit&id=<%= u.getCustomerID()%>'" style="cursor: pointer;">
                                             <td>#<%= u.getCustomerID()%></td>
                                             <td><%= u.getFullName()%></td>
@@ -437,6 +445,9 @@
                                             <td><%= dateFormated%></td>
 =======
                                         <tr onclick="window.location.href='customer?action=edit&id=<%= u.getCustomerID()%>&role=<%= u.getRole()%>'" class="cursor-pointer">
+=======
+                                        <tr onclick="window.location.href='account?action=edit&id=<%= u.getCustomerID()%>&role=<%= u.getRole()%>'" class="cursor-pointer">
+>>>>>>> eff3e4e3ea3ea5244350c64dcc6223c7f46cf145
                                             <td class="ps-4"><span class="product-id-badge">#<%= u.getCustomerID()%></span></td>
                                             <td><span class="fw-bold text-dark"><%= u.getFullName()%></span></td>
                                             <td><%= u.getEmail()%></td>
@@ -492,7 +503,7 @@
                                                 } catch (Exception e) {}
                                             }
                                         %>
-                                        <tr onclick="window.location.href='user?action=edit&id=<%= u.getStaffID()%>&role=<%= u.getRole()%>'" class="cursor-pointer">
+                                        <tr onclick="window.location.href='account?action=edit&id=<%= u.getStaffID()%>&role=<%= u.getRole()%>'" class="cursor-pointer">
                                             <td class="ps-4"><span class="product-id-badge">#<%= u.getStaffID()%></span></td>
                                             <td>
                                                 <div class="d-flex align-items-center gap-2">

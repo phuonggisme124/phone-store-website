@@ -231,6 +231,7 @@ public class CustomerDAO extends DBContext {
 
         StringBuilder sql = new StringBuilder(
                 "UPDATE Customers SET FullName=?, Email=?, Phone=?, Address=?, CCCD=?, YOB=?");
+
         sql.append(" WHERE CustomerID=?");
 
         try (PreparedStatement ps = conn.prepareStatement(sql.toString())) {
@@ -241,8 +242,8 @@ public class CustomerDAO extends DBContext {
             ps.setString(4, c.getAddress());
             ps.setString(5, c.getCccd());
             ps.setDate(6, c.getYob());
-            int i = 7;
-            ps.setInt(i, c.getCustomerID());
+
+            ps.setInt(7, c.getCustomerID());
 
             ps.executeUpdate();
 
@@ -399,5 +400,4 @@ public class CustomerDAO extends DBContext {
 
         return null;
     }
-
 }

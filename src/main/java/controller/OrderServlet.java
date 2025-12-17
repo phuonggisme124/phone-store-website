@@ -7,6 +7,7 @@ import dao.ProductDAO;
 import dao.CustomerDAO;
 import dao.OrderDetailDAO;
 
+import dao.VariantsDAO;
 
 import java.io.IOException;
 import jakarta.servlet.ServletException;
@@ -21,6 +22,7 @@ import model.Category;
 import model.InterestRate;
 import model.Order;
 import model.OrderDetails;
+
 import model.Customer;
 import model.Staff;
 import com.google.gson.Gson;
@@ -245,13 +247,13 @@ public class OrderServlet extends HttpServlet {
                 return;
             }
             int oid = Integer.parseInt(idParam);
-            String isInstalmentParam = request.getParameter("isIntalment");
-            boolean isInstalment = (isInstalmentParam != null) ? Boolean.parseBoolean(isInstalmentParam) : false;
+           
+            
 
             List<OrderDetails> listOrderDetails = dao.getAllOrderDetailByOrderID(oid);
             List<InstallmentDetail> listPayments = paydao.getPaymentByOrderID(oid);
             List<InterestRate> listInterestRate = pdao.getAllInterestRate();
-
+            boolean isInstalment = (listPayments != null && !listPayments.isEmpty());
             request.setAttribute("listOrderDetails", listOrderDetails);
             request.setAttribute("listInterestRate", listInterestRate);
             request.setAttribute("listPayments", listPayments);

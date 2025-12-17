@@ -1,8 +1,9 @@
+<%@page import="model.InstallmentDetail"%>
 <%@page import="model.Staff"%>
 <%@page import="model.InterestRate"%>
 <%@page import="dao.ProductDAO"%>
 <%@page import="model.Variants"%>
-<%@page import="model.Payments"%>
+
 <%@page import="model.OrderDetails"%>
 <%@page import="model.Sale"%>
 <%@page import="model.Order"%>
@@ -34,12 +35,11 @@
                 Staff user = (Staff) session.getAttribute("user");
                 ProductDAO pdao = new ProductDAO();
                 List<InterestRate> listInterestRate = (List<InterestRate>) request.getAttribute("listInterestRate");
-                List<Payments> listPayments = (List<Payments>) request.getAttribute("listPayments");
+                List<InstallmentDetail> listPayments = (List<InstallmentDetail>) request.getAttribute("listPayments");
                 List<OrderDetails> listOrderDetails = (List<OrderDetails>) request.getAttribute("listOrderDetails");
                 
-                Boolean isInstalmentObj = (Boolean) request.getAttribute("isIntalment");
-                boolean isInstalment = (isInstalmentObj != null) ? isInstalmentObj : false;
-
+                Boolean isInstalment = (Boolean) request.getAttribute("isIntalment");
+               
                 if(listOrderDetails == null) listOrderDetails = new ArrayList<>();
                 if(listPayments == null) listPayments = new ArrayList<>();
                 if(listInterestRate == null) listInterestRate = new ArrayList<>();
@@ -58,11 +58,7 @@
                             <div class="d-flex align-items-center gap-3">
                                 <div class="d-flex align-items-center gap-2">
                                     <div class="position-relative">
-<<<<<<< HEAD
-                                        <img src="https://i.pravatar.cc/150?u=<%= (user != null) ? user.getUserId() : "admin" %>" 
-=======
                                         <img src="https://i.pravatar.cc/150?u=<%= (user != null) ? user.getStaffID(): "admin" %>" 
->>>>>>> 62bad43794ed9e6ec4e6d026e91b6a10331a6e66
                                              class="rounded-circle border border-2 border-white shadow-sm" 
                                              width="40" height="40" alt="Avatar">
                                         <span class="position-absolute bottom-0 start-100 translate-middle p-1 bg-success border border-light rounded-circle">
@@ -109,11 +105,7 @@
                                             <th>Specs</th>
                                             <th>Price</th>
                                             <th>Qty</th>
-                                            <% if (isInstalment) { %>
-                                                <th>Period</th>
-                                                <th>Monthly Pay</th>
-                                                <th>Interest</th>
-                                            <% } %>
+                                            
                                             <th class="text-end pe-4">Total</th>
                                         </tr>
                                     </thead>
@@ -130,19 +122,7 @@
                                             <td><%= String.format("%,.0f", od.getUnitPrice())%> ₫</td>
                                             <td>x<%= od.getQuantity()%></td>
                                             
-                                            <% if (isInstalment) { 
-                                                String period = "N/A";
-                                                for (InterestRate iR : listInterestRate) {
-                                                    if (od.getInterestRateID() == iR.getInterestRateID()) {
-                                                        period = iR.getInstalmentPeriod() + " Months";
-                                                        break;
-                                                    }
-                                                }
-                                            %>
-                                                <td><span class="badge bg-info-subtle text-info"><%= period %></span></td>
-                                                <td class="fw-bold text-danger"><%= String.format("%,.0f", od.getMonthlyPayment())%> ₫</td>
-                                                <td><%= od.getInterestRate()%> %</td>
-                                            <% } %>
+                                           
 
                                             <td class="text-end pe-4 fw-bold text-primary">
                                                 <%= String.format("%,.0f", od.getUnitPrice() * od.getQuantity())%> ₫
@@ -175,9 +155,9 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <% for (Payments p : listPayments) { %>
+                                        <% for (InstallmentDetail p : listPayments) { %>
                                         <tr>
-                                            <td class="ps-4 text-muted">#<%= p.getPaymentID()%></td>
+                                            <td class="ps-4 text-muted">#<%= p.getInstallmentDetailID()%></td>
                                             <td class="fw-bold">Month <%= p.getCurrentMonth()%> / <%= p.getTotalMonth()%></td>
                                             <td class="fw-bold text-danger"><%= String.format("%,.0f", p.getAmount())%> ₫</td>
                                             <td>

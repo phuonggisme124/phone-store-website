@@ -7,7 +7,9 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="/layout/header.jsp" %>
+
 <%    Customer userC = (Customer) session.getAttribute("user");
+
 
     boolean isOver18 = false;
     boolean hasCCCD = false;
@@ -41,6 +43,8 @@
         <script src="https://cdn.tailwindcss.com"></script>
 
         <style>
+
+
             :root {
                 --main-color: #FF424F;
                 --main-hover: #e03a45;
@@ -48,6 +52,7 @@
                 --addr-bg: #f8fcfd;
                 --addr-text: #007bff;
             }
+
             .payment-wrapper {
                 font-family: 'Poppins', sans-serif;
                 background-color: #f8f9fa;
@@ -57,12 +62,13 @@
             .payment-wrapper *, .payment-wrapper *::before, .payment-wrapper *::after {
                 box-sizing: border-box;
             }
-            .text-main {
-                color: var(--main-color) !important;
-            }
-            .bg-main {
-                background-color: var(--main-color) !important;
-            }
+            .text-main { color: var(--main-color) !important; }
+            .bg-main { background-color: var(--main-color) !important; }
+
+
+            .text-main { color: var(--main-color) !important; }
+            .bg-main { background-color: var(--main-color) !important; }
+
 
             .payment-container {
                 max-width: 42rem;
@@ -73,6 +79,7 @@
                 position: relative;
                 overflow: hidden;
             }
+
             .payment-form-header {
                 padding: 1.25rem;
                 border-bottom: 1px solid #f0f0f0;
@@ -97,12 +104,9 @@
                 color: #666;
                 padding: 5px;
             }
-            .back-button:hover {
-                color: var(--main-color);
-            }
-            .payment-main {
-                padding: 1.5rem;
-            }
+            .back-button:hover { color: var(--main-color); }
+            .payment-main { padding: 1.5rem; }
+
             .section-title {
                 font-weight: 700;
                 font-size: 0.95rem;
@@ -112,9 +116,8 @@
                 letter-spacing: 0.5px;
                 margin-top: 1.5rem;
             }
-            .recipient-info-section:first-of-type .section-title {
-                margin-top: 0;
-            }
+            .recipient-info-section:first-of-type .section-title { margin-top: 0; }
+
             .info-box {
                 background-color: #fafafa;
                 border: 1px solid #eee;
@@ -124,21 +127,10 @@
                 flex-direction: column;
                 gap: 0.8rem;
             }
-            .info-row {
-                display: flex;
-                justify-content: space-between;
-            }
-            .info-label {
-                color: #666;
-                font-weight: 500;
-                font-size: 0.9rem;
-            }
-            .info-value {
-                color: #222;
-                font-weight: 600;
-                font-size: 0.95rem;
-                text-align: right;
-            }
+            .info-row { display: flex; justify-content: space-between; }
+            .info-label { color: #666; font-weight: 500; font-size: 0.9rem; }
+            .info-value { color: #222; font-weight: 600; font-size: 0.95rem; text-align: right; }
+
             .selected-addr-box {
                 border: 1px solid var(--addr-border);
                 background-color: var(--addr-bg);
@@ -153,6 +145,7 @@
                 margin-top: 3px;
                 font-size: 1.2rem;
             }
+
             .payment-selector-box {
                 border: 1px solid #eee;
                 border-radius: 8px;
@@ -168,6 +161,7 @@
                 border-color: var(--main-color);
                 background-color: #fff0f1;
             }
+
             .summary-box {
                 background-color: #f8f9fa;
                 margin-top: 25px;
@@ -192,9 +186,8 @@
                 transition: background 0.3s;
                 box-shadow: 0 4px 10px rgba(255, 66, 79, 0.3);
             }
-            #confirm-btn:hover {
-                background-color: var(--main-hover);
-            }
+            #confirm-btn:hover { background-color: var(--main-hover); }
+
             .check-product-link {
                 color: var(--main-color);
                 font-weight: 500;
@@ -205,9 +198,8 @@
                 text-align: center;
                 margin-top: 10px;
             }
-            .check-product-link:hover {
-                text-decoration: underline;
-            }
+            .check-product-link:hover { text-decoration: underline; }
+
             .payment-option.selected {
                 border-color: var(--main-color);
                 box-shadow: 0 0 0 1px var(--main-color) inset;
@@ -227,19 +219,11 @@
                 border-color: var(--main-color);
                 color: var(--main-color);
             }
-            .hover\:bg-theme-dark:hover {
-                background-color: var(--main-hover) !important;
-            }
-            .bg-theme {
-                background-color: var(--main-color) !important;
-            }
-            .text-theme {
-                color: var(--main-color) !important;
-            }
-            #qrCodeImage {
-                max-width: 100%;
-                height: auto;
-            }
+            .hover\:bg-theme-dark:hover { background-color: var(--main-hover) !important; }
+            .bg-theme { background-color: var(--main-color) !important; }
+            .text-theme { color: var(--main-color) !important; }
+
+            #qrCodeImage { max-width: 100%; height: auto; }
         </style>
     </head>
 
@@ -294,10 +278,10 @@
                     <input type="hidden" name="receiverPhone" value="<%= receiverPhone%>">
                     <input type="hidden" name="specificAddress" value="<%= specificAddress%>">
                     <input type="hidden" name="totalAmount" value="<%= finalPaymentTotal%>">
-
+                    
                     <input type="hidden" name="paymentMethod" id="paymentMethodInput" value="">
                     <input type="hidden" name="installmentTerm" id="installmentTermInput" value="">
-
+                    
                     <input type="hidden" name="saveAddress" value="<%= saveAddress != null ? saveAddress : ""%>">
                     <input type="hidden" name="city" value="<%= city != null ? city : ""%>">
                     <input type="hidden" name="address" value="<%= address != null ? address : ""%>">
@@ -327,8 +311,8 @@
                         </div>
                     </div>
 
-
-
+                
+                    
                     <div class="space-y-4 mb-6">
                         <h3 class="font-bold text-lg text-gray-700 section-title">VOUCHER</h3>
 
@@ -344,26 +328,26 @@
 
                         <div class="border rounded-lg p-4 bg-white">
                             <% if (appliedVoucher == null) {%>
-                            <%-- Nút mở Modal Voucher --%>
-                            <button type="button" id="openVoucherModalBtn" class="w-full border border-theme text-theme py-2 rounded text-sm font-medium hover:bg-blue-50 transition-colors">
-                                <i class="fa-solid fa-tags mr-2"></i> Select from My Vouchers
-                            </button>
-                            <% } else {%>
-                            <%-- Hiển thị voucher đang áp dụng --%>
-                            <div class="flex justify-between items-center">
-                                <div>
-                                    <p class="font-semibold text-theme"><i class="fa-solid fa-ticket mr-2"></i><%= appliedVoucher.getCode()%></p>
-                                    <p class="text-xs text-green-600">Reduced: -<%= String.format("%,.0f", voucherDiscountValue)%> VND</p>
-                                </div>
-                                <button type="submit" name="action" value="removeVoucher" formnovalidate 
-                                        class="text-red-500 text-sm font-medium hover:underline border-none bg-transparent cursor-pointer">
-                                    Remove
+                                <%-- Nút mở Modal Voucher --%>
+                                <button type="button" id="openVoucherModalBtn" class="w-full border border-theme text-theme py-2 rounded text-sm font-medium hover:bg-blue-50 transition-colors">
+                                    <i class="fa-solid fa-tags mr-2"></i> Select from My Vouchers
                                 </button>
-                            </div>
+                            <% } else {%>
+                                <%-- Hiển thị voucher đang áp dụng --%>
+                                <div class="flex justify-between items-center">
+                                    <div>
+                                        <p class="font-semibold text-theme"><i class="fa-solid fa-ticket mr-2"></i><%= appliedVoucher.getCode()%></p>
+                                        <p class="text-xs text-green-600">Reduced: -<%= String.format("%,.0f", voucherDiscountValue)%> VND</p>
+                                    </div>
+                                    <button type="submit" name="action" value="removeVoucher" formnovalidate 
+                                            class="text-red-500 text-sm font-medium hover:underline border-none bg-transparent cursor-pointer">
+                                        Remove
+                                    </button>
+                                </div>
                             <% }%>
                         </div>
                     </div>
-                    <div class="recipient-info-section">
+                            <div class="recipient-info-section">
                         <h3 class="section-title">Payment Method</h3>
                         <div id="openPaymentModalBtn" class="payment-selector-box">
                             <div style="display: flex; align-items: center; gap: 12px;">
@@ -397,7 +381,7 @@
                             <div style="text-align: right;">
                                 <%-- Input ẩn lưu giá gốc (để reset khi hủy trả góp) --%>
                                 <input type="hidden" id="originalFinalTotal" value="<%= finalPaymentTotal %>">
-
+                                
                                 <%-- Giá hiển thị (sẽ thay đổi bằng JS khi chọn trả góp) --%>
                                 <p id="totalPaymentDisplay" style="color: var(--main-color); font-weight: 700; font-size: 1.25rem;">
                                     <%= String.format("%,.0f", finalPaymentTotal)%> VND
@@ -437,7 +421,7 @@
                             </div>
                         </div>
                         <%  }
-                        } else { %>
+                    } else { %>
                         <p class="text-center text-gray-500">Cart is empty.</p>
                         <% }%>
                     </div>
@@ -458,7 +442,7 @@
                             </div>
                             <i class="fa-regular fa-circle text-gray-300 check-icon"></i>
                         </div>
-
+                        
                         <div id="openInstallmentModalBtn" 
                              class="payment-option border rounded-lg p-4 flex items-center cursor-pointer hover:bg-gray-50 transition-all <%= !isOver18 ? "opacity-50 bg-gray-100" : ""%>" 
                              data-value="INSTALLMENT" 
@@ -486,7 +470,7 @@
                             <i class="fa-solid fa-chevron-right text-gray-400"></i>
                             <% } %>
                         </div>
-
+                        
                         <div id="openTransferModalBtn" class="payment-option border rounded-lg p-4 flex items-center cursor-pointer hover:bg-gray-50 transition-all" data-value="TRANSFER" data-text="Payment via Bank Transfer" data-fa-icon-class="fa-solid fa-building-columns">
                             <div class="flex-grow flex items-center space-x-4">
                                 <i class="fa-solid fa-building-columns text-theme text-2xl w-8 text-center"></i>
@@ -522,6 +506,7 @@
                                 <div class="w-3/4 flex">
                                     <% if (iRList != null) {
                                             for (InterestRate iR : iRList) {
+
                                                 double instalmentPrice = (finalPaymentTotal * iR.getPercent()) / 100;
                                                 double totalPriceEachMothPay = (finalPaymentTotal + instalmentPrice) / iR.getInstalmentPeriod();
                                                 double totalPriceAfterInstalment = finalPaymentTotal + instalmentPrice;
@@ -581,74 +566,83 @@
                     </div>
                 </div>
             </div>
-
-            <div id="voucherModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[80] hidden">
+            
+           <div id="voucherModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[80] hidden">
                 <div class="bg-white rounded-lg shadow-xl w-full max-w-md h-[80vh] flex flex-col">
-                    <div class="p-4 border-b flex justify-between items-center">
-                        <h2 class="text-lg font-semibold text-gray-800">My Vouchers</h2>
-                        <button class="js-close-modal text-gray-400 hover:text-gray-600"><i class="fa-solid fa-times fa-lg"></i></button>
+                    <div class="p-4 border-b flex justify-between items-center bg-gray-50">
+                        <h2 class="text-lg font-bold text-gray-800"><i class="fa-solid fa-ticket text-theme mr-2"></i>My Vouchers</h2>
+                        <button class="js-close-modal text-gray-400 hover:text-red-500 transition-colors"><i class="fa-solid fa-times fa-lg"></i></button>
                     </div>
 
-                    <div class="p-4 flex-1 overflow-y-auto bg-gray-50 space-y-3">
+                    <div class="p-4 flex-1 overflow-y-auto bg-gray-100 space-y-3">
                         <%
                             List<model.Vouchers> myVouchers = (List<model.Vouchers>) request.getAttribute("myVouchers");
                             if (myVouchers != null && !myVouchers.isEmpty()) {
                                 for (model.Vouchers v : myVouchers) {
+                                    // Logic kiểm tra xem có dùng được không
                                     boolean isUsable = "Active".equalsIgnoreCase(v.getStatus()) && v.getQuantity() > 0;
+
+                                    // Class để làm mờ nếu không dùng được
+                                    String containerClass = isUsable ? "bg-white border-l-4 border-theme shadow-sm" : "bg-gray-200 border-l-4 border-gray-400 opacity-70 grayscale";
+                                    String textClass = isUsable ? "text-gray-800" : "text-gray-500";
                         %>
-                        <div class="bg-white border <%= isUsable ? "border-gray-200" : "border-gray-100 opacity-60"%> rounded-lg p-3 shadow-sm relative overflow-hidden">
-                            <div class="absolute top-1/2 -left-2 w-4 h-4 bg-gray-50 rounded-full"></div>
-                            <div class="absolute top-1/2 -right-2 w-4 h-4 bg-gray-50 rounded-full"></div>
-
-                            <div class="flex justify-between items-center ml-3 mr-3">
-                                <div>
-                                    <h4 class="font-bold text-gray-800 text-lg"><%= v.getCode()%></h4>
-                                    <p class="text-red-500 font-bold text-sm">Discount <%= v.getPercentDiscount()%>%</p>
-                                    <p class="text-xs text-gray-500 mt-1">Exp: <%= v.getEndDay()%></p>
-                                    <% if (v.getQuantity() <= 0) { %>
-                                    <span class="text-[10px] bg-gray-200 px-2 py-0.5 rounded text-gray-500">Out of stock</span>
-                                    <% } else if (!"Active".equalsIgnoreCase(v.getStatus())) {%>
-                                    <span class="text-[10px] bg-red-100 px-2 py-0.5 rounded text-red-500"><%= v.getStatus()%></span>
-                                    <% } %>
-                                </div>
-
-                                <div>
-                                    <% if (isUsable) {%>
-                                    <form action="payment" method="post">
-                                        <input type="hidden" name="action" value="applyVoucher">
-                                        <input type="hidden" name="voucherCode" value="<%= v.getCode()%>">
-
-                                        <input type="hidden" name="receiverName" value="<%= receiverName%>">
-                                        <input type="hidden" name="receiverPhone" value="<%= receiverPhone%>">
-                                        <input type="hidden" name="city" value="<%= city%>">
-                                        <input type="hidden" name="address" value="<%= address%>">
-                                        <input type="hidden" name="saveAddress" value="<%= saveAddress%>">
-                                        <input type="hidden" name="addressID" value="<%= addrID != null ? addrID : ""%>">
-
-                                        <button type="submit" class="bg-theme text-white text-xs font-bold px-4 py-2 rounded-full hover:bg-theme-dark transition">
-                                            Apply
-                                        </button>
-                                    </form>
+                        <div class="<%= containerClass%> rounded-r-lg p-4 relative flex justify-between items-center transition-all hover:shadow-md">
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-2">
+                                    <span class="font-bold text-lg <%= textClass%>"><%= v.getCode()%></span>
+                                    <% if (!isUsable) {%>
+                                    <span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-gray-500 text-white"><%= v.getStatus()%></span>
                                     <% } else { %>
-                                    <button disabled class="bg-gray-100 text-gray-400 text-xs font-bold px-4 py-2 rounded-full cursor-not-allowed">
-                                        Invalid
-                                    </button>
-                                    <% } %>
+                                    <span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-green-100 text-green-700">Active</span>
+                                    <% }%>
                                 </div>
+
+                                <p class="text-red-500 font-bold text-sm">Giảm <%= v.getPercentDiscount()%>%</p>
+                                <p class="text-xs text-gray-500 mt-1"><i class="far fa-clock mr-1"></i>HSD: <%= v.getEndDay()%></p>
+
+                                <% if ("Pending".equalsIgnoreCase(v.getStatus())) {%>
+                                <p class="text-xs text-orange-500 mt-1 italic">Mở lúc: <%= v.getStartDay()%></p>
+                                <% } %>
+</div>
+
+                            <div class="ml-4">
+                                <% if (isUsable) {%>
+                                <form action="payment" method="post">
+                                    <input type="hidden" name="action" value="applyVoucher">
+                                    <input type="hidden" name="voucherCode" value="<%= v.getCode()%>">
+
+                                    <input type="hidden" name="receiverName" value="<%= receiverName%>">
+                                    <input type="hidden" name="receiverPhone" value="<%= receiverPhone%>">
+                                    <input type="hidden" name="city" value="<%= city%>">
+                                    <input type="hidden" name="address" value="<%= address%>">
+                                    <input type="hidden" name="saveAddress" value="<%= saveAddress%>">
+                                    <input type="hidden" name="addressID" value="<%= addrID != null ? addrID : ""%>">
+
+                                    <button type="submit" class="bg-theme text-white text-xs font-bold px-4 py-2 rounded-full hover:bg-red-600 shadow-sm transition transform active:scale-95">
+                                        Áp dụng
+                                    </button>
+                                </form>
+                                <% } else { %>
+                                <button type="button" disabled class="bg-gray-300 text-gray-500 text-xs font-bold px-4 py-2 rounded-full cursor-not-allowed">
+                                    Không khả dụng
+                                </button>
+                                <% } %>
                             </div>
+
+                            <div class="absolute -left-2 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-gray-100 rounded-full"></div>
                         </div>
                         <%
                             }
                         } else {
                         %>
-                        <div class="text-center py-10">
-                            <i class="fa-regular fa-folder-open text-4xl text-gray-300 mb-3"></i>
-                            <p class="text-gray-500">You don't have any vouchers yet.</p>
+                        <div class="flex flex-col items-center justify-center h-full text-gray-400">
+                            <i class="fa-regular fa-folder-open text-4xl mb-3"></i>
+                            <p>Bạn chưa lưu voucher nào.</p>
                         </div>
                         <% }%>
                     </div>
                 </div>
-            </div>        
+            </div>
 
             <script>
                 document.addEventListener('DOMContentLoaded', () => {
@@ -678,7 +672,7 @@
                     const selectedPaymentText = document.getElementById('selected-payment-text');
                     const selectedPaymentIcon = document.getElementById('selected-payment-icon');
                     const paymentForm = document.getElementById('payment-form');
-
+                    
                     // Display Price Elements
                     const totalPaymentDisplay = document.getElementById('totalPaymentDisplay');
                     const originalFinalTotal = parseFloat(document.getElementById('originalFinalTotal').value);
@@ -689,15 +683,11 @@
                     let paymentCheckInterval = null;
 
                     // --- HELPER FUNCTIONS ---
-                    const openModal = (modal) => {
-                        if (modal)
-                            modal.classList.remove('hidden');
-                    };
+                    const openModal = (modal) => { if (modal) modal.classList.remove('hidden'); };
                     const closeModal = (modal) => {
                         if (modal) {
                             modal.classList.add('hidden');
-                            if (modal.id === 'transferModal' && paymentCheckInterval)
-                                clearInterval(paymentCheckInterval);
+                            if (modal.id === 'transferModal' && paymentCheckInterval) clearInterval(paymentCheckInterval);
                         }
                     };
                     const formatCurrency = (amount) => new Intl.NumberFormat('vi-VN').format(amount) + " VND";
@@ -708,7 +698,7 @@
                         selectedPaymentIcon.className = 'text-theme text-2xl w-8 text-center ' + iconClass;
                         selectedPaymentIcon.classList.remove('hidden');
                     };
-
+                    
                     const resetToOriginalPrice = () => {
                         totalPaymentDisplay.textContent = formatCurrency(originalFinalTotal);
                         installmentNote.style.display = 'none';
@@ -722,31 +712,14 @@
                     });
 
                     // --- OPEN MODAL EVENTS ---
-                    if (openProductListModalBtn)
-                        openProductListModalBtn.addEventListener('click', (e) => {
-                            e.preventDefault();
-                            openModal(productModal);
-                        });
-                    if (openPaymentModalBtn)
-                        openPaymentModalBtn.addEventListener('click', () => {
-                            document.querySelectorAll('.payment-option').forEach(el => el.classList.remove('selected'));
-                            openModal(paymentMethodModal);
-                        });
-                    if (openVoucherModalBtn)
-                        openVoucherModalBtn.addEventListener('click', (e) => {
-                            e.preventDefault();
-                            openModal(voucherModal);
-                        });
-                    if (backToPaymentModalBtn)
-                        backToPaymentModalBtn.addEventListener('click', () => {
-                            closeModal(installmentModal);
-                            openModal(paymentMethodModal);
-                        });
-                    if (backToPaymentModalBtnFromTransfer)
-                        backToPaymentModalBtnFromTransfer.addEventListener('click', () => {
-                            closeModal(transferModal);
-                            openModal(paymentMethodModal);
-                        });
+                    if (openProductListModalBtn) openProductListModalBtn.addEventListener('click', (e) => { e.preventDefault(); openModal(productModal); });
+                    if (openPaymentModalBtn) openPaymentModalBtn.addEventListener('click', () => { 
+                        document.querySelectorAll('.payment-option').forEach(el => el.classList.remove('selected'));
+                        openModal(paymentMethodModal); 
+                    });
+                    if (openVoucherModalBtn) openVoucherModalBtn.addEventListener('click', (e) => { e.preventDefault(); openModal(voucherModal); });
+                    if (backToPaymentModalBtn) backToPaymentModalBtn.addEventListener('click', () => { closeModal(installmentModal); openModal(paymentMethodModal); });
+                    if (backToPaymentModalBtnFromTransfer) backToPaymentModalBtnFromTransfer.addEventListener('click', () => { closeModal(transferModal); openModal(paymentMethodModal); });
 
                     // --- PAYMENT METHOD SELECTION LOGIC ---
                     document.querySelectorAll('.payment-option').forEach(option => {
@@ -760,38 +733,27 @@
                                     if (confirm("Bạn cần bổ sung thông tin để sử dụng trả góp. Đi đến trang cập nhật ngay?")) {
                                         window.location.href = "customer/editProfile.jsp?redirect=payment";
                                     }
-                                    e.stopPropagation();
-                                    return;
+                                    e.stopPropagation(); return;
                                 }
                                 if (!isAgeOk) {
                                     alert("Rất tiếc, phương thức trả góp chỉ áp dụng cho khách hàng từ 18 tuổi trở lên.");
-                                    e.stopPropagation();
-                                    return;
+                                    e.stopPropagation(); return;
                                 }
                             }
 
                             document.querySelectorAll('.payment-option').forEach(o => o.classList.remove('selected'));
                             option.classList.add('selected');
-
-                            document.querySelectorAll('.check-icon').forEach(i => {
-                                i.classList.replace('fa-circle-check', 'fa-circle');
-                                i.classList.remove('text-theme');
-                            });
+                            
+                            document.querySelectorAll('.check-icon').forEach(i => { i.classList.replace('fa-circle-check', 'fa-circle'); i.classList.remove('text-theme'); });
                             const icon = option.querySelector('.check-icon');
-                            if (icon) {
-                                icon.classList.replace('fa-circle', 'fa-circle-check');
-                                icon.classList.add('text-theme');
-                            }
+                            if (icon) { icon.classList.replace('fa-circle', 'fa-circle-check'); icon.classList.add('text-theme'); }
                         });
                     });
 
                     // --- CONFIRM PAYMENT SELECTION ---
                     confirmPaymentBtn.addEventListener('click', () => {
                         const selected = document.querySelector('.payment-option.selected');
-                        if (!selected) {
-                            alert('Vui lòng chọn một phương thức thanh toán.');
-                            return;
-                        }
+                        if (!selected) { alert('Vui lòng chọn một phương thức thanh toán.'); return; }
 
                         const val = selected.dataset.value;
 
@@ -806,7 +768,7 @@
                             openModal(installmentModal);
                         } else if (val === 'TRANSFER') {
                             resetToOriginalPrice(); // Reset giá
-                            const totalAmount = <%= (long) finalPaymentTotal%>;
+                            const totalAmount = <%= (long) finalPaymentTotal%>; 
                             const orderId = 'DH' + Math.floor(Date.now() / 1000);
                             const transferDescription = 'TT ' + orderId;
 
@@ -817,11 +779,8 @@
                             closeModal(paymentMethodModal);
                             openModal(transferModal);
 
-                            if (paymentCheckInterval)
-                                clearInterval(paymentCheckInterval);
-                            setTimeout(() => {
-                                paymentCheckInterval = setInterval(() => checkPaid(transferDescription), 3000);
-                            }, 5000);
+                            if (paymentCheckInterval) clearInterval(paymentCheckInterval);
+                            setTimeout(() => { paymentCheckInterval = setInterval(() => checkPaid(transferDescription), 3000); }, 5000);
                         }
                     });
 
@@ -841,11 +800,11 @@
                             updateSelectedPaymentDisplay("Installment " + selectedInstallmentTerm + " months", 'fa-solid fa-credit-card');
                             paymentMethodInput.value = "INSTALLMENT_" + selectedInstallmentTerm + "M";
                             installmentTermInput.value = selectedInstallmentTerm;
-
+                            
                             // Cập nhật giá hiển thị + Note
                             totalPaymentDisplay.textContent = formatCurrency(selectedInstallmentPrice);
                             installmentNote.style.display = 'block';
-
+                            
                             closeModal(installmentModal);
                         }
                     });
@@ -853,8 +812,7 @@
                     // --- TRANSFER LOGIC ---
                     confirmTransferBtn.addEventListener('click', () => {
                         const selected = document.querySelector('.payment-option[data-value="TRANSFER"]');
-                        if (selected)
-                            updateSelectedPaymentDisplay(selected.dataset.text, selected.dataset.faIconClass);
+                        if (selected) updateSelectedPaymentDisplay(selected.dataset.text, selected.dataset.faIconClass);
                         paymentMethodInput.value = 'TRANSFER';
                         resetToOriginalPrice();
                         closeModal(transferModal);
@@ -876,24 +834,21 @@
                                 paymentMethodInput.value = 'TRANSFER';
                                 submitOrderForm();
                             }
-                        } catch (e) {
-                            console.error(e);
-                        }
+                        } catch (e) { console.error(e); }
                     }
 
                     // --- SUBMIT FORM ---
                     mainSubmitBtn.addEventListener('click', () => {
-                        if (!paymentMethodInput.value) {
-                            alert('Vui lòng chọn phương thức thanh toán trước khi đặt hàng.');
-                            return;
-                        }
+                        if (!paymentMethodInput.value) { alert('Vui lòng chọn phương thức thanh toán trước khi đặt hàng.'); return; }
                         submitOrderForm();
                     });
 
                     function submitOrderForm() {
+
                         // SỬA LỖI TẠI ĐÂY: Chỉ tìm input nằm trong paymentForm
                         // Code cũ: let actionInput = document.querySelector('input[name="action"]');
-                        let actionInput = paymentForm.querySelector('input[name="action"]');
+                        let actionInput = paymentForm.querySelector('input[name="action"]'); 
+                        
 
                         if (!actionInput) {
                             actionInput = document.createElement('input');
@@ -909,5 +864,4 @@
         </div>
     </body>
 </html>
-
 

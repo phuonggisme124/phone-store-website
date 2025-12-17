@@ -781,4 +781,9 @@
         <script src="${pageContext.request.contextPath}/js/google_login.js?v=10"></script>
         <script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
     </body>
+<<<<<<< HEAD
 </html>
+=======
+</html>
+
+>>>>>>> eff3e4e3ea3ea5244350c64dcc6223c7f46cf145

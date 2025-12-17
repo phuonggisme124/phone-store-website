@@ -178,5 +178,3 @@ List<Carts> list = dao.getCartByCustomerID(customerID);
     }
 }
 
-
-

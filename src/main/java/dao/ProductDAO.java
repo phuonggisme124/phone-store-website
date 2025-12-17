@@ -452,6 +452,7 @@ public class ProductDAO extends DBContext {
         return list;
     }
 
+
     public Specification getSpecificationByProductID(int productID) {
         String sql = "Select * from Specifications WHERE ProductID = ? ";
 

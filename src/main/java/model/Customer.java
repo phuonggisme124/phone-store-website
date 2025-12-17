@@ -4,7 +4,9 @@ import java.sql.Timestamp;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.Period;
+
 import java.time.ZoneId;
+
 
 public class Customer {
 
@@ -154,6 +156,11 @@ public int getAge() {
     public int getRole() {
         return 1;
     }
+    
+   
+
+
+
 
     @Override
     public String toString() {

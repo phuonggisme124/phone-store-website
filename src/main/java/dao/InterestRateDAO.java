@@ -36,7 +36,7 @@ public class InterestRateDAO extends DBContext {
         return iRList;
     }
 
-    public InterestRate getInterestRatePercentByIstalmentPeriod(int instalmentPeriod) {
+       public InterestRate getInterestRatePercentByIstalmentPeriod(int instalmentPeriod) {
         String sql = "SELECT * FROM InterestRates WHERE InstalmentPeriod = ?";
         InterestRate ir = null;
 

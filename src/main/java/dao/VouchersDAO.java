@@ -66,12 +66,15 @@ public class VouchersDAO extends DBContext {
                         rs.getString("Status") // Trạng thái gốc trong DB (VD: Active)
                 );
 
+
                 //  LOGIC XỬ LÝ TRẠNG THÁI HIỂN THỊ 
+
                 // 1. Nếu hạn sử dụng < ngày hiện tại -> Hết hạn (Expired)
                 if (v.getEndDay().compareTo(today) < 0) {
                     v.setStatus("Expired");
                 } // 2. Nếu số lượng = 0 và trạng thái đang Active -> Hết hàng (coi như Expired/SoldOut)
                 else if (v.getQuantity() <= 0 && "Active".equalsIgnoreCase(v.getStatus())) {
+
                     v.setStatus("Expired");
                 }
 
@@ -359,7 +362,6 @@ public class VouchersDAO extends DBContext {
                 try (PreparedStatement ps5 = conn.prepareStatement(sqlUpdateStatus)) {
                     ps5.setInt(1, voucherID);
                     ps5.executeUpdate();
-
                 }
 
             }

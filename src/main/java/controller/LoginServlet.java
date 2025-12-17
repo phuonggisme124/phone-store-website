@@ -54,6 +54,7 @@ public class LoginServlet extends HttpServlet {
             throws ServletException, IOException {
 
         HttpSession session = request.getSession();
+        
         if (session.getAttribute("attempts") == null) {
             session.setAttribute("attempts", 0);
         }
@@ -135,7 +136,7 @@ public class LoginServlet extends HttpServlet {
                     return;
 
                 case 2: // Staff
-                    session.setAttribute("staff", staff);
+                    session.setAttribute("C", staff);
                     session.setAttribute("role", staff.getRole());
                     response.sendRedirect("product");
                     return;
