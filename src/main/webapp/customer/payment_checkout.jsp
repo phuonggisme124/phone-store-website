@@ -567,73 +567,82 @@
                 </div>
             </div>
             
-            <div id="voucherModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[80] hidden">
+           <div id="voucherModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[80] hidden">
                 <div class="bg-white rounded-lg shadow-xl w-full max-w-md h-[80vh] flex flex-col">
-                    <div class="p-4 border-b flex justify-between items-center">
-                        <h2 class="text-lg font-semibold text-gray-800">My Vouchers</h2>
-                        <button class="js-close-modal text-gray-400 hover:text-gray-600"><i class="fa-solid fa-times fa-lg"></i></button>
+                    <div class="p-4 border-b flex justify-between items-center bg-gray-50">
+                        <h2 class="text-lg font-bold text-gray-800"><i class="fa-solid fa-ticket text-theme mr-2"></i>My Vouchers</h2>
+                        <button class="js-close-modal text-gray-400 hover:text-red-500 transition-colors"><i class="fa-solid fa-times fa-lg"></i></button>
                     </div>
 
-                    <div class="p-4 flex-1 overflow-y-auto bg-gray-50 space-y-3">
+                    <div class="p-4 flex-1 overflow-y-auto bg-gray-100 space-y-3">
                         <%
                             List<model.Vouchers> myVouchers = (List<model.Vouchers>) request.getAttribute("myVouchers");
                             if (myVouchers != null && !myVouchers.isEmpty()) {
                                 for (model.Vouchers v : myVouchers) {
+                                    // Logic kiểm tra xem có dùng được không
                                     boolean isUsable = "Active".equalsIgnoreCase(v.getStatus()) && v.getQuantity() > 0;
+
+                                    // Class để làm mờ nếu không dùng được
+                                    String containerClass = isUsable ? "bg-white border-l-4 border-theme shadow-sm" : "bg-gray-200 border-l-4 border-gray-400 opacity-70 grayscale";
+                                    String textClass = isUsable ? "text-gray-800" : "text-gray-500";
                         %>
-                        <div class="bg-white border <%= isUsable ? "border-gray-200" : "border-gray-100 opacity-60"%> rounded-lg p-3 shadow-sm relative overflow-hidden">
-                            <div class="absolute top-1/2 -left-2 w-4 h-4 bg-gray-50 rounded-full"></div>
-                            <div class="absolute top-1/2 -right-2 w-4 h-4 bg-gray-50 rounded-full"></div>
-
-                            <div class="flex justify-between items-center ml-3 mr-3">
-                                <div>
-                                    <h4 class="font-bold text-gray-800 text-lg"><%= v.getCode()%></h4>
-                                    <p class="text-red-500 font-bold text-sm">Discount <%= v.getPercentDiscount()%>%</p>
-                                    <p class="text-xs text-gray-500 mt-1">Exp: <%= v.getEndDay()%></p>
-                                    <% if (v.getQuantity() <= 0) { %>
-                                    <span class="text-[10px] bg-gray-200 px-2 py-0.5 rounded text-gray-500">Out of stock</span>
-                                    <% } else if (!"Active".equalsIgnoreCase(v.getStatus())) {%>
-                                    <span class="text-[10px] bg-red-100 px-2 py-0.5 rounded text-red-500"><%= v.getStatus()%></span>
-                                    <% } %>
-                                </div>
-
-                                <div>
-                                    <% if (isUsable) {%>
-                                    <form action="payment" method="post">
-                                        <input type="hidden" name="action" value="applyVoucher">
-                                        <input type="hidden" name="voucherCode" value="<%= v.getCode()%>">
-                                        
-                                        <input type="hidden" name="receiverName" value="<%= receiverName%>">
-                                        <input type="hidden" name="receiverPhone" value="<%= receiverPhone%>">
-                                        <input type="hidden" name="city" value="<%= city%>">
-                                        <input type="hidden" name="address" value="<%= address%>">
-                                        <input type="hidden" name="saveAddress" value="<%= saveAddress%>">
-                                        <input type="hidden" name="addressID" value="<%= addrID != null ? addrID : ""%>">
-
-                                        <button type="submit" class="bg-theme text-white text-xs font-bold px-4 py-2 rounded-full hover:bg-theme-dark transition">
-                                            Apply
-                                        </button>
-                                    </form>
+                        <div class="<%= containerClass%> rounded-r-lg p-4 relative flex justify-between items-center transition-all hover:shadow-md">
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-2">
+                                    <span class="font-bold text-lg <%= textClass%>"><%= v.getCode()%></span>
+                                    <% if (!isUsable) {%>
+                                    <span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-gray-500 text-white"><%= v.getStatus()%></span>
                                     <% } else { %>
-                                    <button disabled class="bg-gray-100 text-gray-400 text-xs font-bold px-4 py-2 rounded-full cursor-not-allowed">
-                                        Invalid
-                                    </button>
-                                    <% } %>
+                                    <span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-green-100 text-green-700">Active</span>
+                                    <% }%>
                                 </div>
+
+                                <p class="text-red-500 font-bold text-sm">Giảm <%= v.getPercentDiscount()%>%</p>
+                                <p class="text-xs text-gray-500 mt-1"><i class="far fa-clock mr-1"></i>HSD: <%= v.getEndDay()%></p>
+
+                                <% if ("Pending".equalsIgnoreCase(v.getStatus())) {%>
+                                <p class="text-xs text-orange-500 mt-1 italic">Mở lúc: <%= v.getStartDay()%></p>
+                                <% } %>
+</div>
+
+                            <div class="ml-4">
+                                <% if (isUsable) {%>
+                                <form action="payment" method="post">
+                                    <input type="hidden" name="action" value="applyVoucher">
+                                    <input type="hidden" name="voucherCode" value="<%= v.getCode()%>">
+
+                                    <input type="hidden" name="receiverName" value="<%= receiverName%>">
+                                    <input type="hidden" name="receiverPhone" value="<%= receiverPhone%>">
+                                    <input type="hidden" name="city" value="<%= city%>">
+                                    <input type="hidden" name="address" value="<%= address%>">
+                                    <input type="hidden" name="saveAddress" value="<%= saveAddress%>">
+                                    <input type="hidden" name="addressID" value="<%= addrID != null ? addrID : ""%>">
+
+                                    <button type="submit" class="bg-theme text-white text-xs font-bold px-4 py-2 rounded-full hover:bg-red-600 shadow-sm transition transform active:scale-95">
+                                        Áp dụng
+                                    </button>
+                                </form>
+                                <% } else { %>
+                                <button type="button" disabled class="bg-gray-300 text-gray-500 text-xs font-bold px-4 py-2 rounded-full cursor-not-allowed">
+                                    Không khả dụng
+                                </button>
+                                <% } %>
                             </div>
+
+                            <div class="absolute -left-2 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-gray-100 rounded-full"></div>
                         </div>
                         <%
                             }
                         } else {
                         %>
-                        <div class="text-center py-10">
-                            <i class="fa-regular fa-folder-open text-4xl text-gray-300 mb-3"></i>
-                            <p class="text-gray-500">You don't have any vouchers yet.</p>
+                        <div class="flex flex-col items-center justify-center h-full text-gray-400">
+                            <i class="fa-regular fa-folder-open text-4xl mb-3"></i>
+                            <p>Bạn chưa lưu voucher nào.</p>
                         </div>
                         <% }%>
                     </div>
                 </div>
-            </div>        
+            </div>
 
             <script>
                 document.addEventListener('DOMContentLoaded', () => {
@@ -835,14 +844,12 @@
                     });
 
                     function submitOrderForm() {
-<<<<<<< HEAD
+
                         // SỬA LỖI TẠI ĐÂY: Chỉ tìm input nằm trong paymentForm
                         // Code cũ: let actionInput = document.querySelector('input[name="action"]');
                         let actionInput = paymentForm.querySelector('input[name="action"]'); 
                         
-=======
-                        let actionInput = document.querySelector('input[name="action"]');
->>>>>>> a0873bcb5654374d47d9679beb54d2ed86184214
+
                         if (!actionInput) {
                             actionInput = document.createElement('input');
                             actionInput.type = 'hidden';

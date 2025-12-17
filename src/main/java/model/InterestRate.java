@@ -26,6 +26,8 @@ public class InterestRate {
         this.percentExpried = percentExpried;
     }
 
+    
+
 
     public float getPercentExpried() {
         return percentExpried;

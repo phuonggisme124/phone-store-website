@@ -250,7 +250,8 @@ public class ProfitDAO extends DBContext {
                 + "FROM Imports i\n"
                 + "JOIN ImportDetails d ON i.importID = d.importID\n"
                 + "WHERE MONTH(i.importDate) = ? \n"
-                + "  AND YEAR(i.importDate) = ?;";
+                + "  AND YEAR(i.importDate) = ?"
+                + "  AND Status = 1" ;
 
         try {
             PreparedStatement ps = conn.prepareStatement(sql);

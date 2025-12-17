@@ -11,7 +11,7 @@
 <%@page import="model.Products"%>
 <%@page import="java.util.List"%>
 <%@ page import="model.Customer" %>
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -345,7 +345,7 @@
     </form>
 
     <script>
-        // SCRIPT LOGIC GIá»® NGUYÃN NHÆ¯NG ÄÃ ÄÆ¯á»¢C CHUáº¨N HÃA Vá»I JS HIá»N Äáº I
+        // SCRIPT LOGIC GIỮ NGUYÊN NHƯNG ĐÃ ĐƯỢC CHUẨN HÓA VỚI JS HIỆN Đ� I
         document.addEventListener("DOMContentLoaded", function () {
             const headerSearchInput = document.getElementById('headerSearchInput');
             const headerSearchResults = document.getElementById('headerSearchResults');
