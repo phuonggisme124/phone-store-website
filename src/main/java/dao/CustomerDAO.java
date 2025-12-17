@@ -14,7 +14,6 @@ public class CustomerDAO extends DBContext {
         // SQL lấy từ bảng Customers
         String sql = "SELECT * FROM Customers WHERE CustomerID = ?";
 
-
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, id);
             try (ResultSet rs = ps.executeQuery()) {
@@ -53,7 +52,6 @@ public class CustomerDAO extends DBContext {
         return new Customer(customerID, fullName, email, phone, password,
                 address, createdAt, status, cccd, yob, point);
     }
-
 
     // ============================================================
     // Helper: Convert ResultSet → Customer
@@ -232,7 +230,7 @@ public class CustomerDAO extends DBContext {
     public void updateProfile(Customer c) {
 
         StringBuilder sql = new StringBuilder(
-                "UPDATE Customers SET FullName=?, Email=?, Phone=?, Address=?, CCCD=?, YOB=?");     
+                "UPDATE Customers SET FullName=?, Email=?, Phone=?, Address=?, CCCD=?, YOB=?");
         sql.append(" WHERE CustomerID=?");
 
         try (PreparedStatement ps = conn.prepareStatement(sql.toString())) {
@@ -243,7 +241,7 @@ public class CustomerDAO extends DBContext {
             ps.setString(4, c.getAddress());
             ps.setString(5, c.getCccd());
             ps.setDate(6, c.getYob());
-            int i = 7;   
+            int i = 7;
             ps.setInt(i, c.getCustomerID());
 
             ps.executeUpdate();
@@ -322,11 +320,10 @@ public class CustomerDAO extends DBContext {
         }
         return false;
     }
-    
+
     public Customer getCustomerByID(int id) {
         // SQL lấy từ bảng Customers
         String sql = "SELECT * FROM Customers WHERE CustomerID = ?";
-
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, id);
@@ -366,7 +363,6 @@ public class CustomerDAO extends DBContext {
 //        return new Customer(customerID, fullName, email, phone, password,
 //                address, createdAt, status, cccd, yob, point);
 //    }
-
     public Customer getCustomerByEmail(String email) {
         String sql = "SELECT * FROM Customers WHERE Email = ?";
 
@@ -374,9 +370,9 @@ public class CustomerDAO extends DBContext {
             ps.setString(1, email);
             ResultSet rs = ps.executeQuery();
 
-
-            if (rs.next()) return map(rs);
-
+            if (rs.next()) {
+                return map(rs);
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -385,7 +381,23 @@ public class CustomerDAO extends DBContext {
         return null;
     }
 
+    public Customer getCustomerByEmailAndPhone(String email, String phone) {
+        String sql = "SELECT * FROM Customers WHERE Email = ? AND Phone = ?";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, email);
+            ps.setString(2, phone);
+
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return map(rs); // dùng helper map(ResultSet)
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
 
 }
-
-

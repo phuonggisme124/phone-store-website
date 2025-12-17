@@ -201,10 +201,11 @@
                             %>
 
                             <div class="wishlist-card">
-                                <% if(v != null) { %>
-                                <img src="images/<%= v.getImageUrl() %>" alt="<%= p.getName() %>">
-                                <h5><%= p.getName() %> - <%= v.getColor() %> / <%= v.getStorage() %></h5>
-
+                                <a href="product?action=viewDetail&pID=<%= p.getProductID()%>">
+                                    <% if(v != null) { %>
+                                    <img src="images/<%= v.getImageUrl() %>" alt="<%= p.getName() %>">
+                                    <h5><%= p.getName() %> - <%= v.getColor() %> / <%= v.getStorage() %></h5>
+                                </a>
                                 <div class="price">
                                     <% 
                                         Double discount = v.getDiscountPrice();

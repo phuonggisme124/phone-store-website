@@ -43,24 +43,30 @@ public class WarrantyServlet extends HttpServlet {
                     .forward(request, response);
             return;
         }
-        if (action.equals("claim")) {
-            int warrantyID = Integer.parseInt(request.getParameter("warrantyID"));
+//        if (action.equals("claim")) {
+//            int warrantyID = Integer.parseInt(request.getParameter("warrantyID"));
+//
+//            // Lấy đầy đủ thông tin bảo hành để hiển thị lên form claim
+//            Warranty w = warrantyDAO.getWarrantyByID(warrantyID);
+//
+//            if (w == null || !"active".equalsIgnoreCase(w.getStatus())) {
+//                request.setAttribute("error", "Bảo hành không tồn tại hoặc không còn hiệu lực.");
+//                // Quay lại trang danh sách nếu có lỗi
+//                List<Warranty> warranties = warrantyDAO.getWarrantyByCustomer(customer.getCustomerID());
+//                request.setAttribute("warranties", warranties);
+//                request.getRequestDispatcher("customer/warranty.jsp").forward(request, response);
+//                return;
+//            }
+//
+//            request.setAttribute("warranty", w); // Đặt đối tượng warranty vào request
+//            // SỬA Ở ĐÂY: forward đúng tên file claim.jsp
+//            request.getRequestDispatcher("customer/claim.jsp").forward(request, response);
+//        }
 
-            // Lấy đầy đủ thông tin bảo hành để hiển thị lên form claim
-            Warranty w = warrantyDAO.getWarrantyByID(warrantyID);
-
-            if (w == null || !"active".equalsIgnoreCase(w.getStatus())) {
-                request.setAttribute("error", "Bảo hành không tồn tại hoặc không còn hiệu lực.");
-                // Quay lại trang danh sách nếu có lỗi
-                List<Warranty> warranties = warrantyDAO.getWarrantyByCustomer(customer.getCustomerID());
-                request.setAttribute("warranties", warranties);
-                request.getRequestDispatcher("customer/warranty.jsp").forward(request, response);
-                return;
-            }
-
-            request.setAttribute("warranty", w); // Đặt đối tượng warranty vào request
-            // SỬA Ở ĐÂY: forward đúng tên file claim.jsp
-            request.getRequestDispatcher("customer/claim.jsp").forward(request, response);
+        if ("claim".equals(action)) {
+            claimWarranty(request, response);
+        } else {
+            listWarranty(request, response);
         }
     }
 
@@ -94,4 +100,38 @@ public class WarrantyServlet extends HttpServlet {
             response.sendRedirect("warranty");
         }
     }
+
+    private void claimWarranty(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+
+        int warrantyID = Integer.parseInt(request.getParameter("warrantyID"));
+
+        WarrantyDAO dao = new WarrantyDAO();
+
+        // update status -> under warranty
+        dao.updateWarrantyStatus(warrantyID, "under warranty");
+
+        // quay lại trang danh sách
+        response.sendRedirect("warranty");
+    }
+
+    private void listWarranty(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        // Lấy user đang login (đoạn này chỉnh theo project của em)
+        Customer user = (Customer) request.getSession().getAttribute("user");
+
+        if (user == null) {
+            response.sendRedirect("login.jsp");
+            return;
+        }
+
+        WarrantyDAO dao = new WarrantyDAO();
+        List<Warranty> warranties = dao.getWarrantyByCustomer(user.getCustomerID());
+
+        request.setAttribute("warranties", warranties);
+        request.getRequestDispatcher("/customer/warranty.jsp")
+                .forward(request, response);
+    }
+
 }

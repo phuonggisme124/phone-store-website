@@ -111,7 +111,7 @@ public class WarrantyDAO extends DBContext {
                 w.setWarrantyID(rs.getInt("WarrantyID"));
                 w.setOrderID(rs.getInt("OrderID"));
                 w.setVariantID(rs.getInt("VariantID"));
-                w.setProductName(rs.getString("ProductName")); 
+                w.setProductName(rs.getString("ProductName"));
                 w.setSoldDay(rs.getDate("SoldDay"));
                 w.setExpiryDate(rs.getDate("ExpiryDate"));
                 w.setStatus(rs.getString("Status"));
@@ -122,4 +122,17 @@ public class WarrantyDAO extends DBContext {
         }
         return null;
     }
+
+    public void updateWarrantyStatus(int warrantyID, String status) {
+        String sql = "UPDATE Warranty SET Status = ? WHERE WarrantyID = ?";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, status);
+            ps.setInt(2, warrantyID);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

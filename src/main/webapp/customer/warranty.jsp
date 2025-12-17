@@ -113,9 +113,10 @@
                                         <td>
                                             <% if ("active".equalsIgnoreCase(w.getStatus())) { %>
                                             <a href="warranty?action=claim&warrantyID=<%= w.getWarrantyID() %>"
-                                               class="btn btn-sm btn-primary">
+                                               class="btn btn-sm btn-primary" style = "padding: 2px 8px">
                                                 Gửi bảo hành
                                             </a>
+
                                             <% } else { %>
                                             <span class="text-muted">Không khả dụng</span>
                                             <% } %>

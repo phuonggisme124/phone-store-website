@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 <%-- 
     Document   : changePassword
     Created on : Oct 16, 2025, 3:50:10 PM
@@ -20,11 +18,7 @@ if (customer == null) {
         return;
     }
 
-
-    String message = (String) request.getAttribute("message");
-
     String message = (String) session.getAttribute("message");
-
     String error = (String) request.getAttribute("error");
 %>
 
@@ -45,12 +39,6 @@ if (customer == null) {
 
         <style>
             body {
-
-                background: white;
-                min-height: 100vh;
-                font-family: 'Jost', sans-serif;
-                padding-top: 80px;
-
                 background: #EDF1F3;
                 min-height: 100vh;
                 font-family: 'Jost', sans-serif;
@@ -379,64 +367,7 @@ if (customer == null) {
         <div class="profile-container">
             <div class="profile-wrapper">
                 <!-- Sidebar -->
-<<<<<<< HEAD
-<<<<<<< HEAD
-                <aside class="profile-sidebar">
-<<<<<<< HEAD
-                    <h3>Hello, <%= user.getFullName() %></h3>
-=======
-                    <h3>Hello, <%= user.getFullName()%></h3>
->>>>>>> c80843028cf9648874277785e7b7c677afb557ad
-
-                    <a href="user?action=transaction" class="sidebar-link">
-                        <i class="fas fa-shopping-bag"></i>
-                        <span>My Orders</span>
-                    </a>
-<<<<<<< HEAD
-=======
-                    <a href="user?action=payInstallment" class="sidebar-link">
-                        <i class="fas fa-receipt"></i>
-                        <span>Installment Paying</span>
-                    </a>
->>>>>>> c80843028cf9648874277785e7b7c677afb557ad
-=======
-                    <aside class="profile-sidebar">
-                        <h3>Hello, <%= user.getFullName()%></h3>
-
-                        <a href="product?action=viewWishlist" class="sidebar-link">
-                            <i class="fas fa-heart"></i>
-                            <span>My Wishlist</span>
-                        </a>
-                        
-                        <a href="user?action=transaction" class="sidebar-link">
-                            <i class="fas fa-shopping-bag"></i>
-                            <span>My Orders</span>
-                        </a>
-                        <a href="user?action=payInstallment" class="sidebar-link">
-                            <i class="fas fa-receipt"></i>
-                            <span>Installment Paying</span>
-                        </a>
->>>>>>> origin/main
-
-                        <a href="user" class="sidebar-link">
-                            <i class="fas fa-user"></i>
-                            <span>Profile & Address</span>
-                        </a>
-
-                        <a href="user?action=changePassword" class="sidebar-link">
-                            <i class="fas fa-lock"></i>
-                            <span>Change Password</span>
-                        </a>
-
-                        <form action="logout" method="post">
-                            <button type="submit" class="logout-btn">
-                                <i class="fas fa-sign-out-alt"></i> Logout
-                            </button>
-                        </form>
-                    </aside>
-=======
                 <%@ include file="sidebar.jsp" %>
->>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
 
                 <!-- Main Content -->
                 <main class="profile-content">
@@ -460,38 +391,19 @@ if (customer == null) {
                         <!-- Form Section -->
                         <div class="col-lg-8">
                             <form id="changePasswordForm" action="user" method="post" class="profile-form">
-<<<<<<< HEAD
-                                <input type="hidden" name="action" value="updatePassword">
-
-=======
                                 <input type="hidden" name="action" value="changePassword">
                                 <%
 
                                 %>
-<<<<<<< HEAD
->>>>>>> c80843028cf9648874277785e7b7c677afb557ad
-                                <% if (message != null) { %>
-=======
                                 <% if (message != null) {%>
->>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
                                 <div class="alert alert-success">
                                     <i class="fas fa-check-circle"></i>
                                     <%= message%>
                                 </div>
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-                                <% 
-                                    session.removeAttribute("message");
-                                %>
->>>>>>> c80843028cf9648874277785e7b7c677afb557ad
-                                <% } else if (error != null) { %>
-=======
                                 <%
                                     session.removeAttribute("message");
                                 %>
                                 <% } else if (error != null) {%>
->>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
                                 <div class="alert alert-danger">
                                     <i class="fas fa-exclamation-circle"></i>
                                     <%= error%>
@@ -577,6 +489,5 @@ if (customer == null) {
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     </body>
 </html>
-
 
 

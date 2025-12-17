@@ -4,9 +4,9 @@
     Author     : Nhung Hoa
 --%>
 
-<%@page import="java.util.List"%>
+<%--<%@page import="java.util.List"%>
 <%@page import="model.Category"%>
-<%@page import="model.Users"%>
+<%@page import="model.Customer"%>--%>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/layout/header.jsp" %>
 <%
@@ -20,9 +20,10 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+     
         <link rel="stylesheet" type="text/css" href="css/style.css">
         <link rel="stylesheet" type="text/css" href="css/profile.css">
+           <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -32,23 +33,12 @@
     <body>
         <section id="billboard" class="bg-light-blue overflow-hidden padding-large">
             <div class="profile-container">
-<<<<<<< HEAD
-=======
-        
-                    <!-- Sidebar -->
-<<<<<<< HEAD
-                    
->>>>>>> c80843028cf9648874277785e7b7c677afb557ad
-=======
-                     <%@ include file="sidebar.jsp" %>
->>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
-
-                    
+       
                     <!-- Main Content -->
                     <main class="profile-content">
                         <div class="profile-header">
-                            <h1>Forget Password</h1>
-                            <p>Please input your phone number and email.</p>
+                            <h1>Quên mật khẩu</h1>
+                            <p>Nhập email và số điện thoại để đặt lại mật khẩu.</p>
                         </div>
 
                         <div class="row justify-content-center">
@@ -61,16 +51,16 @@
                                             <small id="errorEmailPhone" class="text-danger"></small>
                                         </div>
                                         <div class="mb-3">
-                                            <label>Phone number:</label>
+                                            <label>Số điện thoại:</label>
                                             <input type="text" name="phone" class="form-control" required>
                                         </div>
                                         <div class="mb-3">
-                                            <label>New password:</label>
+                                            <label>Mật khẩu mới:</label>
                                             <input type="password" id="newPassword" name="newPassword" class="form-control" required>
                                             <small id="errorNewPass" class="text-danger"></small>
                                         </div>
                                         <div class="mb-3">
-                                            <label>Confirm password:</label>
+                                            <label>Xác nhận mật khẩu:</label>
                                             <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" required>
                                             <small id="errorConfirmPass" class="text-danger"></small>
                                         </div>
@@ -82,7 +72,7 @@
                                         <div class="text-danger mb-3"><%= error %></div>
                                         <% } %>
 
-                                        <button type="submit" class="btn btn-primary w-100">Confirm</button>
+                                        <button type="submit" class="btn btn-primary w-100">Cập nhật mật khẩu</button>
                                     </form>
                                 </div>
                             </div>
@@ -90,11 +80,7 @@
                     </main>
 
                 </div>
-<<<<<<< HEAD
-
-=======
             
->>>>>>> c80843028cf9648874277785e7b7c677afb557ad
         </section>
 
         <script>
@@ -138,6 +124,3 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     </body>
 </html>
-
-
-
