@@ -509,7 +509,7 @@
                     <div class="display-header d-flex justify-content-between pb-3">
                         <h2 class="display-7 text-dark text-uppercase">SmartWatch</h2>
                         <div class="btn-right">
-                            <a href="product?action=category&cID=4" class="btn btn-medium btn-normal text-uppercase">Go to Shop</a>
+                            <a href="product?action=category&cID=2" class="btn btn-medium btn-normal text-uppercase">Go to Shop</a>
                         </div>
                     </div>
 
@@ -619,7 +619,6 @@
                                         <!--WISH LIST BUTTON-->
                                         <div class="wishlist-wrap">
                                             <%
-<<<<<<< HEAD
                                                 Customer u = (Customer) session.getAttribute("user");
                                                 boolean logged = (u != null);
                                                 boolean liked = false;
@@ -630,32 +629,14 @@
                                                     WishlistDAO wdao = new WishlistDAO();
                                                     liked = wdao.isExist(u.getCustomerID(), productID, variantID);
                                                 }
-=======
- Customer u = (Customer) session.getAttribute("user");
- boolean logged = (u != null);
- boolean liked = false;
- int variantID = p.getVariants().get(0).getVariantID();
- int productID = p.getProductID();
-
- if (logged && variantID > 0) {
-     WishlistDAO wdao = new WishlistDAO();
-     liked = wdao.isExist(u.getCustomerID(), productID, variantID);
- }
->>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
                                             %>
 
                                             <button class="wishlist-btn toggle-wishlist"
                                                     data-productid="<%= productID %>"
                                                     data-variantid="<%= variantID %>"
-<<<<<<< HEAD
                                                     style="position:absolute; top:40px; right:10px; background:none; border:none; padding:0; z-index:10;">
                                                 <i class="<%= liked ? "fas fa-heart" : "far fa-heart" %>"
                                                    style="<%= liked ? "color:#e53e3e; font-size:1.5rem;" : "font-size:1.5rem;" %>"></i>
-=======
-                                                    style="background:none; border:none; padding:0;">
-                                                <i class="<%= liked ? "fas fa-heart" : "far fa-heart" %>"
-                                                   style="<%= liked ? "color:#e53e3e;" : "" %>"></i>
->>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
                                             </button>
 
                                         </div>
@@ -799,12 +780,5 @@
 
         <script src="${pageContext.request.contextPath}/js/google_login.js?v=10"></script>
         <script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
-<<<<<<< HEAD
     </body>
 </html>
-=======
-            </body>
-</html>
-
-
->>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806

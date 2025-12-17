@@ -1,20 +1,15 @@
 <%-- 
-    Document   : warranty
-    Created on : Dec 16, 2025, 6:52:26 PM
+    Document   : claim
+    Created on : Dec 16, 2025, 7:12:14 PM
     Author     : Nhung Hoa
 --%>
-
 <%@ page contentType="text/html; charset=UTF-8" %>
-<%@ page import="java.util.List" %>
 <%@ page import="model.Warranty" %>
-<%@ page import="model.Variants" %>
-<%@ page import="model.Products" %>
-<%@ page import="model.Customer" %>
+<%@ page import="java.util.List" %>
 <%@ include file="/layout/header.jsp" %>
 
-
 <%
-    List<Warranty> warranties = (List<Warranty>) request.getAttribute("warranties");
+    Warranty w = (Warranty) request.getAttribute("warranty"); // warranty được chọn để claim
 %>
 <!DOCTYPE html>
 <html lang="vi">
@@ -28,7 +23,6 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     </head>
-
     <body>
         <section id="billboard" class="bg-light-blue overflow-hidden padding-large">
             <div class="profile-container">
@@ -74,15 +68,14 @@
                         </form>
                     </aside>
 
+
                     <!-- Main Content -->
                     <main class="profile-content">
                         <div class="profile-header">
-                            <h1>Bảo Hành Của Tôi</h1>
+                            <h1>Gửi Yêu Cầu Bảo Hành</h1>
                         </div>
-                        <%
-                           warranties = (List<Warranty>) request.getAttribute("warranties");
-                        %>
 
+                        <% if (w != null) { %>
                         <div class="table-responsive mt-4">
                             <table class="table table-bordered text-center">
                                 <thead class="table-light">
@@ -93,16 +86,13 @@
                                         <th>Ngày mua</th>
                                         <th>Hết hạn</th>
                                         <th>Trạng thái</th>
-                                        <th>Thao tác</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <% if (warranties != null && !warranties.isEmpty()) {
-                for (Warranty w : warranties) { %>
                                     <tr>
                                         <td><%= w.getWarrantyID() %></td>
                                         <td><%= w.getOrderID() %></td>
-                                        <td><%= w.getProductName() %></td>
+                                        <td><%= w.getProductName() != null ? w.getProductName() : "Variant " + w.getVariantID() %></td>
                                         <td><%= w.getSoldDay() %></td>
                                         <td><%= w.getExpiryDate() %></td>
                                         <td>
@@ -110,27 +100,25 @@
                                                 <%= w.getStatus() %>
                                             </span>
                                         </td>
-                                        <td>
-                                            <% if ("active".equalsIgnoreCase(w.getStatus())) { %>
-                                            <a href="warranty?action=claim&warrantyID=<%= w.getWarrantyID() %>"
-                                               class="btn btn-sm btn-primary">
-                                                Gửi bảo hành
-                                            </a>
-                                            <% } else { %>
-                                            <span class="text-muted">Không khả dụng</span>
-                                            <% } %>
-                                        </td>
                                     </tr>
-                                    <% } } else { %>
-                                    <tr>
-                                        <td colspan="7" class="text-muted">
-                                            Bạn chưa có sản phẩm nào được bảo hành
-                                        </td>
-                                    </tr>
-                                    <% } %>
                                 </tbody>
                             </table>
                         </div>
+
+                        <!-- Form gửi yêu cầu -->
+                        <div class="mt-4">
+                            <form action="warranty?action=submitClaim" method="post">
+                                <input type="hidden" name="warrantyID" value="<%= w.getWarrantyID() %>">
+                                <div class="mb-3">
+                                    <label for="reason" class="form-label">Lý do bảo hành</label>
+                                    <textarea class="form-control" id="reason" name="reason" rows="4" required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Gửi yêu cầu</button>
+                            </form>
+                        </div>
+                        <% } else { %>
+                        <p class="text-danger">Không tìm thấy thông tin bảo hành.</p>
+                        <% } %>
 
                     </main>
                 </div>

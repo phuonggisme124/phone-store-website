@@ -14,11 +14,7 @@
 <%@ page import="java.util.Locale" %>
 <%@ include file="/layout/header.jsp" %>
 
-<link rel="stylesheet" 
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" 
-      integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" 
-      crossorigin="anonymous" 
-      referrerpolicy="no-referrer" />
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 <link rel="stylesheet" href="css/product_detail.css">
 <link rel="stylesheet" href="css/review_detail.css">
@@ -43,18 +39,10 @@
 
     int userID = 0;
     if (isLoggedIn) {
-<<<<<<< HEAD
-        userID = user.getCustomerID() ;
-=======
         userID = user.getCustomerID();
->>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
         displayName = (user.getFullName() != null && !user.getFullName().trim().isEmpty())
                 ? user.getFullName() : user.getEmail();
     }
-%>
-
-<%
-    WishlistDAO wdaoGlobal = new WishlistDAO(); 
 %>
 
 <body>
@@ -272,6 +260,14 @@
                         <span class="main-score"><%= String.format("%.1f", rating)%></span>
                         <span class="max-score">/5</span>
                     </div>
+                    <%
+                    if (listVariantRating == null) {
+                        listVariantRating = new ArrayList<>();
+                    }
+                    if (listReview == null) {
+                        listReview = new ArrayList<>();
+                    }
+                    %>
 
                     <p class="stats">
                         <%= rdao.getTotalReview(listVariantRating, listReview)%> Review
@@ -389,11 +385,7 @@
                         <div style="background: yellow; color: black;">
 
                         </div>
-<<<<<<< HEAD
-                        <% if (isLoggedIn && userID == r.getUser().getCustomerID() ) {%>
-=======
                         <% if (isLoggedIn && userID == r.getUser().getCustomerID()) {%>
->>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
                         <form action="review?action=deleteReview" method="post" style="display:inline;">
                             <input type="hidden" name="rID" value="<%= r.getReviewID()%>">
                             <input type="hidden" name="vID" value="<%= r.getVariant().getVariantID()%>">
@@ -416,8 +408,8 @@
 
                 <!-- RELATED PRODUCTS -->
                 <%
-                    // Lấy danh sách sản phẩm liên quan do servlet setAttribute
-                    List<Products> relatedList = (List<Products>) request.getAttribute("relatedList");
+                // Lấy danh sách sản phẩm liên quan do servlet setAttribute
+                List<Products> relatedList = (List<Products>) request.getAttribute("relatedList");
                 %>
                 <section class="related-products position-relative padding-large no-padding-top">
                     <div class="container">
@@ -429,7 +421,7 @@
                             <%
                                 // Import NumberFormat và Locale ở đầu JSP rồi
                                 NumberFormat vnFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
-
+                
                                 // Giới hạn tối đa 10 sản phẩm
                                 List<Products> relatedList10 = new ArrayList<>();
                                 if (relatedList != null) {
@@ -449,30 +441,24 @@
                                         <div class="product-card text-center position-relative">
 
                                             <div class="image-holder position-relative">
-                                                <a href="product?action=viewDetail&pID=<%= rp.getProductID()%>">
-                                                    <img src="images/<%= rp.getVariants().get(0).getImageUrl()%>" 
-                                                         alt="<%= rp.getName()%>" class="img-fluid rounded-3">
+                                                <a href="product?action=viewDetail&pID=<%= rp.getProductID() %>">
+                                                    <img src="images/<%= rp.getVariants().get(0).getImageUrl() %>" 
+                                                         alt="<%= rp.getName() %>" class="img-fluid rounded-3">
                                                 </a>
                                             </div>
 
                                             <div class="card-detail pt-3">
                                                 <h3 class="card-title text-uppercase">
-                                                    <a href="product?action=viewDetail&pID=<%= rp.getProductID()%>">
-                                                        <%= rp.getName()%> 
-                                                        <%= rp.getVariants().get(0).getColor()%> 
-                                                        <%= rp.getVariants().get(0).getStorage()%>
+                                                    <a href="product?action=viewDetail&pID=<%= rp.getProductID() %>">
+                                                        <%= rp.getName() %> 
+                                                        <%= rp.getVariants().get(0).getColor() %> 
+                                                        <%= rp.getVariants().get(0).getStorage() %>
                                                     </a>
                                                 </h3>
 
-<<<<<<< HEAD
                                                 <div class="wishlist-wrap">
                                                     <%
                                                         // KHAI BÁO BIẾN
-=======
-                                                <!-- WISH LIST BUTTON -->
-                                                <div class="wishlist-wrap">
-                                                    <%
->>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
                                                         Customer u = (Customer) session.getAttribute("user");
                                                         boolean logged = (u != null);
                                                         boolean liked = false;
@@ -493,7 +479,6 @@
                                                         }
                                                     %>
 
-<<<<<<< HEAD
                                                     <% if (logged) { %>
                                                     <button class="wishlist-btn toggle-wishlist"
                                                             data-productid="<%= productID %>"
@@ -501,39 +486,20 @@
                                                             style="position:absolute; top:40px; right:10px; background:none; border:none; padding:0; z-index:10;">
                                                         <i class="<%= liked ? "fas fa-heart" : "far fa-heart" %>"
                                                            style="<%= liked ? "color:#e53e3e; font-size:1.5rem;" : "font-size:1.5rem;" %>"></i>
-=======
-                                                    <% if (variantID > 0) { %>
-                                                    <% if (logged) {%>
-                                                    <button class="wishlist-btn" 
-                                                            data-productid="<%= rp.getProductID()%>" 
-                                                            data-variantid="<%= variantID%>"
-                                                            style="background:none; border:none; padding:0;">
-                                                        <i class="<%= liked ? "fas fa-heart" : "far fa-heart"%>" 
-                                                           style="<%= liked ? "color:#e53e3e;" : ""%>"></i>
->>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
                                                     </button>
                                                     <% } else { %>
                                                     <a href="login.jsp" class="wishlist-btn">
                                                         <i class="far fa-heart"></i>
                                                     </a>
                                                     <% } %>
-<<<<<<< HEAD
-=======
-                                                    <% }%>
->>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
                                                 </div>
 
                                                 <span class="item-price text-primary">
-<<<<<<< HEAD
                                                     <%= vnFormat.format(
                                                             rp.getVariants().get(0).getDiscountPrice() != null 
                                                                     ? rp.getVariants().get(0).getDiscountPrice() 
                                                                     : rp.getVariants().get(0).getPrice()
                                                         ) %>
-=======
-                                                    <%= vnFormat.format(rp.getVariants().get(0).getDiscountPrice() != null ? rp.getVariants().get(0).getDiscountPrice() : rp.getVariants().get(0).getPrice())%>
-
->>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
                                                 </span>
 
                                             </div>
@@ -557,20 +523,20 @@
                 <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
 
                 <script>
-                                        var swiper = new Swiper('.related-swiper', {
-                                            slidesPerView: 4,
-                                            spaceBetween: 20,
-                                            navigation: {
-                                                nextEl: '.swiper-button-next',
-                                                prevEl: '.swiper-button-prev',
-                                            },
-                                            breakpoints: {
-                                                320: {slidesPerView: 1},
-                                                576: {slidesPerView: 2},
-                                                768: {slidesPerView: 3},
-                                                992: {slidesPerView: 4}
-                                            }
-                                        });
+                                                    var swiper = new Swiper('.related-swiper', {
+                                                        slidesPerView: 4,
+                                                        spaceBetween: 20,
+                                                        navigation: {
+                                                            nextEl: '.swiper-button-next',
+                                                            prevEl: '.swiper-button-prev',
+                                                        },
+                                                        breakpoints: {
+                                                            320: {slidesPerView: 1},
+                                                            576: {slidesPerView: 2},
+                                                            768: {slidesPerView: 3},
+                                                            992: {slidesPerView: 4}
+                                                        }
+                                                    });
                 </script>
 
             </div>
@@ -586,287 +552,123 @@
 
     <script src="js/jquery-1.11.0.min.js"></script>
     <script src="js/bootstrap.bundle.min.js"></script>
-<<<<<<< HEAD
-=======
 
     <script>
-                                                        /* ------------------ REVIEW MODAL ------------------ */
+                                                    /* ------------------ REVIEW MODAL ------------------ */
 
-                                                        const modal = document.getElementById("reviewModal");
-                                                        const openModalBtn = document.getElementById("openReviewModal");
-                                                        const closeBtn = document.getElementsByClassName("close-button")[0];
+                                                    const modal = document.getElementById("reviewModal");
+                                                    const openModalBtn = document.getElementById("openReviewModal");
+                                                    const closeBtn = document.getElementsByClassName("close-button")[0];
 
-                                                        if (openModalBtn && modal)
-                                                            openModalBtn.onclick = () => modal.style.display = "block";
+                                                    if (openModalBtn && modal)
+                                                        openModalBtn.onclick = () => modal.style.display = "block";
 
-                                                        if (closeBtn)
-                                                            closeBtn.onclick = () => modal.style.display = "none";
+                                                    if (closeBtn)
+                                                        closeBtn.onclick = () => modal.style.display = "none";
 
-                                                        window.onclick = (e) => {
-                                                            if (e.target === modal)
-                                                                modal.style.display = "none";
-                                                        };
+                                                    window.onclick = (e) => {
+                                                        if (e.target === modal)
+                                                            modal.style.display = "none";
+                                                    };
 
-                                                        /* ------------------ QUANTITY SELECTOR ------------------ */
+                                                    /* ------------------ QUANTITY SELECTOR ------------------ */
 
-                                                        document.addEventListener("DOMContentLoaded", function () {
+                                                    document.addEventListener("DOMContentLoaded", function () {
 
-                                                            const minusBtn = document.querySelector('.minus-btn');
-                                                            const plusBtn = document.querySelector('.plus-btn');
-                                                            const quantityInput = document.getElementById('quantity-display');
-                                                            const stockError = document.getElementById('stock-error');
+                                                        const minusBtn = document.querySelector('.minus-btn');
+                                                        const plusBtn = document.querySelector('.plus-btn');
+                                                        const quantityInput = document.getElementById('quantity-display');
+                                                        const stockError = document.getElementById('stock-error');
 
-                                                            const quantitySelector = document.querySelector('.quantity-selector');
-                                                            const stock = quantitySelector ? parseInt(quantitySelector.dataset.stock) : 0;
+                                                        const quantitySelector = document.querySelector('.quantity-selector');
+                                                        const stock = quantitySelector ? parseInt(quantitySelector.dataset.stock) : 0;
 
-                                                            const hiddenInputs = document.querySelectorAll('.hiddenQuantityInput');
+                                                        const hiddenInputs = document.querySelectorAll('.hiddenQuantityInput');
 
-                                                            function updateHiddenQuantity(val) {
-                                                                hiddenInputs.forEach(input => {
-                                                                    input.value = val;
-                                                                    input.setAttribute('value', val);
-                                                                });
-                                                            }
-
-                                                            if (minusBtn && plusBtn && quantityInput) {
-
-                                                                quantityInput.value = 1;
-                                                                updateHiddenQuantity(1);
-
-                                                                minusBtn.onclick = () => {
-                                                                    let val = parseInt(quantityInput.value);
-                                                                    if (isNaN(val))
-                                                                        val = 1;
-
-                                                                    if (val > 1) {
-                                                                        val--;
-                                                                        quantityInput.value = val;
-                                                                        updateHiddenQuantity(val);
-                                                                        if (stockError)
-                                                                            stockError.style.display = "none";
-                                                                    }
-                                                                };
-
-                                                                plusBtn.onclick = () => {
-                                                                    let val = parseInt(quantityInput.value);
-                                                                    if (isNaN(val))
-                                                                        val = 1;
-
-                                                                    if (val < stock) {
-                                                                        val++;
-                                                                        quantityInput.value = val;
-                                                                        updateHiddenQuantity(val);
-                                                                        if (stockError)
-                                                                            stockError.style.display = "none";
-                                                                    } else {
-                                                                        if (stockError)
-                                                                            stockError.style.display = "block";
-                                                                    }
-                                                                };
-                                                            }
-                                                        });
-
-                                                        /* ------------------ CHANGE IMAGE ------------------ */
-
-                                                        function changeImage(thumb) {
-                                                            const mainImg = document.getElementById('displayedImage');
-                                                            const allThumbs = document.querySelectorAll('.thumbnail');
-
-                                                            mainImg.src = thumb.src;
-                                                            allThumbs.forEach(t => t.classList.remove('active'));
-                                                            thumb.classList.add('active');
+                                                        function updateHiddenQuantity(val) {
+                                                            hiddenInputs.forEach(input => {
+                                                                input.value = val;
+                                                                input.setAttribute('value', val);
+                                                            });
                                                         }
-    </script>
 
->>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
-    <script src="js/review-filter.js"></script>
-    <script>
-<<<<<<< HEAD
-                                        document.addEventListener("DOMContentLoaded", function () {
+                                                        if (minusBtn && plusBtn && quantityInput) {
 
-                                            /* ------------------ REVIEW MODAL ------------------ */
-                                            const modal = document.getElementById("reviewModal");
-                                            const openModalBtn = document.getElementById("openReviewModal");
-                                            // Sử dụng querySelector để linh hoạt hơn
-                                            const closeBtn = document.querySelector("#reviewModal .close-button");
+                                                            quantityInput.value = 1;
+                                                            updateHiddenQuantity(1);
 
-                                            if (openModalBtn && modal) {
-                                                openModalBtn.addEventListener('click', () => modal.style.display = "block");
-                                            }
-                                            if (closeBtn && modal) {
-                                                closeBtn.addEventListener('click', () => modal.style.display = "none");
-                                            }
-                                            // Đảm bảo event listener này chỉ gắn một lần
-                                            if (modal) {
-                                                window.addEventListener('click', (e) => {
-                                                    if (e.target === modal) {
-                                                        modal.style.display = "none";
-                                                    }
-                                                });
-                                            }
+                                                            minusBtn.onclick = () => {
+                                                                let val = parseInt(quantityInput.value);
+                                                                if (isNaN(val))
+                                                                    val = 1;
 
-                                            /* ------------------ QUANTITY SELECTOR ------------------ */
-                                            const minusBtn = document.querySelector('.minus-btn');
-                                            const plusBtn = document.querySelector('.plus-btn');
-                                            const quantityInput = document.getElementById('quantity-display');
-                                            const stockError = document.getElementById('stock-error');
-                                            const quantitySelector = document.querySelector('.quantity-selector');
-                                            const stock = quantitySelector ? parseInt(quantitySelector.dataset.stock) : 0;
-                                            const hiddenInputs = document.querySelectorAll('.hiddenQuantityInput');
+                                                                if (val > 1) {
+                                                                    val--;
+                                                                    quantityInput.value = val;
+                                                                    updateHiddenQuantity(val);
+                                                                    if (stockError)
+                                                                        stockError.style.display = "none";
+                                                                }
+                                                            };
 
-                                            function updateHiddenQuantity(val) {
-                                                hiddenInputs.forEach(input => {
-                                                    input.value = val;
-                                                    input.setAttribute('value', val); // Nên dùng property .value
-                                                });
-                                            }
+                                                            plusBtn.onclick = () => {
+                                                                let val = parseInt(quantityInput.value);
+                                                                if (isNaN(val))
+                                                                    val = 1;
 
-                                            if (minusBtn && plusBtn && quantityInput) {
-                                                // Thiết lập giá trị mặc định an toàn khi tải
-                                                quantityInput.value = 1;
-                                                updateHiddenQuantity(1);
-
-                                                minusBtn.addEventListener('click', () => {
-                                                    let val = parseInt(quantityInput.value) || 1; // Xử lý lỗi NaN
-                                                    if (val > 1) {
-                                                        val--;
-                                                        quantityInput.value = val;
-                                                        updateHiddenQuantity(val);
-                                                        if (stockError)
-                                                            stockError.style.display = "none";
-                                                    }
-                                                });
-
-                                                plusBtn.addEventListener('click', () => {
-                                                    let val = parseInt(quantityInput.value) || 1; // Xử lý lỗi NaN
-                                                    if (val < stock) {
-                                                        val++;
-                                                        quantityInput.value = val;
-                                                        updateHiddenQuantity(val);
-                                                        if (stockError)
-                                                            stockError.style.display = "none";
-                                                    } else {
-                                                        if (stockError)
-                                                            stockError.style.display = "block";
-                                                    }
-                                                });
-                                            }
-
-                                            /* ------------------ PHOTO UPLOAD PREVIEW ------------------ */
-                                            const input = document.getElementById("photo-upload-input");
-                                            const previewContainer = document.getElementById("image-preview-container");
-
-                                            if (input && previewContainer) {
-                                                input.addEventListener("change", function () {
-                                                    previewContainer.innerHTML = "";
-                                                    const files = Array.from(this.files);
-
-                                                    if (files.length > 3) {
-                                                        alert("You can only upload up to 3 photos!");
-                                                        this.value = ""; // Xóa các file đã chọn
-                                                        return;
-                                                    }
-
-                                                    // Logic tạo preview (bị thiếu trong code gốc, tôi giữ nguyên logic kiểm tra)
-                                                    files.forEach(file => {
-                                                        const reader = new FileReader();
-                                                        reader.onload = (e) => {
-                                                            const img = document.createElement('img');
-                                                            img.src = e.target.result;
-                                                            img.classList.add('preview-image');
-                                                            previewContainer.appendChild(img);
-                                                        };
-                                                        reader.readAsDataURL(file);
+                                                                if (val < stock) {
+                                                                    val++;
+                                                                    quantityInput.value = val;
+                                                                    updateHiddenQuantity(val);
+                                                                    if (stockError)
+                                                                        stockError.style.display = "none";
+                                                                } else {
+                                                                    if (stockError)
+                                                                        stockError.style.display = "block";
+                                                                }
+                                                            };
+                                                        }
                                                     });
-                                                });
-                                            }
 
-                                        }); // Kết thúc DOMContentLoaded
+                                                    /* ------------------ CHANGE IMAGE ------------------ */
 
-                                        /* ------------------ IMAGE THUMBNAILS (Đặt ngoài DOMContentLoaded nếu được gọi qua onclick trong HTML) ------------------ */
-                                        function changeImage(thumb) {
-                                            const mainImg = document.getElementById('displayedImage');
-                                            const allThumbs = document.querySelectorAll('.thumbnail');
+                                                    function changeImage(thumb) {
+                                                        const mainImg = document.getElementById('displayedImage');
+                                                        const allThumbs = document.querySelectorAll('.thumbnail');
 
-                                            if (mainImg) {
-                                                mainImg.src = thumb.src;
-                                            }
-                                            allThumbs.forEach(t => t.classList.remove('active'));
-                                            thumb.classList.add('active');
-                                        }
-
-                                        /* ----------- WISHLIST TOGGLE ----------- */
-                                        document.addEventListener("click", function (e) {
-                                            const btn = e.target.closest(".toggle-wishlist");
-                                            if (!btn)
-                                                return;
-
-                                            e.preventDefault();
-                                            e.stopPropagation();
-
-                                            const productId = btn.dataset.productid;
-                                            const variantId = btn.dataset.variantid || 0;
-                                            const icon = btn.querySelector("i");
-
-                                            fetch("<%= request.getContextPath() %>/product", {
-                                                method: "POST",
-                                                headers: {"Content-Type": "application/x-www-form-urlencoded"},
-                                                body: "action=toggleWishlist&productId=" + productId + "&variantId=" + variantId
-                                            })
-                                                    .then(res => {
-                                                        if (res.status === 401) {
-                                                            // Chuyển hướng nếu chưa login
-                                                            window.location.href = 'login.jsp';
-                                                            return Promise.reject("Unauthorized");
-                                                        }
-                                                        if (!res.ok)
-                                                            return Promise.reject("Wishlist toggle failed");
-                                                        return res.text();
-                                                    })
-                                                    .then(text => {
-                                                        if (text === "ok" && icon) {
-                                                            if (icon.classList.contains("fas")) {
-                                                                icon.classList.remove("fas");
-                                                                icon.classList.add("far");
-                                                                icon.style.color = "";
-                                                            } else {
-                                                                icon.classList.remove("far");
-                                                                icon.classList.add("fas");
-                                                                icon.style.color = "#e53e3e";
-                                                            }
-                                                        }
-                                                    })
-                                                    .catch(err => console.error(err));
-                                        });
+                                                        mainImg.src = thumb.src;
+                                                        allThumbs.forEach(t => t.classList.remove('active'));
+                                                        thumb.classList.add('active');
+                                                    }
     </script>
-</body>
-</html>
 
-=======
-                                                        /* ------------------ STAR RATING HIGHLIGHT ------------------ */
-                                                        document.addEventListener('DOMContentLoaded', function () {
-                                                            const starOptions = document.querySelectorAll('.star-option');
-                                                            const allStars = document.querySelectorAll('.star-option .star-icon');
+    <script src="js/review-filter.js"></script>
 
-                                                            starOptions.forEach(option => {
-                                                                option.addEventListener('click', function () {
-                                                                    const ratingValue = parseInt(this.getAttribute('data-rating-value'));
+    <script>
+                                                    /* ------------------ STAR RATING HIGHLIGHT ------------------ */
+                                                    document.addEventListener('DOMContentLoaded', function () {
+                                                        const starOptions = document.querySelectorAll('.star-option');
+                                                        const allStars = document.querySelectorAll('.star-option .star-icon');
 
-                                                                    allStars.forEach(star => star.style.color = '#ccc');
+                                                        starOptions.forEach(option => {
+                                                            option.addEventListener('click', function () {
+                                                                const ratingValue = parseInt(this.getAttribute('data-rating-value'));
 
-                                                                    let count = 0;
-                                                                    document.querySelectorAll('.star-option').forEach(opt => {
-                                                                        if (++count <= ratingValue) {
-                                                                            opt.querySelector('.star-icon').style.color = '#ffc107';
-                                                                        }
-                                                                    });
+                                                                allStars.forEach(star => star.style.color = '#ccc');
 
-                                                                    const input = this.querySelector('input[type="radio"]');
-                                                                    if (input)
-                                                                        input.checked = true;
+                                                                let count = 0;
+                                                                document.querySelectorAll('.star-option').forEach(opt => {
+                                                                    if (++count <= ratingValue) {
+                                                                        opt.querySelector('.star-icon').style.color = '#ffc107';
+                                                                    }
                                                                 });
+
+                                                                const input = this.querySelector('input[type="radio"]');
+                                                                if (input)
+                                                                    input.checked = true;
                                                             });
                                                         });
+                                                    });
     </script>
 
     <script>
@@ -899,5 +701,3 @@
 </body>
 </html>
 
-
->>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806

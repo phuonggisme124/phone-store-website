@@ -12,28 +12,17 @@
 <%@ include file="/layout/header.jsp" %>
 
 <%
-<<<<<<< HEAD
     Customer currentUser = (Customer) session.getAttribute("user");
     if (currentUser == null) {
         response.sendRedirect("login.jsp");
         return;
-=======
-    Customer currentUser = (Customer) session.getAttribute("user"); 
-    if(currentUser == null){
-    response.sendRedirect("login.jsp");
-    return;
->>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
     }
 
     WishlistDAO wdao = new WishlistDAO();
     List<Products> wishlist = null;
     try {
         wishlist = wdao.getWishlistByCustomer(currentUser.getCustomerID());
-<<<<<<< HEAD
     } catch (Exception e) {
-=======
-    } catch(Exception e){
->>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
         e.printStackTrace();
     }
 %>
@@ -262,19 +251,12 @@
                                 <h5><%= p.getName() %></h5>
                                 <div class="price">N/A</div>
                                 <% } %>
-<<<<<<< HEAD
                                 <button class="remove-btn toggle-wishlist"
                                         data-productid="<%= p.getProductID() %>"
                                         data-variantid="<%= (v != null) ? v.getVariantID() : 0 %>">
                                     <i class="fas fa-trash-alt"></i> <span>Remove</span>
                                 </button>
 
-=======
-                                <button class="remove-btn" 
-                                        onclick="location.href = 'product?action=removeWishlist&productID=<%= p.getProductID() %>&variantID=<%= v.getVariantID() %>'">
-                                    <i class="fas fa-trash-alt"></i> Remove
-                                </button>
->>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
                             </div>
                             <% } %>
                         </div>
@@ -344,6 +326,3 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     </body>
 </html>
-
-
-

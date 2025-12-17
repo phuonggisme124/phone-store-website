@@ -2,9 +2,6 @@ package model;
 
 import java.sql.Date;
 
-/**
- * Warranty entity
- */
 public class Warranty {
 
     private int warrantyID;
@@ -13,6 +10,8 @@ public class Warranty {
     private Date soldDay;
     private Date expiryDate;
     private String status;
+    private int orderID;
+    private String productName; // thêm
 
     public Warranty() {
     }
@@ -63,5 +62,21 @@ public class Warranty {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public int getOrderID() {
+        return orderID;
+    }
+
+    public void setOrderID(int orderID) {
+        this.orderID = orderID;
+    }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
     }
 }

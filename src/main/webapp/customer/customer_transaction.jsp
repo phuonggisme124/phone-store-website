@@ -118,7 +118,7 @@
                                                 <div class="shipping-info">
                                                     <p><strong>Người nhận</strong>: <%= o.getBuyer().getFullName() + " - " + o.getBuyer().getPhone()%></p>
                                                     <p><strong>Địa chỉ</strong>: <%= o.getShippingAddress()%></p>
-                                                    <p><strong>Thanh toán</strong>: Thanh toán khi nhận hàng (COD)</p>
+                                                    <p><strong>Thanh toán</strong>: <%= o.getPaymentMethod()%></p>
                                                 </div>
 
                                                 <div class="product-list">
@@ -147,7 +147,7 @@
 
 
                                                 <% if (o.getStatus().equals("Pending")) { %>
-                                                <form action="user" method="post" style="margin-top: 10px; text-align: right;">
+                                                <form action="customer" method="post" style="margin-top: 10px; text-align: right;">
                                                     <input type="hidden" name="orderID" value="<%= o.getOrderID() %>">
                                                     <input type="hidden" name="action" value="cancelOrder">
                                                     <button style="border-radius: 15px" type="submit" class="btn btn-danger btn-sm"

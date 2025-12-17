@@ -14,15 +14,15 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <!--<title>Quản Lý Trả Góp</title>-->
-        <link rel="stylesheet" type="text/css" href="css/instalment.css">
         <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="css/instalment.css">
+        
         <link rel="stylesheet" type="text/css" href="css/style.css">
         <link rel="stylesheet" type="text/css" href="css/profile.css">
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
     </head>
     <body>
@@ -30,7 +30,39 @@
             <div class="profile-container">
                 <div class="profile-wrapper">
                     <!-- Sidebar -->
-                     <%@ include file="sidebar.jsp" %>
+                    <aside class="profile-sidebar">
+                        <h3>Hello, <%= user.getFullName()%></h3>
+
+                        <a href="product?action=viewWishlist" class="sidebar-link">
+                            <i class="fas fa-heart"></i>
+                            <span>My Wishlist</span>
+                        </a>
+
+                        <a href="user?action=transaction" class="sidebar-link">
+                            <i class="fas fa-shopping-bag"></i>
+                            <span>My Orders</span>
+                        </a>
+                        <a href="user?action=payInstallment" class="sidebar-link">
+                            <i class="fas fa-receipt"></i>
+                            <span>Installment Paying</span>
+                        </a>
+
+                        <a href="user" class="sidebar-link">
+                            <i class="fas fa-user"></i>
+                            <span>Profile & Address</span>
+                        </a>
+
+                        <a href="user?action=changePassword" class="sidebar-link">
+                            <i class="fas fa-lock"></i>
+                            <span>Change Password</span>
+                        </a>
+
+                        <form action="logout" method="post">
+                            <button type="submit" class="logout-btn">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </button>
+                        </form>
+                    </aside>
 
                     <main class="profile-content">
                         <div class="profile-header">
@@ -288,5 +320,3 @@
 
 </body>
 </html>
-
-

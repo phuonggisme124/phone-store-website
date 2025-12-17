@@ -8,7 +8,6 @@
     
     if (customer == null) {
 %>
-<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="vi">
     <head>
@@ -26,25 +25,6 @@
         </h2>
     </body>
 </html>
-=======
-        <!DOCTYPE html>
-        <html lang="vi">
-        <head>
-            <title>Hồ sơ cá nhân | Phone Store</title>
-            <meta charset="utf-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
-            <link rel="stylesheet" type="text/css" href="css/style.css">
-            <link rel="stylesheet" type="text/css" href="css/profile.css">
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-        </head>
-        <body>
-        <h2 style="color:red; text-align:center; margin-top:80px;">
-            Không tìm thấy thông tin người dùng. Hãy đăng nhập lại.
-        </h2>
-        </body>
-        </html>
->>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
 <%
         return; 
     }
@@ -66,7 +46,6 @@
         <section id="billboard" class="bg-light-blue overflow-hidden padding-large">
             <div class="profile-container">
                 <div class="profile-wrapper">
-<<<<<<< HEAD
                     <aside class="profile-sidebar">
                         <h3>Hello, <%= customer.getFullName()%></h3> 
 
@@ -128,36 +107,6 @@
                                                 <td><%= customer.getFullName()%></td>
                                             </tr>
 
-=======
-                    
-                     <%@ include file="sidebar.jsp" %>
-                    <main class="profile-content">
-                        <div class="profile-header">
-                            <h1>My Profile</h1>
-                            <p>Manage your account information</p>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-lg-4">
-                                <div class="avatar-section">
-                                    <div class="avatar-wrapper">
-                                        <img src="images/avatar.png" alt="User Avatar">
-                                    </div>
-                                    <h5><%= customer.getFullName()%></h5>
-                                    <span class="user-id">ID: #<%= customer.getCustomerID()%></span> 
-                                </div>
-                            </div>
-
-                            <div class="col-lg-8">
-                                <div class="info-table">
-                                    <table>
-                                        <tbody>
-                                            <tr>
-                                                <th><i class="fas fa-user"></i> Full Name:</th>
-                                                <td><%= customer.getFullName()%></td>
-                                            </tr>
-
->>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
                                             <tr>
                                                 <th><i class="fas fa-id-card"></i> CCCD:</th>
                                                 <td><%= customer.getCccd() != null ? customer.getCccd() : "Chưa cập nhật"%></td> 
@@ -219,10 +168,4 @@
         <script src="js/jquery-1.11.0.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     </body>
-<<<<<<< HEAD
 </html>
-=======
-</html>
-
-
->>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
