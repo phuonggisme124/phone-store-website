@@ -509,7 +509,7 @@
                     <div class="display-header d-flex justify-content-between pb-3">
                         <h2 class="display-7 text-dark text-uppercase">SmartWatch</h2>
                         <div class="btn-right">
-                            <a href="product?action=category&cID=2" class="btn btn-medium btn-normal text-uppercase">Go to Shop</a>
+                            <a href="product?action=category&cID=4" class="btn btn-medium btn-normal text-uppercase">Go to Shop</a>
                         </div>
                     </div>
 

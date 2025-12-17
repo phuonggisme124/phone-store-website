@@ -43,6 +43,9 @@
 >>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
         <li><a href="${pageContext.request.contextPath}/category?action=manageCategory" <%= (action.equals("manageCategory")) ? "class='active'" : ""%>
 
-               ><i class="bi bi-grid me-2"></i>Category</a></li>          
+               ><i class="bi bi-grid me-2"></i>Category</a></li>    
+        <li><a href="${pageContext.request.contextPath}/admin?action=viewVoucher" <%= (action.equals("manageVoucher")) ? "class='active'" : ""%>
+
+               ><i class="bi bi-grid me-2"></i>Voucher</a></li>
     </ul>
 </nav>

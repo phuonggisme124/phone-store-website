@@ -11,11 +11,7 @@
 <%@page import="model.Products"%>
 <%@page import="java.util.List"%>
 <%@page import="java.util.ArrayList"%>
-<<<<<<< HEAD
-<%@page import="model.Users"%>
-=======
 
->>>>>>> 62bad43794ed9e6ec4e6d026e91b6a10331a6e66
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html lang="en">

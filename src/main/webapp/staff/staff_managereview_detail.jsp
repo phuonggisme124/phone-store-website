@@ -1,3 +1,4 @@
+<%@page import="model.Staff"%>
 <%@page import="dao.ReviewDAO"%>
 <%@page import="dao.ProductDAO"%>
 <%@page import="java.util.List"%>
@@ -306,7 +307,7 @@
     <body>
         <%
             Review review = (Review) request.getAttribute("review");
-            Users currentUser = (Users) session.getAttribute("user");
+            Staff currentUser = (Staff) session.getAttribute("user");
             ProductDAO pdao = new ProductDAO();
         %>
 
@@ -322,6 +323,9 @@
                     <li><a href="order?action=manageOrder"><i class="bi bi-bag me-2"></i>Orders</a></li>
                     <li><a href="review?action=manageReview" class="fw-bold text-primary"><i class="bi bi-chat-left-text me-2"></i>Reviews</a></li>
                     <li><a href="importproduct?action=staff_import"><i class="bi bi-chat-left-text me-2"></i>importProduct</a></li>
+                    <li><a href="voucher?action=viewVoucher" class="fw-bold text-primary">
+                        <i class="bi bi-ticket-perforated me-2"></i>Voucher
+                    </a></li>
                 </ul>
             </nav>
 

@@ -42,22 +42,22 @@
                             <span>My Wishlist</span>
                         </a>
 
-                        <a href="user?action=transaction" class="sidebar-link">
+                        <a href="customer?action=transaction" class="sidebar-link">
                             <i class="fas fa-shopping-bag"></i>
                             <span>My Orders</span>
                         </a>
 
-                        <a href="user?action=payInstallment" class="sidebar-link">
+                        <a href="customer?action=payInstallment" class="sidebar-link">
                             <i class="fas fa-receipt"></i>
                             <span>Installment Paying</span>
                         </a>
 
-                        <a href="user" class="sidebar-link">
+                        <a href="customer" class="sidebar-link">
                             <i class="fas fa-user"></i>
                             <span>Profile & Address</span>
                         </a>
 
-                        <a href="user?action=changePassword" class="sidebar-link">
+                        <a href="customer?action=changePassword" class="sidebar-link">
                             <i class="fas fa-lock"></i>
                             <span>Change Password</span>
                         </a>

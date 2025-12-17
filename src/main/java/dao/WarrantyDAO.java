@@ -111,7 +111,7 @@ public class WarrantyDAO extends DBContext {
                 w.setWarrantyID(rs.getInt("WarrantyID"));
                 w.setOrderID(rs.getInt("OrderID"));
                 w.setVariantID(rs.getInt("VariantID"));
-                w.setProductName(rs.getString("ProductName")); // Thêm luôn ProductName để hiển thị ở trang claim
+                w.setProductName(rs.getString("ProductName")); 
                 w.setSoldDay(rs.getDate("SoldDay"));
                 w.setExpiryDate(rs.getDate("ExpiryDate"));
                 w.setStatus(rs.getString("Status"));
@@ -122,5 +122,4 @@ public class WarrantyDAO extends DBContext {
         }
         return null;
     }
-
 }

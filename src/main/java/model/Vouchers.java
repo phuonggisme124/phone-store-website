@@ -17,6 +17,7 @@ public class Vouchers {
     private Date startDay;
     private Date endDay;
     private int quantity;
+     private int usedCount; 
     private String status;
 
     public Vouchers() {
@@ -88,6 +89,14 @@ public class Vouchers {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public int getUsedCount() {
+        return usedCount;
+    }
+
+    public void setUsedCount(int usedCount) {
+        this.usedCount = usedCount;
     }
     
     

@@ -8,14 +8,15 @@ import com.google.gson.Gson;
 import dao.CategoryDAO;
 import dao.ImportDAO;
 import dao.OrderDAO;
-import dao.PaymentsDAO;
 import dao.ProductDAO;
 import dao.ProfitDAO;
 import dao.PromotionsDAO;
 import dao.ReviewDAO;
 import dao.SupplierDAO;
 import dao.CustomerDAO;
+import dao.InstallmentDetailDAO;
 import dao.VariantsDAO;
+import dao.VouchersDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -40,7 +41,6 @@ import model.ImportDetail;
 import model.InterestRate;
 import model.Order;
 import model.OrderDetails;
-import model.Payments;
 import model.Products;
 import model.Profit;
 import model.Promotions;
@@ -49,6 +49,7 @@ import model.Sale;
 import model.Suppliers;
 import model.Customer;
 import model.Variants;
+import model.Vouchers;
 
 /**
  *
@@ -108,11 +109,12 @@ public class AdminServlet extends HttpServlet {
         VariantsDAO vdao = new VariantsDAO();
         ReviewDAO rdao = new ReviewDAO();
         OrderDAO odao = new OrderDAO();
-        PaymentsDAO paydao = new PaymentsDAO();
+        InstallmentDetailDAO paydao = new InstallmentDetailDAO();
         PromotionsDAO pmtdao = new PromotionsDAO();
         ProfitDAO pfdao = new ProfitDAO();
         HttpSession session = request.getSession();
         ImportDAO imdao = new ImportDAO();
+        VouchersDAO vouDAO = new VouchersDAO();
 
         System.out.println("DEBUG: Action nhận được = " + action);
         if (action == null) {
@@ -224,6 +226,24 @@ public class AdminServlet extends HttpServlet {
             }
             // Quay lại trang danh sách của ADMIN
             response.sendRedirect("admin?action=importproduct");
+        } if (action.equals("viewVoucher")) {
+            List<Vouchers> list = vouDAO.getAllVouchers();
+            request.setAttribute("listVouchers", list);
+            request.getRequestDispatcher("admin/admin_manageVoucher_view.jsp").forward(request, response);
+        }  else if (action.equals("createVoucher")) {
+            CustomerDAO cdao = new CustomerDAO();
+            List<Customer> listCustomer = cdao.getAllCustomers();
+            request.setAttribute("listCustomers", listCustomer);
+            request.getRequestDispatcher("admin/admin_manageVoucher_create.jsp").forward(request, response);
+        } else if (action.equals("updateVoucher")) {
+            int id = Integer.parseInt(request.getParameter("id"));
+            Vouchers v = vouDAO.getVoucherByID(id);
+            request.setAttribute("voucher", v);
+            request.getRequestDispatcher("admin/admin_manageVoucher_edit.jsp").forward(request, response);
+        } else if (action.equals("deleteVoucher")) {
+            int id = Integer.parseInt(request.getParameter("id"));
+            vouDAO.deleteVoucher(id);
+            response.sendRedirect("admin?action=viewVoucher");
         }
 
     }

@@ -1,16 +1,30 @@
 package controller;
 
-import dao.*;
+import dao.CustomerDAO;
+import dao.CategoryDAO;
+import dao.InstallmentDetailDAO;
+import dao.OrderDAO;
+import dao.OrderDetailDAO;
+
+import dao.StaffDAO;
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import java.io.IOException;
 import java.sql.Date;
-import java.util.*;
-import model.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import model.Customer;
+import model.Category;
+import model.InstallmentDetail;
+import model.Order;
+import model.OrderDetails;
+import model.Staff; // Import Staff model
 
 /**
- * Servlet Controller for Customer (Role 1) and Staff/Admin (Role 2,4)
+ * Servlet Controller for Customer (Role 1) and Staff/Admin managing Customers.
  */
 @WebServlet(name = "CustomerServlet", urlPatterns = {"/customer"})
 public class CustomerServlet extends HttpServlet {
@@ -20,15 +34,13 @@ public class CustomerServlet extends HttpServlet {
     private final CategoryDAO categoryDAO = new CategoryDAO();
     private final OrderDAO orderDAO = new OrderDAO();
     private final OrderDetailDAO orderDetailDAO = new OrderDetailDAO();
-    private final PaymentsDAO paymentsDAO = new PaymentsDAO();
 
-    // =====================================================
     // Load common data for Header/Footer
     private void loadCommonData(HttpServletRequest request) {
-        request.setAttribute("listCategory", categoryDAO.getAllCategories());
+        List<Category> listCategory = categoryDAO.getAllCategories();
+        request.setAttribute("listCategory", listCategory);
     }
 
-    // =====================================================
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -38,6 +50,7 @@ public class CustomerServlet extends HttpServlet {
             action = "view";
         }
 
+        // Check login and determine user type
         HttpSession session = request.getSession();
         Object userObj = session.getAttribute("user");
 
@@ -58,168 +71,154 @@ public class CustomerServlet extends HttpServlet {
         loadCommonData(request);
 
         switch (action) {
-
-            // ================= CUSTOMER =================
-            case "view":
-                if (customer != null) {
-                    request.setAttribute("user", customer);
-                    request.getRequestDispatcher("customer/profile.jsp").forward(request, response);
-                } else {
-                    response.sendRedirect("customer?action=manageUser");
-                }
-                break;
-
+            // 1. Customer: View/Edit Profile
             case "edit":
-                // Staff/Admin edit user
-                if (staff != null && (staff.getRole() == 2 || staff.getRole() == 4)) {
-                    handleAdminEditUser(request, response);
-                    return;
-                }
 
-                // Customer edit self
+                //  KHÁCH HÀNG TỰ SỬA HỒ SƠ
                 if (customer != null) {
+
                     request.setAttribute("user", customer);
                     request.getRequestDispatcher("customer/editProfile.jsp").forward(request, response);
+                } else {
+
+                    response.sendRedirect("login.jsp");
                 }
                 break;
 
+            // 2. Customer: Transaction History
             case "transaction":
                 if (customer != null) {
                     viewTransaction(request, response, customer);
+                } else {
+                    response.sendRedirect("login.jsp");
                 }
                 break;
 
+            // 3. Customer: Installment
             case "payInstallment":
                 if (customer != null) {
+                    InstallmentDetailDAO iDAO = new InstallmentDetailDAO();
+                    List<InstallmentDetail> iDList = iDAO.getInstallmentNearToPay();
+                    for (InstallmentDetail iD : iDList) {
+                        if (iD.getExpriedDay() > 0) {
+                            iDAO.updateExpiredDateByOrderID(iD.getInstallmentDetailID(), iD.getExpriedDay());
+                        }
+                    }
                     viewInstallment(request, response, customer);
+                } else {
+                    response.sendRedirect("login.jsp");
                 }
                 break;
 
+            // 4. Customer: Change Password
             case "changePassword":
                 if (customer != null) {
                     request.getRequestDispatcher("customer/changePassword.jsp").forward(request, response);
-                }
-                break;
-
-            // ================= ADMIN / STAFF =================
-            case "manageUser":
-                if (staff != null && (staff.getRole() == 2 || staff.getRole() == 4)) {
-                    int role = 2;
-                    String roleStr = request.getParameter("role");
-                    if (roleStr != null && !roleStr.isEmpty()) {
-                        role = Integer.parseInt(roleStr);
-                    }
-
-                    request.setAttribute("listCustomers", customerDAO.getAllCustomers());
-                    request.setAttribute("listStaff", staffDAO.getAllStaffs());
-                    request.setAttribute("role", role);
-                    request.getRequestDispatcher("admin/dashboard_admin_manageuser.jsp").forward(request, response);
                 } else {
-                    response.sendRedirect("home");
+                    response.sendRedirect("login.jsp");
                 }
                 break;
 
-            case "createAccount":
-                if (staff != null && staff.getRole() == 4) {
-                    request.getRequestDispatcher("admin/admin_manageuser_create.jsp").forward(request, response);
-                }
-                break;
-
+            // Default: View Profile (Customer only)
             default:
-                response.sendRedirect("customer?action=view");
+                if (customer != null) {
+                    request.setAttribute("user", customer);
+                    request.getRequestDispatcher("customer/profile.jsp").forward(request, response);
+                } else if (staff != null) {
+                    // If staff hits /customer with no action, redirect to manageUser
+                    response.sendRedirect("customer?action=manageUser");
+                } else {
+                    response.sendRedirect("login.jsp");
+                }
+                break;
         }
     }
 
-    // =====================================================
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        // 1. QUAN TRỌNG: Thêm 2 dòng này đầu tiên để nhận dữ liệu Tiếng Việt
+        request.setCharacterEncoding("UTF-8");
+        response.setCharacterEncoding("UTF-8");
+
+        StaffDAO sdao = new StaffDAO();
+        CustomerDAO cdao = new CustomerDAO();
+
+        // Lấy action từ form
         String action = request.getParameter("action");
+
+        // Check login and determine user type
         HttpSession session = request.getSession();
         Object userObj = session.getAttribute("user");
 
-        if (!(userObj instanceof Customer)) {
+        Customer customer = null;
+        Staff staff = null;
+
+        if (userObj instanceof Customer) {
+            customer = (Customer) userObj;
+        } else if (userObj instanceof Staff) {
+            staff = (Staff) userObj;
+        }
+
+        if (customer == null && staff == null) {
             response.sendRedirect("login.jsp");
             return;
         }
 
-        Customer customer = (Customer) userObj;
         loadCommonData(request);
 
-        switch (action) {
-            case "update":
-                updateCustomerProfile(request, response, customer, session);
-                break;
+        // 2. SỬA LỖI Ở ĐÂY: Đổi "update" thành "updateProfile" cho khớp với JSP
+        if ("updateProfile".equals(action)) {
+            updateCustomerProfile(request, response, customer, session);
 
-            case "changePassword":
-                updateCustomerPassword(request, response, customer, session);
-                break;
+        } else if ("changePassword".equals(action)) {
+            updateCustomerPassword(request, response, customer, session);
 
-            case "cancelOrder":
-                cancelOrder(request, response);
-                break;
+        } else if ("cancelOrder".equals(action)) {
+            cancelOrder(request, response);
 
-            case "paidInstalment":
-                processInstallmentPayment(request, response);
-                break;
-
-            default:
-                response.sendRedirect("customer?action=view");
+        } else if ("paidInstalment".equals(action)) {
+            processInstallmentPayment(request, response);
         }
     }
 
-    // =====================================================
-    // ================= HELPER METHODS ====================
-    private void handleAdminEditUser(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-
-        try {
-            int id = Integer.parseInt(request.getParameter("id"));
-            int role = Integer.parseInt(request.getParameter("role"));
-
-            if (role == 1) {
-                request.setAttribute("currentUser", customerDAO.getCustomerByID(id));
-            } else {
-                request.setAttribute("currentUser", staffDAO.getStaffByID(id));
-            }
-            request.getRequestDispatcher("admin/admin_manageuser_edit.jsp").forward(request, response);
-
-        } catch (Exception e) {
-            response.sendRedirect("customer?action=manageUser");
-        }
-    }
-
+    // --- LOGIC HELPER METHODS ---
     private void viewTransaction(HttpServletRequest request, HttpServletResponse response, Customer customer)
             throws ServletException, IOException {
-
         String status = request.getParameter("status");
-        if (status == null) {
-            status = "All";
+        List<Order> oList;
+
+        if (status == null || status.equalsIgnoreCase("All")) {
+            oList = orderDAO.getOrdersByStatus(customer.getCustomerID(), "All");
+        } else {
+            oList = orderDAO.getOrdersByStatus(customer.getCustomerID(), status);
         }
 
-        List<Order> oList = orderDAO.getOrdersByStatus(customer.getCustomerID(), status);
-        Map<Integer, List<OrderDetails>> allDetails = new HashMap<>();
-
-        for (Order o : oList) {
-            allDetails.put(o.getOrderID(),
-                    orderDetailDAO.getOrderDetailByOrderID(o.getOrderID()));
+        Map<Integer, List<OrderDetails>> allOrderDetails = new HashMap<>();
+        if (oList != null) {
+            for (Order o : oList) {
+                List<OrderDetails> details = orderDetailDAO.getOrderDetailByOrderID(o.getOrderID());
+                allOrderDetails.put(o.getOrderID(), details);
+            }
         }
 
         request.setAttribute("oList", oList);
-        request.setAttribute("allOrderDetails", allDetails);
+        request.setAttribute("allOrderDetails", allOrderDetails);
         request.getRequestDispatcher("customer/customer_transaction.jsp").forward(request, response);
     }
 
     private void viewInstallment(HttpServletRequest request, HttpServletResponse response, Customer customer)
             throws ServletException, IOException {
-
+        InstallmentDetailDAO pmDAO = new InstallmentDetailDAO();
         List<Order> oList = orderDAO.getInstalmentOrdersByUserId(customer.getCustomerID());
-        Map<Integer, List<Payments>> allPayments = new HashMap<>();
 
-        for (Order o : oList) {
-            allPayments.put(o.getOrderID(),
-                    paymentsDAO.getPaymentByOrderID(o.getOrderID()));
+        Map<Integer, List<InstallmentDetail>> allPayments = new HashMap<>();
+        if (oList != null) {
+            for (Order o : oList) {
+                List<InstallmentDetail> payments = pmDAO.getPaymentByOrderID(o.getOrderID());
+                allPayments.put(o.getOrderID(), payments);
+            }
         }
 
         request.setAttribute("oList", oList);
@@ -227,42 +226,92 @@ public class CustomerServlet extends HttpServlet {
         request.getRequestDispatcher("customer/instalment.jsp").forward(request, response);
     }
 
-    private void updateCustomerProfile(HttpServletRequest request, HttpServletResponse response,
-            Customer customer, HttpSession session)
+    private void updateCustomerProfile(HttpServletRequest request, HttpServletResponse response, Customer customer, HttpSession session)
             throws ServletException, IOException {
-
-        String fullName = request.getParameter("fullName");
-        if (fullName == null || fullName.trim().isEmpty()) {
-            request.setAttribute("error", "Họ tên không được để trống");
-            request.getRequestDispatcher("customer/editProfile.jsp").forward(request, response);
-            return;
-        }
-
-        customer.setFullName(fullName);
-        customer.setEmail(request.getParameter("email"));
-        customer.setPhone(request.getParameter("phone"));
-        customer.setAddress(request.getParameter("address"));
-        customer.setCccd(request.getParameter("cccd"));
-
         try {
-            customer.setYob(Date.valueOf(request.getParameter("yob")));
-        } catch (Exception ignored) {
+
+            String fullName = request.getParameter("fullName");
+            String email = request.getParameter("email");
+            String phone = request.getParameter("phone");
+            String address = request.getParameter("address");
+            String cccd = request.getParameter("cccd");
+            String yobStr = request.getParameter("yob");
+
+            String redirectTarget = request.getParameter("redirect");
+
+            if (fullName == null || fullName.trim().isEmpty()) {
+                request.setAttribute("error", "Họ tên không được để trống");
+                request.getRequestDispatcher("customer/editProfile.jsp").forward(request, response);
+                return;
+            }
+
+            Date yob = null;
+            if (yobStr != null && !yobStr.isEmpty()) {
+                try {
+                    yob = Date.valueOf(yobStr); // Yêu cầu format từ input date là yyyy-MM-dd
+                } catch (IllegalArgumentException e) {
+                    System.out.println("Lỗi định dạng ngày tháng: " + yobStr);
+                }
+            }
+
+            // 4. Set thông tin mới vào đối tượng Customer
+            customer.setFullName(fullName);
+            customer.setEmail(email);
+            customer.setPhone(phone);
+            customer.setAddress(address);
+            customer.setCccd(cccd);
+            customer.setYob(yob);
+
+            customerDAO.updateProfile(customer);
+
+            session.setAttribute("user", customer);
+
+            if ("payment".equals(redirectTarget)) {
+
+                String addressID = (String) session.getAttribute("addressID");
+                String receiverName = (String) session.getAttribute("receiverName");
+                String receiverPhone = (String) session.getAttribute("receiverPhone");
+
+                if (addressID == null) {
+                    addressID = "";
+                }
+                if (receiverName == null) {
+                    receiverName = "";
+                }
+                if (receiverPhone == null) {
+                    receiverPhone = "";
+                }
+
+                String encodedName = java.net.URLEncoder.encode(receiverName, "UTF-8");
+                String encodedPhone = java.net.URLEncoder.encode(receiverPhone, "UTF-8");
+
+                session.removeAttribute("addressID");
+                session.removeAttribute("receiverName");
+                session.removeAttribute("receiverPhone");
+
+                response.sendRedirect(request.getContextPath()
+                        + "/payment?action=checkout&addressID=" + addressID
+                        + "&receiverName=" + encodedName
+                        + "&receiverPhone=" + encodedPhone);
+
+                return;
+            }
+
+            request.setAttribute("message", "Cập nhật hồ sơ thành công!");
+            request.getRequestDispatcher("customer/editProfile.jsp").forward(request, response);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("error", "Đã xảy ra lỗi khi cập nhật hệ thống!");
+            request.getRequestDispatcher("customer/editProfile.jsp").forward(request, response);
         }
-
-        customerDAO.updateProfile(customer);
-        session.setAttribute("user", customer);
-
-        request.setAttribute("message", "Cập nhật hồ sơ thành công!");
-        request.getRequestDispatcher("customer/editProfile.jsp").forward(request, response);
     }
 
-    private void updateCustomerPassword(HttpServletRequest request, HttpServletResponse response,
-            Customer customer, HttpSession session)
+    private void updateCustomerPassword(HttpServletRequest request, HttpServletResponse response, Customer customer, HttpSession session)
             throws ServletException, IOException {
-
         String oldPass = request.getParameter("oldPassword");
         String newPass = request.getParameter("newPassword");
-        String confirm = request.getParameter("confirmPassword");
+        String confirmPass = request.getParameter("confirmPassword");
 
         if (!customerDAO.checkOldPassword(customer.getCustomerID(), oldPass)) {
             request.setAttribute("error", "Mật khẩu hiện tại không đúng!");
@@ -270,8 +319,8 @@ public class CustomerServlet extends HttpServlet {
             return;
         }
 
-        if (newPass == null || !newPass.equals(confirm)) {
-            request.setAttribute("error", "Mật khẩu xác nhận không khớp!");
+        if (newPass == null || newPass.isEmpty() || !newPass.equals(confirmPass)) {
+            request.setAttribute("error", "Mật khẩu mới và xác nhận mật khẩu không trùng khớp!");
             request.getRequestDispatcher("customer/changePassword.jsp").forward(request, response);
             return;
         }
@@ -286,28 +335,31 @@ public class CustomerServlet extends HttpServlet {
 
     private void cancelOrder(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
-
         try {
             int orderID = Integer.parseInt(request.getParameter("orderID"));
             Order o = orderDAO.getOrderById(orderID);
-            if (o != null && "Pending".equalsIgnoreCase(o.getStatus())) {
+
+            if (o != null && ("Pending".equalsIgnoreCase(o.getStatus()))) {
                 orderDAO.updateOrderStatus(orderID, "Cancelled");
             }
-        } catch (Exception ignored) {
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
         }
-
         response.sendRedirect("customer?action=transaction");
     }
 
     private void processInstallmentPayment(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
-
         try {
-            int paymentID = Integer.parseInt(request.getParameter("paymentID"));
-            paymentsDAO.updatePaymentStatusToPaid(paymentID);
-        } catch (Exception ignored) {
+            String paymentIDStr = request.getParameter("paymentID");
+            if (paymentIDStr != null) {
+                int paymentID = Integer.parseInt(paymentIDStr);
+                InstallmentDetailDAO pmDAO = new InstallmentDetailDAO();
+                pmDAO.updatePaymentStatusToPaid(paymentID);
+            }
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
         }
-
         response.sendRedirect("customer?action=payInstallment");
     }
 }

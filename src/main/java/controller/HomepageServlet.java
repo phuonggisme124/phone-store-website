@@ -3,16 +3,21 @@ package controller;
 import dao.ProductDAO;
 import dao.PromotionsDAO;
 import dao.VariantsDAO;
+import dao.VouchersDAO;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.List;
+import model.Customer;
 import model.Products;
 import model.Promotions;
 import model.Variants;
+import model.Vouchers;
 
 @WebServlet(name = "HomepageServlet", urlPatterns = {"/homepage"})
 public class HomepageServlet extends HttpServlet {
@@ -20,15 +25,15 @@ public class HomepageServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         // ====== KHAI BÁO DAO ======
         ProductDAO pdao = new ProductDAO();
         VariantsDAO vdao = new VariantsDAO();
         PromotionsDAO pmtdao = new PromotionsDAO();
-        
+        VouchersDAO voucherDAO = new VouchersDAO();
+
         pmtdao.updateAllStatus();
         vdao.updateDiscountPrice();
-        
 
         // ====== KIỂM TRA ROLE ======
 //        HttpSession session = request.getSession();
@@ -39,17 +44,27 @@ public class HomepageServlet extends HttpServlet {
             action = "viewhomepage"; // Mặc định
         }
 
-        
-        
-
         try {
             if ("viewhomepage".equals(action)) {
                 // ====== HIỂN THỊ TRANG CHỦ ======
                 List<Products> productList = pdao.getNewestProduct();
                 List<Products> productList1 = pdao.getAllProduct();
- 
+
                 List<Variants> variantsList = vdao.getAllVariant();
-                List<Promotions> promotionsList = pmtdao.getAllPromotion(); 
+                List<Promotions> promotionsList = pmtdao.getAllPromotion();
+                List<Vouchers> listAvailableVouchers = voucherDAO.getAvailableVouchers();
+                request.setAttribute("listAvailableVouchers", listAvailableVouchers);
+
+                // B. Kiểm tra User hiện tại đã lưu những voucher nào?
+                HttpSession session = request.getSession();
+                Customer currentUser = (Customer) session.getAttribute("user");
+                List<Integer> mySavedIds = new ArrayList<>();
+
+                if (currentUser != null) {
+                    // (Bạn nhớ kiểm tra xem đã thêm hàm getSavedVoucherIDsByCustomer vào VouchersDAO chưa nhé)
+                    mySavedIds = voucherDAO.getSavedVoucherIDsByCustomer(currentUser.getCustomerID());
+                }
+                request.setAttribute("mySavedIds", mySavedIds);
                 request.setAttribute("productList", productList);
                 request.setAttribute("productList1", productList1);
                 request.setAttribute("listProduct", productList1); //của thịnh
@@ -59,13 +74,42 @@ public class HomepageServlet extends HttpServlet {
 
                 request.getRequestDispatcher("public/homepage.jsp").forward(request, response);
 
-            }else if ("viewpromotion".equals(action)) {
+            } else if ("viewpromotion".equals(action)) {
                 // ====== HIỂN THỊ TRANG CHỦ ======
                 List<Products> productList = pdao.getNewestProduct();
                 List<Products> productList1 = pdao.getAllProduct();
- 
+
                 List<Variants> variantsList = vdao.getAllVariant();
-                List<Promotions> promotionsList = pmtdao.getAllPromotion(); 
+                List<Promotions> promotionsList = pmtdao.getAllPromotion();
+                request.setAttribute("productList", productList);
+                request.setAttribute("productList1", productList1);
+                request.setAttribute("listProduct", productList1); //của thịnh
+                request.setAttribute("variantsList", variantsList);
+                request.setAttribute("listVariant", variantsList); // của thịnh
+                request.setAttribute("promotionsList", promotionsList); //của thịnh
+
+                request.getRequestDispatcher("public/customer_view_promotion.jsp").forward(request, response);
+
+            } else if ("viewpromotion".equals(action)) {
+                // ====== HIỂN THỊ TRANG KHUYẾN MÃI ======
+                List<Products> productList = pdao.getNewestProduct();
+                List<Products> productList1 = pdao.getAllProduct();
+
+                List<Variants> variantsList = vdao.getAllVariant();
+                List<Promotions> promotionsList = pmtdao.getAllPromotion();
+
+                // Cũng nên thêm logic voucher vào đây nếu trang này cũng cho lưu voucher
+                List<Vouchers> listAvailableVouchers = voucherDAO.getAvailableVouchers();
+                request.setAttribute("listAvailableVouchers", listAvailableVouchers);
+
+                HttpSession session = request.getSession();
+                Customer currentUser = (Customer) session.getAttribute("user");
+                List<Integer> mySavedIds = new ArrayList<>();
+                if (currentUser != null) {
+                    mySavedIds = voucherDAO.getSavedVoucherIDsByCustomer(currentUser.getCustomerID());
+                }
+                request.setAttribute("mySavedIds", mySavedIds);
+
                 request.setAttribute("productList", productList);
                 request.setAttribute("productList1", productList1);
                 request.setAttribute("listProduct", productList1); //của thịnh

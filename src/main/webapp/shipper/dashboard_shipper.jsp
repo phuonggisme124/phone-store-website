@@ -119,9 +119,9 @@
                                 <!-- BODY -->
                                 <div class="card-body">
                                     <p><i class="bi bi-person-circle"></i>
-                                        <strong>Customer:</strong> <%= o.getBuyer().getFullName()%></p>
+                                        <strong>Customer:</strong> <%= o.getReceiverName() %></p>
                                     <p><i class="bi bi-telephone-fill"></i>
-                                        <strong>Phone:</strong> <%= o.getBuyer().getPhone()%></p>
+                                        <strong>Phone:</strong> <%= o.getReceiverPhone() %></p>
                                     <p><i class="bi bi-geo-alt-fill"></i>
                                         <strong>Address:</strong> <%= o.getShippingAddress()%></p>
                                     <p><i class="bi bi-cash-coin"></i>
@@ -150,10 +150,7 @@
                                             if ("In Transit".equals(st)) {
                                                 statusList.add("Delivered");
                                                 statusList.add("Cancelled");
-<<<<<<< HEAD
-=======
                                                 statusList.add("Delayed");
->>>>>>> 62bad43794ed9e6ec4e6d026e91b6a10331a6e66
                                             } else if ("Delayed".equals(st)) {
                                                 statusList.add("Delivered");
                                                 statusList.add("Cancelled");
@@ -250,8 +247,6 @@
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     </body>
-<<<<<<< HEAD
+
 </html>
-=======
-</html>
->>>>>>> 62bad43794ed9e6ec4e6d026e91b6a10331a6e66
+

@@ -47,7 +47,6 @@ public class CategoryDAO extends DBContext {
     public List<Category> getAllCategories() {
         List<Category> categories = new ArrayList<>();
         String sql = "SELECT CategoryID, CategoryName, Description FROM Categories";
-
         try (PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
 
             // Iterate through the result set and map each row to a Category object
@@ -66,7 +65,7 @@ public class CategoryDAO extends DBContext {
     // ==============================================================
     public Category getCategoryById(int id) {
         Category category = null;
-        String sql = "SELECT CategoryID, CategoryName, Description FROM Category WHERE CategoryID = ?";
+        String sql = "SELECT CategoryID, CategoryName, Description FROM Categories WHERE CategoryID = ?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
@@ -89,7 +88,7 @@ public class CategoryDAO extends DBContext {
     public boolean createCategory(Category category) {
         // Assumes CategoryID is auto-increment (IDENTITY) in the database.
         // If not, add CategoryID to the SQL and set it manually.
-        String sql = "INSERT INTO Category (CategoryName, Description) VALUES (?, ?)";
+        String sql = "INSERT INTO Categories (CategoryName, Description) VALUES (?, ?)";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, category.getCategoryName());
@@ -110,11 +109,10 @@ public class CategoryDAO extends DBContext {
         }
     }
 
-    // ==============================================================
     // Method 4: Update an existing category
     // ==============================================================
     public boolean updateCategory(Category category) {
-        String sql = "UPDATE Category SET CategoryName = ?, Description = ? WHERE CategoryID = ?";
+        String sql = "UPDATE Categories SET CategoryName = ?, Description = ? WHERE CategoryID = ?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, category.getCategoryName());
@@ -141,7 +139,7 @@ public class CategoryDAO extends DBContext {
     // Method 5: Delete a category by its ID
     // ==============================================================
     public boolean deleteCategory(int id) {
-        String sql = "DELETE FROM Category WHERE CategoryID = ?";
+        String sql = "DELETE FROM Categories WHERE CategoryID = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
             int rowsAffected = stmt.executeUpdate();

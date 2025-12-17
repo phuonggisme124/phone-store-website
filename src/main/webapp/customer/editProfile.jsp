@@ -1,7 +1,6 @@
 <%@page import="model.Customer"%>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/layout/header.jsp" %>
-
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -9,88 +8,45 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
-        <link rel="stylesheet" type="text/css" href="css/style.css">
+        
+        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/style.css">
+        
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-        <link rel="stylesheet" type="text/css" href="css/edit_profile.css">       
+        
+        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/edit_profile.css">    
     </head>
 
     <body>
-<<<<<<< HEAD
         <%
-            Customer customer = (Customer) session.getAttribute("user");
-            if (customer == null) {
-        %>
-        <div class="profile-container">
-            <h2 style="color:red; text-align:center; margin-top:80px;">
-                ❌ Không tìm thấy thông tin người dùng.
-                <br>Hãy đăng nhập lại.
-            </h2>
-        </div>
-        <%
-            } else {
-=======
-        <%            
-            // Lấy đối tượng Customer từ request attribute "user"
-            Customer customer = (Customer) request.getAttribute("user");
+            // 1. Ưu tiên lấy user từ Session (để tránh lỗi khi redirect)
+            Customer userC = (Customer) session.getAttribute("user");
             
-            if (customer == null) {
+            // 2. Nếu Session chưa có (hiếm khi xảy ra nếu đã login), thử lấy từ Request
+            if (userC == null) {
+                userC = (Customer) request.getAttribute("user");
+            }
+
+            // 3. Nếu cả 2 đều null -> Chưa đăng nhập
+            if (userC == null) {
         %>
             <div class="profile-container">
                 <h2 style="color:red; text-align:center; margin-top:80px;">
                     ❌ Không tìm thấy thông tin người dùng.
-                    <br>Hãy đăng nhập lại.
+                    <br>Vui lòng <a href="${pageContext.request.contextPath}/login.jsp">Đăng nhập lại</a>.
                 </h2>
             </div>
-            
         <%
-                return;
+                return; // Dừng xử lý trang
             }
->>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
         %>
 
         <div class="profile-container">
             <div class="profile-wrapper">
-<<<<<<< HEAD
-                <aside class="profile-sidebar">
-                    <h3>Hello, <%= customer.getFullName()%></h3>
-
-                    <a href="product?action=viewWishlist" class="sidebar-link">
-                        <i class="fas fa-heart"></i>
-                        <span>My Wishlist</span>
-                    </a>
-
-                    <a href="user?action=transaction" class="sidebar-link">
-                        <i class="fas fa-shopping-bag"></i>
-                        <span>My Orders</span>
-                    </a>
-                    <a href="user?action=payInstallment" class="sidebar-link">
-                        <i class="fas fa-receipt"></i>
-                        <span>Installment Paying</span>
-                    </a>
-
-                    <a href="customer?action=view" class="sidebar-link active">
-                        <i class="fas fa-user"></i>
-                        <span>Profile & Address</span>
-                    </a>
-
-                    <a href="user?action=changePassword" class="sidebar-link">
-                        <i class="fas fa-lock"></i>
-                        <span>Change Password</span>
-                    </a>
-
-                    <form action="logout" method="post">
-                        <button type="submit" class="logout-btn">
-                            <i class="fas fa-sign-out-alt"></i> Logout
-                        </button>
-                    </form>
-                </aside>
-=======
-                 <%@ include file="sidebar.jsp" %>
->>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
+                <%@ include file="sidebar.jsp" %>
 
                 <main class="profile-content">
                     <div class="profile-header">
@@ -102,15 +58,20 @@
                         <div class="col-lg-4">
                             <div class="avatar-section">
                                 <div class="avatar-wrapper">
-                                    <img src="images/avatar.png" alt="User Avatar">
+                                    <img src="${pageContext.request.contextPath}/images/avatar.png" alt="User Avatar">
                                 </div>
-                                <h5><%= customer.getFullName()%></h5>
-                                <span class="user-id">ID: #<%= customer.getCustomerID()%></span> 
+                                <h5><%= userC.getFullName()%></h5>
+                                <span class="user-id">ID: #<%= userC.getCustomerID()%></span> 
                             </div>
                         </div>
 
                         <div class="col-lg-8">
-                            <form action="customer?action=update" method="post" class="profile-form">
+                            <form action="${pageContext.request.contextPath}/customer" method="post" class="profile-form">
+                                
+                                <input type="hidden" name="action" value="updateProfile">
+                                
+                                <input type="hidden" name="redirect" value="${param.redirect}">
+                                
                                 <% if (request.getAttribute("message") != null) {%>
                                 <div class="alert alert-success">
                                     <i class="fas fa-check-circle"></i>
@@ -128,19 +89,15 @@
                                         <i class="fas fa-user"></i> Full Name
                                     </label>
                                     <input type="text" class="form-control" id="fullName" name="fullName"
-                                           value="<%= customer.getFullName()%>" required>
+                                           value="<%= userC.getFullName()%>" required>
                                 </div>
-<<<<<<< HEAD
-
-=======
                                 
->>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
                                 <div class="form-group">
                                     <label for="cccd" class="form-label">
                                         <i class="fas fa-id-card"></i> CCCD
                                     </label>
                                     <input type="text" class="form-control" id="cccd" name="cccd"
-                                           value="<%= customer.getCccd() != null ? customer.getCccd() : ""%>">
+                                           value="<%= userC.getCccd() != null ? userC.getCccd() : ""%>">
                                 </div>
 
                                 <div class="form-group">
@@ -148,9 +105,7 @@
                                         <i class="fas fa-calendar"></i> Year of Birth
                                     </label>
                                     <input type="date" class="form-control" id="yob" name="yob"
-                                           value="<%=(customer.getYob() != null)
-                                                    ? customer.getYob().toString()
-                                                    : ""%>">
+                                           value="<%=(userC.getYob() != null) ? userC.getYob().toString() : ""%>">
                                 </div>
 
                                 <div class="form-group">
@@ -158,7 +113,7 @@
                                         <i class="fas fa-envelope"></i> Email Address
                                     </label>
                                     <input type="email" class="form-control" id="email" name="email"
-                                           value="<%= customer.getEmail()%>" required>
+                                           value="<%= userC.getEmail()%>" required>
                                 </div>
 
                                 <div class="form-group">
@@ -166,7 +121,7 @@
                                         <i class="fas fa-phone"></i> Phone Number
                                     </label>
                                     <input type="text" class="form-control" id="phone" name="phone"
-                                           value="<%= customer.getPhone() != null ? customer.getPhone() : ""%>">
+                                           value="<%= userC.getPhone() != null ? userC.getPhone() : ""%>">
                                 </div>
 
                                 <div class="form-group">
@@ -174,12 +129,11 @@
                                         <i class="fas fa-map-marker-alt"></i> Address
                                     </label>
                                     <input type="text" class="form-control" id="address" name="address"
-                                           value="<%= customer.getAddress() != null ? customer.getAddress() : ""%>">
+                                           value="<%= userC.getAddress() != null ? userC.getAddress() : ""%>">
                                 </div>
 
-
                                 <div class="d-flex justify-content-end gap-3">
-                                    <a href="user" class="btn btn-secondary">
+                                    <a href="${pageContext.request.contextPath}/user" class="btn btn-secondary">
                                         <i class="fas fa-times"></i> Cancel
                                     </a>
                                     <button type="submit" class="btn btn-primary">
@@ -192,20 +146,8 @@
                 </main>
             </div>
         </div>
-<<<<<<< HEAD
-        <%
-            } // kết thúc else
-        %>
-        <script src="js/jquery-1.11.0.min.js"></script>
+
+        <script src="${pageContext.request.contextPath}/js/jquery-1.11.0.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     </body>
 </html>
-=======
-
-        <script src="js/jquery-1.11.0.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    </body>
-</html>
-
-
->>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806

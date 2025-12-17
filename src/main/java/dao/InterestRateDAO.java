@@ -48,7 +48,8 @@ public class InterestRateDAO extends DBContext {
             if (rs.next()) {
                 int id = rs.getInt("InterestRateID");  
                 int percent = rs.getInt("Percent");
-                ir = new InterestRate(id, percent, instalmentPeriod); 
+                float percentExpried = rs.getFloat("PercentExpried");
+                ir = new InterestRate(id, percent, instalmentPeriod, percentExpried); 
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
