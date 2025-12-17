@@ -204,7 +204,6 @@
 
                 <form action="payment" method="get" id="checkoutForm">
                     <input type="hidden" name="action" value="checkout">
-
                     <input type="hidden" name="addressID" id="mainAddressID" 
                            value="<%= defaultAddress != null ? defaultAddress.getAddressID() : ""%>">
 

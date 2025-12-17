@@ -232,13 +232,7 @@ public class CustomerDAO extends DBContext {
     public void updateProfile(Customer c) {
 
         StringBuilder sql = new StringBuilder(
-                "UPDATE Customers SET FullName=?, Email=?, Phone=?, Address=?, CCCD=?, YOB=?");
-
-        boolean hasPassword = c.getPassword() != null && !c.getPassword().isEmpty();
-        if (hasPassword) {
-            sql.append(", Password=?");
-        }
-
+                "UPDATE Customers SET FullName=?, Email=?, Phone=?, Address=?, CCCD=?, YOB=?");     
         sql.append(" WHERE CustomerID=?");
 
         try (PreparedStatement ps = conn.prepareStatement(sql.toString())) {
@@ -249,12 +243,7 @@ public class CustomerDAO extends DBContext {
             ps.setString(4, c.getAddress());
             ps.setString(5, c.getCccd());
             ps.setDate(6, c.getYob());
-
-            int i = 7;
-            if (hasPassword) {
-                ps.setString(i++, md5(c.getPassword()));
-            }
-
+            int i = 7;   
             ps.setInt(i, c.getCustomerID());
 
             ps.executeUpdate();

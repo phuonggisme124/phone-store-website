@@ -4,7 +4,6 @@
  */
 package dao;
 
-import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -12,10 +11,9 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import model.InstallmentDetail;
 import model.Order;
-import model.OrderDetails;
 import model.InstallmentDetail;
+import model.InterestRate;
 import utils.DBContext;
 
 /**
@@ -68,7 +66,7 @@ public class InstallmentDetailDAO extends DBContext {
                 int eday = rs.getInt("ExpriedDate");
 
                 // Create a Payments object and add it to the list
-                list.add(new InstallmentDetail(payID, orderID, amount, paymentDate, paymentStatus, totalMonth, currentMonth,eday));
+                list.add(new InstallmentDetail(payID, orderID, amount, paymentDate, paymentStatus, totalMonth, currentMonth, eday));
             }
 
         } catch (Exception e) {
@@ -80,9 +78,9 @@ public class InstallmentDetailDAO extends DBContext {
         return list;
     }
 
-    public void insertNewPayment(Order o, int instalmentPeriod) {
-        String sql = "INSERT INTO InstallmentDetail (OrderID, MonthlyPayment, PaymentDate, PaymentStatus, TotalMonths, CurrentMonth, ExpriedDate) "
-                + "VALUES (?, ?, ?, ?, ?, ?, 0)";
+    public void insertNewPayment(Order o, int instalmentPeriod, int interestRateID) {
+        String sql = "INSERT INTO InstallmentDetail (OrderID, MonthlyPayment, PaymentDate, PaymentStatus, TotalMonths, CurrentMonth, ExpriedDate, interestRateID) "
+                + "VALUES (?, ?, ?, ?, ?, ?, 0, ?)";
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             for (int i = 1; i <= instalmentPeriod; i++) {
@@ -92,6 +90,7 @@ public class InstallmentDetailDAO extends DBContext {
                 ps.setString(4, "Unpaid");
                 ps.setInt(5, instalmentPeriod);
                 ps.setInt(6, i);
+                ps.setInt(7, interestRateID);
                 ps.addBatch(); // thêm vào batch
             }
             ps.executeBatch(); // thực thi toàn bộ cùng lúc
@@ -118,18 +117,52 @@ public class InstallmentDetailDAO extends DBContext {
             System.out.println("updatePaymentStatusToPaid: " + e.getMessage());
         }
     }
-    public static void main(String[] args) {
-    InstallmentDetailDAO dao = new InstallmentDetailDAO();
 
-    Order o = new Order();
-    o.setOrderID(1); // OrderID tồn tại
-    o.setTotalAmount(12000000); // 12 triệu
-    o.setOrderDate(LocalDateTime.now());
+    public List<InstallmentDetail> getInstallmentNearToPay() {
+        String sql = "SELECT * FROM InstallmentDetail i \n"
+                + "WHERE MONTH(i.PaymentDate) = MONTH(GETDATE()) AND YEAR(i.PaymentDate) = YEAR(GETDATE())";
+        List<InstallmentDetail> list = new ArrayList<>();
 
-    dao.insertNewPayment(o, 6); // trả góp 6 tháng
+        try {
 
-    System.out.println("Insert installment success");
-}
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                int payID = rs.getInt("InstallmentDetailID");
+                int orderID = rs.getInt("OrderID");
+                double amount = rs.getDouble("MonthlyPayment");
+                Timestamp paymentDateTimestamp = rs.getTimestamp("PaymentDate");
+                LocalDateTime paymentDate = (paymentDateTimestamp != null)
+                        ? paymentDateTimestamp.toLocalDateTime()
+                        : null;
+                String paymentStatus = rs.getString("PaymentStatus");
+                int totalMonth = rs.getInt("TotalMonths");
+                int currentMonth = rs.getInt("CurrentMonth");
+                int eday = rs.getInt("ExpriedDate");
+                list.add(new InstallmentDetail(payID, orderID, amount, paymentDate, paymentStatus, totalMonth, currentMonth, eday));
+            }
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return list;
+    }
+
+    public boolean updateExpiredDateByOrderID(int iDID, int expriedDay) {
+        String sql = "UPDATE InstallmentDetail\n"
+                + "        SET ExpriedDate = ?\n"
+                + "        WHERE InstallmentDetailID = ?";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, expriedDay);  // số ngày trễ
+            ps.setInt(2, iDID);        // ID đúng index
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
 
 
 }

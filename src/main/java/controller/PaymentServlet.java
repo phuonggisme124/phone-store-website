@@ -126,72 +126,52 @@ public class PaymentServlet extends HttpServlet {
             }
 
             session.setAttribute("cartCheckout", cartSelectedItemsList);
-            request.getRequestDispatcher("customer/payment_checkout.jsp").forward(request, response);
+            request.getRequestDispatcher("customer/payment.jsp").forward(request, response);
 
             /* ================= CHECKOUT ================= */
         } else if (action != null && (action.equalsIgnoreCase("checkout") || action.equalsIgnoreCase("applyVoucher") || action.equalsIgnoreCase("removeVoucher"))) {
-
             List<Carts> carts = (List<Carts>) session.getAttribute("cartCheckout");
 
-//            String receiverName = request.getParameter("receiverName");
-//            String receiverPhone = request.getParameter("receiverPhone");
-//            String addressIDRaw = request.getParameter("addressID");
-//            String city = (String) request.getAttribute("city");
-//
-//            String address = (String) request.getAttribute("address");
-//
-//            String saveAddress = (String) request.getAttribute("saveAddress");
-//
-//            if (receiverPhone == null || receiverPhone.trim().isEmpty()) {
-//                request.setAttribute("error", "Phone number is required");
-//                request.getRequestDispatcher("customer/payment.jsp").forward(request, response);
-//                return;
-//            }
-//
-//            if (addressIDRaw == null || addressIDRaw.isEmpty()) {
-//                request.setAttribute("error", "Please select a shipping address");
-//                request.getRequestDispatcher("customer/payment.jsp").forward(request, response);
-//                return;
-//            }
-//
-//            int addressID = Integer.parseInt(addressIDRaw);
-//            Address selectedAddress = aDAO.getAddressByID(addressID);
-//
-//            if (selectedAddress == null) {
-//                request.setAttribute("error", "Invalid address selected");
-//                request.getRequestDispatcher("customer/payment.jsp").forward(request, response);
-//                return;
-//            }
-//
-//            /* ===== TÁCH ADDRESS & CITY (GIỮ LOGIC CŨ) ===== */
-//            String fullAddress = selectedAddress.getAddress();
-//
-//            if (fullAddress.contains(",")) {
-//                city = fullAddress.substring(fullAddress.lastIndexOf(",") + 1).trim();
-//                address = fullAddress.substring(0, fullAddress.lastIndexOf(",")).trim();
-//            } 
-//
-//            String specificAddress = address + ", " + city;
-            String receiverName = (String) request.getAttribute("receiverName");
-            if (receiverName == null) {
-                receiverName = request.getParameter("receiverName");
-            }
-
-            String receiverPhone = (String) request.getAttribute("receiverPhone");
-            if (receiverPhone == null) {
-                receiverPhone = request.getParameter("receiverPhone");
-            }
-
-            // 2. Lấy thông tin địa chỉ
-            String specificAddress = (String) request.getAttribute("specificAddress");
-            String addressIDRaw = (String) request.getAttribute("addressID");
-            if (addressIDRaw == null) {
-                addressIDRaw = request.getParameter("addressID");
-            }
-
+            String receiverName = request.getParameter("receiverName");
+            String receiverPhone = request.getParameter("receiverPhone");
+            String addressIDRaw = request.getParameter("addressID");
             String city = (String) request.getAttribute("city");
+            session.setAttribute("receiverName", receiverName);
+            session.setAttribute("receiverPhone", receiverPhone);
+            session.setAttribute("addressID", addressIDRaw);
             String address = (String) request.getAttribute("address");
+
             String saveAddress = (String) request.getAttribute("saveAddress");
+
+            if (receiverPhone == null || receiverPhone.trim().isEmpty()) {
+                request.setAttribute("error", "Phone number is required");
+                request.getRequestDispatcher("customer/payment.jsp").forward(request, response);
+                return;
+            }
+
+            if (addressIDRaw == null || addressIDRaw.isEmpty()) {
+                request.setAttribute("error", "Please select a shipping address");
+                request.getRequestDispatcher("customer/payment.jsp").forward(request, response);
+                return;
+            }
+
+            int addressID = Integer.parseInt(addressIDRaw);
+            Address selectedAddress = aDAO.getAddressByID(addressID);
+
+            if (selectedAddress == null) {
+                request.setAttribute("error", "Invalid address selected");
+                request.getRequestDispatcher("customer/payment.jsp").forward(request, response);
+                return;
+            }
+
+            /* ===== TÁCH ADDRESS & CITY (GIỮ LOGIC CŨ) ===== */
+            String fullAddress = selectedAddress.getAddress();
+            if (fullAddress.contains(",")) {
+                city = fullAddress.substring(fullAddress.lastIndexOf(",") + 1).trim();
+                address = fullAddress.substring(0, fullAddress.lastIndexOf(",")).trim();
+            }
+
+            String specificAddress = address + ", " + city;
 
             // --- LOGIC KIỂM TRA ĐỊA CHỈ ---
             // Chỉ kiểm tra DB nếu chưa có text địa chỉ cụ thể
@@ -206,36 +186,6 @@ public class PaymentServlet extends HttpServlet {
                 }
                 if (saveAddress == null) {
                     saveAddress = request.getParameter("saveAddress");
-                }
-
-                // Nếu vẫn null, buộc phải dùng addressID để lấy từ DB
-                if (specificAddress == null || specificAddress.isEmpty()) {
-                    if (addressIDRaw == null || addressIDRaw.isEmpty()) {
-                        request.setAttribute("error", "Please select a shipping address");
-                        // LỖI: Quay về trang chọn địa chỉ
-                        request.getRequestDispatcher("customer/payment.jsp").forward(request, response);
-                        return;
-                    }
-
-                    // Có ID, query DB
-                    int addressID = Integer.parseInt(addressIDRaw);
-                    Address selectedAddress = aDAO.getAddressByID(addressID);
-                    if (selectedAddress != null) {
-                        String fullAddress = selectedAddress.getAddress();
-                        if (fullAddress.contains(",")) {
-                            city = fullAddress.substring(fullAddress.lastIndexOf(",") + 1).trim();
-                            address = fullAddress.substring(0, fullAddress.lastIndexOf(",")).trim();
-                        } else {
-                            address = fullAddress;
-                            city = "";
-                        }
-                        specificAddress = fullAddress;
-                    } else {
-                        request.setAttribute("error", "Invalid address selected");
-                        // LỖI: Quay về trang chọn địa chỉ
-                        request.getRequestDispatcher("customer/payment.jsp").forward(request, response);
-                        return;
-                    }
                 }
             }
             InterestRateDAO iRDAO = new InterestRateDAO();
@@ -279,7 +229,7 @@ public class PaymentServlet extends HttpServlet {
                 List<Vouchers> myVouchers = vDAO.getVouchersByCustomerID(u.getCustomerID());
                 request.setAttribute("myVouchers", myVouchers);
             }
-           
+
             request.setAttribute("tempTotal", tempTotal);       // Tổng gốc
             request.setAttribute("discountAmount", discountAmount); // Số tiền được giảm
             request.setAttribute("finalTotal", finalTotal); // tổng tiền thanh toán
@@ -455,7 +405,7 @@ public class PaymentServlet extends HttpServlet {
                 o.setOrderID(newOrderID);
                 o.setOrderDate(LocalDateTime.now());
 
-                pmDAO.insertNewPayment(o, term);
+                pmDAO.insertNewPayment(o, term, iR.getInterestRateID());
 
                 OrderDetailDAO oDDAO = new OrderDetailDAO();
                 for (Carts c : carts) {

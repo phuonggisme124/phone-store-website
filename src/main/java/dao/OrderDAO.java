@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import model.Customer;
+import model.InstallmentDetail;
 import model.Order;
 import model.OrderDetails;
-import model.Payments;
 import model.Variants;
 import utils.DBContext;
 
@@ -216,13 +216,13 @@ public class OrderDAO extends DBContext {
 
     /* ======================== INSTALLMENT ======================== */
     public List<Order> getAllPendingInstalment(List<Order> orders) {
-        PaymentsDAO pmdao = new PaymentsDAO();
+        InstallmentDetailDAO pmdao = new InstallmentDetailDAO();
         List<Order> list = new ArrayList<>();
 
         for (Order o : orders) {
-            List<Payments> payments = pmdao.getPaymentByOrderID(o.getOrderID());
+            List<InstallmentDetail> payments = pmdao.getPaymentByOrderID(o.getOrderID());
             if (payments != null) {
-                for (Payments p : payments) {
+                for (InstallmentDetail p : payments) {
                     if ("Pending".equals(p.getPaymentStatus())) {
                         list.add(o);
                         break;
@@ -234,14 +234,14 @@ public class OrderDAO extends DBContext {
     }
 
     public List<Order> getAllCompletedInstalment(List<Order> orders) {
-        PaymentsDAO pmdao = new PaymentsDAO();
+        InstallmentDetailDAO pmdao = new InstallmentDetailDAO();
         List<Order> list = new ArrayList<>();
 
         for (Order o : orders) {
             boolean pending = false;
-            List<Payments> payments = pmdao.getPaymentByOrderID(o.getOrderID());
+            List<InstallmentDetail> payments = pmdao.getPaymentByOrderID(o.getOrderID());
             if (payments != null) {
-                for (Payments p : payments) {
+                for (InstallmentDetail p : payments) {
                     if ("Pending".equals(p.getPaymentStatus())) {
                         pending = true;
                         break;
@@ -719,13 +719,13 @@ public class OrderDAO extends DBContext {
     }
 
     public List<Order> getAllPendingInstalmentAndPhone(List<Order> listInstalment, String phone) {
-        PaymentsDAO pmdao = new PaymentsDAO();
+        InstallmentDetailDAO pmdao = new InstallmentDetailDAO();
         List<Order> list = new ArrayList<>();
         for (Order order : listInstalment) {
             if (order.getReceiverPhone() != null && order.getReceiverPhone().equals(phone)) {
-                List<Payments> listPayment = pmdao.getPaymentByOrderID(order.getOrderID());
+                List<InstallmentDetail> listPayment = pmdao.getPaymentByOrderID(order.getOrderID());
                 if (listPayment != null && !listPayment.isEmpty()) {
-                    for (Payments payment : listPayment) {
+                    for (InstallmentDetail payment : listPayment) {
                         if (payment.getPaymentStatus().equals("Pending")) {
                             list.add(order);
                             break;
@@ -738,14 +738,14 @@ public class OrderDAO extends DBContext {
     }
 
     public List<Order> getAllCompletedInstalmentAndPhone(List<Order> listInstalment, String phone) {
-        PaymentsDAO pmdao = new PaymentsDAO();
+        InstallmentDetailDAO pmdao = new InstallmentDetailDAO();
         List<Order> list = new ArrayList<>();
         for (Order order : listInstalment) {
             if (order.getReceiverPhone() != null && order.getReceiverPhone().equals(phone)) {
                 boolean checkPending = false;
-                List<Payments> listPayment = pmdao.getPaymentByOrderID(order.getOrderID());
+                List<InstallmentDetail> listPayment = pmdao.getPaymentByOrderID(order.getOrderID());
                 if (listPayment != null && !listPayment.isEmpty()) {
-                    for (Payments payment : listPayment) {
+                    for (InstallmentDetail payment : listPayment) {
                         if (payment.getPaymentStatus().equals("Pending")) {
                             checkPending = true;
                             break;
