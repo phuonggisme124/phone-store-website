@@ -7,31 +7,48 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="/layout/header.jsp" %>
+<%    Customer userC = (Customer) session.getAttribute("user");
 
+    boolean isOver18 = false;
+    boolean hasCCCD = false;
+    boolean hasYob = false;
+
+    if (userC != null) {
+        if (userC.getCccd() != null && !userC.getCccd().trim().isEmpty()) {
+            hasCCCD = true;
+        }
+        if (userC.getYob() != null) {
+            hasYob = true;
+            if (userC.getAge() >= 18) {
+                isOver18 = true;
+            }
+        }
+    }
+%>
 <!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Confirm Payment</title>
-        
+
         <script src="${pageContext.request.contextPath}/js/bootstrap.min.js"></script>
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/home.css?v=<%=System.currentTimeMillis()%>">
-        
+
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-        
+
         <script src="https://cdn.tailwindcss.com"></script>
 
         <style>
             /* ======================================================= */
             /* 3. CẤU HÌNH MÀU SẮC RIÊNG BIỆT                        */
             /* ======================================================= */
-            :root { 
+            :root {
                 /* MÀU CHỦ ĐẠO (BUTTON, ICON CHUNG) -> HỒNG/ĐỎ */
-                --main-color: #FF424F; 
+                --main-color: #FF424F;
                 --main-hover: #e03a45;
-                
+
                 /* MÀU RIÊNG CHO ĐỊA CHỈ -> XANH DƯƠNG */
                 --addr-border: #72AEC8;
                 --addr-bg: #f8fcfd;
@@ -39,109 +56,235 @@
             }
 
             /* Reset cho vùng Payment để không ảnh hưởng Header */
-            .payment-wrapper { 
-                font-family: 'Poppins', sans-serif; 
-                background-color: #f8f9fa; 
+            .payment-wrapper {
+                font-family: 'Poppins', sans-serif;
+                background-color: #f8f9fa;
                 min-height: 100vh;
                 padding-bottom: 50px;
             }
-            .payment-wrapper *, .payment-wrapper *::before, .payment-wrapper *::after { box-sizing: border-box; }
+            .payment-wrapper *, .payment-wrapper *::before, .payment-wrapper *::after {
+                box-sizing: border-box;
+            }
 
             /* --- HELPER CLASSES --- */
-            .text-main { color: var(--main-color) !important; }
-            .bg-main { background-color: var(--main-color) !important; }
-            
+            .text-main {
+                color: var(--main-color) !important;
+            }
+            .bg-main {
+                background-color: var(--main-color) !important;
+            }
+
             /* --- CONTAINER --- */
             .payment-container {
-                max-width: 42rem; margin: 2rem auto; background-color: #ffffff;
-                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); border-radius: 12px; position: relative; overflow: hidden;
+                max-width: 42rem;
+                margin: 2rem auto;
+                background-color: #ffffff;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+                border-radius: 12px;
+                position: relative;
+                overflow: hidden;
             }
-            
+
             /* Header Form */
             .payment-form-header {
-                padding: 1.25rem; border-bottom: 1px solid #f0f0f0; 
-                display: flex; align-items: center; justify-content: center; position: relative; background: #fff;
+                padding: 1.25rem;
+                border-bottom: 1px solid #f0f0f0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                position: relative;
+                background: #fff;
             }
-            .header-title { font-size: 1.2rem; font-weight: 700; color: #111; margin: 0; }
-            .back-button { position: absolute; left: 1rem; background: none; border: none; cursor: pointer; color: #666; padding: 5px; }
-            .back-button:hover { color: var(--main-color); }
+            .header-title {
+                font-size: 1.2rem;
+                font-weight: 700;
+                color: #111;
+                margin: 0;
+            }
+            .back-button {
+                position: absolute;
+                left: 1rem;
+                background: none;
+                border: none;
+                cursor: pointer;
+                color: #666;
+                padding: 5px;
+            }
+            .back-button:hover {
+                color: var(--main-color);
+            }
 
-            .payment-main { padding: 1.5rem; }
+            .payment-main {
+                padding: 1.5rem;
+            }
 
             /* --- CÁC KHỐI THÔNG TIN --- */
-            .section-title { 
-                font-weight: 700; font-size: 0.95rem; color: #555; 
-                margin-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 1.5rem; 
+            .section-title {
+                font-weight: 700;
+                font-size: 0.95rem;
+                color: #555;
+                margin-bottom: 0.75rem;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                margin-top: 1.5rem;
             }
-            .recipient-info-section:first-of-type .section-title { margin-top: 0; }
+            .recipient-info-section:first-of-type .section-title {
+                margin-top: 0;
+            }
 
             .info-box {
-                background-color: #fafafa; border: 1px solid #eee; border-radius: 8px; padding: 1rem;
-                display: flex; flex-direction: column; gap: 0.8rem;
+                background-color: #fafafa;
+                border: 1px solid #eee;
+                border-radius: 8px;
+                padding: 1rem;
+                display: flex;
+                flex-direction: column;
+                gap: 0.8rem;
             }
-            .info-row { display: flex; justify-content: space-between; }
-            .info-label { color: #666; font-weight: 500; font-size: 0.9rem; }
-            .info-value { color: #222; font-weight: 600; font-size: 0.95rem; text-align: right;}
+            .info-row {
+                display: flex;
+                justify-content: space-between;
+            }
+            .info-label {
+                color: #666;
+                font-weight: 500;
+                font-size: 0.9rem;
+            }
+            .info-value {
+                color: #222;
+                font-weight: 600;
+                font-size: 0.95rem;
+                text-align: right;
+            }
 
             /* --- ĐỊA CHỈ (MÀU XANH THEO YÊU CẦU) --- */
             .selected-addr-box {
-                border: 1px solid var(--addr-border); 
-                background-color: var(--addr-bg); 
+                border: 1px solid var(--addr-border);
+                background-color: var(--addr-bg);
                 border-radius: 8px;
-                padding: 16px; display: flex; align-items: flex-start; gap: 12px;
+                padding: 16px;
+                display: flex;
+                align-items: flex-start;
+                gap: 12px;
             }
-            .selected-addr-box i { color: var(--addr-border); margin-top: 3px; font-size: 1.2rem;}
-            .change-addr-text { color: var(--addr-text); font-weight: 600; font-size: 0.85rem; text-transform: uppercase; text-decoration: none; cursor: pointer; white-space: nowrap;}
+            .selected-addr-box i {
+                color: var(--addr-border);
+                margin-top: 3px;
+                font-size: 1.2rem;
+            }
+            .change-addr-text {
+                color: var(--addr-text);
+                font-weight: 600;
+                font-size: 0.85rem;
+                text-transform: uppercase;
+                text-decoration: none;
+                cursor: pointer;
+                white-space: nowrap;
+            }
 
             /* --- NÚT CHỌN THANH TOÁN --- */
             .payment-selector-box {
-                border: 1px solid #eee; border-radius: 8px; padding: 14px;
-                display: flex; justify-content: space-between; align-items: center;
-                cursor: pointer; background-color: white; transition: all 0.2s;
+                border: 1px solid #eee;
+                border-radius: 8px;
+                padding: 14px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                cursor: pointer;
+                background-color: white;
+                transition: all 0.2s;
             }
-            .payment-selector-box:hover { border-color: var(--main-color); background-color: #fff0f1; }
+            .payment-selector-box:hover {
+                border-color: var(--main-color);
+                background-color: #fff0f1;
+            }
 
             /* --- TỔNG KẾT & NÚT ĐẶT HÀNG (MÀU HỒNG) --- */
-            .summary-box { 
-                background-color: #f8f9fa; margin-top: 25px; border: 1px solid #eee; 
-                border-radius: 8px; padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem; 
+            .summary-box {
+                background-color: #f8f9fa;
+                margin-top: 25px;
+                border: 1px solid #eee;
+                border-radius: 8px;
+                padding: 1.25rem;
+                display: flex;
+                flex-direction: column;
+                gap: 1rem;
             }
-            
+
             #confirm-btn {
-                width: 100%; 
+                width: 100%;
                 background-color: var(--main-color); /* HỒNG */
-                color: white; font-weight: 600; font-size: 1rem;
-                border: none; border-radius: 8px; /* Bo góc vừa phải như ảnh Place Order */
-                padding: 14px; cursor: pointer; margin-top: 24px; 
+                color: white;
+                font-weight: 600;
+                font-size: 1rem;
+                border: none;
+                border-radius: 8px; /* Bo góc vừa phải như ảnh Place Order */
+                padding: 14px;
+                cursor: pointer;
+                margin-top: 24px;
                 transition: background 0.3s;
                 box-shadow: 0 4px 10px rgba(255, 66, 79, 0.3);
             }
-            #confirm-btn:hover { background-color: var(--main-hover); }
+            #confirm-btn:hover {
+                background-color: var(--main-hover);
+            }
 
             .check-product-link {
-                color: var(--main-color); font-weight: 500; font-size: 0.85rem; 
-                text-decoration: none; cursor: pointer; display: block; text-align: center; margin-top: 10px;
+                color: var(--main-color);
+                font-weight: 500;
+                font-size: 0.85rem;
+                text-decoration: none;
+                cursor: pointer;
+                display: block;
+                text-align: center;
+                margin-top: 10px;
             }
-            .check-product-link:hover { text-decoration: underline; }
+            .check-product-link:hover {
+                text-decoration: underline;
+            }
 
             /* --- STYLE CHO MODAL (Dùng chung màu hồng cho đồng bộ nút Confirm) --- */
-            .payment-option.selected { border-color: var(--main-color); box-shadow: 0 0 0 1px var(--main-color) inset; background-color: #fff0f1; }
-            .term-column.selected { background-color: #fff0f1; border-color: var(--main-color); }
-            .term-column.selected .term-button { background-color: var(--main-color); color: white; cursor: default; border-color: var(--main-color); }
-            .term-button { border-color: var(--main-color); color: var(--main-color); }
-            .hover\:bg-theme-dark:hover { background-color: var(--main-hover) !important; }
-            .bg-theme { background-color: var(--main-color) !important; }
-            .text-theme { color: var(--main-color) !important; }
-            
-            #qrCodeImage { max-width: 100%; height: auto; }
+            .payment-option.selected {
+                border-color: var(--main-color);
+                box-shadow: 0 0 0 1px var(--main-color) inset;
+                background-color: #fff0f1;
+            }
+            .term-column.selected {
+                background-color: #fff0f1;
+                border-color: var(--main-color);
+            }
+            .term-column.selected .term-button {
+                background-color: var(--main-color);
+                color: white;
+                cursor: default;
+                border-color: var(--main-color);
+            }
+            .term-button {
+                border-color: var(--main-color);
+                color: var(--main-color);
+            }
+            .hover\:bg-theme-dark:hover {
+                background-color: var(--main-hover) !important;
+            }
+            .bg-theme {
+                background-color: var(--main-color) !important;
+            }
+            .text-theme {
+                color: var(--main-color) !important;
+            }
+
+            #qrCodeImage {
+                max-width: 100%;
+                height: auto;
+            }
         </style>
     </head>
 
     <body class="payment-wrapper">
-        <% 
+        <%
             List<Carts> cartsCheckout = (List<Carts>) session.getAttribute("cartCheckout");
             ProductDAO pDAO = new ProductDAO();
-            
+
             String receiverName = (String) request.getAttribute("receiverName");
             String receiverPhone = (String) request.getAttribute("receiverPhone");
             String specificAddress = (String) request.getAttribute("specificAddress");
@@ -197,12 +340,12 @@
                         <h3 class="section-title">Shipping Address</h3>
                         <div class="selected-addr-box">
                             <i class="fa-solid fa-location-dot"></i>
-                            
+
                             <span style="color:#333; font-size:0.95rem; line-height:1.5; font-weight: 500; flex: 1;">
                                 <%= specificAddress != null ? specificAddress : "No address provided"%>
                             </span>
-                            
-                  
+
+
                         </div>
                     </div>
 
@@ -227,7 +370,7 @@
                             <p style="color:#666;">Discount</p>
                             <p class="text-theme" style="font-weight: 600;">-<%= String.format("%,.0f", discountAmount)%> VND</p>
                         </div>
-                        <% } %>
+                        <% }%>
                         <hr style="border-top: 1px dashed #ddd; margin: 5px 0;">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <p style="font-weight: 600; color:#333;">Total Payment</p>
@@ -237,10 +380,10 @@
                                 </p>
                             </div>
                         </div>
-                        
-                        <% if (totalQuantity > 0) { %>
+
+                        <% if (totalQuantity > 0) {%>
                         <a id="openProductListModalBtn" class="check-product-link">
-                            Check product list (<%= totalQuantity %> items) <i class="fa-solid fa-chevron-right text-xs"></i>
+                            Check product list (<%= totalQuantity%> items) <i class="fa-solid fa-chevron-right text-xs"></i>
                         </a>
                         <% } %>
                     </div>
@@ -258,23 +401,23 @@
                 </div>
                 <div class="p-4 space-y-4 max-h-[60vh] overflow-y-auto">
                     <% if (cartsCheckout != null && !cartsCheckout.isEmpty()) {
-                        for (Carts c : cartsCheckout) {%>
-                        <div class="flex items-start space-x-4 border-b pb-3 last:border-0 last:pb-0">
-                            <img src="${pageContext.request.contextPath}/images/<%= c.getVariant().getImageList()[0]%>" class="w-16 h-16 object-contain border rounded-md" onerror="this.src='https://placehold.co/60'">
-                            <div class="flex-1">
-                                <p class="font-semibold text-sm text-gray-800 line-clamp-2"><%= pDAO.getProductByID(c.getVariant().getProductID()).getName().toUpperCase() + " " + c.getVariant().getStorage().toUpperCase() + " " + c.getVariant().getColor()%></p>
-                                <div class="flex items-center justify-between mt-2">
-                                    <span class="font-bold text-theme text-sm"><%= String.format("%,.0f", c.getVariant().getDiscountPrice())%> VND</span>
-                                    <span class="text-gray-600 text-sm">x<%= c.getQuantity()%></span>
-                                </div>
+                            for (Carts c : cartsCheckout) {%>
+                    <div class="flex items-start space-x-4 border-b pb-3 last:border-0 last:pb-0">
+                        <img src="${pageContext.request.contextPath}/images/<%= c.getVariant().getImageList()[0]%>" class="w-16 h-16 object-contain border rounded-md" onerror="this.src='https://placehold.co/60'">
+                        <div class="flex-1">
+                            <p class="font-semibold text-sm text-gray-800 line-clamp-2"><%= pDAO.getProductByID(c.getVariant().getProductID()).getName().toUpperCase() + " " + c.getVariant().getStorage().toUpperCase() + " " + c.getVariant().getColor()%></p>
+                            <div class="flex items-center justify-between mt-2">
+                                <span class="font-bold text-theme text-sm"><%= String.format("%,.0f", c.getVariant().getDiscountPrice())%> VND</span>
+                                <span class="text-gray-600 text-sm">x<%= c.getQuantity()%></span>
                             </div>
                         </div>
+                    </div>
                     <%  }
                     } else { %>
-                        <p class="text-center text-gray-500">Cart is empty.</p>
-                    <% } %>
+                    <p class="text-center text-gray-500">Cart is empty.</p>
+                    <% }%>
                 </div>
-     
+
             </div>
         </div>
 
@@ -292,12 +435,33 @@
                         </div>
                         <i class="fa-regular fa-circle text-gray-300 check-icon"></i>
                     </div>
-                    <div id="openInstallmentModalBtn" class="payment-option border rounded-lg p-4 flex items-center cursor-pointer hover:bg-gray-50 transition-all" data-value="INSTALLMENT" data-text="Installment via Card/Wallet" data-fa-icon-class="fa-solid fa-credit-card">
-                        <div class="flex-grow flex items-center space-x-4">
-                            <i class="fa-solid fa-credit-card text-theme text-2xl w-8 text-center"></i>
-                            <span class="font-medium">Installment via Card/Wallet</span>
+                    <div id="openInstallmentModalBtn" 
+                         class="payment-option border rounded-lg p-4 flex items-center cursor-pointer hover:bg-gray-50 transition-all <%= !isOver18 ? "opacity-50 bg-gray-100" : ""%>" 
+                         data-value="INSTALLMENT" 
+                         data-text="Installment via Card/Wallet" 
+                         data-fa-icon-class="fa-solid fa-credit-card"
+                         data-age-ok="<%= isOver18%>"       
+                         data-cccd-ok="<%= hasCCCD%>"
+                         data-has-yob="<%= hasYob%>"> <div class="flex-grow flex items-center space-x-4">
+                            <i class="fa-solid fa-credit-card text-theme text-2xl w-8 text-center <%= !isOver18 ? "text-gray-400" : ""%>"></i>
+                            <div class="flex flex-col">
+                                <span class="font-medium <%= !isOver18 ? "text-gray-500" : ""%>">Installment via Card/Wallet</span>
+
+                                <% if (!hasYob) { %>
+                                <span class="text-xs text-orange-500 font-semibold">(Need to update YOB)</span>
+                                <% } else if (!hasCCCD) { %>
+                                <span class="text-xs text-orange-500 font-semibold">(Need to update CCCD)</span>
+                                <% } else if (!isOver18) { %>
+                                <span class="text-xs text-red-500 font-semibold">(Must be at least 18 years old)</span>
+                                <% } %>
+                            </div>
                         </div>
+
+                        <% if (!hasYob || !hasCCCD || !isOver18) { %>
+                        <i class="fa-solid fa-lock text-gray-400"></i>
+                        <% } else { %>
                         <i class="fa-solid fa-chevron-right text-gray-400"></i>
+                        <% } %>
                     </div>
                     <div id="openTransferModalBtn" class="payment-option border rounded-lg p-4 flex items-center cursor-pointer hover:bg-gray-50 transition-all" data-value="TRANSFER" data-text="Payment via Bank Transfer" data-fa-icon-class="fa-solid fa-building-columns">
                         <div class="flex-grow flex items-center space-x-4">
@@ -332,10 +496,11 @@
                             </div>
                             <% List<InterestRate> iRList = (List<InterestRate>) request.getAttribute("iRList"); %>
                             <div class="w-3/4 flex">
-                                <% if (iRList != null) { for (InterestRate iR : iRList) {
-                                        double instalmentPrice = (totalPriceAfterDiscount * iR.getPercent()) / 100;
-                                        double totalPriceEachMothPay = (totalPriceAfterDiscount + instalmentPrice) / iR.getInstalmentPeriod();
-                                        double totalPriceAfterInstalment = totalPriceAfterDiscount + instalmentPrice;
+                                <% if (iRList != null) {
+                                        for (InterestRate iR : iRList) {
+                                            double instalmentPrice = (totalPriceAfterDiscount * iR.getPercent()) / 100;
+                                            double totalPriceEachMothPay = (totalPriceAfterDiscount + instalmentPrice) / iR.getInstalmentPeriod();
+                                            double totalPriceAfterInstalment = totalPriceAfterDiscount + instalmentPrice;
                                 %>
                                 <div class="term-column w-1/3 border rounded-md p-2 mx-1 flex flex-col cursor-pointer transition-colors" data-term="<%=iR.getInstalmentPeriod()%>">
                                     <div class="flex-grow">
@@ -347,7 +512,8 @@
                                     </div>
                                     <button class="term-button mt-2 w-full py-1 border rounded-md font-semibold text-xs transition-colors">SELECT</button>
                                 </div>
-                                <% }} %>
+                                <% }
+                                    }%>
                             </div>
                         </div>
                     </div>
@@ -392,27 +558,27 @@
 
         <script>
             document.addEventListener('DOMContentLoaded', () => {
-                // DOM ELEMENTS
+                // --- DOM ELEMENTS ---
                 const openProductListModalBtn = document.getElementById('openProductListModalBtn');
                 const productModal = document.getElementById('productModal');
-                
+
                 const paymentMethodModal = document.getElementById('paymentMethodModal');
                 const installmentModal = document.getElementById('installmentModal');
                 const transferModal = document.getElementById('transferModal');
-                
+
                 const openPaymentModalBtn = document.getElementById('openPaymentModalBtn');
                 const confirmPaymentBtn = document.getElementById('confirmPaymentBtn');
                 const confirmInstallmentBtn = document.getElementById('confirmInstallmentBtn');
                 const confirmTransferBtn = document.getElementById('confirmTransferBtn');
-                
+
                 const backToPaymentModalBtn = document.getElementById('backToPaymentModalBtn');
                 const backToPaymentModalBtnFromTransfer = document.getElementById('backToPaymentModalBtnFromTransfer');
-                
+
                 const paymentMethodInput = document.getElementById('paymentMethodInput');
                 const installmentTermInput = document.getElementById('installmentTermInput');
                 const selectedPaymentText = document.getElementById('selected-payment-text');
                 const selectedPaymentIcon = document.getElementById('selected-payment-icon');
-                
+
                 let selectedInstallmentTerm = null;
                 let paymentCheckInterval = null;
 
@@ -420,15 +586,19 @@
                 const openModal = (modal) => modal.classList.remove('hidden');
                 const closeModal = (modal) => {
                     modal.classList.add('hidden');
-                    if (modal.id === 'transferModal' && paymentCheckInterval) clearInterval(paymentCheckInterval);
+                    if (modal.id === 'transferModal' && paymentCheckInterval)
+                        clearInterval(paymentCheckInterval);
                 };
 
                 document.querySelectorAll('.js-close-modal').forEach(btn => {
-                    btn.addEventListener('click', (e) => { e.preventDefault(); closeModal(e.target.closest('.fixed')); });
+                    btn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        closeModal(e.target.closest('.fixed'));
+                    });
                 });
 
                 // --- PRODUCT MODAL ---
-                if(openProductListModalBtn) {
+                if (openProductListModalBtn) {
                     openProductListModalBtn.addEventListener('click', (e) => {
                         e.preventDefault();
                         openModal(productModal);
@@ -448,19 +618,60 @@
                     openModal(paymentMethodModal);
                 });
 
-                backToPaymentModalBtn.addEventListener('click', () => { closeModal(installmentModal); openModal(paymentMethodModal); });
-                backToPaymentModalBtnFromTransfer.addEventListener('click', () => { closeModal(transferModal); openModal(paymentMethodModal); });
+                backToPaymentModalBtn.addEventListener('click', () => {
+                    closeModal(installmentModal);
+                    openModal(paymentMethodModal);
+                });
 
+                backToPaymentModalBtnFromTransfer.addEventListener('click', () => {
+                    closeModal(transferModal);
+                    openModal(paymentMethodModal);
+                });
+
+                // --- XỬ LÝ CLICK CHỌN PHƯƠNG THỨC THANH TOÁN ---
                 document.querySelectorAll('.payment-option').forEach(option => {
-                    option.addEventListener('click', () => {
+                    option.addEventListener('click', (e) => {
+
+                        if (option.dataset.value === 'INSTALLMENT') {
+                            const isAgeOk = option.dataset.ageOk === 'true';   // True nếu >= 18
+                            const isCccdOk = option.dataset.cccdOk === 'true'; // True nếu có CCCD
+                            const hasYob = option.dataset.hasYob === 'true';   // True nếu có Yob
+
+                            // 1. Ưu tiên kiểm tra: Thiếu thông tin (YOB hoặc CCCD) -> Yêu cầu cập nhật
+                            if (!hasYob || !isCccdOk) {
+                                let msg = "Bạn cần bổ sung thông tin để sử dụng trả góp:\n";
+                                if (!hasYob)
+                                    msg += "- Ngày sinh (để xác minh độ tuổi)\n";
+                                if (!isCccdOk)
+                                    msg += "- Căn cước công dân\n";
+
+                                msg += "\nĐi đến trang cập nhật ngay?";
+
+                                if (confirm(msg)) {
+                                    window.location.href = "customer/editProfile.jsp?redirect=payment";
+                                }
+                                e.stopPropagation();
+                                return;
+                            }
+
+                            // 2. Sau khi đã có đủ thông tin, kiểm tra tuổi
+                            if (!isAgeOk) {
+                                alert("Rất tiếc, phương thức trả góp chỉ áp dụng cho khách hàng từ 18 tuổi trở lên.");
+                                e.stopPropagation();
+                                return;
+                            }
+                        }
+
+                        // 2. LOGIC CHỌN GIAO DIỆN (Nếu thỏa mãn điều kiện hoặc không phải trả góp)
                         document.querySelectorAll('.payment-option').forEach(o => o.classList.remove('selected'));
                         option.classList.add('selected');
+
                         // Reset check icon
                         document.querySelectorAll('.check-icon').forEach(i => i.classList.replace('fa-circle-check', 'fa-circle'));
                         document.querySelectorAll('.check-icon').forEach(i => i.classList.remove('text-theme'));
-                        
+
                         const icon = option.querySelector('.check-icon');
-                        if(icon) {
+                        if (icon) {
                             icon.classList.replace('fa-circle', 'fa-circle-check');
                             icon.classList.add('text-theme');
                         }
@@ -469,30 +680,37 @@
 
                 confirmPaymentBtn.addEventListener('click', () => {
                     const selected = document.querySelector('.payment-option.selected');
-                    if (!selected) { alert('Please select a payment method.'); return; }
-                    
+                    if (!selected) {
+                        alert('Please select a payment method.');
+                        return;
+                    }
+
                     const val = selected.dataset.value;
+
                     if (val === 'COD') {
                         updateSelectedPaymentDisplay(selected.dataset.text, selected.dataset.faIconClass);
                         paymentMethodInput.value = 'COD';
                         installmentTermInput.value = '';
                         closeModal(paymentMethodModal);
+
                     } else if (val === 'INSTALLMENT') {
                         closeModal(paymentMethodModal);
                         openModal(installmentModal);
+
                     } else if (val === 'TRANSFER') {
-                        const totalAmount = <%= (int)totalPriceAfterDiscount %>; 
+                        const totalAmount = <%= (int) totalPriceAfterDiscount%>;
                         const orderId = 'DH' + Math.floor(Date.now() / 1000);
                         const transferDescription = 'TT ' + orderId;
                         document.getElementById('transferContent').innerText = transferDescription;
-                        
+
                         const qrUrl = "https://img.vietqr.io/image/970422-0968418098-compact.png?amount=" + totalAmount + "&addInfo=" + encodeURIComponent(transferDescription) + "&accountName=TRANG TIEN DAT";
                         document.getElementById('qrCodeImage').src = qrUrl;
 
                         closeModal(paymentMethodModal);
                         openModal(transferModal);
 
-                        if (paymentCheckInterval) clearInterval(paymentCheckInterval);
+                        if (paymentCheckInterval)
+                            clearInterval(paymentCheckInterval);
                         setTimeout(() => {
                             paymentCheckInterval = setInterval(() => checkPaid(transferDescription), 3000);
                         }, 5000);
@@ -517,16 +735,18 @@
                         closeModal(installmentModal);
                     }
                 });
-                
+
                 confirmTransferBtn.addEventListener('click', () => {
-                     const selected = document.querySelector('.payment-option[data-value="TRANSFER"]');
-                     if(selected) updateSelectedPaymentDisplay(selected.dataset.text, selected.dataset.faIconClass);
-                     paymentMethodInput.value = 'TRANSFER';
-                     closeModal(transferModal);
+                    const selected = document.querySelector('.payment-option[data-value="TRANSFER"]');
+                    if (selected)
+                        updateSelectedPaymentDisplay(selected.dataset.text, selected.dataset.faIconClass);
+                    paymentMethodInput.value = 'TRANSFER';
+                    closeModal(transferModal);
                 });
 
                 async function checkPaid(desc) {
                     try {
+                        // Link Google Script của bạn
                         const response = await fetch("https://script.google.com/macros/s/AKfycbwVGFzfs_VMzmWN9kXOcLW2o5HNR407tycQzyyq20NjEOn32MBZw6GSBFVi5uRtWtSwqw/exec");
                         const data = await response.json();
                         const last = data.data[data.data.length - 1];
@@ -535,12 +755,15 @@
                             paymentMethodInput.value = 'TRANSFER';
                             document.getElementById('payment-form').submit();
                         }
-                    } catch (e) { console.error(e); }
+                    } catch (e) {
+                        console.error(e);
+                    }
                 }
 
                 document.getElementById('confirm-btn').addEventListener('click', () => {
                     if (!paymentMethodInput.value) {
-                        alert('Please select a payment method.'); return;
+                        alert('Please select a payment method.');
+                        return;
                     }
                     document.getElementById('payment-form').submit();
                 });

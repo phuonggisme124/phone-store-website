@@ -98,7 +98,7 @@ public class PaymentServlet extends HttpServlet {
                 response.sendRedirect("homepage?error=invalid_parameter");
             }
 
-        /* ================= BUY NOW FROM CART ================= */
+            /* ================= BUY NOW FROM CART ================= */
         } else if ("buyNowFromCart".equalsIgnoreCase(action)) {
 
             session.setAttribute("buyFrom", action);
@@ -125,7 +125,7 @@ public class PaymentServlet extends HttpServlet {
             session.setAttribute("cartCheckout", cartSelectedItemsList);
             request.getRequestDispatcher("customer/payment.jsp").forward(request, response);
 
-        /* ================= CHECKOUT ================= */
+            /* ================= CHECKOUT ================= */
         } else if ("checkout".equalsIgnoreCase(action)) {
 
             List<Carts> carts = (List<Carts>) session.getAttribute("cartCheckout");
@@ -133,7 +133,9 @@ public class PaymentServlet extends HttpServlet {
             String receiverName = request.getParameter("receiverName");
             String receiverPhone = request.getParameter("receiverPhone");
             String addressIDRaw = request.getParameter("addressID");
-
+            session.setAttribute("receiverName", receiverName);
+            session.setAttribute("receiverPhone", receiverPhone);
+            session.setAttribute("addressID", addressIDRaw);
             if (receiverPhone == null || receiverPhone.trim().isEmpty()) {
                 request.setAttribute("error", "Phone number is required");
                 request.getRequestDispatcher("customer/payment.jsp").forward(request, response);
@@ -236,7 +238,7 @@ public class PaymentServlet extends HttpServlet {
                 o.setOrderID(newOrderID);
                 o.setOrderDate(LocalDateTime.now());
 
-                pmDAO.insertNewPayment(o, term);
+                pmDAO.insertNewPayment(o, term, iR.getInterestRateID());
 
                 OrderDetailDAO oDDAO = new OrderDetailDAO();
                 for (Carts c : carts) {
@@ -252,7 +254,7 @@ public class PaymentServlet extends HttpServlet {
                     oDDAO.insertNewOrderDetail(oD);
                 }
 
-            /* ================= NORMAL PAYMENT ================= */
+                /* ================= NORMAL PAYMENT ================= */
             } else {
 
                 byte isInstalment = 0;

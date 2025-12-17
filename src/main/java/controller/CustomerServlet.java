@@ -2,23 +2,25 @@ package controller;
 
 import dao.CustomerDAO;
 import dao.CategoryDAO;
+import dao.InstallmentDetailDAO;
 import dao.OrderDAO;
 import dao.OrderDetailDAO;
-import dao.PaymentsDAO;
+
 import dao.StaffDAO;
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import java.io.IOException;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import model.Customer;
 import model.Category;
+import model.InstallmentDetail;
 import model.Order;
 import model.OrderDetails;
-import model.Payments;
 import model.Staff; // Import Staff model
 
 /**
@@ -95,6 +97,13 @@ public class CustomerServlet extends HttpServlet {
             // 3. Customer: Installment
             case "payInstallment":
                 if (customer != null) {
+                    InstallmentDetailDAO iDAO = new InstallmentDetailDAO();
+                    List<InstallmentDetail> iDList = iDAO.getInstallmentNearToPay();
+                    for (InstallmentDetail iD : iDList) {
+                        if (iD.getExpriedDay() > 0) {
+                            iDAO.updateExpiredDateByOrderID(iD.getInstallmentDetailID(), iD.getExpriedDay());
+                        }
+                    }
                     viewInstallment(request, response, customer);
                 } else {
                     response.sendRedirect("login.jsp");
@@ -110,9 +119,6 @@ public class CustomerServlet extends HttpServlet {
                 }
                 break;
 
-            
-            
-            
             // Default: View Profile (Customer only)
             default:
                 if (customer != null) {
@@ -131,9 +137,17 @@ public class CustomerServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
+        // 1. QUAN TRỌNG: Thêm 2 dòng này đầu tiên để nhận dữ liệu Tiếng Việt
+        request.setCharacterEncoding("UTF-8");
+        response.setCharacterEncoding("UTF-8");
+
         StaffDAO sdao = new StaffDAO();
         CustomerDAO cdao = new CustomerDAO();
+
+        // Lấy action từ form
         String action = request.getParameter("action");
+
         // Check login and determine user type
         HttpSession session = request.getSession();
         Object userObj = session.getAttribute("user");
@@ -154,7 +168,8 @@ public class CustomerServlet extends HttpServlet {
 
         loadCommonData(request);
 
-        if ("update".equals(action)) {
+        // 2. SỬA LỖI Ở ĐÂY: Đổi "update" thành "updateProfile" cho khớp với JSP
+        if ("updateProfile".equals(action)) {
             updateCustomerProfile(request, response, customer, session);
 
         } else if ("changePassword".equals(action)) {
@@ -195,13 +210,13 @@ public class CustomerServlet extends HttpServlet {
 
     private void viewInstallment(HttpServletRequest request, HttpServletResponse response, Customer customer)
             throws ServletException, IOException {
-        PaymentsDAO pmDAO = new PaymentsDAO();
+        InstallmentDetailDAO pmDAO = new InstallmentDetailDAO();
         List<Order> oList = orderDAO.getInstalmentOrdersByUserId(customer.getCustomerID());
 
-        Map<Integer, List<Payments>> allPayments = new HashMap<>();
+        Map<Integer, List<InstallmentDetail>> allPayments = new HashMap<>();
         if (oList != null) {
             for (Order o : oList) {
-                List<Payments> payments = pmDAO.getPaymentByOrderID(o.getOrderID());
+                List<InstallmentDetail> payments = pmDAO.getPaymentByOrderID(o.getOrderID());
                 allPayments.put(o.getOrderID(), payments);
             }
         }
@@ -214,12 +229,15 @@ public class CustomerServlet extends HttpServlet {
     private void updateCustomerProfile(HttpServletRequest request, HttpServletResponse response, Customer customer, HttpSession session)
             throws ServletException, IOException {
         try {
+
             String fullName = request.getParameter("fullName");
             String email = request.getParameter("email");
             String phone = request.getParameter("phone");
             String address = request.getParameter("address");
             String cccd = request.getParameter("cccd");
             String yobStr = request.getParameter("yob");
+
+            String redirectTarget = request.getParameter("redirect");
 
             if (fullName == null || fullName.trim().isEmpty()) {
                 request.setAttribute("error", "Họ tên không được để trống");
@@ -230,12 +248,13 @@ public class CustomerServlet extends HttpServlet {
             Date yob = null;
             if (yobStr != null && !yobStr.isEmpty()) {
                 try {
-                    yob = Date.valueOf(yobStr);
+                    yob = Date.valueOf(yobStr); // Yêu cầu format từ input date là yyyy-MM-dd
                 } catch (IllegalArgumentException e) {
-                    System.out.println("Invalid date format: " + yobStr);
+                    System.out.println("Lỗi định dạng ngày tháng: " + yobStr);
                 }
             }
 
+            // 4. Set thông tin mới vào đối tượng Customer
             customer.setFullName(fullName);
             customer.setEmail(email);
             customer.setPhone(phone);
@@ -244,14 +263,46 @@ public class CustomerServlet extends HttpServlet {
             customer.setYob(yob);
 
             customerDAO.updateProfile(customer);
+
             session.setAttribute("user", customer);
+
+            if ("payment".equals(redirectTarget)) {
+
+                String addressID = (String) session.getAttribute("addressID");
+                String receiverName = (String) session.getAttribute("receiverName");
+                String receiverPhone = (String) session.getAttribute("receiverPhone");
+
+                if (addressID == null) {
+                    addressID = "";
+                }
+                if (receiverName == null) {
+                    receiverName = "";
+                }
+                if (receiverPhone == null) {
+                    receiverPhone = "";
+                }
+
+                String encodedName = java.net.URLEncoder.encode(receiverName, "UTF-8");
+                String encodedPhone = java.net.URLEncoder.encode(receiverPhone, "UTF-8");
+
+                session.removeAttribute("addressID");
+                session.removeAttribute("receiverName");
+                session.removeAttribute("receiverPhone");
+
+                response.sendRedirect(request.getContextPath()
+                        + "/payment?action=checkout&addressID=" + addressID
+                        + "&receiverName=" + encodedName
+                        + "&receiverPhone=" + encodedPhone);
+
+                return;
+            }
 
             request.setAttribute("message", "Cập nhật hồ sơ thành công!");
             request.getRequestDispatcher("customer/editProfile.jsp").forward(request, response);
 
         } catch (Exception e) {
             e.printStackTrace();
-            request.setAttribute("error", "Đã xảy ra lỗi khi cập nhật!");
+            request.setAttribute("error", "Đã xảy ra lỗi khi cập nhật hệ thống!");
             request.getRequestDispatcher("customer/editProfile.jsp").forward(request, response);
         }
     }
@@ -303,7 +354,7 @@ public class CustomerServlet extends HttpServlet {
             String paymentIDStr = request.getParameter("paymentID");
             if (paymentIDStr != null) {
                 int paymentID = Integer.parseInt(paymentIDStr);
-                PaymentsDAO pmDAO = new PaymentsDAO();
+                InstallmentDetailDAO pmDAO = new InstallmentDetailDAO();
                 pmDAO.updatePaymentStatusToPaid(paymentID);
             }
         } catch (NumberFormatException e) {
@@ -312,6 +363,3 @@ public class CustomerServlet extends HttpServlet {
         response.sendRedirect("customer?action=payInstallment");
     }
 }
-
-
-

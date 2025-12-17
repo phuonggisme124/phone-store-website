@@ -1,19 +1,25 @@
+<%@page import="model.InterestRate"%>
+<%@page import="dao.InterestRateDAO"%>
+<%@page import="dao.InstallmentDetailDAO"%>
+<%@page import="model.InstallmentDetail"%>
 <%@page import="java.text.NumberFormat"%>
 <%@page import="java.util.Locale"%>
 <%@page import="java.util.Map"%>
-<%@page import="model.Payments"%>
 <%@page import="model.Order"%>
 <%@page import="java.util.List"%>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page isELIgnored="true" %>
 <!DOCTYPE html>
 <%@ include file="/layout/header.jsp" %>
+
+<%
+    InterestRateDAO irDAO = new InterestRateDAO();
+%>
+
 <html lang="vi">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <!--<title>Quản Lý Trả Góp</title>-->
         <link rel="stylesheet" type="text/css" href="css/instalment.css">
         <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="css/style.css">
@@ -22,22 +28,20 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
     </head>
     <body>
         <section id="billboard" class="bg-light-blue overflow-hidden padding-large" style="margin-top: -60px;">
             <div class="profile-container">
                 <div class="profile-wrapper">
-                    <!-- Sidebar -->
-                     <%@ include file="sidebar.jsp" %>
+                    <%@ include file="sidebar.jsp" %>
 
                     <main class="profile-content">
                         <div class="profile-header">
                             <h1>Quản Lý Trả Góp</h1>
 
-                            <%                    List<Order> oList = (List<Order>) request.getAttribute("oList");
-                                Map<Integer, List<Payments>> allPayments = (Map<Integer, List<Payments>>) request.getAttribute("allPayments");
+                            <%
+                                List<Order> oList = (List<Order>) request.getAttribute("oList");
+                                Map<Integer, List<InstallmentDetail>> allPayments = (Map<Integer, List<InstallmentDetail>>) request.getAttribute("allPayments");
                                 NumberFormat vnFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
                             %>
 
@@ -45,11 +49,11 @@
                                 <% if (oList != null && !oList.isEmpty()) {
                                         for (int i = oList.size() - 1; i >= 0; i--) {
                                             Order o = oList.get(i);
-                                            List<Payments> pList = allPayments.get(o.getOrderID());
+                                            List<InstallmentDetail> pList = allPayments.get(o.getOrderID());
                                             int paidCount = 0;
 
                                             if (pList != null) {
-                                                for (Payments p : pList) {
+                                                for (InstallmentDetail p : pList) {
                                                     if ("Paid".equalsIgnoreCase(p.getPaymentStatus())) {
                                                         paidCount++;
                                                     }
@@ -67,7 +71,7 @@
                                         </div>
                                         <div class="plan-summary">
                                             <h4>Đã trả <%= paidCount%> / <%= (pList != null ? pList.size() : 0)%> tháng</h4>
-                                            <%-- ĐOẠN MÃ MỚI VỚI ICON --%>
+                                            <%-- ICON TRẠNG THÁI --%>
                                             <div class="status-badge <%= (paidCount == (pList != null ? pList.size() : 0)) ? "status-done" : "status-ongoing"%>">
                                                 <% if (paidCount == (pList != null ? pList.size() : 0)) { %>
                                                 <i class="fas fa-check-circle"></i> Hoàn tất
@@ -82,19 +86,61 @@
                                     <div class="card-details-wrapper">
                                         <h5>Lịch sử thanh toán</h5>
                                         <div class="payment-schedule">
-                                            <% for (Payments p : pList) {%>
+                                            <% for (InstallmentDetail p : pList) {%>
                                             <div class="payment-item <%= p.getPaymentStatus().equalsIgnoreCase("Paid") ? "paid" : "unpaid"%>">
                                                 <div class="payment-period">Kỳ <%= p.getCurrentMonth()%></div>
-                                                <div class="payment-date"><%= p.getPaymentDate() != null ? p.getPaymentDate() : "-"%></div>
-                                                <div class="payment-amount"><%= vnFormat.format(p.getAmount())%></div>
+                                                
+                                                <div class="payment-date">
+                                                    <%= p.getPaymentDate() != null ? p.getPaymentDate() : "-"%>
+                                                    <% if (p.getExpriedDay() > 0 && !"Paid".equalsIgnoreCase(p.getPaymentStatus())) { %>
+                                                        <br><span style="color: red; font-size: 0.8rem; font-weight: bold;">(Trễ <%= p.getExpriedDay() %> ngày)</span>
+                                                    <% } %>
+                                                </div>
+                                                
+                                                <div class="payment-amount">
+                                                    <% 
+                                                        // Nếu có ngày trễ và chưa trả -> Tính tách lãi và gốc
+                                                        if (p.getExpriedDay() > 0 && !"Paid".equalsIgnoreCase(p.getPaymentStatus())) {
+                                                            try {
+                                                                InterestRate ir = irDAO.getInterestRatePercentByIstalmentPeriod(p.getTotalMonth());
+                                                                double percent = ir.getPercentExpried(); 
+                                                                int days = p.getExpriedDay();
+                                                                double currentTotal = p.getAmount(); 
+                                       
+                                                                
+                                                                double originalPrice = currentTotal / (1.0 + ((percent * days) / 10.0));
+                                                                double penaltyPrice = currentTotal - originalPrice;
+                                                    %>
+                                                        <div style="display: flex; flex-direction: column; align-items: flex-end;">
+                                                            <span style="text-decoration: line-through; color: #888; font-size: 0.85em;">
+                                                                Gốc: <%= vnFormat.format(originalPrice) %>
+                                                            </span>
+                                                            <span style="color: #dc3545; font-size: 0.85em;">
+                                                                Lãi phạt: +<%= vnFormat.format(penaltyPrice) %>
+                                                            </span>
+                                                            <strong style="color: #d63384; font-size: 1.1em;">
+                                                                <%= vnFormat.format(currentTotal) %>
+                                                            </strong>
+                                                        </div>
+                                                    <% 
+                                                            } catch (Exception e) {
+                                                                
+                                                                out.print(vnFormat.format(p.getAmount()));
+                                                            }
+                                                        } else {
+                                                            
+                                                    %>
+                                                        <%= vnFormat.format(p.getAmount())%>
+                                                    <% } %>
+                                                </div>
 
                                                 <div class="payment-status">
                                                     <% if ("Paid".equalsIgnoreCase(p.getPaymentStatus())) { %>
                                                     <i class="fas fa-check-circle"></i> Đã thanh toán
                                                     <% } else {%>
                                                     <button class="pay-btn"
-                                                            data-paymentid="<%= p.getPaymentID()%>"
-                                                            data-amount="<%= p.getAmount()%>"
+                                                            data-paymentid="<%= p.getInstallmentDetailID()%>"
+                                                            data-amount="<%= (long)p.getAmount()%>"
                                                             data-period="Kỳ <%= p.getCurrentMonth()%>">
                                                         <i class="fas fa-credit-card"></i> Thanh toán
                                                     </button>
@@ -141,11 +187,12 @@
                                     </form> 
                                 </div>
                             </div>
+                            
                         </div>
+                    </main>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
 
     <script>
@@ -199,19 +246,18 @@
                     qrCodeImage.src = vietQrApiUrl;
 
                     // Mở modal
-                    modal.style.display = "flex"; // <-- Dòng này sẽ kích hoạt modal
+                    modal.style.display = "flex"; // 
 
                     // Cập nhật UI nút "Đã thanh toán"
                     const confirmBtn = document.getElementById('confirmTransferBtn');
                     confirmBtn.disabled = true;
                     confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang chờ thanh toán...';
 
-                    // --- Logic kiểm tra thanh toán (Polling) ---
+ 
                     if (paymentCheckInterval) {
                         clearInterval(paymentCheckInterval);
                     }
 
-                    // Set time out = 5s cho việc người dùng quét mã QR, và kiểm tra giao dịch mỗi 3s
                     setTimeout(() => {
                         paymentCheckInterval = setInterval(() => {
                             console.log("Đang kiểm tra thanh toán cho: " + transferDescription);
@@ -221,11 +267,11 @@
                 });
             });
 
-            // === HÀM ĐÓNG MODAL ===
+
             const closeModalAndStopCheck = () => {
                 modal.style.display = "none"; // <-- Dòng này sẽ ẩn modal
 
-                // Kích hoạt lại nút
+
                 const confirmBtn = document.getElementById('confirmTransferBtn');
                 confirmBtn.disabled = false;
                 confirmBtn.innerHTML = '<i class="fas fa-check"></i> Đã thanh toán';
@@ -243,7 +289,6 @@
                 }
             };
 
-            // === COPY NỘI DUNG ===
             document.getElementById("copyContentBtn").onclick = () => {
                 const text = document.getElementById("transferContent").textContent;
                 navigator.clipboard.writeText(text).then(() => {
@@ -251,7 +296,6 @@
                 });
             };
 
-            // === HÀM KIỂM TRA THANH TOÁN (ĐÃ SỬA) ===
             async function checkPaid(description, paymentId) {
                 try {
                     const response = await fetch("https://script.google.com/macros/s/AKfycbwVGFzfs_VMzmWN9kXOcLW2o5HNR407tycQzyyq20NjEOn32MBZw6GSBFVi5uRtWtSwqw/exec");
@@ -259,21 +303,14 @@
                     const lastPaid = data.data[data.data.length - 1];
                     const lastDescription = lastPaid["Mô tả"];
 
-                    // So sánh nội dung chuyển khoản
                     if (lastDescription.includes(description)) {
-                        // 1. Dừng vòng lặp
                         clearInterval(paymentCheckInterval);
 
-                        // 2. Hiển thị Alert
                         alert("Thanh toán thành công!");
 
-                        // 3. Lấy form
                         const paymentForm = document.getElementById('paymentConfirmForm');
 
-                        // 4. (An toàn) Đảm bảo paymentID trong form là đúng
                         document.getElementById('modalPaymentID').value = paymentId;
-
-                        // 5. Chuyển qua POST
                         paymentForm.submit();
 
                     } else {
@@ -288,5 +325,3 @@
 
 </body>
 </html>
-
-
