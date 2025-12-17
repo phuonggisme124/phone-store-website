@@ -4,8 +4,12 @@
 <%@page import="model.Products"%>
 <%@page import="java.util.List"%>
 <%@page import="java.util.ArrayList"%>
+<<<<<<< HEAD
+<%@page import="model.Staff"%> <%@page import="com.google.gson.Gson"%>
+=======
 
 <%@page import="com.google.gson.Gson"%>
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html lang="en">
@@ -24,13 +28,21 @@
     </head>
     <body>
         <%
+<<<<<<< HEAD
+            // SỬA: Lấy Staff từ Session
             Staff currentUser = (Staff) session.getAttribute("user");
+
+=======
+            Staff currentUser = (Staff) session.getAttribute("user");
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
             if (currentUser == null) {
                 response.sendRedirect("login.jsp");
                 return;
             }
+
+            // Check quyền Admin (Role = 4)
             if (currentUser.getRole() != 4) {
-                response.sendRedirect("login");
+                response.sendRedirect("login"); // Hoặc trang báo lỗi quyền
                 return;
             }
 
@@ -59,11 +71,34 @@
             <%@ include file="sidebar.jsp" %>
 
             <div class="page-content flex-grow-1">
+<<<<<<< HEAD
+                <nav class="navbar navbar-light bg-white shadow-sm">
+=======
                 <nav class="navbar navbar-light bg-white shadow-sm px-3 py-2 sticky-top">
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
                     <div class="container-fluid">
                         <button class="btn btn-light text-primary border-0 shadow-sm rounded-circle" id="menu-toggle" style="width: 40px; height: 40px;">
                             <i class="bi bi-list fs-5"></i>
                         </button>
+<<<<<<< HEAD
+                        <div class="d-flex align-items-center ms-auto">
+                            <form action="admin" method="get" class="d-flex position-relative me-3" id="searchForm" autocomplete="off" style="width: 250px;">
+                                <input type="hidden" name="action" value="manageSupplier">
+                                <input class="form-control me-2" type="text" id="searchSupplier" name="supplierName"
+                                       placeholder="Search Supplier" value="<%= currentSupplierName%>"
+                                       oninput="showSuggestions(this.value)">
+                                <button class="btn btn-outline-primary" type="submit">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                                <div id="suggestionBox" class="list-group position-absolute"
+                                     style="top: 100%; left: 0; width: 250px; z-index: 1000;"></div>
+                            </form>
+
+                            <a href="logout" class="btn btn-outline-danger btn-sm me-3">Logout</a>
+                            <div class="d-flex align-items-center">
+                                <img src="https://i.pravatar.cc/40" class="rounded-circle me-2" width="35">
+                                <span><%= currentUser.getFullName()%></span>
+=======
 
                         <div class="d-flex align-items-center ms-auto gap-3">
 
@@ -115,37 +150,75 @@
                                    style="width: 38px; height: 38px;" title="Logout">
                                     <i class="bi bi-box-arrow-right fs-6"></i>
                                 </a>
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
                             </div>
                         </div>
                     </div>
                 </nav>
 
+<<<<<<< HEAD
+=======
                 
                 
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
                 <%
                     String successCreateSupplier = (String) session.getAttribute("successCreateSupplier");
                     String successUpdateSupplier = (String) session.getAttribute("successUpdateSupplier");
                     String successDeleteSupplier = (String) session.getAttribute("successDeleteSupplier");
+
                     if (successCreateSupplier != null) {
                 %>
                 <div class="alert alert-success alert-dismissible fade show w-50 mx-auto mt-3" role="alert">
                     <i class="bi bi-check-circle-fill me-2"></i><%= successCreateSupplier%>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
+<<<<<<< HEAD
+                <%
+                        session.removeAttribute("successCreateSupplier");
+                    }
+                %>
+
+                <%
+                    if (successUpdateSupplier != null) {
+                %>
+=======
                 <% session.removeAttribute("successCreateSupplier"); } %>
 
                 <% if (successUpdateSupplier != null) { %>
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
                 <div class="alert alert-success alert-dismissible fade show w-50 mx-auto mt-3" role="alert">
                     <i class="bi bi-check-circle-fill me-2"></i><%= successUpdateSupplier%>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
+<<<<<<< HEAD
+                <%
+                        session.removeAttribute("successUpdateSupplier");
+                    }
+                %>
+
+                <%
+                    if (successDeleteSupplier != null) {
+                %>
+=======
                 <% session.removeAttribute("successUpdateSupplier"); } %>
                 
                 <% if (successDeleteSupplier != null) { %>
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
                 <div class="alert alert-success alert-dismissible fade show w-50 mx-auto mt-3" role="alert">
                     <i class="bi bi-check-circle-fill me-2"></i><%= successDeleteSupplier%>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
+<<<<<<< HEAD
+                <%
+                        session.removeAttribute("successDeleteSupplier");
+                    }
+                %>
+
+                <div class="card shadow-sm border-0 p-4 m-3">
+                    <div class="card-body p-0">
+                        <div class="container-fluid p-4 ps-3">
+                            <h1 class="fw-bold ps-3 mb-4 fw-bold text-primary">Manage Supplier</h1>
+=======
                 <% session.removeAttribute("successDeleteSupplier"); } %>
 
                 <div class="card shadow-sm border-0 rounded-4 m-3 overflow-hidden">
@@ -153,6 +226,7 @@
                         <div>
                             <h4 class="fw-bold text-dark mb-1">Manage Suppliers</h4>
                             <p class="text-muted small mb-0">List of all product suppliers</p>
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
                         </div>
                         <a class="btn btn-gradient-primary px-4 py-2 rounded-pill shadow-sm d-flex align-items-center gap-2" href="supplier?action=createSupplier">
                             <i class="bi bi-plus-lg"></i> 
@@ -322,11 +396,6 @@
                 if (!searchInput.contains(e.target) && !suggestionBox.contains(e.target)) {
                     suggestionBox.style.display = "none"; // Ẩn box đi
                 }
-            });
-        </script>
-        <script>
-            document.getElementById("menu-toggle").addEventListener("click", function () {
-                document.getElementById("wrapper").classList.toggle("toggled");
             });
         </script>
         <script>

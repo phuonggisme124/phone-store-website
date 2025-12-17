@@ -4,8 +4,7 @@
 <%@page import="model.Products"%>
 <%@page import="java.util.List"%>
 <%@page import="java.util.ArrayList"%>
-<%@page import="model.Users"%>
-<%@page import="com.google.gson.Gson"%>
+<%@page import="model.Staff"%> <%@page import="com.google.gson.Gson"%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html lang="en">
@@ -14,6 +13,10 @@
         <title>Admin Dashboard - Update Category</title>
 
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<<<<<<< HEAD
+
+=======
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
         <link rel="stylesheet" href="css/dashboard_admin.css">
@@ -93,17 +96,48 @@
         </style>
     </head>
     <body>
+<<<<<<< HEAD
+        <%
+            // SỬA: Lấy Staff từ Session
+            Staff currentUser = (Staff) session.getAttribute("user");
+            
+            if (currentUser == null) {
+                response.sendRedirect("login.jsp");
+                return;
+            }
+            // Check Admin role
+            if (currentUser.getRole() != 4) {
+                response.sendRedirect("login"); 
+                return;
+            }
+
+            Category catergory = (Category) request.getAttribute("catergory");
+        %>
+
+=======
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
         <div class="d-flex" id="wrapper">
             <%@ include file="sidebar.jsp" %>
             <% Staff currentUser = (Staff) session.getAttribute("user"); %>
 
             <div class="page-content flex-grow-1">
+<<<<<<< HEAD
+                <nav class="navbar navbar-light bg-white shadow-sm">
+=======
                 
                 <nav class="navbar navbar-light bg-white shadow-sm px-3 py-2 sticky-top">
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
                     <div class="container-fluid">
                         <button class="btn btn-light text-primary border-0 shadow-sm rounded-circle" id="menu-toggle" style="width: 40px; height: 40px;">
                             <i class="bi bi-list fs-5"></i>
                         </button>
+<<<<<<< HEAD
+                        <div class="d-flex align-items-center ms-auto">
+                            <a href="logout" class="btn btn-outline-danger btn-sm me-3">Logout</a>
+                            <div class="d-flex align-items-center">
+                                <img src="https://i.pravatar.cc/40" class="rounded-circle me-2" width="35">
+                                <span><%= currentUser.getFullName()%></span>
+=======
 
                         <div class="d-flex align-items-center ms-auto gap-3">
                             <div class="vr text-secondary opacity-25 mx-1" style="height: 25px;"></div>
@@ -126,11 +160,42 @@
                                    style="width: 38px; height: 38px;" title="Logout">
                                     <i class="bi bi-box-arrow-right fs-6"></i>
                                 </a>
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
                             </div>
                         </div>
                     </div>
                 </nav>
 
+<<<<<<< HEAD
+                <div class="card shadow-sm border-0 p-4 m-3">
+                    <div class="card-body p-0">
+                        <h4 class="fw-bold ps-3 mb-4">Edit Category</h4>
+                        
+                        <% if (catergory != null) {%>
+                        <form action="category" method="post" class="w-50 mx-auto bg-light p-4 rounded shadow">
+
+                            <div class="mb-3">
+                                <input type="hidden" class="form-control" name="cateID" value="<%= catergory.getCategoryId()%>" readonly>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Category Name</label>
+                                <input type="text" class="form-control" name="name" value="<%= catergory.getCategoryName()%>" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Description</label>
+                                <input type="text" class="form-control" name="description" value="<%= catergory.getDescription()%>" required>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button type="submit" name="action" value="updateCategory" class="btn btn-primary flex-fill">Update</button>
+                                <button type="submit" name="action" value="deleteCategory" class="btn btn-danger flex-fill" onclick="return confirm('Are you sure to delete this category?');">Delete</button>
+                            </div>
+                        </form>
+                        <% } else { %>
+                        <div class="alert alert-info m-4" role="alert">
+                            <i class="bi bi-info-circle me-2"></i>Category not found.
+=======
                 <% 
                     Category category = (Category) request.getAttribute("catergory"); // Chú ý: biến trong Servlet đại ca đặt là 'catergory' (thừa chữ r)
                     
@@ -141,6 +206,7 @@
                             <h4 class="alert-heading"><i class="bi bi-exclamation-triangle-fill"></i> Category Not Found</h4>
                             <p>The category you are trying to edit does not exist or has been deleted.</p>
                             <a href="category?action=manageCategory" class="btn btn-outline-danger">Back to List</a>
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
                         </div>
                     </div>
                 <% 
@@ -193,7 +259,11 @@
         </div>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<<<<<<< HEAD
+
+=======
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
         <script src="js/dashboard.js"></script>
 
         <script>

@@ -230,9 +230,7 @@ public class CustomerDAO extends DBContext {
     public void updateProfile(Customer c) {
 
         StringBuilder sql = new StringBuilder(
-
                 "UPDATE Customers SET FullName=?, Email=?, Phone=?, Address=?, CCCD=?, YOB=?");
-
 
         sql.append(" WHERE CustomerID=?");
 
@@ -246,7 +244,6 @@ public class CustomerDAO extends DBContext {
             ps.setDate(6, c.getYob());
 
             ps.setInt(7, c.getCustomerID());
-
 
             ps.executeUpdate();
 
@@ -385,4 +382,22 @@ public class CustomerDAO extends DBContext {
         return null;
     }
 
+    public Customer getCustomerByEmailAndPhone(String email, String phone) {
+        String sql = "SELECT * FROM Customers WHERE Email = ? AND Phone = ?";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, email);
+            ps.setString(2, phone);
+
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return map(rs); // dùng helper map(ResultSet)
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
 }

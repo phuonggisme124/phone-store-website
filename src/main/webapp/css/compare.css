@@ -1,0 +1,39 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : Dec 15, 2025, 9:24:43 PM
+    Author     : Nhung Hoa
+*/
+
+.product-comparison-container {
+    /* Đảm bảo container sử dụng Flexbox */
+    display: flex; 
+    /* Căn giữa tất cả các mục con theo chiều ngang */
+    justify-content: center; 
+    /* Thêm một khoảng đệm nhỏ ở trên/dưới để thoáng */
+    padding: 20px 0; 
+}
+
+/* Tùy chọn: Đặt chiều rộng tối đa cho mỗi cột sản phẩm 
+   (Nếu mỗi cột là 33.33% khi có 3 sản phẩm, bạn có thể giữ nguyên chiều rộng này 
+   hoặc tăng lên một chút như 40% để trông lớn hơn) */
+.product-comparison-container > .product-item {
+    width: 300px; /* Chiều rộng cố định */
+    /* HOẶC */
+    flex-basis: 40%; /* Chiếm 40% của không gian container, tùy chọn */
+}
+
+
+.compare-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 4px;
+    padding: 5px 10px;
+}
+
+.compare-text {
+    font-size: 10px;
+    white-space: nowrap;
+}

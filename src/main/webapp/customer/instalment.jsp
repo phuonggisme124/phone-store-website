@@ -8,7 +8,7 @@
 <%@page import="model.Order"%>
 <%@page import="java.util.List"%>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page isELIgnored="true" %>
+<%--<%@ page isELIgnored="true" %>--%>
 <!DOCTYPE html>
 <%@ include file="/layout/header.jsp" %>
 
@@ -89,14 +89,14 @@
                                             <% for (InstallmentDetail p : pList) {%>
                                             <div class="payment-item <%= p.getPaymentStatus().equalsIgnoreCase("Paid") ? "paid" : "unpaid"%>">
                                                 <div class="payment-period">Kỳ <%= p.getCurrentMonth()%></div>
-                                                
+
                                                 <div class="payment-date">
                                                     <%= p.getPaymentDate() != null ? p.getPaymentDate() : "-"%>
                                                     <% if (p.getExpriedDay() > 0 && !"Paid".equalsIgnoreCase(p.getPaymentStatus())) { %>
-                                                        <br><span style="color: red; font-size: 0.8rem; font-weight: bold;">(Trễ <%= p.getExpriedDay() %> ngày)</span>
+                                                    <br><span style="color: red; font-size: 0.8rem; font-weight: bold;">(Trễ <%= p.getExpriedDay() %> ngày)</span>
                                                     <% } %>
                                                 </div>
-                                                
+
                                                 <div class="payment-amount">
                                                     <% 
                                                         // Nếu có ngày trễ và chưa trả -> Tính tách lãi và gốc
@@ -111,17 +111,17 @@
                                                                 double originalPrice = currentTotal / (1.0 + ((percent * days) / 10.0));
                                                                 double penaltyPrice = currentTotal - originalPrice;
                                                     %>
-                                                        <div style="display: flex; flex-direction: column; align-items: flex-end;">
-                                                            <span style="text-decoration: line-through; color: #888; font-size: 0.85em;">
-                                                                Gốc: <%= vnFormat.format(originalPrice) %>
-                                                            </span>
-                                                            <span style="color: #dc3545; font-size: 0.85em;">
-                                                                Lãi phạt: +<%= vnFormat.format(penaltyPrice) %>
-                                                            </span>
-                                                            <strong style="color: #d63384; font-size: 1.1em;">
-                                                                <%= vnFormat.format(currentTotal) %>
-                                                            </strong>
-                                                        </div>
+                                                    <div style="display: flex; flex-direction: column; align-items: flex-end;">
+                                                        <span style="text-decoration: line-through; color: #888; font-size: 0.85em;">
+                                                            Gốc: <%= vnFormat.format(originalPrice) %>
+                                                        </span>
+                                                        <span style="color: #dc3545; font-size: 0.85em;">
+                                                            Lãi phạt: +<%= vnFormat.format(penaltyPrice) %>
+                                                        </span>
+                                                        <strong style="color: #d63384; font-size: 1.1em;">
+                                                            <%= vnFormat.format(currentTotal) %>
+                                                        </strong>
+                                                    </div>
                                                     <% 
                                                             } catch (Exception e) {
                                                                 
@@ -130,7 +130,7 @@
                                                         } else {
                                                             
                                                     %>
-                                                        <%= vnFormat.format(p.getAmount())%>
+                                                    <%= vnFormat.format(p.getAmount())%>
                                                     <% } %>
                                                 </div>
 
@@ -187,7 +187,7 @@
                                     </form> 
                                 </div>
                             </div>
-                            
+
                         </div>
                     </main>
                 </div>
@@ -195,133 +195,137 @@
         </section>
 
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const vnFormat = new Intl.NumberFormat('vi-VN', {style: 'currency', currency: 'VND'});
-            const modal = document.getElementById("paymentModal");
-            const closeBtn = document.querySelector(".js-close-modal");
-            let paymentCheckInterval = null;
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const vnFormat = new Intl.NumberFormat('vi-VN', {style: 'currency', currency: 'VND'});
+                const modal = document.getElementById("paymentModal");
+                const closeBtn = document.querySelector(".js-close-modal");
+                let paymentCheckInterval = null;
 
-            // === MỞ/ĐÓNG CARD ===
-            document.querySelectorAll(".card-header").forEach(header => {
-                header.addEventListener("click", function (e) {
-                    this.closest(".installment-card").classList.toggle("open");
+                // === MỞ/ĐÓNG CARD ===
+                document.querySelectorAll(".card-header").forEach(header => {
+                    header.addEventListener("click", function (e) {
+                        this.closest(".installment-card").classList.toggle("open");
+                    });
                 });
-            });
 
-            // === MỞ MODAL KHI BẤM "THANH TOÁN" ===
-            document.querySelectorAll(".pay-btn").forEach(btn => {
-                btn.addEventListener("click", function (e) {
+                // === MỞ MODAL KHI BẤM "THANH TOÁN" ===
+                document.querySelectorAll(".pay-btn").forEach(btn => {
+                    btn.addEventListener("click", function (e) {
 
-                    // --- Dữ liệu động từ nút được bấm ---
-                    const paymentId = this.dataset.paymentid;
-                    const period = this.dataset.period;
-                    const realAmount = parseInt(this.dataset.amount);
+                        // --- Dữ liệu động từ nút được bấm ---
+                        const paymentId = this.dataset.paymentid;
+                        const period = this.dataset.period;
+                        const realAmount = parseInt(this.dataset.amount);
 
-                    // === YÊU CẦU 3: Giữ giá 2000 để test ===
-                    const totalAmountTest = 2000;
+                        // === YÊU CẦU 3: Giữ giá 2000 để test ===
+                        const totalAmountTest = 2000;
 
-                    // --- Logic tạo VietQR ---
-                    const qrCodeImage = document.getElementById('qrCodeImage');
-                    const transferDescription = 'PAYMENT' + paymentId + Date.now();
+                        // --- Logic tạo VietQR ---
+                        const qrCodeImage = document.getElementById('qrCodeImage');
+                        const transferDescription = 'PAYMENT' + paymentId + Date.now();
 
-                    // Cập nhật thông tin trên Modal
-                    document.getElementById('transferContent').innerText = transferDescription;
-                    document.getElementById("modalTitle").textContent = "Thanh toán " + period;
-                    document.getElementById("transferAmount").textContent = vnFormat.format(realAmount);
+                        // Cập nhật thông tin trên Modal
+                        document.getElementById('transferContent').innerText = transferDescription;
+                        document.getElementById("modalTitle").textContent = "Thanh toán " + period;
+                        document.getElementById("transferAmount").textContent = vnFormat.format(realAmount);
 
-                    // === Gán paymentId vào form NGAY KHI MỞ MODAL ===
-                    document.getElementById("modalPaymentID").value = paymentId;
+                        // === Gán paymentId vào form NGAY KHI MỞ MODAL ===
+                        document.getElementById("modalPaymentID").value = paymentId;
 
-                    // Thông tin ngân hàng của bạn
-                    const bankId = "970422"; // MB Bank
-                    const accountNumber = "0968418098";
-                    const accountName = "TRANG TIEN DAT";
+                        // Thông tin ngân hàng của bạn
+                        const bankId = "970422"; // MB Bank
+                        const accountNumber = "0968418098";
+                        const accountName = "TRANG TIEN DAT";
 
-                    // Tạo link VietQR
-                    const encodedDescription = encodeURIComponent(transferDescription);
-                    const encodedAccountName = encodeURIComponent(accountName);
-                    const cacheBuster = `&t=${Date.now()}`;
-                    const vietQrApiUrl = `https://img.vietqr.io/image/${bankId}-${accountNumber}-compact.png?amount=${totalAmountTest}&addInfo=${encodedDescription}&accountName=${encodedAccountName}${cacheBuster}`;
-                    qrCodeImage.src = vietQrApiUrl;
+                        // Tạo link VietQR
+                        const encodedDescription = encodeURIComponent(transferDescription);
+                        const encodedAccountName = encodeURIComponent(accountName);
+                        const cacheBuster = `&t=${Date.now()}`;
+                        const vietQrApiUrl = `https://img.vietqr.io/image/${bankId}-${accountNumber}-compact.png?amount=${totalAmountTest}&addInfo=${encodedDescription}&accountName=${encodedAccountName}${cacheBuster}`;
+                        qrCodeImage.src = vietQrApiUrl;
 
-                    // Mở modal
-                    modal.style.display = "flex"; // 
+                        // Mở modal
+                        modal.style.display = "flex"; // 
 
-                    // Cập nhật UI nút "Đã thanh toán"
+                        // Cập nhật UI nút "Đã thanh toán"
+                        const confirmBtn = document.getElementById('confirmTransferBtn');
+                        confirmBtn.disabled = true;
+                        confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang chờ thanh toán...';
+
+
+                        if (paymentCheckInterval) {
+                            clearInterval(paymentCheckInterval);
+                        }
+
+                        setTimeout(() => {
+                            paymentCheckInterval = setInterval(() => {
+                                console.log("Đang kiểm tra thanh toán cho: " + transferDescription);
+                                checkPaid(transferDescription, paymentId);
+                            }, 3000);
+                        }, 5000);
+                    });
+                });
+
+
+                const closeModalAndStopCheck = () => {
+                    modal.style.display = "none"; // <-- Dòng này sẽ ẩn modal
+
+
                     const confirmBtn = document.getElementById('confirmTransferBtn');
-                    confirmBtn.disabled = true;
-                    confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang chờ thanh toán...';
+                    confirmBtn.disabled = false;
+                    confirmBtn.innerHTML = '<i class="fas fa-check"></i> Đã thanh toán';
 
- 
                     if (paymentCheckInterval) {
                         clearInterval(paymentCheckInterval);
+                        console.log("Đã dừng kiểm tra thanh toán.");
                     }
+                };
 
-                    setTimeout(() => {
-                        paymentCheckInterval = setInterval(() => {
-                            console.log("Đang kiểm tra thanh toán cho: " + transferDescription);
-                            checkPaid(transferDescription, paymentId);
-                        }, 3000);
-                    }, 5000);
-                });
+                closeBtn.onclick = closeModalAndStopCheck;
+                window.onclick = (e) => {
+                    if (e.target === modal) {
+                        closeModalAndStopCheck();
+                    }
+                };
+
+                document.getElementById("copyContentBtn").onclick = () => {
+                    const text = document.getElementById("transferContent").textContent;
+                    navigator.clipboard.writeText(text).then(() => {
+                        alert("Đã sao chép: " + text);
+                    });
+                };
+
+                async function checkPaid(description, paymentId) {
+                    try {
+                        const response = await fetch("https://script.google.com/macros/s/AKfycbwVGFzfs_VMzmWN9kXOcLW2o5HNR407tycQzyyq20NjEOn32MBZw6GSBFVi5uRtWtSwqw/exec");
+                        const data = await response.json();
+                        const lastPaid = data.data[data.data.length - 1];
+                        const lastDescription = lastPaid["Mô tả"];
+
+                        if (lastDescription.includes(description)) {
+                            clearInterval(paymentCheckInterval);
+
+                            alert("Thanh toán thành công!");
+
+                            const paymentForm = document.getElementById('paymentConfirmForm');
+
+                            document.getElementById('modalPaymentID').value = paymentId;
+                            paymentForm.submit();
+
+                        } else {
+                            console.log("Checking payment... Not yet paid.");
+                        }
+                    } catch (error) {
+                        console.error("Error checking payment:", error);
+                    }
+                }
             });
+        </script>
 
-
-            const closeModalAndStopCheck = () => {
-                modal.style.display = "none"; // <-- Dòng này sẽ ẩn modal
-
-
-                const confirmBtn = document.getElementById('confirmTransferBtn');
-                confirmBtn.disabled = false;
-                confirmBtn.innerHTML = '<i class="fas fa-check"></i> Đã thanh toán';
-
-                if (paymentCheckInterval) {
-                    clearInterval(paymentCheckInterval);
-                    console.log("Đã dừng kiểm tra thanh toán.");
-                }
-            };
-
-            closeBtn.onclick = closeModalAndStopCheck;
-            window.onclick = (e) => {
-                if (e.target === modal) {
-                    closeModalAndStopCheck();
-                }
-            };
-
-            document.getElementById("copyContentBtn").onclick = () => {
-                const text = document.getElementById("transferContent").textContent;
-                navigator.clipboard.writeText(text).then(() => {
-                    alert("Đã sao chép: " + text);
-                });
-            };
-
-            async function checkPaid(description, paymentId) {
-                try {
-                    const response = await fetch("https://script.google.com/macros/s/AKfycbwVGFzfs_VMzmWN9kXOcLW2o5HNR407tycQzyyq20NjEOn32MBZw6GSBFVi5uRtWtSwqw/exec");
-                    const data = await response.json();
-                    const lastPaid = data.data[data.data.length - 1];
-                    const lastDescription = lastPaid["Mô tả"];
-
-                    if (lastDescription.includes(description)) {
-                        clearInterval(paymentCheckInterval);
-
-                        alert("Thanh toán thành công!");
-
-                        const paymentForm = document.getElementById('paymentConfirmForm');
-
-                        document.getElementById('modalPaymentID').value = paymentId;
-                        paymentForm.submit();
-
-                    } else {
-                        console.log("Checking payment... Not yet paid.");
-                    }
-                } catch (error) {
-                    console.error("Error checking payment:", error);
-                }
-            }
-        });
-    </script>
-
-</body>
+    </body>
 </html>
+
+
+
+

@@ -235,43 +235,44 @@ public class ProductServlet extends HttpServlet {
 
             request.getRequestDispatcher("public/productdetail.jsp").forward(request, response);
         } else if ("category".equals(action)) {
-            int cID = Integer.parseInt(request.getParameter("cID"));
-            String variation = request.getParameter("variation");
-            if (variation == null) {
-                variation = "ALL";
-            }
-            List<Products> listProduct = pdao.getAllProductByCategory(cID);
-            List<Variants> listVariant;
-            List<Review> listReview = rdao.getAllReview();
-
-            if (variation.equals("ALL")) {
-                listVariant = vdao.getAllVariantByCategory(cID);
-            } else if (variation.equals("PROMOTION")) {
-                listVariant = vdao.getAllVariantByCategory(cID);
+            try {
+                int cID = Integer.parseInt(request.getParameter("cID"));
+                String variation = request.getParameter("variation");
+                if (variation == null) {
+                    variation = "ALL";
+                }
                 PromotionsDAO promotionDAO = new PromotionsDAO();
                 List<Promotions> promotionsList = promotionDAO.getTheHighestPromotion();
                 request.setAttribute("promotionsList", promotionsList);
-            } else {
-                listVariant = vdao.getAllVariantByCategoryAndOrderByPrice(cID, variation);
+                List<Variants> listVariant;
+                if (variation.equals("ALL") || variation.equals("PROMOTION")) {
+                    listVariant = vdao.getAllVariantByCategory(cID);
+                } else {
+ 
+                    listVariant = vdao.getAllVariantByCategoryAndOrderByPrice(cID, variation);
+                }         
+                List<Products> listProduct = pdao.getAllProductByCategory(cID);
+                List<Review> listReview = rdao.getAllReview();
+
+                List<Products> productList1_search = pdao.getAllProduct();
+                List<Variants> variantsList_search = new ArrayList<>();
+                try {
+                    variantsList_search = vdao.getAllVariants();
+                } catch (SQLException ex) {
+                    Logger.getLogger(ProductServlet.class.getName()).log(Level.SEVERE, null, ex);
+                }   
+                request.setAttribute("productList1", productList1_search);
+                request.setAttribute("variantsList", variantsList_search);
+                request.setAttribute("listVariant", listVariant);
+                request.setAttribute("categoryID", cID);
+                request.setAttribute("listProduct", listProduct);
+                request.setAttribute("listReview", listReview);
+
+                request.getRequestDispatcher("public/view_product_by_category.jsp").forward(request, response);
+
+            } catch (NumberFormatException e) {
+                response.sendRedirect("home");
             }
-
-            List<Products> productList1_search = pdao.getAllProduct();
-            List<Variants> variantsList_search = new ArrayList<>();
-            try {
-                variantsList_search = vdao.getAllVariants();
-            } catch (SQLException ex) {
-                Logger.getLogger(ProductServlet.class.getName()).log(Level.SEVERE, null, ex);
-            }
-
-            request.setAttribute("productList1", productList1_search);
-            request.setAttribute("variantsList", variantsList_search);
-            request.setAttribute("listVariant", listVariant);
-            request.setAttribute("categoryID", cID);
-            request.setAttribute("listProduct", listProduct);
-            request.setAttribute("listReview", listReview);
-
-            request.getRequestDispatcher("public/view_product_by_category.jsp").forward(request, response);
-
         } else if (action.equals("productDetail")) {
             try {
                 List<Products> listProducts = pdao.getAllProduct();
@@ -444,6 +445,46 @@ public class ProductServlet extends HttpServlet {
                 // admin
                 request.getRequestDispatcher("admin/dashboard_admin_manageproduct.jsp").forward(request, response);
             }
+        }else if ("compare".equals(action)) {
+            String vIDsParam = request.getParameter("vIDs");
+            SpecificationDAO specDao = new SpecificationDAO();
+            ProductDAO productDao = new ProductDAO(); // thêm dao lấy tên
+
+            List<Variants> compareList = new ArrayList<>();
+            Map<Integer, Specification> specMap = new HashMap<>();
+            Map<Integer, String> productNameMap = new HashMap<>(); // map chứa tên
+
+            if (vIDsParam != null && !vIDsParam.isEmpty()) {
+                String[] vIDArr = vIDsParam.split(",");
+                for (String s : vIDArr) {
+                    try {
+                        int vID = Integer.parseInt(s);
+                        Variants v = vdao.getVariantByID(vID);
+                        if (v != null) {
+                            compareList.add(v);
+
+                            int pID = v.getProductID();
+
+                            if (!specMap.containsKey(pID)) {
+                                Specification spec = specDao.getSpecificationByProductID(pID);
+                                specMap.put(pID, spec);
+                            }
+
+                            if (!productNameMap.containsKey(pID)) {
+                                String productName = productDao.getProductNameByID(pID);
+                                productNameMap.put(pID, productName);
+                            }
+                        }
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            request.setAttribute("compareList", compareList);
+            request.setAttribute("specMap", specMap);
+            request.setAttribute("productNameMap", productNameMap); // truyền thêm xuống JSP
+            request.getRequestDispatcher("public/compare.jsp").forward(request, response);
         }// ----- WISHLIST HANDLER -----
 //        else if ("viewWishlist".equals(action)) {
 //            if (currentCustomer == null) {
@@ -679,6 +720,3 @@ public class ProductServlet extends HttpServlet {
 
     }
 }
-
-
-

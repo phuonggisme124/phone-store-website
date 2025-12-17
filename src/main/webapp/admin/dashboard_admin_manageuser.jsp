@@ -3,9 +3,13 @@
 <%@page import="java.time.format.DateTimeFormatter"%>
 <%@page import="java.util.List"%>
 <%@page import="java.util.ArrayList"%>
+<<<<<<< HEAD
+<%@page import="model.Customer"%> <%@page import="model.Staff"%>    <%@page import="com.google.gson.Gson"%>
+=======
 <%@page import="model.Customer"%> 
 <%@page import="model.Staff"%>    
 <%@page import="com.google.gson.Gson"%>
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <!DOCTYPE html>
@@ -15,6 +19,10 @@
         <title>Admin Dashboard - Manage Users</title>
 
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<<<<<<< HEAD
+
+=======
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
         <link rel="stylesheet" href="css/dashboard_admin.css">
@@ -24,32 +32,53 @@
     </head>
     <body>
         <%
+<<<<<<< HEAD
+            // 1. SỬA: Lấy Admin từ session (Đối tượng là Staff)
+            Staff currentUser = (Staff) session.getAttribute("user");
+=======
             // 1. LOGIC GIỮ NGUYÊN
             Staff currentUser = (Staff) session.getAttribute("admin");
             
             // Xử lý roleTable (Tránh null pointer)
             Integer roleTableObj = (Integer) request.getAttribute("role");
             int roleTable = (roleTableObj != null) ? roleTableObj : 0; // Mặc định 0 nếu null
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
 
             if (currentUser == null) {
                 response.sendRedirect("login.jsp");
                 return;
             }
+            // Check role Admin
             if (currentUser.getRole() != 4) {
                 response.sendRedirect("login");
                 return;
             }
 
+<<<<<<< HEAD
+            // 2. SỬA: Lấy danh sách Customer từ request
+            List<Customer> listUsers = (List<Customer>) request.getAttribute("listUsers");
+=======
             List<Customer> listCustomers = (List<Customer>) request.getAttribute("listCustomers");
             List<Staff> listStaff = (List<Staff>) request.getAttribute("listStaff");
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
 
             String currentRole = request.getParameter("roleFilter") != null ? request.getParameter("roleFilter") : "All";
             String currentUserName = request.getParameter("userName") != null ? request.getParameter("userName") : "";
 
             List<String> allUserNames = new ArrayList<>();
+<<<<<<< HEAD
+<<<<<<< HEAD
+            if (listUsers != null) {
+                for (Customer u : listUsers) {
+                    // Lấy tên Customer
+=======
+            if (listCustomers != null) {
+=======
             // Fix logic lấy tên cho Autocomplete
             if (listCustomers != null && roleTable == 1) {
+>>>>>>> eff3e4e3ea3ea5244350c64dcc6223c7f46cf145
                 for (Customer u : listCustomers) {
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
                     if (!allUserNames.contains(u.getFullName())) {
                         allUserNames.add(u.getFullName());
                     }
@@ -65,19 +94,51 @@
             }
         %>
 
+<<<<<<< HEAD
+        <script>
+            const allUserNames = <%= new Gson().toJson(allUserNames)%>;
+        </script>
+=======
         <script>const allUserNames = <%= new Gson().toJson(allUserNames)%>;</script>
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
 
         <div class="d-flex" id="wrapper">
             <%@ include file="sidebar.jsp" %>
 
             <div class="page-content flex-grow-1">
+<<<<<<< HEAD
+                <nav class="navbar navbar-light bg-white shadow-sm">
+=======
                 
                 <nav class="navbar navbar-light bg-white shadow-sm px-3 py-2 sticky-top">
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
                     <div class="container-fluid">
                         <button class="btn btn-light text-primary border-0 shadow-sm rounded-circle" id="menu-toggle" style="width: 40px; height: 40px;">
                             <i class="bi bi-list fs-5"></i>
                         </button>
 
+<<<<<<< HEAD
+                            <form action="admin" method="get" class="d-flex position-relative me-3" id="searchForm" autocomplete="off">
+                                <input type="hidden" name="action" value="manageUser">
+                                <input type="hidden" name="roleFilter" value="<%= currentRole%>">
+                                <input class="form-control me-2" type="text" id="searchUser" name="userName"
+                                       placeholder="Search User…" value="<%= currentUserName%>"
+                                       oninput="showSuggestions(this.value)">
+                                <button class="btn btn-outline-primary" type="submit">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                                <div id="suggestionBox" class="list-group position-absolute w-100"
+                                     style="top: 100%; z-index: 1000;"></div>
+                            </form>
+
+                            <form action="admin" method="get" class="dropdown me-3">
+                                <input type="hidden" name="action" value="manageUser">
+                                <input type="hidden" name="userName" value="<%= currentUserName%>">
+
+                                <button class="btn btn-outline-secondary fw-bold dropdown-toggle"
+                                        type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-funnel"></i> Filter
+=======
                         <div class="d-flex align-items-center ms-auto gap-3">
                             <form action="account" method="get" class="position-relative mb-0" id="searchForm" autocomplete="off">
                                 <input type="hidden" name="action" value="manageUser">
@@ -108,11 +169,28 @@
                                 <input type="hidden" name="userName" value="<%= currentUserName%>">
                                 <button class="btn btn-outline-custom dropdown-toggle px-3 rounded-pill d-flex align-items-center gap-2" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="bi bi-funnel-fill"></i> <span>Role: <%= roleLabel %></span>
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-3 mt-2">
                                     <li><button type="submit" name="roleFilter" value="All" class="dropdown-item">All Roles</button></li>
+<<<<<<< HEAD
+<<<<<<< HEAD
+                                    <li><button type="submit" name="roleFilter" value="1" class="dropdown-item">
+                                            <i class="bi bi-person"></i> Customer
+                                        </button></li>
+                                </ul>
+                            </form>
+
+                            <a href="logout" class="btn btn-outline-danger btn-sm">Logout</a>
+                            <div class="d-flex align-items-center ms-3">
+                                <img src="https://i.pravatar.cc/40" class="rounded-circle me-2" width="35">
+                                <span><%= currentUser.getFullName()%></span>
+=======
+                                    <li><button type="submit" name="roleFilter" value="1" class="dropdown-item">Customer</button></li>
+=======
                                     <li><button type="submit" name="roleFilter" value="2" class="dropdown-item">Staff</button></li>
                                     <li><button type="submit" name="roleFilter" value="3" class="dropdown-item">Shipper</button></li>
+>>>>>>> eff3e4e3ea3ea5244350c64dcc6223c7f46cf145
                                 </ul>
                             </form>
                             <%
@@ -131,6 +209,7 @@
                                     </div>
                                 </div>
                                 <a href="logout" class="btn btn-light text-danger rounded-circle shadow-sm d-flex align-items-center justify-content-center hover-danger" style="width: 38px; height: 38px;"><i class="bi bi-box-arrow-right fs-6"></i></a>
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
                             </div>
                         </div>
                     </div>
@@ -141,6 +220,54 @@
                     String successUpdateUser = (String) session.getAttribute("successUpdateUser");
                     String successDeleteUser = (String) session.getAttribute("successDeleteUser");
 
+<<<<<<< HEAD
+                    if (successCreateUser != null) {
+                %>
+                <div class="alert alert-success alert-dismissible fade show w-50 mx-auto mt-3" role="alert">
+                    <i class="bi bi-check-circle-fill me-2"></i><%= successCreateUser%>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                <%
+                        session.removeAttribute("successCreateUser");
+                    }
+                %>
+
+                <%
+                    if (successUpdateUser != null) {
+                %>
+                <div class="alert alert-success alert-dismissible fade show w-50 mx-auto mt-3" role="alert">
+                    <i class="bi bi-check-circle-fill me-2"></i><%= successUpdateUser%>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                <%
+                        session.removeAttribute("successUpdateUser");
+                    }
+                %>
+                <%
+                    if (successDeleteUser != null) {
+                %>
+                <div class="alert alert-success alert-dismissible fade show w-50 mx-auto mt-3" role="alert">
+                    <i class="bi bi-check-circle-fill me-2"></i><%= successDeleteUser%>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                <%
+                        session.removeAttribute("successDeleteUser");
+                    }
+                %>
+
+                <div class="container-fluid px-4 pb-4 m-3">
+                    <div class="card shadow-sm border-0 p-4">
+                        <div class="card-body p-0">
+                            <div class="container-fluid p-4 ps-3">
+                                <h1 class="fw-bold ps-3 mb-4 fw-bold text-primary">Manage User</h1>
+                            </div>
+                            <div class="container-fluid p-4">
+                                <a class="btn btn-primary px-4 py-2 rounded-pill shadow-sm" href="customer?action=createAccount">
+                                    <i class="bi bi-person-plus"></i> Create Account
+                                </a>
+                            </div>
+                            <% if (listUsers != null && !listUsers.isEmpty()) { %>
+=======
                     if (successCreateUser != null) { %>
                     <div class="alert alert-success alert-dismissible fade show w-50 mx-auto mt-3 shadow-sm border-0" role="alert">
                         <i class="bi bi-check-circle-fill me-2"></i><%= successCreateUser%>
@@ -228,6 +355,7 @@
                         
                         <% if (roleTable == 1) { %>
                             <% if (listCustomers != null && !listCustomers.isEmpty()) { %>
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
                             <div class="table-responsive">
                                 <table class="table table-hover align-middle mb-0 custom-table">
                                     <thead class="bg-light-purple">
@@ -243,6 +371,34 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+<<<<<<< HEAD
+                                        <%
+                                            for (Customer u : listUsers) {
+                                                // Lọc theo Role nếu không phải "All" (Ở đây listUsers chỉ chứa Customer)
+                                                if (!currentRole.equals("All") && u.getRole() != Integer.parseInt(currentRole)) {
+                                                    continue;
+                                                }
+
+                                                // Lọc theo User Name nếu có search
+                                                if (!currentUserName.isEmpty() && !u.getFullName().toLowerCase().contains(currentUserName.toLowerCase())) {
+                                                    continue;
+                                                }
+
+                                                // Định nghĩa Role (Customer mặc định là 1)
+                                                String role = "Customer";
+                                                String roleIcon = "bi-person";
+                                                String roleColor = "status-green";
+
+                                                // Status badge (Giả sử Status là int: 1=Active)
+                                                String statusBadge;
+                                                String currentStatus = u.getStatus();
+                                                // Kiểm tra kiểu dữ liệu của Status trong model Customer (int hay String) để so sánh
+                                                // Code dưới đây giả sử getStatus() trả về int
+                                                if ("Active".equalsIgnoreCase(currentStatus)) {
+                                                    statusBadge = "<span class='badge status-green '>Active</span>";
+                                                } else {
+                                                    statusBadge = "<span class='badge status-red '>Locked</span>";
+=======
                                         <% for (Customer u : listCustomers) { 
                                             // Logic Filter cũ
                                             if (!currentRole.equals("All") && u.getRole() != Integer.parseInt(currentRole)) continue;
@@ -261,10 +417,37 @@
                                                     dateFormated = u.getCreatedAt().toLocalDateTime().format(formatter);
                                                 } catch (Exception e) {
                                                     // Fallback nếu là Date thường
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
                                                 }
                                             }
                                         %>
+<<<<<<< HEAD
+<<<<<<< HEAD
+                                        <tr onclick="window.location.href = 'customer?action=edit&id=<%= u.getCustomerID()%>'" style="cursor: pointer;">
+                                            <td>#<%= u.getCustomerID()%></td>
+                                            <td><%= u.getFullName()%></td>
+                                            <td><%= u.getEmail()%></td>
+                                            <td><%= u.getPhone()%></td>
+
+                                            <td class="<%= roleColor%>">
+                                                <i class="bi <%= roleIcon%> me-1 <%= roleColor%>"></i><%= role%>
+                                            </td>
+                                            <td><%= u.getAddress() != null ? u.getAddress() : "N/A"%></td>
+                                            <%
+                                                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+                                                String dateFormated = "";
+                                                Timestamp createAt = u.getCreatedAt();
+                                                if (createAt != null) {
+
+                                                    dateFormated = createAt.toLocalDateTime().format(formatter);
+                                                }
+                                            %>
+                                            <td><%= dateFormated%></td>
+=======
+                                        <tr onclick="window.location.href='customer?action=edit&id=<%= u.getCustomerID()%>&role=<%= u.getRole()%>'" class="cursor-pointer">
+=======
                                         <tr onclick="window.location.href='account?action=edit&id=<%= u.getCustomerID()%>&role=<%= u.getRole()%>'" class="cursor-pointer">
+>>>>>>> eff3e4e3ea3ea5244350c64dcc6223c7f46cf145
                                             <td class="ps-4"><span class="product-id-badge">#<%= u.getCustomerID()%></span></td>
                                             <td><span class="fw-bold text-dark"><%= u.getFullName()%></span></td>
                                             <td><%= u.getEmail()%></td>
@@ -272,6 +455,7 @@
                                             <td><span class="role-customer"><i class="bi bi-person me-1"></i>Customer</span></td>
                                             <td><div class="text-truncate" style="max-width: 150px;"><%= u.getAddress() != null ? u.getAddress() : "N/A"%></div></td>
                                             <td><small class="text-muted"><%= dateFormated%></small></td>
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
                                             <td><%= statusBadge%></td>
                                         </tr>
                                         <% } %>
@@ -337,17 +521,79 @@
                                     </tbody>
                                 </table>
                             </div>
+<<<<<<< HEAD
+                            <% }%>
+                        </div>
+=======
                             <% } else { %>
                                 <div class="text-center p-5 text-muted">No staff found.</div>
                             <% } %>
                         <% } %>
 
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
                     </div>
                 </div>
             </div>
         </div>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<<<<<<< HEAD
+
+        <script src="js/dashboard.js"></script>
+        <script>
+                                            // Menu toggle
+                                            document.getElementById("menu-toggle").addEventListener("click", function () {
+                                                document.getElementById("wrapper").classList.toggle("toggled");
+                                            });
+
+                                            // ------------------ Autocomplete ------------------
+                                            var debounceTimer;
+                                            function showSuggestions(str) {
+                                                clearTimeout(debounceTimer);
+                                                debounceTimer = setTimeout(() => {
+                                                    var box = document.getElementById("suggestionBox");
+                                                    box.innerHTML = "";
+                                                    if (str.length < 1)
+                                                        return;
+
+                                                    var matches = allUserNames.filter(name =>
+                                                        name.toLowerCase().includes(str.toLowerCase())
+                                                    );
+
+                                                    if (matches.length > 0) {
+                                                        matches.slice(0, 5).forEach(name => {
+                                                            var item = document.createElement("button");
+                                                            item.type = "button";
+                                                            item.className = "list-group-item list-group-item-action";
+                                                            item.textContent = name;
+                                                            item.onclick = function () {
+                                                                document.getElementById("searchUser").value = name;
+                                                                box.innerHTML = "";
+                                                                document.getElementById("searchForm").submit();
+                                                            };
+                                                            box.appendChild(item);
+                                                        });
+                                                    } else {
+                                                        var item = document.createElement("div");
+                                                        item.className = "list-group-item text-muted small";
+                                                        item.textContent = "No users found.";
+                                                        box.appendChild(item);
+                                                    }
+                                                }, 200);
+                                            }
+
+                                            // Ẩn suggestions khi click bên ngoài
+                                            document.addEventListener('click', function (e) {
+                                                var searchInput = document.getElementById('searchUser');
+                                                var suggestionBox = document.getElementById('suggestionBox');
+                                                if (!searchInput.contains(e.target) && !suggestionBox.contains(e.target)) {
+                                                    suggestionBox.innerHTML = "";
+                                                }
+                                            });
+        </script>
+
+        <script>
+=======
         <script src="js/dashboard.js"></script>
         <script>
             // Toggle Sidebar
@@ -389,6 +635,7 @@
             });
             
             // Auto hide alerts
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
             setTimeout(() => {
                 const alert = document.querySelector('.alert');
                 if (alert) {

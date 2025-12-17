@@ -4,8 +4,7 @@
 <%@page import="model.Products"%>
 <%@page import="java.util.List"%>
 <%@page import="java.util.ArrayList"%>
-<%@page import="model.Users"%>
-<%@page import="com.google.gson.Gson"%>
+<%@page import="model.Staff"%> <%@page import="com.google.gson.Gson"%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html lang="en">
@@ -14,6 +13,10 @@
         <title>Admin Dashboard - Create Category</title>
 
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<<<<<<< HEAD
+
+=======
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
         <link rel="stylesheet" href="css/dashboard_admin.css">
@@ -84,6 +87,24 @@
         </style>
     </head>
     <body>
+<<<<<<< HEAD
+        <%
+            // SỬA: Lấy Staff từ Session
+            Staff currentUser = (Staff) session.getAttribute("user");
+            
+            if (currentUser == null) {
+                response.sendRedirect("login.jsp");
+                return;
+            }
+            // Check Admin role
+            if (currentUser.getRole() != 4) {
+                response.sendRedirect("login"); 
+                return;
+            }
+        %>
+
+=======
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
         <div class="d-flex" id="wrapper">
             <%@ include file="sidebar.jsp" %>
             <% 
@@ -95,12 +116,23 @@
             %>
 
             <div class="page-content flex-grow-1">
+<<<<<<< HEAD
+                <nav class="navbar navbar-light bg-white shadow-sm">
+=======
                 
                 <nav class="navbar navbar-light bg-white shadow-sm px-3 py-2 sticky-top">
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
                     <div class="container-fluid">
                         <button class="btn btn-light text-primary border-0 shadow-sm rounded-circle" id="menu-toggle" style="width: 40px; height: 40px;">
                             <i class="bi bi-list fs-5"></i>
                         </button>
+<<<<<<< HEAD
+                        <div class="d-flex align-items-center ms-auto">
+                            <a href="logout" class="btn btn-outline-danger btn-sm me-3">Logout</a>
+                            <div class="d-flex align-items-center">
+                                <img src="https://i.pravatar.cc/40" class="rounded-circle me-2" width="35">
+                                <span><%= currentUser.getFullName()%></span>
+=======
 
                         <div class="d-flex align-items-center ms-auto gap-3">
                             <div class="vr text-secondary opacity-25 mx-1" style="height: 25px;"></div>
@@ -123,11 +155,33 @@
                                    style="width: 38px; height: 38px;" title="Logout">
                                     <i class="bi bi-box-arrow-right fs-6"></i>
                                 </a>
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
                             </div>
                         </div>
                     </div>
                 </nav>
 
+<<<<<<< HEAD
+                <div class="card shadow-sm border-0 p-4 m-3">
+                    <div class="card-body p-0">
+                        <h4 class="fw-bold ps-3 mb-4">Create New Category</h4>
+                        
+                        <form action="category" method="post" class="w-50 mx-auto bg-light p-4 rounded shadow">
+                            <div class="mb-3">
+                                <label class="form-label">Category Name</label>
+                                <input type="text" class="form-control" name="name" value="" required placeholder="Enter category name...">
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Description</label>
+                                <input type="text" class="form-control" name="description" value="" placeholder="Enter description...">
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button type="submit" name="action" value="createCategory" class="btn btn-primary flex-fill">Create</button>
+                                <a href="category?action=manageCategory" class="btn btn-secondary flex-fill text-center">Cancel</a>
+                            </div>
+                        </form>
+=======
                 <div class="container-fluid p-4">
                     <form action="category" method="post" id="categoryForm" class="form-card p-5 mx-auto" style="max-width: 600px;">
                         
@@ -145,6 +199,7 @@
                                 session.removeAttribute("existName");
                             %>
                         </div>
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
                         
                         <input type="hidden" name="cateID" value="">
 
@@ -170,6 +225,10 @@
         </div>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<<<<<<< HEAD
+
+=======
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
         <script src="js/dashboard.js"></script>
 
         <script>

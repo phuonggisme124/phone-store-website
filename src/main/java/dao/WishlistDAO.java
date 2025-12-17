@@ -123,6 +123,3 @@ public class WishlistDAO extends DBContext {
     }
 
 }
-
-
-

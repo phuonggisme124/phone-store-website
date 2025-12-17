@@ -537,6 +537,20 @@ public class ProductDAO extends DBContext {
         }
     }
 
+    public String getProductNameByID(int productID) {
+        String sql = "SELECT Name FROM dbo.Products WHERE ProductID = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, productID);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getString("Name");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 //    public List<Products> getRelatedProducts(int productID, int categoryID, int limit) {
 //        List<Products> allProducts = getAllProduct(); // lấy tất cả sản phẩm
 //        // lọc cùng category nhưng khác product hiện tại

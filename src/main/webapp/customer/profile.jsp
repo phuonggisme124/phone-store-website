@@ -8,23 +8,23 @@
     
     if (customer == null) {
 %>
-        <!DOCTYPE html>
-        <html lang="vi">
-        <head>
-            <title>Hồ sơ cá nhân | Phone Store</title>
-            <meta charset="utf-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
-            <link rel="stylesheet" type="text/css" href="css/style.css">
-            <link rel="stylesheet" type="text/css" href="css/profile.css">
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-        </head>
-        <body>
+<!DOCTYPE html>
+<html lang="vi">
+    <head>
+        <title>Hồ sơ cá nhân | Phone Store</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="css/style.css">
+        <link rel="stylesheet" type="text/css" href="css/profile.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    </head>
+    <body>
         <h2 style="color:red; text-align:center; margin-top:80px;">
             Không tìm thấy thông tin người dùng. Hãy đăng nhập lại.
         </h2>
-        </body>
-        </html>
+    </body>
+</html>
 <%
         return; 
     }
@@ -46,8 +46,41 @@
         <section id="billboard" class="bg-light-blue overflow-hidden padding-large">
             <div class="profile-container">
                 <div class="profile-wrapper">
-                    
-                     <%@ include file="sidebar.jsp" %>
+                    <aside class="profile-sidebar">
+                        <h3>Hello, <%= customer.getFullName()%></h3> 
+
+                        <a href="product?action=viewWishlist" class="sidebar-link">
+                            <i class="fas fa-heart"></i> <span>My Wishlist</span>
+                        </a>
+
+                        <a href="customer?action=transaction" class="sidebar-link">
+                            <i class="fas fa-shopping-bag"></i> <span>My Orders</span>
+                        </a>
+
+                        <a href="customer?action=payInstallment" class="sidebar-link">
+                            <i class="fas fa-receipt"></i> <span>Installment Paying</span>
+                        </a>
+
+                        <a href="customer?action=view" class="sidebar-link active">
+                            <i class="fas fa-user"></i> <span>Profile & Address</span>
+                        </a>
+
+                        <a href="customer?action=changePassword" class="sidebar-link">
+                            <i class="fas fa-lock"></i> <span>Change Password</span>
+                        </a>
+
+                        <a href="warranty" class="sidebar-link active">
+                            <i class="fas fa-tools"></i>
+                            <span>My Warranty</span>
+                        </a>
+
+                        <form action="logout" method="post">
+                            <button type="submit" class="logout-btn">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </button>
+                        </form>
+                    </aside>
+
                     <main class="profile-content">
                         <div class="profile-header">
                             <h1>My Profile</h1>
@@ -136,5 +169,3 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     </body>
 </html>
-
-

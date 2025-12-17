@@ -1,7 +1,10 @@
 <%@page import="model.Staff"%>
 <%@page import="model.Products"%>
 <%@page import="java.util.List"%>
+<<<<<<< HEAD
+=======
 
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html lang="en">

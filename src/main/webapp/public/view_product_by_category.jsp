@@ -13,11 +13,15 @@
 <%@page import="java.util.HashMap" %>
 
 <%@page import="dao.WishlistDAO"%>
-<%@page import="model.Users"%>
 
 
+<%
+    // Lấy Context Path của ứng dụng web
+    String contextPath = request.getContextPath();
+%>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <link rel="stylesheet" href="css/home.css">
+<link rel="stylesheet" href="css/compare.css">
 
 <!DOCTYPE html>
 <html lang="en">
@@ -190,8 +194,7 @@
 
     <body class="bg-gray-100 text-gray-900 font-sans">
 
-        <%  
-            String categoryName = "All Products";
+        <%            String categoryName = "All Products";
 
             if ("1".equals(currentCategoryId)) {
                 categoryName = "Phone";
@@ -240,7 +243,11 @@
                                             String productName = productNameMap_search.get(v.getProductID());
                                             Integer categoryID = productCategoryMap_search.get(v.getProductID());
                                             if (productName != null && categoryID != null) {
-                                                String image = (v.getImageUrl() != null) ? v.getImageUrl().split("#")[0] : "";
+                                                String image = "";
+                                                if (v.getImageList() != null && v.getImageList().length > 0) {
+                                                    String raw = v.getImageList()[0];
+                                                    image = raw.contains("#") ? raw.split("#")[0] : raw;
+                                                }
                                                 String color = (v.getColor() != null) ? v.getColor() : "N/A";
                                                 String storage = (v.getStorage() != null) ? v.getStorage() : "N/A";
                                 %>
@@ -428,6 +435,11 @@
                     if (listVariant != null && !listVariant.isEmpty() && listProduct != null) {
                         for (Variants v : listVariant) {
                             double rating = 0;
+                            String image = "";
+                            if (v.getImageList() != null && v.getImageList().length > 0) {
+                                String raw = v.getImageList()[0];
+                                image = raw.contains("#") ? raw.split("#")[0] : raw;
+                            }
                             String pName = "";
                             for (Products p : listProduct) {
                                 if (p.getProductID() == v.getProductID()) {
@@ -451,13 +463,13 @@
                     <div class="relative">
                         <a href="product?action=viewDetail&vID=<%=v.getVariantID()%>&pID=<%=v.getProductID()%>" class="block w-full aspect-square overflow-hidden">
                             <img class="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
-                                 src="images/<%=v.getImageList()[0] %>"
+                                 src="images/<%=image%>"
                                  alt="<%=pName%>">
                         </a>
 
-                        <% if (pr != null && pr.getDiscountPercent() > 0 && "active".equalsIgnoreCase(pr.getStatus())) { %>
+                        <% if (pr != null && pr.getDiscountPercent() > 0 && "active".equalsIgnoreCase(pr.getStatus())) {%>
                         <div class="discount-tag">Giảm <%=pr.getDiscountPercent()%>%</div>
-                        <% } %>
+                        <% }%>
                     </div>
 
                     <div class="p-4 flex flex-col flex-grow">
@@ -471,11 +483,11 @@
                             <span class="text-red-500 font-bold text-lg">
                                 <%=vnFormat.format(v.getDiscountPrice())%>
                             </span>
-                            <% if (v.getPrice() > v.getDiscountPrice()) { %>
+                            <% if (v.getPrice() > v.getDiscountPrice()) {%>
                             <span class="text-gray-500 line-through text-sm ml-2">
                                 <%=vnFormat.format(v.getPrice())%>
                             </span>
-                            <% } %>
+                            <% }%>
                         </div>
 
                         <div class="flex flex-wrap gap-2 mb-3 text-xs">
@@ -484,7 +496,7 @@
 
 
                         <div class="mt-auto flex justify-between items-center text-sm pt-2">
-                            <% if (rating > 0) { %>
+                            <% if (rating > 0) {%>
                             <div class="flex items-center gap-1 text-yellow-500">
                                 <i class="fa-solid fa-star"></i>
                                 <span class="font-semibold text-gray-800"><%=String.format("%.1f", rating)%></span>
@@ -492,60 +504,105 @@
                             <% } else { %>
                             <span class="text-gray-500 text-xs">Be the first to review this product.</span>
                             <% } %>
-                            
-                            <!-- WISHLIST BUTTON -->                        
+                            <!--
+                                                        <div class="wishlist-wrap">
                             <%
-                                Users u = (Users) session.getAttribute("user");
+                                // 1. Tìm đối tượng Products (rp) tương ứng với Variant v
+                                Products rp = null;
+                                for (Products prod : listProduct) {
+                                    if (prod.getProductID() == v.getProductID()) {
+                                        rp = prod;
+                                        break;
+                                    }
+                                }
+
+                                Customer u = (Customer) session.getAttribute("user");
                                 boolean logged = (u != null);
                                 boolean liked = false;
+                                int variantID = -1;
 
-                                int variantID = v.getVariantID();  
-                                int productID = v.getProductID();  
+                                int productID = 0;
+                                if (rp != null) {
+                                    variantID = v.getVariantID(); // Lấy VariantID từ đối tượng v hiện tại
+                                    productID = rp.getProductID(); // Lấy ProductID từ đối tượng rp đã tìm thấy
 
-                                if (logged) {
-                                    try {
-                                        WishlistDAO wdao = new WishlistDAO();
-                                        liked = wdao.isExist(u.getUserId(), productID, variantID);
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
+                                    if (logged && variantID > 0) {
+                                        try {
+                                            WishlistDAO wdao = new WishlistDAO();
+                                            // Sử dụng ProductID của rp và VariantID của v
+                                            liked = wdao.isExist(u.getCustomerID(), productID, variantID); 
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
                                     }
                                 }
                             %>
-
+                            <% if (variantID > 0) { %>
                             <% if (logged) { %>
-                            <form action="product" method="post" style="display:inline;">
-                                <input type="hidden" name="action" value="<%= liked ? "remove" : "wishlist" %>">
-                                <input type="hidden" name="productId" value="<%= productID %>">
-                                <input type="hidden" name="variantId" value="<%= variantID %>">
-                                <input type="hidden" name="redirect"
-                                       value="product?action=viewDetail&pID=<%= productID %>">
-
-                                <button type="submit" class="wishlist-btn" style="background:none; border:none; padding:0;">
-                                    <i class="<%= liked ? "fas fa-heart" : "far fa-heart" %>"
-                                       style="<%= liked ? "color:#e53e3e;" : "" %>"></i>
-                                </button>
-                            </form>
+                            <button class="wishlist-btn toggle-wishlist"
+                                    data-productid="<%= productID %>"
+                                    data-variantid="<%= variantID %>"
+                                    style="position:absolute; top:40px; right:10px; background:none; border:none; padding:0; z-index:10;">
+                                <i class="<%= liked ? "fas fa-heart" : "far fa-heart" %>"
+                                   style="<%= liked ? "color:#e53e3e; font-size:1.5rem;" : "font-size:1.5rem;" %>"></i>
+                            </button>
                             <% } else { %>
-                            <a href="login.jsp" class="wishlist-btn">
-                                <i class="far fa-heart"></i>
-                            </a>
+                            <button class="wishlist-btn" 
+                                    data-productid="<%= rp != null ? rp.getProductID() : 0 %>" 
+                                    data-variantid="<%= variantID %>"
+                                    data-login-required="true"
+                                    style="background:none; border:none; padding:0;">
+                                <i class="far fa-heart"></i> 
+                            </button>
                             <% } %>
-           
-                            
+                            <% } %>
                         </div>
+                            -->
 
-                        
+                            <%
+     // 1. Tìm sản phẩm rp tương ứng
+     rp = null;
+     for (Products prod : listProduct) {
+         if (prod.getProductID() == v.getProductID()) {
+             rp = prod;
+             break;
+         }
+     }
 
+     // 2. Các biến dùng cho nút compare
+     String variantIDStr = String.valueOf(v.getVariantID());
+     String productIDStr = String.valueOf(v.getProductID());
+     String productNameFull = pName + " " + v.getStorage() + " " + v.getColor();
 
+     // 3. Xử lý ảnh
+     String imageURL = contextPath + "/images/no-image.png"; // default
+     if (v.getImageList() != null && v.getImageList().length > 0) {
+         String imageName = v.getImageList()[0];
+         if (imageName.startsWith("/")) {
+             imageURL = imageName;
+         } else {
+             imageURL = contextPath + "/images/" + imageName;
+         }
+     }
+                            %>
+                            <button class="compare-btn"
+                                    data-variantid="<%= variantIDStr %>"
+                                    data-productid="<%= productIDStr %>"
+                                    data-name="<%= productNameFull %>"
+                                    data-image="<%= imageURL %>">
+                                <i class="fa-solid fa-plus"></i> <span class="compare-text">So sánh</span>
+                            </button>
+
+                        </div>
                     </div>
                 </div>
                 <%
-                        }
-                    } else {
-                        String message = "No products to display.";
-                        if (isPromotionFilterActive) {
-                            message = "Unfortunately, no products are featured in our HOT PROMOTION right now.";
-                        }
+                    }
+                } else {
+                    String message = "No products to display.";
+                    if (isPromotionFilterActive) {
+                        message = "Unfortunately, no products are featured in our HOT PROMOTION right now.";
+                    }
                 %>
                 <div class="col-span-full text-center py-10 bg-white rounded-xl shadow-lg">
                     <p class="text-xl font-semibold text-gray-700"><%= message%></p>
@@ -555,5 +612,201 @@
                 %>
             </div>
         </div>
+
+        <!-- Compare tray HTML -->
+        <div id="comparison-tray" class="stickcompare stickcompare_new cp-desktop hidden fixed bottom-0 left-0 right-0 bg-white shadow-2xl p-3 z-50 border-t border-gray-200">
+            <div class="container max-w-7xl mx-auto flex items-center justify-between">
+                <div class="flex items-center space-x-4 flex-grow">
+                    <label id="compare-error-label" class="error text-red-600 font-semibold hidden">Vui lòng xóa bớt sản phẩm để tiếp tục so sánh!</label>
+                    <ul id="compare-list" class="listcompare flex space-x-3">
+                        <!-- Template li (ẩn) -->
+                        <template id="compare-item-template">
+                            <li class="relative bg-gray-50 rounded-lg p-2 flex items-center space-x-2 border border-gray-200 w-32 h-24">
+                                <a href="" class="flex flex-col items-center">
+                                    <img src="" alt="" class="w-10 h-10 object-contain">
+                                    <h3 class="text-xs font-medium text-gray-800 line-clamp-2 mt-1"></h3>
+                                </a>
+                                <span class="remove-ic-compare absolute top-0 right-0 m-1 cursor-pointer text-gray-400 hover:text-red-500">
+                                    <i class="fa-solid fa-xmark fa-xs"></i>
+                                </span>
+                            </li>
+                        </template>
+
+                    </ul>
+                </div>
+                <div class="closecompare flex items-center space-x-3 ml-4">
+                    <a href="javascript:;" onclick="removeAllCompare()" id="remove-all-btn" class="txtremoveall text-gray-500 hover:text-gray-700 text-sm hidden">Xóa tất cả sản phẩm</a>
+                    <button id="do-compare-btn"
+                            type="button"
+                            class="doss px-6 py-2 bg-custom-accent text-white font-semibold rounded-lg">
+                        So sánh ngay
+                    </button>
+
+                </div>
+            </div>
+        </div>
+
+        <script>
+            const CONTEXT_PATH = '<%= contextPath %>';
+            const MAX_COMPARE = 3;
+            let compareItems = [];
+
+// --- Clone template li và render toàn bộ tray ---
+            function renderCompareTray() {
+                const tray = document.getElementById('comparison-tray');
+                const compareList = document.getElementById('compare-list');
+                compareList.querySelectorAll('li:not(#compare-item-template)').forEach(li => li.remove());
+
+                compareItems.forEach(item => {
+                    const template = document.getElementById('compare-item-template');
+                    const clone = template.content.cloneNode(true);
+                    const li = clone.querySelector('li');
+
+                    li.id = `compare-item-${item.vID}`;
+                    li.dataset.variantid = item.vID;
+                    li.dataset.productid = item.pID;
+                    li.querySelector('img').src = item.img;
+                    li.querySelector('h3').textContent = item.name;
+                    li.querySelector('.remove-ic-compare').onclick = (e) => removeCompare(item.vID, e);
+
+                    compareList.appendChild(li);
+                });
+
+                // Render ô trống
+                for (let i = compareItems.length + 1; i <= MAX_COMPARE; i++) {
+                    const emptyLi = document.createElement('li');
+                    emptyLi.className = "text-xs text-gray-500 p-2 border border-dashed border-gray-300 rounded-lg w-32 text-center h-20 flex items-center justify-center";
+                    emptyLi.textContent = `Chọn sản phẩm ${i}`;
+                    compareList.appendChild(emptyLi);
+                }
+
+                // Hiện/ẩn tray
+                tray.classList.toggle('hidden', compareItems.length === 0);
+
+                // Nút so sánh
+                const doCompareBtn = document.getElementById('do-compare-btn');
+// Nút so sánh (UI only)
+                doCompareBtn.classList.toggle('opacity-50', compareItems.length < 2);
+                doCompareBtn.classList.toggle('cursor-not-allowed', compareItems.length < 2);
+                doCompareBtn.disabled = compareItems.length < 2;
+
+                doCompareBtn.addEventListener('click', () => {
+                    if (compareItems.length < 2) {
+                        alert("Vui lòng chọn ít nhất 2 sản phẩm để so sánh.");
+                        return;
+                    }
+
+                    const variantIDs = compareItems.map(item => item.vID).join(',');
+                    window.location.href =
+                            "<%= request.getContextPath() %>/product?action=compare&vIDs=" + variantIDs;
+                });
+                // Nút xóa tất cả
+                const removeAllBtn = document.getElementById('remove-all-btn');
+                removeAllBtn.classList.toggle('hidden', compareItems.length === 0);
+
+                updateCompareButtons();
+            }
+
+// --- Toggle sản phẩm ---
+            function toggleCompare(vID, pID, name, img) {
+                const index = compareItems.findIndex(item => item.vID === vID);
+
+                if (index !== -1) {
+                    compareItems.splice(index, 1);
+                } else {
+                    if (compareItems.length >= MAX_COMPARE) {
+                        document.getElementById('compare-error-label').classList.remove('hidden');
+                        return;
+                    }
+                    compareItems.push({vID, pID, name, img});
+                }
+
+                document.getElementById('compare-error-label').classList.add('hidden');
+                renderCompareTray();
+            }
+
+// --- Xóa sản phẩm ---
+            function removeCompare(vID, event) {
+                if (event)
+                    event.stopPropagation();
+                const index = compareItems.findIndex(item => item.vID === vID);
+                if (index !== -1)
+                    compareItems.splice(index, 1);
+                document.getElementById('compare-error-label').classList.add('hidden');
+                renderCompareTray();
+            }
+
+// --- Xóa tất cả ---
+            function removeAllCompare() {
+                compareItems = [];
+                document.getElementById('compare-error-label').classList.add('hidden');
+                renderCompareTray();
+            }
+
+// --- So sánh ngay ---
+            function doCompare() {
+                if (compareItems.length < 2) {
+                    alert("Vui lòng chọn ít nhất 2 sản phẩm để so sánh.");
+                    return;
+                }
+                const variantIDs = compareItems.map(item => item.vID);
+                window.location.href =
+                        "<%= request.getContextPath() %>/product?action=compare&vIDs=" + variantIDs;
+            }
+
+// --- Cập nhật nút compare trên sản phẩm ---
+            function updateCompareButtons() {
+                document.querySelectorAll('.compare-btn').forEach(button => {
+                    const vID = parseInt(button.getAttribute('data-variantid'));
+                    const icon = button.querySelector('i');
+                    const textSpan = button.querySelector('.compare-text');
+
+                    const isSelected = compareItems.findIndex(item => item.vID === vID) !== -1;
+
+                    if (isSelected) {
+                        if (icon) {
+                            icon.classList.replace('fa-plus', 'fa-check');
+                            icon.classList.add('text-green-500');
+                        }
+                        if (textSpan)
+                            textSpan.textContent = 'Đã chọn';
+                        button.classList.add('compare-selected');
+                    } else {
+                        if (icon) {
+                            icon.classList.replace('fa-check', 'fa-plus');
+                            icon.classList.remove('text-green-500');
+                        }
+                        if (textSpan)
+                            textSpan.textContent = 'So sánh';
+                        button.classList.remove('compare-selected');
+                    }
+                });
+            }
+
+// --- Gắn sự kiện ---
+            function initCompareButtons() {
+                document.querySelectorAll('.compare-btn').forEach(button => {
+                    button.removeEventListener('click', handleCompareClick);
+                    button.addEventListener('click', handleCompareClick);
+                });
+            }
+            function handleCompareClick(event) {
+                const btn = event.currentTarget;
+                toggleCompare(
+                        parseInt(btn.getAttribute('data-variantid')),
+                        parseInt(btn.getAttribute('data-productid')),
+                        btn.getAttribute('data-name'),
+                        btn.getAttribute('data-image')
+                        );
+            }
+
+// --- Khởi tạo ---
+            window.addEventListener('DOMContentLoaded', () => {
+                renderCompareTray();
+                initCompareButtons();
+            });
+
+        </script>
+
     </body>
 </html>

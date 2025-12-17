@@ -217,7 +217,7 @@
                             </li>
                             <li>
                                 <a class="dropdown-item" href="voucher?action=viewMyVouchers">
-                                    <i class="fas fa-ticket-alt me-2"></i> View My Voucher
+                                    <i class="fas fa-ticket-alt me-2"></i> Voucher
                                 </a>
                             </li>
 
@@ -303,9 +303,47 @@
                                     <li class="pe-3 position-relative">
                                         <button id="notification-bell" class="btn p-0 border-0 bg-transparent position-relative">
                                             <i class="bi bi-bell fs-4"></i>
-                                            <span id="notifCount" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">0</span>
+                                            <span id="notifCount" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                                0
+                                            </span>
                                         </button>
+
                                         <div id="notification-dropdown" class="notification-dropdown shadow rounded">
+                                            <%
+                                                try (Connection conn = new DBContext().conn) {
+                                                    NotificationDAO dao = new NotificationDAO(conn);
+
+                                                    Customer currentUser = (Customer) session.getAttribute("user");
+                                                    int userId = (currentUser != null) ? currentUser.getCustomerID() : 1;
+
+                                                    List<Notification> notifications = dao.getNotificationsByUser(userId);
+
+                                                    if(notifications != null && !notifications.isEmpty()) {
+                                                        for(Notification n : notifications) {
+                                            %>
+                                            <div class="notification-item" style="border:1px solid #ccc; border-radius:8px; padding:8px; margin-bottom:8px;">
+                                                <p style="margin:0;font-size:14px; color: black;"><%= n.getContent() %></p>
+                                                <small style="color:gray;"><%= n.getCreatedAt() %></small>
+                                            </div>
+                                            <%
+                                                        }
+                                                    } else {
+                                            %>
+                                            <div style="padding:10px;text-align:center;color:gray;">No notifications</div>
+                                            <%
+                                                    }
+
+                                                    int unreadCount = dao.countUnread(userId);
+                                            %>
+                                            <script>
+                                                document.getElementById('notifCount').innerText = '<%= unreadCount %>';
+                                            </script>
+                                            <%
+                                                } catch(Exception e) {
+                                                    out.println("<div style='padding:10px;color:red;'>Error loading notifications</div>");
+                                                    e.printStackTrace();
+                                                }
+                                            %>
                                         </div>
                                     </li>
 
@@ -458,8 +496,6 @@
                             });
                 }
             });
-
-
 
             document.addEventListener("click", function (e) {
                 if (!dropdown.contains(e.target) && !bell.contains(e.target)) {

@@ -32,8 +32,10 @@
         <li><a href="${pageContext.request.contextPath}/review?action=manageReview" <%= (action.equals("manageReview")) ? "class='active'" : ""%>
                ><i class="bi bi-chat me-2"></i>Reviews</a></li>
 
+
         <li><a href="${pageContext.request.contextPath}/account?action=manageUser" <%= (action.equals("manageUser")) ? "class='active'" : ""%>
                ><i class="bi bi-people me-2"></i>Account</a></li>
+
 
         <li><a href="${pageContext.request.contextPath}/category?action=manageCategory" <%= (action.equals("manageCategory")) ? "class='active'" : ""%>
 

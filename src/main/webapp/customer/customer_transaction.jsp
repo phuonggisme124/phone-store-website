@@ -55,7 +55,45 @@
                 <div class="profile-wrapper">
 
                     <!-- Sidebar -->
-                     <%@ include file="sidebar.jsp" %>
+                    <aside class="profile-sidebar">
+                        <h3>Hello, <%= user.getFullName() %></h3>
+
+                        <a href="product?action=viewWishlist" class="sidebar-link">
+                            <i class="fas fa-heart"></i>
+                            <span>My Wishlist</span>
+                        </a>
+
+                        <a href="customer?action=transaction" class="sidebar-link">
+                            <i class="fas fa-shopping-bag"></i>
+                            <span>My Orders</span>
+                        </a>
+
+                        <a href="customer?action=payInstallment" class="sidebar-link">
+                            <i class="fas fa-receipt"></i>
+                            <span>Installment Paying</span>
+                        </a>
+
+                        <a href="customer" class="sidebar-link">
+                            <i class="fas fa-user"></i>
+                            <span>Profile & Address</span>
+                        </a>
+
+                        <a href="customer?action=changePassword" class="sidebar-link">
+                            <i class="fas fa-lock"></i>
+                            <span>Change Password</span>
+                        </a>
+
+                        <a href="warranty" class="sidebar-link active">
+                            <i class="fas fa-tools"></i>
+                            <span>My Warranty</span>
+                        </a>
+
+                        <form action="logout" method="post">
+                            <button type="submit" class="logout-btn">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </button>
+                        </form>
+                    </aside>
 
                     <!-- Main Content -->
                     <main class="profile-content">
@@ -118,7 +156,7 @@
                                                 <div class="shipping-info">
                                                     <p><strong>Người nhận</strong>: <%= o.getBuyer().getFullName() + " - " + o.getBuyer().getPhone()%></p>
                                                     <p><strong>Địa chỉ</strong>: <%= o.getShippingAddress()%></p>
-                                                    <p><strong>Thanh toán</strong>: Thanh toán khi nhận hàng (COD)</p>
+                                                    <p><strong>Thanh toán</strong>: <%= o.getPaymentMethod()%></p>
                                                 </div>
 
                                                 <div class="product-list">
@@ -147,7 +185,7 @@
 
 
                                                 <% if (o.getStatus().equals("Pending")) { %>
-                                                <form action="user" method="post" style="margin-top: 10px; text-align: right;">
+                                                <form action="customer" method="post" style="margin-top: 10px; text-align: right;">
                                                     <input type="hidden" name="orderID" value="<%= o.getOrderID() %>">
                                                     <input type="hidden" name="action" value="cancelOrder">
                                                     <button style="border-radius: 15px" type="submit" class="btn btn-danger btn-sm"

@@ -5,13 +5,23 @@
 <%@page import="java.time.LocalDateTime"%>
 <%@page import="java.time.format.DateTimeFormatter"%>
 <%@page import="com.google.gson.Gson"%>
+<<<<<<< HEAD
+<%@page import="dao.CustomerDAO"%> 
+<%@page import="dao.StaffDAO"%>    
+=======
 
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
 <%@page import="model.Order"%>
 <%@page import="model.Suppliers"%>
 <%@page import="model.Category"%>
 <%@page import="model.Products"%>
 <%@page import="java.util.List"%>
+<<<<<<< HEAD
+<%@page import="model.Staff"%>     
+<%@page import="model.Customer"%>
+=======
 
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html lang="en">
@@ -28,9 +38,25 @@
     </head>
     <body>
         <%
+<<<<<<< HEAD
+            // 1. FIX: Get Staff from Session (Admin is a Staff)
+            Staff currentUser = (Staff) session.getAttribute("user");
+            
+            if (currentUser == null) {
+                response.sendRedirect("login.jsp");
+                return;
+            }
+            // Check Admin role
+            if (currentUser.getRole() != 4) {
+                response.sendRedirect("login"); 
+                return;
+            }
+
+=======
             Staff user = (Staff) session.getAttribute("user");
             CustomerDAO udao = new CustomerDAO();
             
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
             String phone = (String) request.getAttribute("phone");
             if (phone == null || phone.isEmpty()) phone = "";
             
@@ -58,9 +84,13 @@
                             <i class="bi bi-list fs-5"></i>
                         </button>
 
+<<<<<<< HEAD
+                            <form action="order" method="get" class="d-flex position-relative me-3" id="searchForm" autocomplete="off">
+=======
                         <div class="d-flex align-items-center ms-auto gap-3">
 
                             <form action="order" method="get" class="position-relative mb-0" id="searchForm" autocomplete="off">
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
                                 <input type="hidden" name="action" value="searchOrder">
                                 <input type="hidden" name="status" value="<%= status %>">
 
@@ -87,6 +117,13 @@
                                      style="top: 100%; z-index: 1000; display: none;"></div>
                             </form>
 
+<<<<<<< HEAD
+                            <form action="order" method="get" class="dropdown me-3">
+                                <input type="hidden" name="action" value="filterOrder">
+                                <input type="hidden" name="phone" value="<%= phone%>">
+
+                                <button class="btn btn-outline-secondary fw-bold dropdown-toggle" 
+=======
                             <% 
                                 String[] statuses = {"All", "Pending", "In Transit", "Delivered", "Delayed", "Cancelled"};
                             %>
@@ -95,6 +132,7 @@
                                 <input type="hidden" name="phone" value="<%= phone %>">
 
                                 <button class="btn btn-outline-custom dropdown-toggle px-3 rounded-pill d-flex align-items-center gap-2"
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
                                         type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="bi bi-funnel-fill"></i> 
                                     <span>Status: <%= status %></span>
@@ -119,6 +157,12 @@
                                 </ul>
                             </form>
 
+<<<<<<< HEAD
+                            <a href="logout" class="btn btn-outline-danger btn-sm">Logout</a>
+                            <div class="d-flex align-items-center ms-3">
+                                <img src="https://i.pravatar.cc/40" class="rounded-circle me-2" width="35">
+                                <span><%= currentUser.getFullName() %></span>
+=======
                             <div class="vr text-secondary opacity-25 mx-1" style="height: 25px;"></div>
 
                             <div class="d-flex align-items-center gap-3">
@@ -143,16 +187,35 @@
                                    style="width: 38px; height: 38px;" title="Logout">
                                     <i class="bi bi-box-arrow-right fs-6"></i>
                                 </a>
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
                             </div>
                         </div>
                     </div>
                 </nav>
 
+<<<<<<< HEAD
+                <%
+                    // 3. FIX: Initialize Correct DAOs
+                    CustomerDAO custDAO = new CustomerDAO(); 
+                    StaffDAO staffDAO = new StaffDAO(); 
+                    
+                    List<Order> listOrder = (List<Order>) request.getAttribute("listOrder");
+                %>
+
+                <%
+                    if (listOrder != null && !listOrder.isEmpty()) {
+                %>
+                <div class="card shadow-sm border-0 p-4 m-3">
+                    <div class="card-body p-0">
+                        <div class="container-fluid p-4 ps-3">
+                            <h1 class="fw-bold ps-3 mb-4 fw-bold text-primary">Manage Orders</h1>
+=======
                 <div class="card shadow-sm border-0 rounded-4 m-3 overflow-hidden">
                     <div class="card-header bg-white border-0 p-4 d-flex justify-content-between align-items-center">
                         <div>
                             <h4 class="fw-bold text-dark mb-1">Manage Orders</h4>
                             <p class="text-muted small mb-0">Track and manage customer orders</p>
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
                         </div>
                         <a class="btn btn-gradient-primary px-4 py-2 rounded-pill shadow-sm d-flex align-items-center gap-2" href="order?action=showInstalment">
                             <i class="bi bi-credit-card-2-front"></i> 
@@ -280,6 +343,93 @@
                                 </tbody>
                             </table>
                         </div>
+<<<<<<< HEAD
+                        <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>OrderID</th>
+                                    <th>User Name</th>
+                                    <th>Receiver Phone</th>
+                                    <th>Receiver Name</th>
+                                    <th>Address</th>
+                                    <th>Method</th>
+                                    <th>Order Date</th>
+                                    <th>Total Amount</th>
+                                    <th>Staff</th>
+                                    <th>Shipper</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <%
+                                    for (Order o : listOrder) {
+
+                                        String statusOrder = o.getStatus();
+                                        String statusBadge;
+                                        if (statusOrder != null && statusOrder.equalsIgnoreCase("Pending")) {
+                                            statusBadge = "<span class='badge status-yellow bg-success' style='font-size: 15px'>Pending</span>";
+                                        } else if (statusOrder != null && statusOrder.equalsIgnoreCase("In Transit")) {
+                                            statusBadge = "<span class='badge status-blue bg-success' style='font-size: 15px'>In Transit</span>";
+                                        } else if (statusOrder != null && statusOrder.equalsIgnoreCase("Delayed")) {
+                                            statusBadge = "<span class='badge status-black ' style='font-size: 15px'>Delayed</span>";
+                                        } else if (statusOrder != null && statusOrder.equalsIgnoreCase("Delivered")) {
+                                            statusBadge = "<span class='badge status-green bg-success' style='font-size: 15px'>Delivered</span>";
+                                        } else {
+                                            statusBadge = "<span class='badge status-red bg-success' style='font-size: 15px'>Cancelled</span>";
+                                        }
+                                        
+                                        // 4. FIX: Get Customer Name using CustomerDAO
+                                        String customerName = "Unknown";
+                                        Customer c = custDAO.getCustomerById(o.getUserID());
+                                        if(c != null) customerName = c.getFullName();
+                                %>                              
+
+                                <tr onclick="window.location.href = 'order?action=orderDetail&id=<%= o.getOrderID()%>&isInstalment=<%= o.getIsInstalment()%>'">
+                                    <td>#<%= o.getOrderID()%></td>
+                                    <td><%= customerName %></td>
+                                    <td><%= o.getBuyerPhone()%></td>
+                                    <td><%= o.getBuyerName()%></td>
+                                    <td><%= o.getShippingAddress()%></td>
+                                    <td><%= o.getPaymentMethod()%></td>
+                                    <%
+                                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+                                        String dateFormated = "";
+                                        LocalDateTime createAt = o.getOrderDate();
+                                        if (createAt != null) {
+                                            dateFormated = createAt.format(formatter);
+                                        }
+                                    %>
+                                    <td><%= dateFormated%></td>
+                                    <td><%= String.format("%,.0f", o.getTotalAmount())%></td>
+
+                                    <%
+                                        // 5. FIX: Get Staff/Shipper Name using StaffDAO
+                                        String staffName = "";
+                                        if (o.getStaffID() != 0) {
+                                            Staff s = staffDAO.getStaffByID(o.getStaffID());
+                                            if(s != null) staffName = s.getFullName();
+                                        }
+                                        
+                                        String shipperName = "";
+                                        if (o.getShipperID() != 0) {
+                                            Staff s = staffDAO.getStaffByID(o.getShipperID());
+                                            if(s != null) shipperName = s.getFullName();
+                                        }
+                                    %>
+
+                                    <td><%=staffName%></td>   
+                                    <td><%= shipperName%></td>  
+                                    <td><%= statusBadge%></td>
+                                </tr>                                  
+                                <%
+                                    }
+                                %>
+                            </tbody>
+                        </table>
+                        </div>
+=======
                         <% } else { %>
                         <div class="container-fluid p-5 text-center">
                             <div class="mb-3"><i class="bi bi-inbox text-muted" style="font-size: 3rem; opacity: 0.5;"></i></div>
@@ -287,6 +437,7 @@
                             <p class="text-secondary small">Try adjusting your filters.</p>
                         </div>
                         <% } %>
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
                     </div>
                 </div>
             </div>
@@ -295,7 +446,11 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
         
         <script>
+<<<<<<< HEAD
+            const phoneNumbers = <%= new Gson().toJson(listPhone)%>;
+=======
             // --- JS Logic ---
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
             const searchInput = document.getElementById("searchPhone");
             const suggestionBox = document.getElementById("suggestionBox");
 
@@ -311,6 +466,43 @@
                 const matches = phoneNumbers.filter(num => num.includes(query));
 
                 if (matches.length === 0) {
+<<<<<<< HEAD
+                    suggestionBox.style.display = "none";
+                    return;
+                }
+
+                matches.forEach(num => {
+                    const item = document.createElement("button");
+                    item.type = "button";
+                    item.className = "list-group-item list-group-item-action";
+                    item.innerHTML = highlightMatch(num, query);
+
+                    item.addEventListener("click", () => {
+                        searchInput.value = num;
+                        suggestionBox.style.display = "none";
+                        document.getElementById("searchForm").submit();
+                    });
+
+                    suggestionBox.appendChild(item);
+                });
+
+                suggestionBox.style.display = "block";
+            }
+
+            function highlightMatch(text, keyword) {
+                const regex = new RegExp(`(${keyword})`, "gi");
+                return text.replace(regex, `<strong>$1</strong>`);
+            }
+
+            document.addEventListener("click", (e) => {
+                if (!e.target.closest("#searchForm")) {
+                    suggestionBox.style.display = "none";
+                }
+            });
+        </script>
+
+        <script>
+=======
                     // Hiển thị thông báo không tìm thấy
                     const item = document.createElement("div");
                     item.className = "list-group-item text-muted small";
@@ -345,6 +537,7 @@
                 }
             });
 
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
             document.getElementById("menu-toggle").addEventListener("click", function () {
                 document.getElementById("wrapper").classList.toggle("toggled");
             });

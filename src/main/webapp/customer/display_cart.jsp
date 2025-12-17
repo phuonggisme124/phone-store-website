@@ -50,7 +50,10 @@
         <section id="banner-top" class="position-relative overflow-hidden bg-light-blue"></section>
 
         <%
+<<<<<<< HEAD
+=======
 
+>>>>>>> c80843028cf9648874277785e7b7c677afb557ad
             NumberFormat vnFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
             double initialTotalPrice = 0;
             ProductDAO pDAO = new ProductDAO();

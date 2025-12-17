@@ -1,0 +1,194 @@
+*   [33mf7a9b77[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m Merge remote-tracking branch 'origin/main'
+[31m|[m[32m\[m  
+[31m|[m *   [33mb1cbb99[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m  add salary
+[31m|[m [33m|[m[34m\[m  
+[31m|[m [33m|[m * [33m6d00045[m Update: fix add wishlist
+[31m|[m [33m|[m * [33m280291e[m Update: update related product when select storage
+[31m|[m * [34m|[m [33m2af060c[m  fix import Product staff
+[31m|[m [35m|[m[34m\[m[34m|[m 
+[31m|[m [35m|[m * [33m08bb2b8[m Update: add related product and "add to wish list"
+[31m|[m [35m|[m * [33mfd89a57[m Update: add related product and "add to wish list"
+[31m|[m [35m|[m * [33m5d0dc37[m Update: add related product and "add to wish list"
+* [35m|[m [36m|[m [33m9b77b44[m Resolve merge conflicts from pull
+[1;31m|[m[35m\[m[35m|[m [36m|[m 
+[1;31m|[m * [36m|[m [33mc808430[m  fix display  import product
+[1;31m|[m * [36m|[m [33md907415[m update
+[1;31m|[m * [36m|[m [33mca8902a[m  fix: correct logic error in product import processing
+[1;31m|[m * [36m|[m [33mb023e19[m update, create account
+[1;31m|[m * [36m|[m [33m406062f[m update logic phone and adress customer
+[1;31m|[m * [36m|[m [33me9386fc[m fix cancel order,fix review detail,fix product detail for staff
+[1;31m|[m * [36m|[m [33m482f78b[m new version
+[1;31m|[m [36m|[m[36m/[m  
+[1;31m|[m * [33ma456a66[m Update: fix UI
+[1;31m|[m *   [33mcd47acd[m Resolve merge conflicts and update files
+[1;31m|[m [1;33m|[m[1;34m\[m  
+[1;31m|[m [1;33m|[m * [33m115b013[m fix bug code
+[1;31m|[m [1;33m|[m *   [33m974b66f[m  fix review interface and delete button
+[1;31m|[m [1;33m|[m [1;35m|[m[1;36m\[m  
+[1;31m|[m [1;33m|[m * [1;36m\[m   [33mfb56e0c[m  fix review interface and delete button
+[1;31m|[m [1;33m|[m [31m|[m[32m\[m [1;36m\[m  
+[1;31m|[m [1;33m|[m * [32m|[m [1;36m|[m [33maaa3549[m  fix display review detail in productdetail.jsp
+[1;31m|[m * [32m|[m [32m|[m [1;36m|[m [33me1937c5[m Update: fix UI
+[1;31m|[m * [32m|[m [32m|[m [1;36m|[m   [33m5fc0949[m Resolve merge conflicts and update files
+[1;31m|[m [33m|[m[1;36m\[m [32m\[m [32m\[m [1;36m\[m  
+[1;31m|[m [33m|[m [1;36m|[m [32m|[m[1;36m_[m[32m|[m[1;36m/[m  
+[1;31m|[m [33m|[m [1;36m|[m[1;36m/[m[32m|[m [32m|[m   
+[1;31m|[m [33m|[m * [32m|[m [32m|[m [33mab3455d[m fix logic size of cart
+[1;31m|[m [33m|[m [32m|[m [32m|[m[32m/[m  
+[1;31m|[m [33m|[m [32m|[m[32m/[m[32m|[m   
+[1;31m|[m * [32m|[m [32m|[m [33mbc2bb4c[m Ignore target folder
+[1;31m|[m * [32m|[m [32m|[m [33m27a3839[m Update: Save
+[1;31m|[m * [32m|[m [32m|[m [33mfa0e768[m t add .
+[1;31m|[m [35m|[m[32m\[m[32m|[m [32m|[m 
+[1;31m|[m [35m|[m * [32m|[m [33m711850a[m conflict fixed and update logic update status shipper and insert order detail when installment payment
+[1;31m|[m [35m|[m [1;31m|[m[32m\[m[32m|[m 
+[1;31m|[m [35m|[m [1;31m|[m * [33m0fd8987[m Fix order cancel and reduce stock of varian after assign shipper for staff.
+[1;31m|[m [35m|[m * [1;32m|[m [33m8b40a9c[m fixed conflict
+[1;31m|[m [35m|[m [1;33m|[m[1;32m\[m[1;32m|[m 
+[1;31m|[m [35m|[m [1;33m|[m * [33me9143db[m fix import: catch errors in variants that do not exist yet
+[1;31m|[m [35m|[m [1;33m|[m * [33made0c92[m Update order: add view order detail  and decrease variant stock when assign shipper
+[1;31m|[m [35m|[m * [1;34m|[m [33m144fed5[m pull new version
+[1;31m|[m * [1;34m|[m [1;34m|[m [33m92f5bfb[m Update: User can cancel the order, fix user interface
+[1;31m|[m * [1;34m|[m [1;34m|[m [33mb0535dc[m Update: User can cancel the order, fix user interface
+[1;31m|[m [1;34m|[m [1;34m|[m[1;34m/[m  
+[1;31m|[m [1;34m|[m[1;34m/[m[1;34m|[m   
+[1;31m|[m * [1;34m|[m [33ma011a8d[m  push code
+[1;31m|[m [1;34m|[m[1;34m/[m  
+[1;31m|[m * [33m7c0c1a7[m Update Google account login, check the number of failed login attempts, and fix all merge conflicts.
+* [1;34m|[m [33m914c780[m Stage all changes and resolve previous conflicts
+[1;35m|[m[1;34m\[m[1;34m|[m 
+[1;35m|[m *   [33meb7cc49[m merged code
+[1;35m|[m [31m|[m[32m\[m  
+[1;35m|[m * [32m|[m [33m5b5af3d[m Restore changes from stash
+[1;35m|[m * [32m|[m [33m725fb76[m update cancel order for staff.
+[1;35m|[m * [32m|[m [33md8429d9[m fix importproduct
+[1;35m|[m * [32m|[m [33mdf67789[m  create import product
+[1;35m|[m * [32m|[m [33m76f7653[m change sequence
+[1;35m|[m * [32m|[m [33m46435f5[m[33m ([m[1;31morigin/master[m[33m)[m Initial commit
+[1;35m|[m  [32m/[m  
+* [32m/[m [33m6e4def0[m Update: add forgotPassword and Notification
+[32m|[m[32m/[m  
+* [33m02f7c16[m Update: add forgotPassword and Notification
+* [33m965d597[m Update: add forgotPassword and Notification
+[32m|[m * [33m0a42240[m[33m ([m[1;35mrefs/stash[m[33m)[m WIP on main: b8de8dc Work in progress
+[32m|[m[32m/[m[34m|[m 
+[32m|[m * [33m0d9686a[m index on main: b8de8dc Work in progress
+[32m|[m[32m/[m  
+* [33mb8de8dc[m Work in progress
+*   [33m62784e8[m Merge branch 'main' of https://github.com/phuonggisme124/phone-store-website t stash pop
+[35m|[m[36m\[m  
+[35m|[m * [33m6aac840[m[33m ([m[1;31morigin/temp-recover[m[33m)[m update assign shipper and manage review for staff and fix admin dashbroad
+[35m|[m *   [33m1f7fb91[m fix display product detail
+[35m|[m [1;31m|[m[1;32m\[m  
+[35m|[m [1;31m|[m * [33mf3715ba[m[33m ([m[1;31morigin/restore_backup[m[33m)[m Add notifications for adding products to the cart and performing actions within the cart.
+[35m|[m [1;31m|[m * [33mf4db08b[m update revenue
+[35m|[m * [1;32m|[m [33m07f51d9[m fix display comment
+[35m|[m [1;32m|[m[1;32m/[m  
+[35m|[m * [33m452f8aa[m  fix product details and catch review errors
+* [1;32m|[m [33m18eef29[m Merged latest changes from origin/main
+[1;33m|[m[1;32m\[m[1;32m|[m 
+[1;33m|[m * [33ma00e84f[m update form input product and update date promotion
+[1;33m|[m * [33m8e7fd9f[m Separating JSP by user role
+[1;33m|[m * [33m8205738[m update customer installment payment and filter based role
+[1;33m|[m * [33m61d1712[m update create account
+[1;33m|[m * [33m8b1dcb2[m fix header for view category and sreach for each category
+[1;33m|[m * [33ma4ef9ea[m fix view homepage
+[1;33m|[m * [33m0ed67ab[m update add product
+[1;33m|[m * [33m1b9c640[m fix updat profile for customer
+* [1;34m|[m [33m5dd9fa9[m Update: Fixed editProfile
+[1;34m|[m[1;34m/[m  
+* [33mf766b37[m Update: added view order page
+*   [33m4a402a5[m fixed customer transaction and view instalment payment
+[1;35m|[m[1;36m\[m  
+[1;35m|[m * [33md029baf[m update homepage css
+[1;35m|[m * [33medf37ad[m  update view homepage
+[1;35m|[m * [33m55b769d[m update admin dashboard - category, review, order
+* [1;36m|[m   [33m7fa8a0f[m Push newest version (Fixed conflict)
+[1;36m|[m[32m\[m [1;36m\[m  
+[1;36m|[m [32m|[m[1;36m/[m  
+[1;36m|[m[1;36m/[m[32m|[m   
+[1;36m|[m * [33mdb80a36[m Update: added view order page
+[1;36m|[m * [33m9a8f469[m Update: added changePassword
+[1;36m|[m * [33m1564566[m Update: added changePassword
+* [32m|[m [33m51eb6c2[m fix add to cart function
+* [32m|[m [33m60ad5c1[m fix conflict
+* [32m|[m   [33mc3e975a[m Resolve merge conflicts from stash pop
+[33m|[m[34m\[m [32m\[m  
+[33m|[m * [32m|[m [33m611c689[m display product's images for project
+* [34m|[m [32m|[m [33md4ae7f7[m header for each page of customer and page margins fix
+* [34m|[m [32m|[m [33m5e321cc[m Update product images (add new, delete old), new header for customer view, search product categories for each page
+* [34m|[m [32m|[m [33mfb80c5f[m Remove target from tracking
+* [34m|[m [32m|[m [33m76fcc56[m Finish merge and add .gitignore
+[34m|[m[34m/[m [32m/[m  
+* [32m|[m [33m77a35b9[m update view products by category
+* [32m|[m [33m84e48d3[m Add payment function and customer's transaction
+* [32m|[m [33m961a0ef[m search phone and view promotion in homepage for customer
+* [32m|[m [33mf8cfff9[m update search order
+* [32m|[m [33mca4a814[m update order vs order detail
+* [32m|[m   [33m9c35f5e[m update review product
+[35m|[m[36m\[m [32m\[m  
+[35m|[m * [32m|[m [33m5bb44e0[m Resolve conflicts and prepare for rebase
+[35m|[m * [32m|[m   [33m4c8fb8a[m sreach and filter of review,product,productdetail,promotion,supplier,user
+[35m|[m [1;31m|[m[1;32m\[m [32m\[m  
+[35m|[m [1;31m|[m * [32m|[m [33mb3aa73e[m update review and images
+[35m|[m [1;31m|[m * [32m|[m [33m373e0f9[m addReview and deleteReview
+[35m|[m [1;31m|[m * [32m|[m [33mb0a41e6[m addReview deleteReview
+[35m|[m * [1;32m|[m [32m|[m [33m4d5ebb6[m sreach and filter for review,product,productdetail,promotion,supplier,user of admin for manage
+[35m|[m [1;32m|[m[1;32m/[m [32m/[m  
+* [1;32m/[m [32m/[m [33m18fd57b[m Backup code sau khi stash pop
+[1;32m|[m[1;32m/[m [32m/[m  
+* [32m|[m   [33mf81d149[m update dashboard review, view review detail
+[1;33m|[m[1;34m\[m [32m\[m  
+[1;33m|[m * [32m|[m [33m486c89c[m sreach and filter for staff,view and update review for staff
+[1;33m|[m * [32m|[m [33m2035fde[m Sreach auto and filter,function review for staff
+[1;33m|[m [32m|[m[32m/[m  
+[1;33m|[m * [33ma71d5df[m Update: added profile.jsp and editProfile.jsp. Update/modify UserServlet, update/modify CategoryServlet
+* [1;34m|[m [33mbf451a6[m Restore changes from stash
+* [1;34m|[m [33ma38806b[m Update code with formated code and comment model package
+[1;34m|[m[1;34m/[m  
+* [33mfdcb329[m Update: added new comments and modify old comments to controller package and DAO package
+* [33mbc61e2e[m Update: added new comments and modify old comments to controller package and DAO package
+* [33m10c8888[m Update: added new comment to controller package and DAO package
+* [33ma5e8744[m update productdetail
+* [33mc68d367[m update homapage.jsp, category.git, productdetail.jsp
+* [33m74d6f39[m Add a feature that allows products to be added to the shopping cart and lets users view the details of the products currently in their cart (the interface for displaying this data has not been implemented yet).
+* [33m7f2e51e[m Add a feature that allows staff to choose the delivery person
+* [33m1c6b3fc[m update productdetail.jsp
+* [33m882b478[m update admin dashboard
+* [33m47021e7[m update dashboard admin
+* [33m4e58ed9[m create admin_promotion.jsp
+* [33m6116fb4[m update dashboard admin
+* [33m7b996d2[m update dashboard admin
+*   [33mcf7c154[m update data in homepage and filter for shipper dashboard
+[1;35m|[m[1;36m\[m  
+[1;35m|[m *   [33me9095cd[m update  homepase
+[1;35m|[m [31m|[m[32m\[m  
+[1;35m|[m [31m|[m * [33mbcf7bd4[m update dashboard admin
+[1;35m|[m * [32m|[m [33m37e23d8[m Resolve merge conflicts
+* [32m|[m [32m|[m [33m1a2c859[m save change
+[32m|[m [32m|[m[32m/[m  
+[32m|[m[32m/[m[32m|[m   
+* [32m|[m [33md59e524[m update shipper dashboard (Shipper can view and change status of products
+[32m|[m[32m/[m  
+* [33m4337338[m update dashboard
+*   [33m4be270b[m update shipper dashboard
+[33m|[m[34m\[m  
+[33m|[m *   [33m654e381[m update model
+[33m|[m [35m|[m[36m\[m  
+[33m|[m [35m|[m * [33ma16a842[m Update: added new model classes (Suppliers, Categories, Products, Promotions, Payments)
+[33m|[m [35m|[m * [33m8438b8b[m update dashboard_admin.jsp
+[33m|[m * [36m|[m [33m65a117c[m update model
+[33m|[m * [36m|[m [33m0c65254[m update model
+[33m|[m [36m|[m[36m/[m  
+* [36m/[m [33mfb76e1f[m update dashboard_shipper
+[36m|[m[36m/[m  
+* [33m77a23d1[m update order and sale model
+* [33md8ff1c7[m update dashboard_admin.jsp
+* [33m5cb012d[m update dashboard_admin.jsp
+* [33maf0cabf[m update register function
+*   [33m3dab525[m update dashboard
+[1;31m|[m[1;32m\[m  
+[1;31m|[m * [33mc2713de[m update login.jsp
+* [1;32m|[m [33m29877a3[m update login.jsp
+[1;32m|[m[1;32m/[m  
+* [33md422033[m update login

@@ -1,3 +1,15 @@
-/src/main/webapp/dashboard_admin/nbproject/private/
+# Maven
 /target/
+
+# Compiled files
+*.class
+*.war
+
+# NetBeans
 /nbproject/
+**/nbproject/private/
+
+# OS / IDE
+.DS_Store
+.idea/
+.vscode/

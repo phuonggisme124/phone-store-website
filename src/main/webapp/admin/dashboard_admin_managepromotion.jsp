@@ -1,4 +1,7 @@
+<<<<<<< HEAD
+=======
 <%@page import="model.Staff"%>
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
 <%@page import="java.time.LocalDateTime"%>
 <%@page import="java.time.format.DateTimeFormatter"%>
 <%@page import="model.Promotions"%>
@@ -7,8 +10,12 @@
 <%@page import="model.Products"%>
 <%@page import="java.util.List"%>
 <%@page import="java.util.ArrayList"%>
+<<<<<<< HEAD
+<%@page import="model.Staff"%> <%@page import="com.google.gson.Gson"%>
+=======
 
 <%@page import="com.google.gson.Gson"%>
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html lang="en">
@@ -28,13 +35,20 @@
     </head>
     <body>
         <%
+<<<<<<< HEAD
+            // SỬA: Lấy Staff từ Session
             Staff currentUser = (Staff) session.getAttribute("user");
+            
+=======
+            Staff currentUser = (Staff) session.getAttribute("user");
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
             if (currentUser == null) {
                 response.sendRedirect("login.jsp");
                 return;
             }
+            // Check quyền Admin (Role = 4)
             if (currentUser.getRole() != 4) {
-                response.sendRedirect("login");
+                response.sendRedirect("login"); // Hoặc trang báo lỗi quyền
                 return;
             }
 
@@ -74,12 +88,36 @@
             <%@ include file="sidebar.jsp" %>
 
             <div class="page-content flex-grow-1">
+<<<<<<< HEAD
+                <nav class="navbar navbar-light bg-white shadow-sm">
+=======
                 <nav class="navbar navbar-light bg-white shadow-sm px-3 py-2 sticky-top">
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
                     <div class="container-fluid">
                         <button class="btn btn-light text-primary border-0 shadow-sm rounded-circle" id="menu-toggle" style="width: 40px; height: 40px;">
                             <i class="bi bi-list fs-5"></i>
                         </button>
 
+<<<<<<< HEAD
+                            <form action="admin" method="get" class="d-flex position-relative me-3" id="searchForm" autocomplete="off">
+                                <input type="hidden" name="action" value="managePromotion">
+                                <input type="hidden" name="discountFilter" value="<%= currentDiscount%>">
+                                <input class="form-control me-2" type="text" id="searchProduct" name="productName"
+                                       placeholder="Search Product…" value="<%= currentProductName%>"
+                                       oninput="showSuggestions(this.value)">
+                                <button class="btn btn-outline-primary" type="submit">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                                <div id="suggestionBox" class="list-group position-absolute w-100"
+                                     style="top: 100%; z-index: 1000;"></div>
+                            </form>
+
+                            <form action="admin" method="get" class="dropdown me-3">
+                                <input type="hidden" name="action" value="managePromotion">
+                                <input type="hidden" name="productName" value="<%= currentProductName%>">
+
+                                <button class="btn btn-outline-secondary fw-bold dropdown-toggle"
+=======
                         <div class="d-flex align-items-center ms-auto gap-3">
 
                             <form action="promotion" method="get" class="position-relative mb-0" id="searchForm" autocomplete="off">
@@ -114,10 +152,37 @@
                                 <input type="hidden" name="productName" value="<%= currentProductName%>">
 
                                 <button class="btn btn-outline-custom dropdown-toggle px-3 rounded-pill d-flex align-items-center gap-2"
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
                                         type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="bi bi-funnel-fill"></i> 
                                     <span>Discount: <%= currentDiscount.equals("All") ? "All" : currentDiscount + "%"%></span>
                                 </button>
+<<<<<<< HEAD
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="filterDropdown">
+                                    <li><button type="submit" name="discountFilter" value="All" class="dropdown-item">All Discounts</button></li>
+                                    <li><button type="submit" name="discountFilter" value="0-20" class="dropdown-item">
+                                            <i class="bi bi-tag"></i> 0% - 20%
+                                    </button></li>
+                                    <li><button type="submit" name="discountFilter" value="21-40" class="dropdown-item">
+                                            <i class="bi bi-tag"></i> 21% - 40%
+                                    </button></li>
+                                    <li><button type="submit" name="discountFilter" value="41-60" class="dropdown-item">
+                                            <i class="bi bi-tag"></i> 41% - 60%
+                                    </button></li>
+                                    <li><button type="submit" name="discountFilter" value="61-80" class="dropdown-item">
+                                            <i class="bi bi-tag"></i> 61% - 80%
+                                    </button></li>
+                                    <li><button type="submit" name="discountFilter" value="81-100" class="dropdown-item">
+                                            <i class="bi bi-tag-fill"></i> 81% - 100%
+                                    </button></li>
+                                </ul>
+                            </form>
+
+                            <a href="logout" class="btn btn-outline-danger btn-sm me-3">Logout</a>
+                            <div class="d-flex align-items-center ms-3">
+                                <img src="https://i.pravatar.cc/40" class="rounded-circle me-2" width="35">
+                                <span><%= currentUser.getFullName()%></span>
+=======
 
                                 <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-3 mt-2" aria-labelledby="filterDropdown">
                                     <li>
@@ -161,37 +226,81 @@
                                    style="width: 38px; height: 38px;" title="Logout">
                                     <i class="bi bi-box-arrow-right fs-6"></i>
                                 </a>
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
                             </div>
                         </div>
                     </div>
                 </nav>
 
+<<<<<<< HEAD
+=======
                
 
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
                 <%
                     String successCreatePromotion = (String) session.getAttribute("successCreatePromotion");
                     String successUpdatePromotion = (String) session.getAttribute("successUpdatePromotion");
                     String successDeletePromotion = (String) session.getAttribute("successDeletePromotion");
+                    
                     if (successCreatePromotion != null) {
                 %>
                 <div class="alert alert-success alert-dismissible fade show w-50 mx-auto mt-3" role="alert">
                     <i class="bi bi-check-circle-fill me-2"></i><%= successCreatePromotion%>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
+<<<<<<< HEAD
+                <%
+                        session.removeAttribute("successCreatePromotion");
+                    }
+                %>
+                
+                <%
+                    if (successUpdatePromotion != null) {
+                %>
+=======
                 <% session.removeAttribute("successCreatePromotion"); } %>
 
                 <% if (successUpdatePromotion != null) { %>
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
                 <div class="alert alert-success alert-dismissible fade show w-50 mx-auto mt-3" role="alert">
                     <i class="bi bi-check-circle-fill me-2"></i><%= successUpdatePromotion%>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
+<<<<<<< HEAD
+                <%
+                        session.removeAttribute("successUpdatePromotion");
+                    }
+                %>
+                
+                <%
+                    if (successDeletePromotion != null) {
+                %>
+=======
                 <% session.removeAttribute("successUpdatePromotion"); } %>
 
                 <% if (successDeletePromotion != null) { %>
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
                 <div class="alert alert-success alert-dismissible fade show w-50 mx-auto mt-3" role="alert">
                     <i class="bi bi-check-circle-fill me-2"></i><%= successDeletePromotion%>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
+<<<<<<< HEAD
+                <%
+                        session.removeAttribute("successDeletePromotion");
+                    }
+                %>
+                
+                <div class="card shadow-sm border-0 p-4 m-3">
+                    <div class="card-body p-0">
+                        <div class="container-fluid p-4 ps-3">
+                            <h1 class="fw-bold ps-3 mb-4 fw-bold text-primary">Manage Promotions</h1>
+                        </div>
+                        <div class="container-fluid p-4">
+                            <a class="btn btn-primary px-4 py-2 rounded-pill shadow-sm" href="promotion?action=createPromotion">
+                                <i class="bi bi-tag-fill me-2"></i> Create Promotion
+                            </a>
+                        </div>
+=======
                 <% session.removeAttribute("successDeletePromotion"); } %>
 
                 <div class="card shadow-sm border-0 rounded-4 m-3 overflow-hidden">
@@ -240,6 +349,7 @@
                     <% } %>
 
                     <div class="card-body p-0">
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
                         <% if (listPromotions != null && !listPromotions.isEmpty()) { %>
                         <div class="table-responsive">
                             <table class="table table-hover align-middle mb-0 custom-table">
@@ -373,6 +483,17 @@
                 document.getElementById("wrapper").classList.toggle("toggled");
             });
 
+<<<<<<< HEAD
+            // Autocomplete
+            var debounceTimer;
+            function showSuggestions(str) {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    var box = document.getElementById("suggestionBox");
+                    box.innerHTML = "";
+                    if (str.length < 1)
+                        return;
+=======
             // ------------------ Autocomplete (Fixed Version) ------------------
             var debounceTimer;
             function showSuggestions(str) {
@@ -386,6 +507,7 @@
                         box.style.display = "none";
                         return;
                     }
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
 
                     var matches = allProductNames.filter(name =>
                         name.toLowerCase().includes(str.toLowerCase())
@@ -395,11 +517,18 @@
                         matches.slice(0, 5).forEach(name => {
                             var item = document.createElement("button");
                             item.type = "button";
+<<<<<<< HEAD
+                            item.className = "list-group-item list-group-item-action";
+                            item.textContent = name;
+                            item.onclick = function () {
+                                document.getElementById("searchProduct").value = name;
+=======
                             item.className = "list-group-item list-group-item-action text-start";
                             item.textContent = name;
                             item.onclick = function () {
                                 document.getElementById("searchProduct").value = name;
                                 box.style.display = "none";
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
                                 box.innerHTML = "";
                                 document.getElementById("searchForm").submit();
                             };
@@ -411,9 +540,12 @@
                         item.textContent = "No products found.";
                         box.appendChild(item);
                     }
+<<<<<<< HEAD
+=======
                     
                     // QUAN TRỌNG: Hiện box
                     box.style.display = "block";
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
                 }, 200);
             }
 
@@ -422,6 +554,11 @@
                 var searchInput = document.getElementById('searchProduct');
                 var suggestionBox = document.getElementById('suggestionBox');
                 if (!searchInput.contains(e.target) && !suggestionBox.contains(e.target)) {
+<<<<<<< HEAD
+                    suggestionBox.innerHTML = "";
+                }
+            });
+=======
                     suggestionBox.style.display = "none";
                 }
             });
@@ -435,6 +572,7 @@
                     setTimeout(() => alert.remove(), 500);
                 }
             }, 3000);
+>>>>>>> 1b29b8814bac2c7c9547140c5454d64b3d75b806
         </script>
     </body>
 </html>

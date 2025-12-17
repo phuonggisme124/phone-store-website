@@ -1,4 +1,3 @@
-<%@page import="model.Vouchers"%>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@page import="dao.ProductDAO"%>
 <%@page import="java.text.NumberFormat"%>
@@ -161,83 +160,6 @@
     }
 
     /* hi?u ?ng menu */
-
-
-
-    /* --- CSS CHO VOUCHER --- */
-    .voucher-section {
-        background-color: #fff1f0; /* Nền hồng nhạt nổi bật */
-        padding: 40px 0;
-    }
-    .voucher-card {
-        background: white;
-        border: 2px dashed #ff5722; /* Viền nét đứt màu cam Shopee */
-        border-radius: 8px;
-        padding: 15px;
-        position: relative;
-        transition: transform 0.3s;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-    }
-    .voucher-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 5px 15px rgba(255, 87, 34, 0.2);
-    }
-    .voucher-code {
-        color: #ff5722;
-        font-weight: bold;
-        font-size: 1.2rem;
-    }
-    .voucher-discount {
-        font-size: 1.5rem;
-        font-weight: 800;
-        color: #d0011b;
-    }
-    .voucher-info {
-        font-size: 0.9rem;
-        color: #555;
-        margin-bottom: 10px;
-    }
-    .btn-save-voucher {
-        background-color: #ff5722;
-        color: white;
-        border: none;
-        width: 100%;
-        padding: 8px;
-        border-radius: 4px;
-        text-transform: uppercase;
-        font-weight: bold;
-        text-decoration: none;
-        display: block;
-    }
-    .btn-save-voucher:hover {
-        background-color: #e64a19;
-        color: white;
-    }
-    .btn-saved {
-        background-color: #ccc;
-        color: #666;
-        cursor: not-allowed;
-    }
-    /* Góc khuyết trang trí cho voucher */
-    .voucher-card::before, .voucher-card::after {
-        content: "";
-        position: absolute;
-        width: 20px;
-        height: 20px;
-        background-color: #fff1f0; /* Trùng màu nền section */
-        border-radius: 50%;
-        top: 50%;
-        transform: translateY(-50%);
-    }
-    .voucher-card::before {
-        left: -10px;
-    }
-    .voucher-card::after {
-        right: -10px;
-    }
 
 
 </style>
@@ -502,37 +424,6 @@
             </div>
         </section>
 
-        <section id="voucher-hunter" class="voucher-section" style="background: #fff1f0; padding: 60px 0;">
-            <div class="container">
-                <div class="row justify-content-center text-center">
-                    <div class="col-lg-8">
-                        <h2 class="display-6 fw-bold text-uppercase mb-3" style="color: #d0011b;">
-                            <i class="fas fa-ticket-alt"></i> Kho Voucher Ưu Đãi
-                        </h2>
-
-                        <p class="lead text-muted mb-4">
-                            Săn ngay mã giảm giá độc quyền và quản lý kho voucher của riêng bạn để mua sắm tiết kiệm hơn.
-                        </p>
-
-                        <div class="d-flex justify-content-center gap-3">
-                            <%
-                                if (session.getAttribute("user") != null) {
-                            %>
-                            <a href="voucher?action=viewMyVouchers" class="btn btn-danger btn-lg rounded-pill px-5 shadow-sm transition-btn">
-                                <i class="fas fa-wallet me-2"></i> Vào Ví Voucher & Săn Mã
-                            </a>
-                            <% } else { %>
-                            <a href="login.jsp" class="btn btn-dark btn-lg rounded-pill px-5 shadow-sm">
-                                Đăng nhập để săn Voucher
-                            </a>
-                            <% } %>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-
         <section id="mobile-products" class="product-store position-relative padding-large no-padding-top">
             <div class="container">
                 <div class="row mb-5">
@@ -579,24 +470,24 @@
                                         <!--WISH LIST BUTTON-->
                                         <div class="wishlist-wrap">
                                             <%
-                                                Customer u = (Customer) session.getAttribute("user");
-                                                boolean logged = (u != null);
-                                                boolean liked = false;
-                                                int variantID = p.getVariants().get(0).getVariantID();
-                                                int productID = p.getProductID();
+ Customer u = (Customer) session.getAttribute("user");
+ boolean logged = (u != null);
+ boolean liked = false;
+ int variantID = p.getVariants().get(0).getVariantID();
+ int productID = p.getProductID();
 
-                                                if (logged && variantID > 0) {
-                                                    WishlistDAO wdao = new WishlistDAO();
-                                                    liked = wdao.isExist(u.getCustomerID(), productID, variantID);
-                                                }
+ if (logged && variantID > 0) {
+     WishlistDAO wdao = new WishlistDAO();
+     liked = wdao.isExist(u.getCustomerID(), productID, variantID);
+ }
                                             %>
 
                                             <button class="wishlist-btn toggle-wishlist"
-                                                    data-productid="<%= productID%>"
-                                                    data-variantid="<%= variantID%>"
-                                                    style="background:none; border:none; padding:0;">
-                                                <i class="<%= liked ? "fas fa-heart" : "far fa-heart"%>"
-                                                   style="<%= liked ? "color:#e53e3e;" : ""%>"></i>
+                                                    data-productid="<%= productID %>"
+                                                    data-variantid="<%= variantID %>"
+                                                    style="position:absolute; top:40px; right:10px; background:none; border:none; padding:0; z-index:10;">
+                                                <i class="<%= liked ? "fas fa-heart" : "far fa-heart" %>"
+                                                   style="<%= liked ? "color:#e53e3e; font-size:1.5rem;" : "font-size:1.5rem;" %>"></i>
                                             </button>
 
                                         </div>
@@ -668,11 +559,11 @@
                                             %>
 
                                             <button class="wishlist-btn toggle-wishlist"
-                                                    data-productid="<%= productID%>"
-                                                    data-variantid="<%= variantID%>"
-                                                    style="background:none; border:none; padding:0;">
-                                                <i class="<%= liked ? "fas fa-heart" : "far fa-heart"%>"
-                                                   style="<%= liked ? "color:#e53e3e;" : ""%>"></i>
+                                                    data-productid="<%= productID %>"
+                                                    data-variantid="<%= variantID %>"
+                                                    style="position:absolute; top:40px; right:10px; background:none; border:none; padding:0; z-index:10;">
+                                                <i class="<%= liked ? "fas fa-heart" : "far fa-heart" %>"
+                                                   style="<%= liked ? "color:#e53e3e; font-size:1.5rem;" : "font-size:1.5rem;" %>"></i>
                                             </button>
 
                                         </div>
@@ -741,11 +632,11 @@
                                             %>
 
                                             <button class="wishlist-btn toggle-wishlist"
-                                                    data-productid="<%= productID%>"
-                                                    data-variantid="<%= variantID%>"
-                                                    style="background:none; border:none; padding:0;">
-                                                <i class="<%= liked ? "fas fa-heart" : "far fa-heart"%>"
-                                                   style="<%= liked ? "color:#e53e3e;" : ""%>"></i>
+                                                    data-productid="<%= productID %>"
+                                                    data-variantid="<%= variantID %>"
+                                                    style="position:absolute; top:40px; right:10px; background:none; border:none; padding:0; z-index:10;">
+                                                <i class="<%= liked ? "fas fa-heart" : "far fa-heart" %>"
+                                                   style="<%= liked ? "color:#e53e3e; font-size:1.5rem;" : "font-size:1.5rem;" %>"></i>
                                             </button>
 
                                         </div>
@@ -855,7 +746,7 @@
                 const variantId = btn.dataset.variantid || 0;
                 const icon = btn.querySelector("i");
 
-                fetch("<%= request.getContextPath()%>/product", {
+                fetch("<%= request.getContextPath() %>/product", {
                     method: "POST",
                     headers: {"Content-Type": "application/x-www-form-urlencoded"},
                     body: "action=toggleWishlist&productId=" + productId + "&variantId=" + variantId
@@ -890,5 +781,9 @@
         <script src="${pageContext.request.contextPath}/js/google_login.js?v=10"></script>
         <script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
     </body>
+<<<<<<< HEAD
+</html>
+=======
 </html>
 
+>>>>>>> eff3e4e3ea3ea5244350c64dcc6223c7f46cf145
